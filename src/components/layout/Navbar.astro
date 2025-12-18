@@ -1,0 +1,191 @@
+---
+/**
+ * Navbar - Responsive navigation bar with mobile menu support
+ *
+ * @description
+ * A sticky navigation bar that includes site logo/name, navigation links,
+ * theme toggle, and a mobile-friendly hamburger menu. Navigation items are
+ * automatically filtered based on feature flags from site config. The mobile
+ * menu uses an overlay with backdrop blur and smooth transitions.
+ *
+ * @example
+ * ```astro
+ * <Navbar />
+ * ```
+ *
+ * @remarks
+ * This component doesn't accept props - it reads all configuration from
+ * `siteConfig.navigation.main` and `siteConfig.features`. The navbar is
+ * sticky positioned and includes backdrop blur for a modern glass effect.
+ *
+ * Mobile menu features:
+ * - Hamburger icon that transforms to close icon
+ * - Full-screen overlay with backdrop
+ * - Keyboard accessible (Escape to close)
+ * - Auto-closes when clicking links or backdrop
+ * - Prevents body scroll when open
+ */
+import { siteConfig } from '@/config';
+import { Icon } from 'astro-icon/components';
+import ThemeToggle from '../ui/buttons/ThemeToggle.astro';
+
+const { features, navigation } = siteConfig;
+
+// Feature-flagged navigation items
+const featureNavItems = [
+  { label: 'Blog', href: '/blog', feature: 'blog' as const },
+  { label: 'Docs', href: '/docs', feature: 'docs' as const },
+];
+
+// Filter feature nav items based on feature flags
+const activeFeatureNavItems = featureNavItems.filter(
+  (item) => features[item.feature]
+);
+---
+
+<nav class="sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b border-surface">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center justify-between h-16">
+      <!-- Logo / Site Name -->
+      <a href="/" class="flex items-center gap-2 font-semibold text-lg text-text">
+        {siteConfig.logo ? (
+          <img src={siteConfig.logo} alt={siteConfig.name} class="h-8 w-auto" />
+        ) : (
+          siteConfig.name
+        )}
+      </a>
+
+      <!-- Desktop Navigation -->
+      <div class="hidden md:flex items-center gap-6">
+        <!-- Main navigation links -->
+        {navigation.main.map((item) => (
+          <a
+            href={item.href}
+            class="text-text-muted hover:text-text transition-colors text-sm font-medium rounded-md px-2 py-1 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background focus:outline-none"
+          >
+            {item.label}
+          </a>
+        ))}
+
+        <!-- Feature-flagged navigation links -->
+        {activeFeatureNavItems.map((item) => (
+          <a
+            href={item.href}
+            class="text-text-muted hover:text-text transition-colors text-sm font-medium rounded-md px-2 py-1 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background focus:outline-none"
+          >
+            {item.label}
+          </a>
+        ))}
+
+        <ThemeToggle />
+      </div>
+
+      <!-- Mobile menu button -->
+      <div class="flex items-center gap-2 md:hidden">
+        <ThemeToggle />
+        <button
+          id="mobile-menu-button"
+          type="button"
+          aria-label="Toggle mobile menu"
+          aria-expanded="false"
+          aria-controls="mobile-menu"
+          class="p-2 rounded-md hover:bg-surface transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+        >
+          <!-- Hamburger icon (shown when menu is closed) -->
+          <Icon name="lucide:menu" id="menu-icon-open" class="w-6 h-6 text-text" aria-hidden="true" />
+          <!-- Close icon (shown when menu is open) -->
+          <Icon name="lucide:x" id="menu-icon-close" class="hidden w-6 h-6 text-text" aria-hidden="true" />
+        </button>
+      </div>
+    </div>
+  </div>
+
+</nav>
+
+<!-- Mobile Navigation Overlay -->
+<div id="mobile-menu" class="fixed inset-0 z-40 hidden md:hidden" role="navigation" aria-label="Mobile navigation">
+  <!-- Backdrop -->
+  <div id="mobile-menu-backdrop" class="absolute inset-0 bg-background/80 backdrop-blur-sm"></div>
+  <!-- Menu Panel -->
+  <div id="mobile-menu-panel" class="absolute left-0 right-0 bg-surface border-b border-background shadow-lg">
+    <div class="px-4 py-4 space-y-1">
+      {navigation.main.map((item) => (
+        <a
+          href={item.href}
+          class="block px-3 py-3 rounded-md text-text-muted hover:text-text hover:bg-background transition-colors text-base font-medium focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-inset"
+        >
+          {item.label}
+        </a>
+      ))}
+      {activeFeatureNavItems.map((item) => (
+        <a
+          href={item.href}
+          class="block px-3 py-3 rounded-md text-text-muted hover:text-text hover:bg-background transition-colors text-base font-medium focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-inset"
+        >
+          {item.label}
+        </a>
+      ))}
+    </div>
+  </div>
+</div>
+
+<script>
+  const navbar = document.querySelector('nav');
+  const mobileMenuButton = document.getElementById('mobile-menu-button');
+  const mobileMenu = document.getElementById('mobile-menu');
+  const mobileMenuPanel = document.getElementById('mobile-menu-panel');
+  const mobileMenuBackdrop = document.getElementById('mobile-menu-backdrop');
+  const menuIconOpen = document.getElementById('menu-icon-open');
+  const menuIconClose = document.getElementById('menu-icon-close');
+
+  function updateMenuPosition() {
+    if (navbar && mobileMenuPanel) {
+      const navbarRect = navbar.getBoundingClientRect();
+      mobileMenuPanel.style.top = `${navbarRect.bottom}px`;
+    }
+  }
+
+  function openMobileMenu() {
+    updateMenuPosition();
+    mobileMenu?.classList.remove('hidden');
+    mobileMenuButton?.setAttribute('aria-expanded', 'true');
+    menuIconOpen?.classList.add('hidden');
+    menuIconClose?.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeMobileMenu() {
+    mobileMenu?.classList.add('hidden');
+    mobileMenuButton?.setAttribute('aria-expanded', 'false');
+    menuIconOpen?.classList.remove('hidden');
+    menuIconClose?.classList.add('hidden');
+    document.body.style.overflow = '';
+  }
+
+  function toggleMobileMenu() {
+    const isExpanded = mobileMenuButton?.getAttribute('aria-expanded') === 'true';
+    if (isExpanded) {
+      closeMobileMenu();
+    } else {
+      openMobileMenu();
+    }
+  }
+
+  mobileMenuButton?.addEventListener('click', toggleMobileMenu);
+
+  // Close menu when clicking backdrop
+  mobileMenuBackdrop?.addEventListener('click', closeMobileMenu);
+
+  // Close menu on Escape key
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && mobileMenuButton?.getAttribute('aria-expanded') === 'true') {
+      closeMobileMenu();
+      mobileMenuButton?.focus();
+    }
+  });
+
+  // Close menu when clicking a link
+  mobileMenu?.querySelectorAll('a').forEach(link => {
+    link.addEventListener('click', closeMobileMenu);
+  });
+</script>

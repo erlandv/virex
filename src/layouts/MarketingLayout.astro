@@ -1,0 +1,61 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import Navbar from '../components/layout/Navbar.astro';
+import Footer from '../components/layout/Footer.astro';
+import AnnouncementBar from '../components/layout/AnnouncementBar.astro';
+import { siteConfig } from '@/config';
+
+interface Props {
+  title: string;
+  description: string;
+  image?: string;
+  type?: 'website' | 'article';
+  // Article-specific props for JSON-LD
+  publishedDate?: Date;
+  modifiedDate?: Date;
+  author?: string;
+  tags?: string[];
+}
+
+const { 
+  title, 
+  description, 
+  image, 
+  type = 'website',
+  publishedDate,
+  modifiedDate,
+  author,
+  tags
+} = Astro.props;
+
+const { announcement } = siteConfig;
+---
+
+<BaseLayout 
+  title={title} 
+  description={description} 
+  image={image} 
+  type={type}
+  publishedDate={publishedDate}
+  modifiedDate={modifiedDate}
+  author={author}
+  tags={tags}
+>
+  <div class="flex flex-col min-h-screen">
+    {announcement.enabled && (
+      <AnnouncementBar
+        id={announcement.id}
+        text={announcement.text}
+        href={announcement.href}
+        linkText={announcement.linkText}
+        variant={announcement.variant}
+        dismissible={announcement.dismissible}
+      />
+    )}
+    <Navbar />
+    <main id="main-content" class="flex-1">
+      <slot />
+    </main>
+    <Footer />
+  </div>
+</BaseLayout>

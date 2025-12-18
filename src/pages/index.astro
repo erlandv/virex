@@ -1,0 +1,105 @@
+---
+import { getCollection } from 'astro:content';
+import MarketingLayout from '../layouts/MarketingLayout.astro';
+import Hero from '../components/sections/Hero.astro';
+import FeatureGrid from '../components/sections/FeatureGrid.astro';
+import TestimonialCard from '../components/ui/cards/TestimonialCard.astro';
+import CTA from '../components/sections/CTA.astro';
+import { siteConfig } from '@/config';
+
+const testimonials = await getCollection('testimonials', ({ data }) => !data.draft);
+const sortedTestimonials = [...testimonials].sort((a, b) => a.data.order - b.data.order);
+
+interface Feature {
+  icon: string;
+  title: string;
+  description: string;
+}
+
+const features: Feature[] = [
+  {
+    icon: "lucide:zap",
+    title: "Lightning Fast Deploys",
+    description: "Push to deploy in seconds, not minutes. Our optimized build pipeline gets your changes live faster than ever."
+  },
+  {
+    icon: "lucide:refresh-cw",
+    title: "Automatic Rollbacks",
+    description: "Something went wrong? Instantly roll back to any previous deployment with a single click."
+  },
+  {
+    icon: "lucide:globe",
+    title: "Global Edge Network",
+    description: "Your app runs on 200+ edge locations worldwide, ensuring blazing fast load times for every user."
+  },
+  {
+    icon: "lucide:shield",
+    title: "Built-in Security",
+    description: "SSL certificates, DDoS protection, and security headers configured automatically for every project."
+  },
+  {
+    icon: "lucide:bar-chart",
+    title: "Real-time Analytics",
+    description: "Monitor performance, track errors, and understand your users with built-in observability tools."
+  },
+  {
+    icon: "lucide:handshake",
+    title: "Team Collaboration",
+    description: "Preview deployments for every PR, role-based access control, and seamless Git integration."
+  }
+];
+---
+
+<MarketingLayout 
+  title={`${siteConfig.name} - ${siteConfig.description}`}
+  description={siteConfig.description}
+>
+  <Hero
+    title="Ship faster. Scale effortlessly."
+    subtitle="Virex is the modern deployment platform that helps teams build, deploy, and scale applications without the infrastructure headaches."
+    primaryCTA={{ label: "Start for Free", href: "/pricing" }}
+    secondaryCTA={{ label: "View Documentation", href: "/docs" }}
+  />
+
+  <section class="py-section bg-surface">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-12">
+        <h2 class="text-3xl sm:text-4xl font-bold text-text">Everything you need to ship</h2>
+        <p class="mt-4 text-lg text-text-muted max-w-2xl mx-auto">
+          From development to production, Virex provides all the tools your team needs to move fast and stay reliable.
+        </p>
+      </div>
+      <FeatureGrid features={features} />
+    </div>
+  </section>
+
+  {siteConfig.features.testimonials && sortedTestimonials.length > 0 && (
+    <section class="py-section">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12">
+          <h2 class="text-3xl sm:text-4xl font-bold text-text">Loved by developers</h2>
+          <p class="mt-4 text-lg text-text-muted max-w-2xl mx-auto">
+            Join thousands of teams who trust Virex to power their deployments.
+          </p>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          {sortedTestimonials.map((testimonial) => (
+            <TestimonialCard
+              quote={testimonial.data.quote}
+              author={testimonial.data.author}
+              role={testimonial.data.role}
+              company={testimonial.data.company}
+              avatar={testimonial.data.avatar}
+            />
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+
+  <CTA
+    title="Ready to ship faster?"
+    description="Get started with Virex today. No credit card required for the free tier."
+    action={{ label: "Start Building", href: "/pricing" }}
+  />
+</MarketingLayout>

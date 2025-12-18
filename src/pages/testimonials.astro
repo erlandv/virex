@@ -1,0 +1,91 @@
+---
+import MarketingLayout from '../layouts/MarketingLayout.astro';
+import TestimonialCard from '../components/ui/cards/TestimonialCard.astro';
+import CTA from '../components/sections/CTA.astro';
+import { Icon } from 'astro-icon/components';
+import { getCollection } from 'astro:content';
+import { siteConfig } from '@/config';
+
+const testimonials = await getCollection('testimonials', ({ data }) => !data.draft);
+const sortedTestimonials = testimonials.sort((a, b) => a.data.order - b.data.order);
+
+// Separate featured testimonials for highlight section
+const featuredTestimonials = sortedTestimonials.filter(t => t.data.featured);
+const otherTestimonials = sortedTestimonials.filter(t => !t.data.featured);
+---
+
+<MarketingLayout 
+  title={`Testimonials - ${siteConfig.name}`}
+  description={`See what developers and teams are saying about ${siteConfig.name}. Real stories from real users.`}
+>
+  <section class="py-section">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-16">
+        <h1 class="text-4xl sm:text-5xl font-bold text-text">
+          Loved by developers
+        </h1>
+        <p class="mt-4 text-lg text-text-muted max-w-2xl mx-auto">
+          Don't just take our word for it. Here's what developers and teams are saying about {siteConfig.name}.
+        </p>
+      </div>
+
+      {featuredTestimonials.length > 0 && (
+        <div class="mb-16">
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {featuredTestimonials.map((testimonial) => (
+              <div class="p-8 rounded-xl bg-primary/5 border border-primary/20">
+                <Icon name="lucide:quote" class="w-10 h-10 text-primary/40 mb-4" />
+                <blockquote class="text-xl text-text leading-relaxed">
+                  "{testimonial.data.quote}"
+                </blockquote>
+                <div class="mt-6 flex items-center gap-4">
+                  {testimonial.data.avatar ? (
+                    <img
+                      src={testimonial.data.avatar}
+                      alt={testimonial.data.author}
+                      class="w-14 h-14 rounded-full object-cover"
+                    />
+                  ) : (
+                    <div class="w-14 h-14 rounded-full bg-primary/10 text-primary flex items-center justify-center text-lg font-semibold">
+                      {testimonial.data.author.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)}
+                    </div>
+                  )}
+                  <div>
+                    <div class="font-semibold text-text text-lg">{testimonial.data.author}</div>
+                    <div class="text-text-muted">
+                      {testimonial.data.role} at {testimonial.data.company}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {otherTestimonials.map((testimonial) => (
+          <TestimonialCard
+            quote={testimonial.data.quote}
+            author={testimonial.data.author}
+            role={testimonial.data.role}
+            company={testimonial.data.company}
+            avatar={testimonial.data.avatar}
+          />
+        ))}
+      </div>
+
+      {sortedTestimonials.length === 0 && (
+        <div class="text-center py-12">
+          <p class="text-text-muted">No testimonials yet. Check back soon!</p>
+        </div>
+      )}
+    </div>
+  </section>
+
+  <CTA
+    title="Ready to join them?"
+    description="Start building and shipping faster with our modern deployment platform."
+    action={{ label: "Get Started Free", href: "/pricing" }}
+  />
+</MarketingLayout>

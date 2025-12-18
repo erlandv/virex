@@ -1,0 +1,13 @@
+---
+import { getCollection } from 'astro:content';
+
+// Get all non-draft docs and find the first one by order
+const allDocs = await getCollection('docs', ({ data }) => !data.draft);
+const sortedDocs = allDocs.sort((a, b) => a.data.order - b.data.order);
+
+// Redirect to the first doc (usually introduction)
+const firstDoc = sortedDocs[0];
+const redirectUrl = firstDoc ? `/docs/${firstDoc.slug}` : '/';
+
+return Astro.redirect(redirectUrl);
+---

@@ -1,0 +1,175 @@
+---
+import MarketingLayout from '../layouts/MarketingLayout.astro';
+import { siteConfig } from '@/config';
+
+// This is a placeholder status page. In production, you would typically:
+// 1. Use a dedicated status page service (Statuspage.io, Instatus, etc.)
+// 2. Fetch real-time status from your monitoring system
+// 3. Display actual incident history
+
+const services = [
+  { name: "Website & Dashboard", status: "operational" },
+  { name: "API", status: "operational" },
+  { name: "Build System", status: "operational" },
+  { name: "Edge Network (CDN)", status: "operational" },
+  { name: "DNS", status: "operational" },
+  { name: "SSL Certificates", status: "operational" },
+];
+
+const statusConfig = {
+  operational: { label: "Operational", color: "bg-green-500", textColor: "text-green-600 dark:text-green-400" },
+  degraded: { label: "Degraded Performance", color: "bg-yellow-500", textColor: "text-yellow-600 dark:text-yellow-400" },
+  partial: { label: "Partial Outage", color: "bg-orange-500", textColor: "text-orange-600 dark:text-orange-400" },
+  major: { label: "Major Outage", color: "bg-red-500", textColor: "text-red-600 dark:text-red-400" },
+  maintenance: { label: "Under Maintenance", color: "bg-blue-500", textColor: "text-blue-600 dark:text-blue-400" },
+};
+
+const allOperational = services.every(s => s.status === "operational");
+
+// Sample past incidents - replace with real incident data
+const recentIncidents = [
+  {
+    date: "December 10, 2024",
+    title: "Increased API Latency",
+    status: "resolved",
+    description: "We experienced elevated API response times for approximately 15 minutes. The issue has been identified and resolved.",
+    updates: [
+      { time: "14:45 UTC", message: "Issue resolved. All systems operating normally." },
+      { time: "14:30 UTC", message: "We've identified the cause and are implementing a fix." },
+      { time: "14:15 UTC", message: "Investigating reports of slow API responses." },
+    ]
+  }
+];
+---
+
+<MarketingLayout 
+  title={`System Status - ${siteConfig.name}`}
+  description={`Current system status and incident history for ${siteConfig.name}. Check the operational status of our services.`}
+>
+  <section class="py-section">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-12">
+        <h1 class="text-4xl sm:text-5xl font-bold text-text">System Status</h1>
+        <p class="mt-4 text-text-muted">
+          Current status of {siteConfig.name} services
+        </p>
+      </div>
+
+      <!-- Overall Status Banner -->
+      <div class:list={[
+        "p-6 rounded-lg mb-8 text-center",
+        allOperational 
+          ? "bg-green-100 dark:bg-green-950 border border-green-300 dark:border-green-800" 
+          : "bg-yellow-100 dark:bg-yellow-950 border border-yellow-300 dark:border-yellow-800"
+      ]}>
+        <div class="flex items-center justify-center gap-3">
+          {allOperational ? (
+            <>
+              <span class="w-3 h-3 rounded-full bg-green-500"></span>
+              <span class="text-lg font-semibold text-green-900 dark:text-green-100">All Systems Operational</span>
+            </>
+          ) : (
+            <>
+              <span class="w-3 h-3 rounded-full bg-yellow-500"></span>
+              <span class="text-lg font-semibold text-yellow-900 dark:text-yellow-100">Some Systems Experiencing Issues</span>
+            </>
+          )}
+        </div>
+        <p class="mt-2 text-sm text-green-900 dark:text-green-100">
+          Last updated: {new Date().toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' })} UTC
+        </p>
+      </div>
+
+      <!-- Service Status List -->
+      <div class="rounded-lg border border-border overflow-hidden">
+        <div class="bg-surface px-4 py-3 border-b border-border">
+          <h2 class="font-semibold text-text">Services</h2>
+        </div>
+        <div class="divide-y divide-border">
+          {services.map((service) => {
+            const config = statusConfig[service.status as keyof typeof statusConfig];
+            return (
+              <div class="flex items-center justify-between px-4 py-4 bg-background">
+                <span class="text-text">{service.name}</span>
+                <div class="flex items-center gap-2">
+                  <span class={`text-sm font-medium ${config.textColor}`}>{config.label}</span>
+                  <span class={`w-2.5 h-2.5 rounded-full ${config.color}`}></span>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      <!-- Incident History -->
+      <div class="mt-12">
+        <h2 class="text-xl font-bold text-text mb-6">Recent Incidents</h2>
+        
+        {recentIncidents.length > 0 ? (
+          <div class="space-y-6">
+            {recentIncidents.map((incident) => (
+              <div class="rounded-lg border border-border overflow-hidden">
+                <div class="bg-surface px-4 py-3 border-b border-border">
+                  <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                    <h3 class="font-semibold text-text">{incident.title}</h3>
+                    <div class="flex items-center gap-2">
+                      <span class="text-sm text-text-muted">{incident.date}</span>
+                      <span class="px-2 py-0.5 text-xs font-medium rounded-full bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200">
+                        {incident.status}
+                      </span>
+                    </div>
+                  </div>
+                  <p class="mt-2 text-sm text-text-muted">{incident.description}</p>
+                </div>
+                <div class="px-4 py-3 bg-background">
+                  <div class="space-y-3">
+                    {incident.updates.map((update) => (
+                      <div class="flex gap-3 text-sm">
+                        <span class="text-text-muted font-mono whitespace-nowrap">{update.time}</span>
+                        <span class="text-text">{update.message}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div class="text-center py-8 px-4 rounded-lg border border-border">
+            <p class="text-text-muted">No incidents reported in the last 30 days.</p>
+          </div>
+        )}
+      </div>
+
+      <!-- Subscribe to Updates -->
+      <div class="mt-12 p-6 rounded-lg bg-surface border border-border text-center">
+        <h3 class="text-lg font-semibold text-text">Stay Updated</h3>
+        <p class="mt-2 text-text-muted">
+          Get notified about scheduled maintenance and incidents.
+        </p>
+        <div class="mt-4 flex flex-col sm:flex-row gap-3 justify-center">
+          <a
+            href={siteConfig.social.twitter}
+            class="inline-flex items-center justify-center px-4 py-2 rounded-md border border-border text-text font-medium hover:bg-background transition-colors text-sm"
+          >
+            Follow on Twitter
+          </a>
+          <a
+            href={`mailto:${siteConfig.contact.supportEmail}?subject=Subscribe to Status Updates`}
+            class="inline-flex items-center justify-center px-4 py-2 rounded-md border border-border text-text font-medium hover:bg-background transition-colors text-sm"
+          >
+            Email Notifications
+          </a>
+        </div>
+      </div>
+
+      <!-- Note about placeholder -->
+      <p class="mt-8 text-sm text-text-muted text-center">
+        This is a placeholder status page. For production, consider using a dedicated service like{' '}
+        <a href="https://www.atlassian.com/software/statuspage" class="text-primary hover:underline">Statuspage</a>,{' '}
+        <a href="https://instatus.com" class="text-primary hover:underline">Instatus</a>, or{' '}
+        <a href="https://betteruptime.com" class="text-primary hover:underline">Better Uptime</a>.
+      </p>
+    </div>
+  </section>
+</MarketingLayout>

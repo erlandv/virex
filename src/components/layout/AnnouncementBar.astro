@@ -1,0 +1,136 @@
+---
+/**
+ * AnnouncementBar - Dismissible top banner for site-wide announcements
+ *
+ * @description
+ * A sticky banner that appears at the top of the page for important announcements,
+ * promotions, or updates. Supports dismissal with localStorage persistence, optional
+ * links, and multiple color variants. Users can dismiss the banner and it will remain
+ * hidden on subsequent visits.
+ *
+ * @example
+ * ```astro
+ * <AnnouncementBar
+ *   text="New feature released!"
+ *   href="/blog/new-feature"
+ *   linkText="Learn more"
+ * />
+ * ```
+ *
+ * @example With custom styling and dismissal
+ * ```astro
+ * <AnnouncementBar
+ *   text="Limited time offer: 50% off all plans"
+ *   href="/pricing"
+ *   linkText="Get started"
+ *   variant="gradient"
+ *   dismissible={true}
+ *   id="summer-sale-2024"
+ * />
+ * ```
+ *
+ * @example Non-dismissible announcement
+ * ```astro
+ * <AnnouncementBar
+ *   text="Scheduled maintenance on Dec 25"
+ *   variant="secondary"
+ *   dismissible={false}
+ * />
+ * ```
+ */
+interface Props {
+  /** Announcement text displayed in the banner */
+  text: string;
+  /** Optional link URL for the announcement */
+  href?: string;
+  /** Link text shown after main text (defaults to "Learn more") */
+  linkText?: string;
+  /** Background style variant for the banner */
+  variant?: 'primary' | 'secondary' | 'gradient';
+  /** Allow users to dismiss the banner (defaults to true) */
+  dismissible?: boolean;
+  /** Unique ID for localStorage to remember dismissal state */
+  id?: string;
+}
+
+import { Icon } from 'astro-icon/components';
+
+const {
+  text,
+  href,
+  linkText = 'Learn more',
+  variant = 'primary',
+  dismissible = true,
+  id = 'announcement',
+} = Astro.props;
+
+const variantClasses = {
+  primary: 'bg-primary text-white',
+  secondary: 'bg-secondary text-white',
+  gradient: 'bg-gradient-to-r from-primary to-secondary text-white',
+};
+---
+
+<div
+  id={`announcement-${id}`}
+  class:list={[
+    'announcement-bar relative py-2.5 px-4 text-center text-sm font-medium',
+    variantClasses[variant],
+  ]}
+  role="banner"
+  data-announcement-id={id}
+>
+  <div class="max-w-7xl mx-auto flex items-center justify-center gap-x-2">
+    <p class="flex items-center gap-x-2 flex-wrap justify-center">
+      <span>{text}</span>
+      {href && (
+        <a
+          href={href}
+          class="inline-flex items-center gap-1 underline underline-offset-2 hover:no-underline font-semibold"
+        >
+          {linkText}
+          <Icon name="lucide:chevron-right" class="w-4 h-4" aria-hidden="true" />
+        </a>
+      )}
+    </p>
+    {dismissible && (
+      <button
+        type="button"
+        class="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 rounded-md hover:bg-white/20 transition-colors focus:outline-none focus:ring-2 focus:ring-white/50"
+        aria-label="Dismiss announcement"
+        data-dismiss-announcement={id}
+      >
+        <Icon name="lucide:x" class="w-4 h-4" aria-hidden="true" />
+      </button>
+    )}
+  </div>
+</div>
+
+<Fragment set:html={`<style>html.announcement-${id}-dismissed #announcement-${id} { display: none; }</style>`} />
+
+<script>
+  function initAnnouncementBars() {
+    const bars = document.querySelectorAll('.announcement-bar');
+
+    bars.forEach((bar) => {
+      const id = bar.getAttribute('data-announcement-id');
+      if (!id) return;
+
+      const dismissKey = `announcement-dismissed-${id}`;
+      const dismissedClass = `announcement-${id}-dismissed`;
+
+      // Setup dismiss button
+      const dismissBtn = bar.querySelector(`[data-dismiss-announcement="${id}"]`);
+      dismissBtn?.addEventListener('click', () => {
+        localStorage.setItem(dismissKey, 'true');
+        document.documentElement.classList.add(dismissedClass);
+      });
+    });
+  }
+
+  // Run on initial load
+  initAnnouncementBars();
+
+  // Re-run on Astro page transitions
+  document.addEventListener('astro:page-load', initAnnouncementBars);
+</script>

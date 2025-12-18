@@ -1,0 +1,82 @@
+---
+import BlogLayout from '../../layouts/BlogLayout.astro';
+import { getCollection, type CollectionEntry } from 'astro:content';
+import { siteConfig } from '@/config';
+import { calculateReadingTime } from '@/lib/utils';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('blog', ({ data }) => !data.draft);
+  return posts.map(post => ({
+    params: { slug: post.slug },
+    props: { post },
+  }));
+}
+
+interface Props {
+  post: CollectionEntry<'blog'>;
+}
+
+const { post } = Astro.props;
+const { Content } = await post.render();
+
+// Get related posts based on shared tags
+const allPosts = await getCollection('blog', ({ data }) => !data.draft);
+
+const relatedPosts = allPosts
+  .filter(p => p.slug !== post.slug)
+  .map(p => ({
+    post: p,
+    sharedTags: p.data.tags.filter(tag => post.data.tags.includes(tag)).length
+  }))
+  .filter(p => p.sharedTags > 0)
+  .sort((a, b) => {
+    if (b.sharedTags !== a.sharedTags) {
+      return b.sharedTags - a.sharedTags;
+    }
+    return b.post.data.publishedDate.getTime() - a.post.data.publishedDate.getTime();
+  })
+  .slice(0, 3)
+  .map(p => p.post);
+---
+
+<BlogLayout
+  title={`${post.data.title} - ${siteConfig.name}`}
+  description={post.data.description}
+  publishedDate={post.data.publishedDate}
+  author={post.data.author}
+  image={post.data.image}
+  tags={post.data.tags}
+  content={post.body || ''}
+>
+  <Content />
+
+  <!-- Related Posts -->
+  {relatedPosts.length > 0 && (
+    <aside class="mt-16 pt-12 border-t border-border">
+      <h2 class="text-2xl font-bold text-text mb-8">Related Posts</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {relatedPosts.map((relatedPost) => (
+            <a href={`/blog/${relatedPost.slug}`} class="group block">
+              <article class="h-full p-4 rounded-lg border border-border hover:border-primary transition-colors">
+                <div class="text-sm text-text-muted mb-2">
+                  {relatedPost.data.publishedDate.toLocaleDateString('en-US', { 
+                    month: 'short', 
+                    day: 'numeric',
+                    year: 'numeric'
+                  })}
+                  <span class="mx-1">·</span>
+                  {calculateReadingTime(relatedPost.body || '')} min read
+                </div>
+                <h3 class="font-semibold text-text group-hover:text-primary transition-colors line-clamp-2">
+                  {relatedPost.data.title}
+                </h3>
+                <p class="mt-2 text-sm text-text-muted line-clamp-2">
+                  {relatedPost.data.description}
+                </p>
+              </article>
+            </a>
+          ))}
+      </div>
+    </aside>
+  )}
+</BlogLayout>

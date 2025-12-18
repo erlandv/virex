@@ -1,0 +1,173 @@
+---
+import MarketingLayout from '../layouts/MarketingLayout.astro';
+import CTA from '../components/sections/CTA.astro';
+import { Icon } from 'astro-icon/components';
+import { siteConfig } from '@/config';
+
+interface Feature {
+  icon: string;
+  title: string;
+  description: string;
+}
+
+interface FeatureCategory {
+  title: string;
+  description: string;
+  features: Feature[];
+}
+
+const featureCategories: FeatureCategory[] = [
+  {
+    title: "Deployment",
+    description: "Get your code to production faster than ever",
+    features: [
+      {
+        icon: "lucide:zap",
+        title: "Instant Deploys",
+        description: "Push to your Git repository and watch your changes go live in seconds. Our optimized build pipeline handles everything from dependency installation to asset optimization."
+      },
+      {
+        icon: "lucide:refresh-cw",
+        title: "Automatic Rollbacks",
+        description: "Every deployment is versioned and stored. Roll back to any previous version with a single click—no downtime, no stress."
+      },
+      {
+        icon: "lucide:git-branch",
+        title: "Preview Deployments",
+        description: "Every pull request gets its own unique URL. Share with your team, get feedback, and merge with confidence."
+      },
+      {
+        icon: "lucide:package",
+        title: "Zero-Config Builds",
+        description: "Virex auto-detects your framework and configures the build process automatically. Next.js, Astro, Remix, Vite—we support them all."
+      }
+    ]
+  },
+  {
+    title: "Infrastructure",
+    description: "Enterprise-grade infrastructure without the complexity",
+    features: [
+      {
+        icon: "lucide:globe",
+        title: "Global Edge Network",
+        description: "Your application runs on 200+ edge locations worldwide. Users get sub-50ms response times no matter where they are."
+      },
+      {
+        icon: "lucide:trending-up",
+        title: "Auto-Scaling",
+        description: "Handle traffic spikes effortlessly. Virex automatically scales your application up or down based on demand."
+      },
+      {
+        icon: "lucide:shield",
+        title: "Built-in Security",
+        description: "SSL certificates provisioned automatically. DDoS protection, WAF rules, and security headers configured out of the box."
+      },
+      {
+        icon: "lucide:database",
+        title: "Edge Caching",
+        description: "Intelligent caching at the edge reduces origin load and speeds up content delivery. Configure cache rules with simple headers."
+      }
+    ]
+  },
+  {
+    title: "Developer Experience",
+    description: "Tools that make your team more productive",
+    features: [
+      {
+        icon: "lucide:link",
+        title: "Git Integration",
+        description: "Connect your GitHub, GitLab, or Bitbucket repository. Automatic deployments on every push to your main branch."
+      },
+      {
+        icon: "lucide:terminal",
+        title: "CLI & API",
+        description: "Full-featured CLI for local development and CI/CD integration. REST API for custom automation workflows."
+      },
+      {
+        icon: "lucide:bar-chart",
+        title: "Real-time Logs",
+        description: "Stream build and runtime logs in real-time. Debug issues quickly with searchable, filterable log history."
+      },
+      {
+        icon: "lucide:bell",
+        title: "Notifications",
+        description: "Get notified about deployments, errors, and performance issues via Slack, Discord, email, or webhooks."
+      }
+    ]
+  },
+  {
+    title: "Collaboration",
+    description: "Built for teams of all sizes",
+    features: [
+      {
+        icon: "lucide:users",
+        title: "Team Management",
+        description: "Invite team members with role-based access control. Admins, developers, and viewers each get appropriate permissions."
+      },
+      {
+        icon: "lucide:message-square",
+        title: "Deployment Comments",
+        description: "Leave comments on any deployment. Discuss changes, flag issues, and keep context with your code."
+      },
+      {
+        icon: "lucide:lock",
+        title: "Environment Variables",
+        description: "Securely manage secrets and configuration. Different values for development, preview, and production environments."
+      },
+      {
+        icon: "lucide:clipboard-list",
+        title: "Audit Logs",
+        description: "Track every action taken in your organization. Know who deployed what, when, and why."
+      }
+    ]
+  }
+];
+---
+
+<MarketingLayout 
+  title={`Features - ${siteConfig.name}`}
+  description="Discover all the features that make Virex the best platform for deploying and scaling your applications."
+>
+  <section class="py-section">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center max-w-3xl mx-auto">
+        <h1 class="text-4xl sm:text-5xl font-bold text-text">
+          Everything you need to ship
+        </h1>
+        <p class="mt-6 text-lg text-text-muted">
+          From your first commit to global scale, Virex provides all the tools your team needs to build, deploy, and run modern applications.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  {featureCategories.map((category, index) => (
+    <section class:list={["py-section", index % 2 === 1 ? "bg-surface" : ""]}>
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="mb-12">
+          <h2 class="text-2xl sm:text-3xl font-bold text-text">{category.title}</h2>
+          <p class="mt-2 text-text-muted">{category.description}</p>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          {category.features.map((feature) => (
+            <div class="flex gap-4">
+              <div class="flex-shrink-0 w-12 h-12 flex items-center justify-center rounded-lg bg-primary/10 text-primary">
+                <Icon name={feature.icon} class="w-6 h-6" />
+              </div>
+              <div>
+                <h3 class="text-lg font-semibold text-text">{feature.title}</h3>
+                <p class="mt-2 text-text-muted leading-relaxed">{feature.description}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  ))}
+
+  <CTA
+    title="Ready to experience the difference?"
+    description="Start deploying with Virex today. Free tier available with no credit card required."
+    action={{ label: "Get Started Free", href: "/pricing" }}
+  />
+</MarketingLayout>

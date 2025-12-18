@@ -1,0 +1,77 @@
+---
+/**
+ * ThemeToggle - Button to switch between light and dark themes
+ *
+ * @description
+ * A toggle button that switches between light and dark color modes. The theme
+ * preference is persisted in localStorage and respects the user's system
+ * preference on first visit. The button displays a sun icon in dark mode and
+ * a moon icon in light mode.
+ *
+ * @example
+ * ```astro
+ * <ThemeToggle />
+ * ```
+ *
+ * @remarks
+ * This component doesn't accept props. It automatically:
+ * - Detects system color scheme preference on first visit
+ * - Saves user preference to localStorage
+ * - Updates the `dark` class on the `<html>` element
+ * - Syncs icon state across multiple instances on the same page
+ *
+ * The theme is applied by toggling the `dark` class on `document.documentElement`,
+ * which should be used with Tailwind's dark mode class strategy.
+ */
+
+import { Icon } from 'astro-icon/components';
+---
+
+<button
+  type="button"
+  aria-label="Toggle dark mode"
+  class="theme-toggle cursor-pointer p-2 rounded-md hover:bg-surface transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+>
+  <!-- Sun icon (shown in dark mode) -->
+  <Icon name="lucide:sun" class="sun-icon hidden w-5 h-5 text-text" />
+  <!-- Moon icon (shown in light mode) -->
+  <Icon name="lucide:moon" class="moon-icon w-5 h-5 text-text" />
+</button>
+
+<script>
+  const themeToggles = document.querySelectorAll('.theme-toggle');
+  const sunIcons = document.querySelectorAll('.sun-icon');
+  const moonIcons = document.querySelectorAll('.moon-icon');
+
+  function updateIcons(isDark: boolean) {
+    sunIcons.forEach(icon => icon.classList.toggle('hidden', !isDark));
+    moonIcons.forEach(icon => icon.classList.toggle('hidden', isDark));
+  }
+
+  function getThemePreference(): 'dark' | 'light' {
+    const stored = localStorage.getItem('theme');
+    if (stored === 'dark' || stored === 'light') {
+      return stored;
+    }
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  }
+
+  function setTheme(theme: 'dark' | 'light') {
+    const isDark = theme === 'dark';
+    document.documentElement.classList.toggle('dark', isDark);
+    localStorage.setItem('theme', theme);
+    updateIcons(isDark);
+  }
+
+  // Initialize theme on load
+  const initialTheme = getThemePreference();
+  setTheme(initialTheme);
+
+  // Toggle theme on button click - attach to all toggle buttons
+  themeToggles.forEach(toggle => {
+    toggle.addEventListener('click', () => {
+      const isDark = document.documentElement.classList.contains('dark');
+      setTheme(isDark ? 'light' : 'dark');
+    });
+  });
+</script>

@@ -1,0 +1,115 @@
+---
+/**
+ * PricingTable - Pricing plans comparison table
+ *
+ * @description
+ * Displays pricing plans in a responsive grid. Supports highlighting
+ * a recommended plan and customizable CTAs for each plan.
+ *
+ * @example
+ * ```astro
+ * <PricingTable
+ *   plans={[
+ *     {
+ *       name: "Free",
+ *       price: "$0",
+ *       period: "month",
+ *       description: "For side projects",
+ *       features: ["3 projects", "Community support"],
+ *       cta: { label: "Start Free", href: "/signup" }
+ *     },
+ *     {
+ *       name: "Pro",
+ *       price: "$20",
+ *       period: "month",
+ *       description: "For professionals",
+ *       features: ["Unlimited projects", "Priority support"],
+ *       highlighted: true,
+ *       cta: { label: "Start Trial", href: "/signup?plan=pro" }
+ *     }
+ *   ]}
+ * />
+ * ```
+ */
+
+import { Icon } from 'astro-icon/components';
+
+/** Individual pricing plan configuration */
+interface PricingPlan {
+  /** Plan name (e.g., "Free", "Pro", "Enterprise") */
+  name: string;
+  /** Display price (e.g., "$0", "$20") */
+  price: string;
+  /** Billing period (e.g., "month", "year") */
+  period: string;
+  /** Short description of the plan */
+  description: string;
+  /** List of features included in the plan */
+  features: string[];
+  /** Whether to highlight this plan as recommended */
+  highlighted?: boolean;
+  /** Call-to-action button configuration */
+  cta: { label: string; href: string };
+}
+
+interface Props {
+  /** Array of pricing plans to display */
+  plans: PricingPlan[];
+}
+
+const { plans } = Astro.props;
+---
+
+<section class="py-section">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      {plans.map((plan) => (
+        <div
+          class:list={[
+            "relative p-8 rounded-lg border",
+            plan.highlighted
+              ? "bg-primary/5 border-primary shadow-lg"
+              : "bg-surface border-border",
+          ]}
+        >
+          {plan.highlighted && (
+            <div class="absolute -top-3 left-1/2 -translate-x-1/2">
+              <span class="inline-block px-3 py-1 text-xs font-semibold text-white bg-primary rounded-full">
+                Most Popular
+              </span>
+            </div>
+          )}
+          <div class="text-center">
+            <h3 class="text-xl font-semibold text-text">{plan.name}</h3>
+            <p class="mt-2 text-text-muted text-sm">{plan.description}</p>
+            <div class="mt-6">
+              <span class="text-4xl font-bold text-text">{plan.price}</span>
+              <span class="text-text-muted">/{plan.period}</span>
+            </div>
+          </div>
+          <ul class="mt-8 space-y-4">
+            {plan.features.map((feature) => (
+              <li class="flex items-start gap-3">
+                <Icon name="lucide:check" class="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                <span class="text-text-muted">{feature}</span>
+              </li>
+            ))}
+          </ul>
+          <div class="mt-8">
+            <a
+              href={plan.cta.href}
+              class:list={[
+                "block w-full text-center px-6 py-3 rounded-md font-medium transition-colors",
+                plan.highlighted
+                  ? "bg-primary text-white hover:bg-primary-dark"
+                  : "bg-surface border border-border text-text hover:bg-background",
+              ]}
+            >
+              {plan.cta.label}
+            </a>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>

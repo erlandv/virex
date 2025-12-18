@@ -1,0 +1,138 @@
+---
+import MarketingLayout from '../layouts/MarketingLayout.astro';
+import PricingTable from '../components/sections/PricingTable.astro';
+import { siteConfig } from '@/config';
+
+const plans = [
+  {
+    name: "Hobby",
+    price: "$0",
+    period: "month",
+    description: "Perfect for side projects and experiments",
+    features: [
+      "3 projects",
+      "100 GB bandwidth/month",
+      "Automatic HTTPS",
+      "Preview deployments",
+      "Community support"
+    ],
+    highlighted: false,
+    cta: { label: "Start Free", href: "#" }
+  },
+  {
+    name: "Pro",
+    price: "$20",
+    period: "month",
+    description: "For professional developers and small teams",
+    features: [
+      "Unlimited projects",
+      "1 TB bandwidth/month",
+      "Team collaboration (5 members)",
+      "Priority builds",
+      "Advanced analytics",
+      "Email support"
+    ],
+    highlighted: true,
+    cta: { label: "Start Free Trial", href: "#" }
+  },
+  {
+    name: "Enterprise",
+    price: "Custom",
+    period: "month",
+    description: "For organizations with advanced needs",
+    features: [
+      "Unlimited everything",
+      "Custom bandwidth limits",
+      "Unlimited team members",
+      "SSO & SAML",
+      "SLA guarantee",
+      "Dedicated support",
+      "Custom contracts"
+    ],
+    highlighted: false,
+    cta: { label: "Contact Sales", href: "/contact" }
+  }
+];
+
+const faqs = [
+  {
+    question: "Can I change plans later?",
+    answer: "Yes, you can upgrade or downgrade your plan at any time. When upgrading, you'll be charged the prorated difference. When downgrading, the new rate applies at your next billing cycle."
+  },
+  {
+    question: "What happens if I exceed my bandwidth limit?",
+    answer: "We'll notify you when you're approaching your limit. If you exceed it, your sites will continue to work—we'll just reach out to discuss upgrading your plan or purchasing additional bandwidth."
+  },
+  {
+    question: "Do you offer discounts for annual billing?",
+    answer: "Yes! Annual plans come with a 20% discount. You can switch to annual billing from your account settings at any time."
+  },
+  {
+    question: "Is there a free trial for paid plans?",
+    answer: "Absolutely. All paid plans come with a 14-day free trial. No credit card required to start—you'll only be charged if you decide to continue after the trial."
+  },
+  {
+    question: "What payment methods do you accept?",
+    answer: "We accept all major credit cards (Visa, Mastercard, American Express) and PayPal. Enterprise customers can also pay via invoice with NET-30 terms."
+  },
+  {
+    question: "Can I get a refund if I'm not satisfied?",
+    answer: "Yes, we offer a 30-day money-back guarantee on all paid plans. If you're not happy with Virex, contact support for a full refund."
+  }
+];
+---
+
+<MarketingLayout 
+  title={`Pricing - ${siteConfig.name}`}
+  description="Simple, transparent pricing for teams of all sizes. Start free and scale as you grow."
+>
+  <section class="py-section">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center max-w-3xl mx-auto">
+        <h1 class="text-4xl sm:text-5xl font-bold text-text">
+          Simple, transparent pricing
+        </h1>
+        <p class="mt-6 text-lg text-text-muted">
+          Start free and scale as you grow. No hidden fees, no surprises.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <PricingTable plans={plans} />
+
+  <section class="py-section bg-surface">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl sm:text-3xl font-bold text-text text-center mb-12">
+        Frequently asked questions
+      </h2>
+      <div class="space-y-8">
+        {faqs.map((faq) => (
+          <div class="border-b border-border pb-8 last:border-0">
+            <h3 class="text-lg font-semibold text-text">{faq.question}</h3>
+            <p class="mt-3 text-text-muted leading-relaxed">{faq.answer}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="py-section">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="bg-surface border border-border rounded-lg p-8 text-center">
+        <h2 class="text-2xl font-bold text-text">Need something custom?</h2>
+        <p class="mt-4 text-text-muted max-w-2xl mx-auto">
+          Have specific requirements or need a custom solution? Our team is happy to discuss your needs and create a plan that works for you.
+        </p>
+        <div class="mt-6">
+          <a
+            href="/contact"
+            class="inline-flex items-center justify-center px-6 py-3 rounded-md bg-primary text-white font-medium hover:bg-primary-dark transition-colors"
+          >
+            Talk to Sales
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+</MarketingLayout>

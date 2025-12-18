@@ -1,0 +1,77 @@
+---
+import SEO from '../components/common/SEO.astro';
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+  description: string;
+  image?: string;
+  type?: 'website' | 'article';
+  // Article-specific props for JSON-LD
+  publishedDate?: Date;
+  modifiedDate?: Date;
+  author?: string;
+  tags?: string[];
+}
+
+const { 
+  title, 
+  description, 
+  image, 
+  type = 'website',
+  publishedDate,
+  modifiedDate,
+  author,
+  tags
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <SEO 
+      title={title} 
+      description={description} 
+      image={image} 
+      type={type}
+      publishedDate={publishedDate}
+      modifiedDate={modifiedDate}
+      author={author}
+      tags={tags}
+    />
+    <!-- Theme and announcement initialization - runs before page render to prevent flash -->
+    <script is:inline>
+      (function() {
+        // Theme initialization
+        const stored = localStorage.getItem('theme');
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const theme = stored || (prefersDark ? 'dark' : 'light');
+        if (theme === 'dark') {
+          document.documentElement.classList.add('dark');
+        }
+        
+        // Announcement dismissal check - hide if any announcement was dismissed
+        const keys = Object.keys(localStorage).filter(k => k.startsWith('announcement-dismissed-'));
+        keys.forEach(key => {
+          if (localStorage.getItem(key) === 'true') {
+            const id = key.replace('announcement-dismissed-', '');
+            document.documentElement.classList.add(`announcement-${id}-dismissed`);
+          }
+        });
+      })();
+    </script>
+  </head>
+  <body class="min-h-screen bg-background text-text antialiased">
+    <!-- Skip to main content link for accessibility -->
+    <a
+      href="#main-content"
+      class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[100] focus:px-4 focus:py-2 focus:bg-primary focus:text-white focus:rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+    >
+      Skip to main content
+    </a>
+    <slot />
+  </body>
+</html>

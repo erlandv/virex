@@ -1,0 +1,76 @@
+---
+import MarketingLayout from './MarketingLayout.astro';
+import { Icon } from 'astro-icon/components';
+import { calculateReadingTime, formatDate } from '@/lib/utils';
+
+interface Props {
+  title: string;
+  description: string;
+  publishedDate: Date;
+  author: string;
+  image?: string;
+  tags?: string[];
+  content: string;
+}
+
+const { title, description, publishedDate, author, image, tags = [], content } = Astro.props;
+
+const readingTime = calculateReadingTime(content);
+const formattedDate = formatDate(publishedDate, {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+});
+---
+
+<MarketingLayout 
+  title={title} 
+  description={description} 
+  image={image} 
+  type="article"
+  publishedDate={publishedDate}
+  author={author}
+  tags={tags}
+>
+  <article class="py-section">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+      <!-- Article Header -->
+      <header class="mb-8">
+        <h1 class="text-4xl font-bold text-text mb-4">{title}</h1>
+        <p class="text-lg text-text-muted mb-6">{description}</p>
+        
+        <!-- Article Metadata -->
+        <div class="flex flex-wrap items-center gap-4 text-sm text-text-muted border-b border-border pb-6">
+          <span class="flex items-center gap-1">
+            <Icon name="lucide:user" class="w-4 h-4" />
+            {author}
+          </span>
+          <span class="flex items-center gap-1">
+            <Icon name="lucide:calendar" class="w-4 h-4" />
+            {formattedDate}
+          </span>
+          <span class="flex items-center gap-1">
+            <Icon name="lucide:clock" class="w-4 h-4" />
+            {readingTime} min read
+          </span>
+        </div>
+        
+        <!-- Tags -->
+        {tags.length > 0 && (
+          <div class="flex flex-wrap gap-2 mt-4">
+            {tags.map((tag) => (
+              <span class="px-3 py-1 text-xs font-medium bg-surface text-text-muted rounded-full">
+                {tag}
+              </span>
+            ))}
+          </div>
+        )}
+      </header>
+
+      <!-- Article Content -->
+      <div class="prose prose-lg max-w-none dark:prose-invert">
+        <slot />
+      </div>
+    </div>
+  </article>
+</MarketingLayout>

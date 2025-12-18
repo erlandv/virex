@@ -1,0 +1,302 @@
+---
+/**
+ * Footer - Site-wide footer with navigation, newsletter, and social links
+ *
+ * @description
+ * A comprehensive footer component that includes newsletter subscription form,
+ * multi-column navigation links (Product, Resources, Company, Legal), contact
+ * information, social media links, and copyright notice. Navigation links are
+ * automatically filtered based on feature flags from site config.
+ *
+ * @example
+ * ```astro
+ * <Footer />
+ * ```
+ *
+ * @remarks
+ * This component doesn't accept props - it reads all configuration from
+ * `siteConfig` including features, social links, contact info, and content.
+ * Feature-flagged sections (blog, docs, changelog, etc.) are automatically
+ * shown or hidden based on the config.
+ *
+ * The newsletter form includes a TODO comment for API integration. Replace
+ * the mock implementation with your actual newsletter service endpoint.
+ */
+import { siteConfig } from '@/config';
+import { Icon } from 'astro-icon/components';
+
+const { features, social, contact, content } = siteConfig;
+const { newsletter } = content;
+const currentYear = new Date().getFullYear();
+
+// Product links (always visible)
+const productLinks = [
+  { label: 'Features', href: '/features' },
+  { label: 'Pricing', href: '/pricing' },
+  { label: 'FAQ', href: '/faq' },
+  { label: 'Status', href: '/status' },
+];
+
+// Feature-flagged resource links
+const resourceLinks = [
+  { label: 'Blog', href: '/blog', feature: 'blog' as const },
+  { label: 'Docs', href: '/docs', feature: 'docs' as const },
+  { label: 'Changelog', href: '/changelog', feature: 'changelog' as const },
+  { label: 'Roadmap', href: '/roadmap', feature: 'roadmap' as const },
+];
+
+const activeResourceLinks = resourceLinks.filter(
+  (item) => features[item.feature]
+);
+
+// Company links (always visible)
+const companyLinks = [
+  { label: 'About', href: '/about' },
+  { label: 'Careers', href: '/careers' },
+  { label: 'Contact', href: '/contact' },
+];
+
+// Legal links (always visible)
+const legalLinks = [
+  { label: 'Privacy Policy', href: '/privacy' },
+  { label: 'Terms of Service', href: '/terms' },
+];
+
+// Feature-flagged company links
+const featureCompanyLinks = [
+  { label: 'Testimonials', href: '/testimonials', feature: 'testimonials' as const },
+];
+
+const activeCompanyLinks = [
+  ...companyLinks,
+  ...featureCompanyLinks.filter((item) => features[item.feature]),
+];
+---
+
+<footer class="bg-surface border-t border-background">
+  <!-- Newsletter Section -->
+  <div class="bg-background/50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div class="max-w-2xl mx-auto text-center">
+        <h3 class="text-xl font-semibold text-text">{newsletter.title}</h3>
+        <p class="mt-2 text-sm text-text-muted">
+          {newsletter.description}
+        </p>
+        <form 
+          id="newsletter-form" 
+          class="mt-6 flex flex-col sm:flex-row gap-3 max-w-md mx-auto"
+          data-success-message={newsletter.successMessage}
+          data-error-message={newsletter.errorMessage}
+        >
+          <label for="newsletter-email" class="sr-only">Email address</label>
+          <input
+            type="email"
+            id="newsletter-email"
+            name="email"
+            required
+            placeholder={newsletter.placeholder}
+            class="flex-1 px-4 py-2.5 text-sm rounded-md border border-surface bg-surface text-text placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+          />
+          <button
+            type="submit"
+            class="px-6 py-2.5 text-sm cursor-pointer font-medium rounded-md bg-primary text-white hover:bg-primary/90 transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background"
+          >
+            {newsletter.buttonText}
+          </button>
+        </form>
+        <p id="newsletter-message" class="mt-3 text-sm hidden"></p>
+        <p class="mt-4 text-xs text-text-muted">
+          {newsletter.privacyNote}
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Footer Content -->
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <!-- Links Grid -->
+    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-8 lg:gap-12">
+      <!-- Brand Column -->
+      <div class="col-span-2 sm:col-span-3 lg:col-span-1 mb-4 lg:mb-0">
+        <a href="/" class="inline-flex items-center gap-2 font-semibold text-lg text-text">
+          {siteConfig.logo ? (
+            <img src={siteConfig.logo} alt={siteConfig.name} class="h-8 w-auto" />
+          ) : (
+            siteConfig.name
+          )}
+        </a>
+        <p class="mt-3 text-sm text-text-muted max-w-xs">
+          {siteConfig.description}
+        </p>
+        <!-- Contact Info -->
+        <div class="mt-4 space-y-1 text-sm text-text-muted">
+          {contact.email && (
+            <a href={`mailto:${contact.email}`} class="block hover:text-text transition-colors">
+              {contact.email}
+            </a>
+          )}
+          {contact.address && (
+            <p>
+              {contact.address.city}, {contact.address.state}, {contact.address.country}
+            </p>
+          )}
+        </div>
+      </div>
+
+      <!-- Product Column -->
+      <div>
+        <h3 class="font-semibold text-sm text-text mb-4">Product</h3>
+        <ul class="space-y-3">
+          {productLinks.map((link) => (
+            <li>
+              <a
+                href={link.href}
+                class="text-sm text-text-muted hover:text-text transition-colors"
+              >
+                {link.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <!-- Resources Column -->
+      {activeResourceLinks.length > 0 && (
+        <div>
+          <h3 class="font-semibold text-sm text-text mb-4">Resources</h3>
+          <ul class="space-y-3">
+            {activeResourceLinks.map((link) => (
+              <li>
+                <a
+                  href={link.href}
+                  class="text-sm text-text-muted hover:text-text transition-colors"
+                >
+                  {link.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      <!-- Company Column -->
+      <div>
+        <h3 class="font-semibold text-sm text-text mb-4">Company</h3>
+        <ul class="space-y-3">
+          {activeCompanyLinks.map((link) => (
+            <li>
+              <a
+                href={link.href}
+                class="text-sm text-text-muted hover:text-text transition-colors"
+              >
+                {link.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <!-- Legal Column -->
+      <div>
+        <h3 class="font-semibold text-sm text-text mb-4">Legal</h3>
+        <ul class="space-y-3">
+          {legalLinks.map((link) => (
+            <li>
+              <a
+                href={link.href}
+                class="text-sm text-text-muted hover:text-text transition-colors"
+              >
+                {link.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+
+    <!-- Bottom Bar -->
+    <div class="mt-12 pt-8 border-t border-background">
+      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <!-- Copyright -->
+        <p class="text-sm text-text-muted">
+          &copy; {currentYear} {siteConfig.name}. All rights reserved.
+        </p>
+        <!-- Social Links -->
+        <div class="flex items-center gap-4">
+          {social.twitter && (
+            <a
+              href={social.twitter}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Twitter"
+              class="text-text-muted hover:text-text transition-colors"
+            >
+              <Icon name="lucide:twitter" class="w-5 h-5" />
+            </a>
+          )}
+          {social.github && (
+            <a
+              href={social.github}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="GitHub"
+              class="text-text-muted hover:text-text transition-colors"
+            >
+              <Icon name="lucide:github" class="w-5 h-5" />
+            </a>
+          )}
+          {social.discord && (
+            <a
+              href={social.discord}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Discord"
+              class="text-text-muted hover:text-text transition-colors"
+            >
+              <Icon name="simple-icons:discord" class="w-5 h-5" />
+            </a>
+          )}
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+  const form = document.getElementById('newsletter-form') as HTMLFormElement;
+  const message = document.getElementById('newsletter-message');
+  const emailInput = document.getElementById('newsletter-email') as HTMLInputElement;
+
+  // Get configurable messages from data attributes
+  const successMessage = form?.dataset.successMessage || 'Thanks for subscribing!';
+  const errorMessage = form?.dataset.errorMessage || 'Something went wrong. Please try again.';
+
+  form?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const email = emailInput?.value;
+    if (!email || !message) return;
+
+    const submitBtn = form.querySelector('button[type="submit"]') as HTMLButtonElement;
+    const originalText = submitBtn.textContent;
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Subscribing...';
+
+    try {
+      // TODO: Replace with your newsletter API endpoint
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      message.textContent = successMessage;
+      message.className = 'mt-3 text-sm text-green-500';
+      message.classList.remove('hidden');
+      emailInput.value = '';
+    } catch {
+      message.textContent = errorMessage;
+      message.className = 'mt-3 text-sm text-red-500';
+      message.classList.remove('hidden');
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = originalText;
+    }
+  });
+</script>

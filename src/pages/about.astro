@@ -1,0 +1,153 @@
+---
+import MarketingLayout from '../layouts/MarketingLayout.astro';
+import CTA from '../components/sections/CTA.astro';
+import { siteConfig } from '@/config';
+
+const team = [
+  {
+    name: "Sarah Mitchell",
+    role: "CEO & Co-founder",
+    bio: "Former infrastructure lead at a major cloud provider. Sarah started Virex to make deployment accessible to every developer.",
+    avatar: "/images/team/sarah-mitchell.webp"
+  },
+  {
+    name: "James Chen",
+    role: "CTO & Co-founder",
+    bio: "Built distributed systems at scale for 15 years. James leads our engineering team and architecture decisions.",
+    avatar: "/images/team/james-chen.webp"
+  },
+  {
+    name: "Maria Rodriguez",
+    role: "VP of Product",
+    bio: "Product leader with a passion for developer tools. Maria ensures every feature we ship solves real problems.",
+    avatar: "/images/team/maria-rodriguez.webp"
+  },
+  {
+    name: "David Kim",
+    role: "VP of Engineering",
+    bio: "Scaling expert who loves building reliable systems. David leads our platform and infrastructure teams.",
+    avatar: "/images/team/david-kim.webp"
+  }
+];
+
+const values = [
+  {
+    title: "Developer First",
+    description: "We build for developers because we are developers. Every decision starts with how it impacts the people using our platform."
+  },
+  {
+    title: "Simplicity Wins",
+    description: "Complex problems deserve simple solutions. We work hard to hide complexity so you can focus on building."
+  },
+  {
+    title: "Reliability Matters",
+    description: "Your users depend on your app, and you depend on us. We take that responsibility seriously."
+  },
+  {
+    title: "Transparency Always",
+    description: "No hidden fees, no surprise limits, no confusing pricing. What you see is what you get."
+  }
+];
+
+const stats = [
+  { value: "50K+", label: "Developers" },
+  { value: "10M+", label: "Deployments" },
+  { value: "99.99%", label: "Uptime" },
+  { value: "200+", label: "Edge Locations" }
+];
+---
+
+<MarketingLayout 
+  title={`About - ${siteConfig.name}`}
+  description="Learn about the team and mission behind Virex, the modern deployment platform for developers."
+>
+  <section class="py-section">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="max-w-3xl">
+        <h1 class="text-4xl sm:text-5xl font-bold text-text">
+          We're building the future of deployment
+        </h1>
+        <p class="mt-6 text-lg text-text-muted leading-relaxed">
+          Virex started with a simple observation: deploying applications shouldn't be hard. Yet developers everywhere were spending hours configuring CI/CD pipelines, managing infrastructure, and debugging deployment issues.
+        </p>
+        <p class="mt-4 text-lg text-text-muted leading-relaxed">
+          We founded Virex in 2021 to change that. Our mission is to make deployment so simple that it disappears—letting developers focus entirely on building great products.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="py-section bg-surface">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+        {stats.map((stat) => (
+          <div class="text-center">
+            <div class="text-4xl sm:text-5xl font-bold text-primary">{stat.value}</div>
+            <div class="mt-2 text-text-muted">{stat.label}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="py-section">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl sm:text-3xl font-bold text-text mb-12">Our values</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        {values.map((value) => (
+          <div class="p-6 rounded-lg border border-border">
+            <h3 class="text-xl font-semibold text-text">{value.title}</h3>
+            <p class="mt-3 text-text-muted leading-relaxed">{value.description}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="py-section bg-surface">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl sm:text-3xl font-bold text-text mb-12">Meet the team</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+        {team.map((member) => {
+          const initials = member.name.split(' ').map(n => n[0]).join('').toUpperCase();
+          return (
+            <div class="text-center">
+              <img 
+                src={member.avatar} 
+                alt={member.name}
+                class="w-24 h-24 mx-auto rounded-full object-cover"
+                onerror={`this.style.display='none'; this.nextElementSibling.style.display='flex';`}
+              />
+              <div class="w-24 h-24 mx-auto rounded-full bg-primary/10 text-primary items-center justify-center text-2xl font-semibold hidden">
+                {initials}
+              </div>
+              <h3 class="mt-4 text-lg font-semibold text-text">{member.name}</h3>
+              <p class="text-sm text-primary">{member.role}</p>
+              <p class="mt-3 text-sm text-text-muted">{member.bio}</p>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  </section>
+
+  <section class="py-section">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="max-w-3xl">
+        <h2 class="text-2xl sm:text-3xl font-bold text-text">Backed by the best</h2>
+        <p class="mt-4 text-text-muted leading-relaxed">
+          We're proud to be backed by leading investors who share our vision for the future of developer tools. Our investors include top-tier venture capital firms and angels who have built and scaled developer-focused companies.
+        </p>
+        <p class="mt-4 text-text-muted leading-relaxed">
+          With their support, we're building a platform that will serve millions of developers worldwide.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <CTA
+    title="Join us on our mission"
+    description="We're always looking for talented people who want to make deployment better for everyone."
+    action={{ label: "View Open Positions", href: "/careers" }}
+  />
+</MarketingLayout>

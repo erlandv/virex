@@ -1,0 +1,120 @@
+---
+/**
+ * OptimizedImage - Wrapper for optimized image loading with automatic format conversion
+ *
+ * @description
+ * A smart image component that wraps Astro's Image component for automatic optimization.
+ * Supports both local and remote images with lazy loading, format conversion (WebP/AVIF),
+ * and quality control. Automatically detects remote URLs and handles them appropriately.
+ * For imported images, uses Astro's built-in optimization; for remote/local paths, uses
+ * standard img tags with lazy loading.
+ *
+ * @example Basic usage with local path
+ * ```astro
+ * <OptimizedImage
+ *   src="/images/hero.jpg"
+ *   alt="Hero image"
+ *   width={800}
+ *   height={600}
+ * />
+ * ```
+ *
+ * @example With imported image (gets optimized)
+ * ```astro
+ * <OptimizedImage
+ *   src={import('../assets/logo.png')}
+ *   alt="Company logo"
+ *   width={200}
+ *   height={100}
+ *   format="avif"
+ *   quality={90}
+ * />
+ * ```
+ *
+ * @example Remote image with custom loading
+ * ```astro
+ * <OptimizedImage
+ *   src="https://example.com/image.jpg"
+ *   alt="Remote image"
+ *   loading="eager"
+ *   class="rounded-lg shadow-md"
+ * />
+ * ```
+ */
+import { Image } from 'astro:assets';
+
+interface Props {
+  /** Image source - can be a path string, remote URL, or imported ImageMetadata */
+  src: string | ImageMetadata;
+  /** Alt text for accessibility (required) */
+  alt: string;
+  /** Image width in pixels */
+  width?: number;
+  /** Image height in pixels */
+  height?: number;
+  /** Loading strategy (defaults to "lazy") */
+  loading?: 'lazy' | 'eager';
+  /** Decoding strategy (defaults to "async") */
+  decoding?: 'async' | 'sync' | 'auto';
+  /** CSS class names */
+  class?: string;
+  /** Output image format for optimization (defaults to "webp") */
+  format?: 'webp' | 'avif' | 'png' | 'jpg' | 'jpeg';
+  /** Image quality from 1-100 (defaults to 80) */
+  quality?: number;
+}
+
+const {
+  src,
+  alt,
+  width,
+  height,
+  loading = 'lazy',
+  decoding = 'async',
+  class: className,
+  format = 'webp',
+  quality = 80,
+} = Astro.props;
+
+// Check if src is a remote URL
+const isRemote = typeof src === 'string' && (src.startsWith('http://') || src.startsWith('https://'));
+
+// For remote images, we need to use img tag with loading="lazy"
+// For local images, use Astro's Image component
+---
+
+{isRemote ? (
+  <img
+    src={src}
+    alt={alt}
+    width={width}
+    height={height}
+    loading={loading}
+    decoding={decoding}
+    class={className}
+  />
+) : typeof src === 'string' ? (
+  /* Local path string - use regular img with lazy loading */
+  <img
+    src={src}
+    alt={alt}
+    width={width}
+    height={height}
+    loading={loading}
+    decoding={decoding}
+    class={className}
+  />
+) : (
+  /* Imported image - use Astro Image for optimization */
+  <Image
+    src={src}
+    alt={alt}
+    width={width}
+    height={height}
+    loading={loading}
+    decoding={decoding}
+    class={className}
+    format={format}
+    quality={quality}
+  />
+)}

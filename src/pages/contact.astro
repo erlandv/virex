@@ -1,0 +1,97 @@
+---
+import MarketingLayout from '../layouts/MarketingLayout.astro';
+import ContactForm from '../components/forms/ContactForm.astro';
+import { Icon } from 'astro-icon/components';
+import { siteConfig, contact, contactMethods, contactFAQs } from '@/config';
+
+const office = contact.address;
+---
+
+<MarketingLayout
+  title={`Contact - ${siteConfig.name}`}
+  description="Get in touch with the Virex team. We're here to help with questions about our platform, pricing, or enterprise solutions."
+>
+  <section class="py-section">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="max-w-3xl">
+        <h1 class="text-4xl sm:text-5xl font-bold text-text">Get in touch</h1>
+        <p class="mt-6 text-lg text-text-muted">
+          Have a question about {siteConfig.name}? Want to discuss enterprise solutions?
+          We'd love to hear from you.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="py-section bg-surface">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+        <div>
+          <h2 class="text-2xl font-bold text-text mb-8">Send us a message</h2>
+          <ContactForm />
+        </div>
+
+        <div class="space-y-8">
+          <!-- Contact Methods -->
+          <div>
+            <h2 class="text-2xl font-bold text-text mb-4">
+              Other ways to reach us
+            </h2>
+            <div class="space-y-3">
+              {
+                contactMethods.map((method) => (
+                  <a
+                    href={method.href}
+                    class="flex items-center gap-3 text-text-muted hover:text-primary transition-colors group"
+                  >
+                    <Icon name={method.icon} class="w-5 h-5 text-primary" />
+                    <span class="group-hover:underline">{method.value}</span>
+                  </a>
+                ))
+              }
+            </div>
+          </div>
+
+          <!-- Our Office -->
+          <div>
+            <h2 class="text-2xl font-bold text-text mb-4">Our office</h2>
+            <div class="flex items-start gap-3 text-text-muted">
+              <Icon
+                name="lucide:map-pin"
+                class="w-5 h-5 text-primary flex-shrink-0 mt-0.5"
+              />
+              <address class="not-italic">
+                {office.street}<br />
+                {office.city}, {office.state}
+                {office.zip}<br />
+                {office.country}
+              </address>
+            </div>
+          </div>
+
+          <!-- FAQ Mini -->
+          <div>
+            <h2 class="text-2xl font-bold text-text mb-4">Common questions</h2>
+            <div class="space-y-4">
+              {
+                contactFAQs.map((faq) => (
+                  <div>
+                    <h3 class="font-medium text-text">{faq.question}</h3>
+                    <p class="text-sm text-text-muted mt-1">{faq.answer}</p>
+                  </div>
+                ))
+              }
+            </div>
+            <a
+              href="/faq"
+              class="inline-flex items-center gap-1 text-primary hover:underline mt-4 text-sm font-medium"
+            >
+              View all FAQs
+              <Icon name="lucide:arrow-right" class="w-4 h-4" />
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</MarketingLayout>

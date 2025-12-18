@@ -1,0 +1,78 @@
+---
+/**
+ * TestimonialCard - Customer testimonial display card
+ *
+ * @description
+ * Displays a customer quote with author information. Automatically generates
+ * initials as avatar fallback if no avatar image is provided.
+ *
+ * @example
+ * ```astro
+ * <TestimonialCard
+ *   quote="This product changed everything for us."
+ *   author="Jane Doe"
+ *   role="CTO"
+ *   company="Acme Inc"
+ * />
+ * ```
+ *
+ * @example With avatar
+ * ```astro
+ * <TestimonialCard
+ *   quote="This product changed everything for us."
+ *   author="Jane Doe"
+ *   role="CTO"
+ *   company="Acme Inc"
+ *   avatar="/images/testimonials/jane.jpg"
+ * />
+ * ```
+ */
+
+interface Props {
+  /** The testimonial quote text */
+  quote: string;
+  /** Author's full name */
+  author: string;
+  /** Author's job title or role */
+  role: string;
+  /** Author's company name */
+  company: string;
+  /** Optional URL to author's avatar image */
+  avatar?: string;
+}
+
+const { quote, author, role, company, avatar } = Astro.props;
+
+// Generate initials for avatar fallback
+const initials = author
+  .split(' ')
+  .map((n) => n[0])
+  .join('')
+  .toUpperCase()
+  .slice(0, 2);
+---
+
+<div class="p-6 rounded-lg bg-surface border border-border">
+  <blockquote class="text-text leading-relaxed">
+    "{quote}"
+  </blockquote>
+  <div class="mt-6 flex items-center gap-4">
+    {avatar ? (
+      <img
+        src={avatar}
+        alt={author}
+        class="w-12 h-12 rounded-full object-cover"
+      />
+    ) : (
+      <div class="w-12 h-12 rounded-full bg-primary/10 text-primary flex items-center justify-center font-semibold">
+        {initials}
+      </div>
+    )}
+    <div>
+      <div class="font-semibold text-text">{author}</div>
+      <div class="text-sm text-text-muted">
+        {role} at {company}
+      </div>
+    </div>
+  </div>
+</div>

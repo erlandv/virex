@@ -1,0 +1,77 @@
+---
+import MarketingLayout from '../layouts/MarketingLayout.astro';
+import { getCollection } from 'astro:content';
+import { siteConfig } from '@/config';
+
+const changelog = await getCollection('changelog', ({ data }) => !data.draft);
+const sortedChangelog = changelog.sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+
+const typeColors = {
+  major: 'bg-primary text-white',
+  minor: 'bg-secondary text-white',
+  patch: 'bg-text-muted/20 text-text',
+};
+
+const typeLabels = {
+  major: 'Major',
+  minor: 'Minor',
+  patch: 'Patch',
+};
+---
+
+<MarketingLayout 
+  title={`Changelog - ${siteConfig.name}`}
+  description={`See what's new in ${siteConfig.name}. Track our latest features, improvements, and bug fixes.`}
+>
+  <section class="py-section">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-16">
+        <h1 class="text-4xl sm:text-5xl font-bold text-text">
+          Changelog
+        </h1>
+        <p class="mt-4 text-lg text-text-muted max-w-2xl mx-auto">
+          Stay up to date with the latest features, improvements, and fixes in {siteConfig.name}.
+        </p>
+      </div>
+
+      <div class="space-y-12">
+        {sortedChangelog.map(async (entry) => {
+          const { Content } = await entry.render();
+          return (
+            <article class="relative pl-8 border-l-2 border-border">
+              <div class="absolute -left-2 top-0 w-4 h-4 rounded-full bg-primary border-4 border-background" />
+              
+              <div class="flex flex-wrap items-center gap-3 mb-4">
+                <span class={`px-2.5 py-0.5 text-sm font-medium rounded-full ${typeColors[entry.data.type]}`}>
+                  {typeLabels[entry.data.type]}
+                </span>
+                <span class="text-sm font-mono text-text-muted">v{entry.data.version}</span>
+                <span class="text-sm text-text-muted">
+                  {entry.data.date.toLocaleDateString('en-US', { 
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric' 
+                  })}
+                </span>
+              </div>
+
+              <h2 class="text-2xl font-bold text-text mb-4">
+                {entry.data.title}
+              </h2>
+
+              <div class="prose prose-text max-w-none">
+                <Content />
+              </div>
+            </article>
+          );
+        })}
+      </div>
+
+      {sortedChangelog.length === 0 && (
+        <div class="text-center py-12">
+          <p class="text-text-muted">No changelog entries yet. Check back soon!</p>
+        </div>
+      )}
+    </div>
+  </section>
+</MarketingLayout>

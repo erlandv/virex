@@ -1,0 +1,164 @@
+---
+import MarketingLayout from '../layouts/MarketingLayout.astro';
+import { Icon } from 'astro-icon/components';
+import { siteConfig } from '@/config';
+
+interface Benefit {
+  icon: string;
+  title: string;
+  description: string;
+}
+
+const benefits: Benefit[] = [
+  {
+    icon: "lucide:globe",
+    title: "Remote First",
+    description: "Work from anywhere in the world. We believe great talent isn't limited by geography."
+  },
+  {
+    icon: "lucide:bar-chart",
+    title: "Competitive Salary",
+    description: "We offer top-of-market compensation with equity options for all full-time employees."
+  },
+  {
+    icon: "lucide:users",
+    title: "Great Team",
+    description: "Join a diverse team of talented individuals who are passionate about what they build."
+  },
+  {
+    icon: "lucide:zap",
+    title: "Learning Budget",
+    description: "Annual budget for courses, conferences, and books to help you grow professionally."
+  }
+];
+
+// Sample job openings - replace with your actual positions or integrate with an ATS
+const openings = [
+  {
+    title: "Senior Frontend Engineer",
+    department: "Engineering",
+    location: "Remote",
+    type: "Full-time",
+    href: "#"
+  },
+  {
+    title: "Product Designer",
+    department: "Design",
+    location: "Remote",
+    type: "Full-time",
+    href: "#"
+  },
+  {
+    title: "Developer Advocate",
+    department: "Marketing",
+    location: "Remote",
+    type: "Full-time",
+    href: "#"
+  },
+  {
+    title: "Customer Success Manager",
+    department: "Support",
+    location: "Remote (US/EU)",
+    type: "Full-time",
+    href: "#"
+  }
+];
+
+const departments = [...new Set(openings.map(job => job.department))];
+---
+
+<MarketingLayout 
+  title={`Careers - ${siteConfig.name}`}
+  description={`Join the ${siteConfig.name} team. We're building the future of deployment and looking for talented people to help us get there.`}
+>
+  <section class="py-section">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="max-w-3xl">
+        <h1 class="text-4xl sm:text-5xl font-bold text-text">
+          Join our team
+        </h1>
+        <p class="mt-6 text-lg text-text-muted">
+          We're on a mission to make deployment effortless for every developer. 
+          Join us and help shape the future of how software gets shipped.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="py-section bg-surface">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl sm:text-3xl font-bold text-text mb-12">Why work with us</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        {benefits.map((benefit) => (
+          <div class="flex gap-4">
+            <div class="flex-shrink-0 w-12 h-12 flex items-center justify-center rounded-lg bg-primary/10 text-primary">
+              <Icon name={benefit.icon} class="w-6 h-6" />
+            </div>
+            <div>
+              <h3 class="text-lg font-semibold text-text">{benefit.title}</h3>
+              <p class="mt-2 text-text-muted">{benefit.description}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="py-section">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl sm:text-3xl font-bold text-text mb-4">Open positions</h2>
+      <p class="text-text-muted mb-8">
+        {openings.length} open {openings.length === 1 ? 'position' : 'positions'} across {departments.length} {departments.length === 1 ? 'department' : 'departments'}
+      </p>
+
+      {openings.length > 0 ? (
+        <div class="space-y-4">
+          {openings.map((job) => (
+            <a
+              href={job.href}
+              class="block p-6 rounded-lg border border-border hover:border-primary transition-colors group"
+            >
+              <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div>
+                  <h3 class="text-lg font-semibold text-text group-hover:text-primary transition-colors">
+                    {job.title}
+                  </h3>
+                  <div class="flex flex-wrap gap-3 mt-2 text-sm text-text-muted">
+                    <span>{job.department}</span>
+                    <span>•</span>
+                    <span>{job.location}</span>
+                    <span>•</span>
+                    <span>{job.type}</span>
+                  </div>
+                </div>
+                <div class="flex-shrink-0">
+                  <span class="inline-flex items-center gap-1 text-primary font-medium">
+                    Apply
+                    <Icon name="lucide:chevron-right" class="w-4 h-4" />
+                  </span>
+                </div>
+              </div>
+            </a>
+          ))}
+        </div>
+      ) : (
+        <div class="text-center py-12 px-4 rounded-lg border border-border">
+          <p class="text-text-muted">No open positions at the moment.</p>
+          <p class="text-text-muted mt-2">Check back soon or send us your resume anyway!</p>
+        </div>
+      )}
+
+      <div class="mt-12 p-6 rounded-lg bg-surface border border-border">
+        <h3 class="text-lg font-semibold text-text">Don't see a role that fits?</h3>
+        <p class="mt-2 text-text-muted">
+          We're always looking for talented people. Send your resume to{' '}
+          <a href={`mailto:${siteConfig.contact.email}`} class="text-primary hover:underline">
+            {siteConfig.contact.email}
+          </a>{' '}
+          and tell us how you'd like to contribute.
+        </p>
+      </div>
+    </div>
+  </section>
+
+</MarketingLayout>

@@ -1,0 +1,133 @@
+---
+import { getCollection } from 'astro:content';
+import MarketingLayout from './MarketingLayout.astro';
+import { Icon } from 'astro-icon/components';
+
+interface Props {
+  title: string;
+  description: string;
+  section: string;
+}
+
+const { title, description, section } = Astro.props;
+
+// Get all non-draft docs and organize by section
+const allDocs = await getCollection('docs', ({ data }) => !data.draft);
+
+// Group docs by section and sort by order
+interface DocItem {
+  title: string;
+  slug: string;
+  order: number;
+}
+
+interface SidebarSection {
+  section: string;
+  items: DocItem[];
+}
+
+const sidebarSections: SidebarSection[] = [];
+const sectionMap = new Map<string, DocItem[]>();
+
+for (const doc of allDocs) {
+  const sectionName = doc.data.section;
+  if (!sectionMap.has(sectionName)) {
+    sectionMap.set(sectionName, []);
+  }
+  sectionMap.get(sectionName)!.push({
+    title: doc.data.title,
+    slug: doc.slug,
+    order: doc.data.order,
+  });
+}
+
+// Sort items within each section by order
+for (const [sectionName, items] of sectionMap) {
+  items.sort((a, b) => a.order - b.order);
+  sidebarSections.push({ section: sectionName, items });
+}
+
+// Sort sections by the minimum order of their items
+sidebarSections.sort((a, b) => {
+  const aMinOrder = Math.min(...a.items.map(i => i.order));
+  const bMinOrder = Math.min(...b.items.map(i => i.order));
+  return aMinOrder - bMinOrder;
+});
+
+// Get current page slug for highlighting
+const currentSlug = Astro.url.pathname.replace('/docs/', '').replace(/\/$/, '');
+---
+
+<MarketingLayout title={title} description={description}>
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-section">
+    <div class="flex flex-col lg:flex-row gap-8">
+      <!-- Sidebar -->
+      <aside class="lg:w-64 shrink-0">
+        <nav class="sticky top-24">
+          <!-- Mobile sidebar toggle -->
+          <button
+            id="docs-sidebar-toggle"
+            type="button"
+            class="lg:hidden w-full flex items-center justify-between p-3 mb-4 bg-surface rounded-md text-text"
+          >
+            <span class="font-medium">Documentation</span>
+            <Icon name="lucide:chevron-down" class="w-5 h-5" />
+          </button>
+
+          <!-- Sidebar content -->
+          <div id="docs-sidebar" class="hidden lg:block space-y-6">
+            {sidebarSections.map((sidebarSection) => (
+              <div>
+                <h3 class="font-semibold text-sm text-text mb-2">{sidebarSection.section}</h3>
+                <ul class="space-y-1">
+                  {sidebarSection.items.map((item) => {
+                    const isActive = currentSlug === item.slug;
+                    return (
+                      <li>
+                        <a
+                          href={`/docs/${item.slug}`}
+                          class:list={[
+                            'block px-3 py-2 text-sm rounded-md transition-colors',
+                            isActive
+                              ? 'bg-primary text-white font-medium'
+                              : 'text-text-muted hover:text-text hover:bg-surface',
+                          ]}
+                        >
+                          {item.title}
+                        </a>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
+            ))}
+          </div>
+        </nav>
+      </aside>
+
+      <!-- Main content -->
+      <main class="flex-1 min-w-0">
+        <article>
+          <header class="mb-8 pb-6 border-b border-border">
+            <p class="text-sm text-primary font-medium mb-2">{section}</p>
+            <h1 class="text-3xl font-bold text-text">{title}</h1>
+            <p class="mt-2 text-text-muted">{description}</p>
+          </header>
+
+          <div class="prose prose-lg max-w-none dark:prose-invert">
+            <slot />
+          </div>
+        </article>
+      </main>
+    </div>
+  </div>
+</MarketingLayout>
+
+<script>
+  const toggle = document.getElementById('docs-sidebar-toggle');
+  const sidebar = document.getElementById('docs-sidebar');
+
+  toggle?.addEventListener('click', () => {
+    sidebar?.classList.toggle('hidden');
+  });
+</script>

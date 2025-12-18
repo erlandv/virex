@@ -1,0 +1,159 @@
+---
+import MarketingLayout from '../layouts/MarketingLayout.astro';
+import CTA from '../components/sections/CTA.astro';
+import { siteConfig } from '@/config';
+
+const roadmapItems = [
+  {
+    quarter: "Q1 2025",
+    status: "in-progress",
+    items: [
+      {
+        title: "GitHub Actions Integration",
+        description: "Native integration with GitHub Actions for seamless CI/CD workflows.",
+        status: "in-progress"
+      },
+      {
+        title: "Custom Domains SSL",
+        description: "Automatic SSL certificate provisioning for custom domains.",
+        status: "in-progress"
+      },
+      {
+        title: "Team Analytics Dashboard",
+        description: "Comprehensive analytics for team performance and deployment metrics.",
+        status: "planned"
+      }
+    ]
+  },
+  {
+    quarter: "Q2 2025",
+    status: "planned",
+    items: [
+      {
+        title: "Multi-Region Deployments",
+        description: "Deploy your applications to multiple regions for better global performance.",
+        status: "planned"
+      },
+      {
+        title: "Database Integrations",
+        description: "One-click integrations with popular databases like PostgreSQL and MongoDB.",
+        status: "planned"
+      },
+      {
+        title: "Advanced Caching",
+        description: "Edge caching with fine-grained cache control and instant purging.",
+        status: "planned"
+      }
+    ]
+  },
+  {
+    quarter: "Q3 2025",
+    status: "planned",
+    items: [
+      {
+        title: "Serverless Functions",
+        description: "Deploy serverless functions alongside your static sites.",
+        status: "planned"
+      },
+      {
+        title: "A/B Testing",
+        description: "Built-in A/B testing for deployments with traffic splitting.",
+        status: "planned"
+      }
+    ]
+  },
+  {
+    quarter: "Future",
+    status: "exploring",
+    items: [
+      {
+        title: "Self-Hosted Option",
+        description: "Run Virex on your own infrastructure for complete control.",
+        status: "exploring"
+      },
+      {
+        title: "Mobile App",
+        description: "Monitor and manage deployments from your mobile device.",
+        status: "exploring"
+      }
+    ]
+  }
+];
+
+const statusColors = {
+  "completed": "bg-green-500/10 text-green-600 dark:text-green-400",
+  "in-progress": "bg-primary/10 text-primary",
+  "planned": "bg-text-muted/10 text-text-muted",
+  "exploring": "bg-secondary/10 text-secondary"
+};
+
+const statusLabels = {
+  "completed": "Completed",
+  "in-progress": "In Progress",
+  "planned": "Planned",
+  "exploring": "Exploring"
+};
+---
+
+<MarketingLayout 
+  title={`Roadmap - ${siteConfig.name}`}
+  description={`See what's coming next for ${siteConfig.name}. Our public roadmap shows planned features and improvements.`}
+>
+  <section class="py-section">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-16">
+        <h1 class="text-4xl sm:text-5xl font-bold text-text">
+          Product Roadmap
+        </h1>
+        <p class="mt-4 text-lg text-text-muted max-w-2xl mx-auto">
+          See what we're working on and what's coming next. Have a feature request? 
+          <a href="/contact" class="text-primary hover:underline">Let us know</a>.
+        </p>
+      </div>
+
+      <div class="flex flex-wrap gap-4 justify-center mb-12">
+        {Object.entries(statusLabels).map(([key, label]) => (
+          <div class="flex items-center gap-2">
+            <span class={`w-3 h-3 rounded-full ${statusColors[key as keyof typeof statusColors].split(' ')[0]}`} />
+            <span class="text-sm text-text-muted">{label}</span>
+          </div>
+        ))}
+      </div>
+
+      <div class="space-y-12">
+        {roadmapItems.map((quarter) => (
+          <div>
+            <h2 class="text-xl font-bold text-text mb-6 flex items-center gap-3">
+              {quarter.quarter}
+              <span class={`px-2.5 py-0.5 text-xs font-medium rounded-full ${statusColors[quarter.status as keyof typeof statusColors]}`}>
+                {statusLabels[quarter.status as keyof typeof statusLabels]}
+              </span>
+            </h2>
+            
+            <div class="space-y-4">
+              {quarter.items.map((item) => (
+                <div class="p-6 rounded-lg border border-border bg-surface/50">
+                  <div class="flex items-start justify-between gap-4">
+                    <div>
+                      <h3 class="text-lg font-semibold text-text">{item.title}</h3>
+                      <p class="mt-2 text-text-muted">{item.description}</p>
+                    </div>
+                    <span class={`shrink-0 px-2.5 py-0.5 text-xs font-medium rounded-full ${statusColors[item.status as keyof typeof statusColors]}`}>
+                      {statusLabels[item.status as keyof typeof statusLabels]}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <CTA
+    title="Have a feature request?"
+    description="We'd love to hear your ideas. Share your feedback and help shape the future of our platform."
+    action={{ label: "Contact Us", href: "/contact" }}
+  />
+</MarketingLayout>

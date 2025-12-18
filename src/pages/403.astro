@@ -1,0 +1,17 @@
+---
+import ErrorLayout from '../layouts/ErrorLayout.astro';
+import ErrorPage from '../components/error/ErrorPage.astro';
+
+Astro.response.status = 403;
+---
+
+<ErrorLayout
+  title="Access Denied"
+  description="You don't have permission to access this page."
+>
+  <ErrorPage
+    code={403}
+    title="Access Denied"
+    message="You don't have permission to access this page. If you believe this is a mistake, please contact support."
+  />
+</ErrorLayout>

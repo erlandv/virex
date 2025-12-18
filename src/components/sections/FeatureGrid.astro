@@ -1,0 +1,66 @@
+---
+/**
+ * FeatureGrid - Grid layout for displaying product features
+ *
+ * @description
+ * Displays features in a responsive grid (1 column on mobile, 2 on tablet, 3 on desktop).
+ * Each feature includes an icon, title, and description.
+ *
+ * @example
+ * ```astro
+ * <FeatureGrid
+ *   features={[
+ *     {
+ *       icon: "lucide:zap",
+ *       title: "Lightning Fast",
+ *       description: "Deploy in seconds, not minutes."
+ *     },
+ *     {
+ *       icon: "lucide:shield",
+ *       title: "Secure by Default",
+ *       description: "SSL and security headers included."
+ *     }
+ *   ]}
+ * />
+ * ```
+ */
+
+import { Icon } from 'astro-icon/components';
+
+/** Individual feature item configuration */
+interface Feature {
+  /** Icon name from Lucide (e.g., "lucide:zap", "lucide:shield") */
+  icon: string;
+  /** Feature title text */
+  title: string;
+  /** Feature description text */
+  description: string;
+}
+
+interface Props {
+  /** Array of features to display in the grid */
+  features: Feature[];
+}
+
+const { features } = Astro.props;
+---
+
+<section class="py-section">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      {features.map((feature) => (
+        <div class="p-6 rounded-lg bg-surface border border-border">
+          <div class="w-12 h-12 flex items-center justify-center rounded-md bg-primary/10 text-primary mb-4">
+            <Icon name={feature.icon} class="w-6 h-6" aria-hidden="true" />
+          </div>
+          <h3 class="text-lg font-semibold text-text mb-2">
+            {feature.title}
+          </h3>
+          <p class="text-text-muted leading-relaxed">
+            {feature.description}
+          </p>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>

@@ -1,0 +1,141 @@
+---
+import MarketingLayout from '../../../layouts/MarketingLayout.astro';
+import Pagination from '../../../components/ui/navigation/Pagination.astro';
+import { Icon } from 'astro-icon/components';
+import { getCollection, type CollectionEntry } from 'astro:content';
+import { siteConfig } from '@/config';
+import { calculateReadingTime } from '@/lib/utils';
+
+const POSTS_PER_PAGE = 6;
+
+export async function getStaticPaths() {
+  const postsPerPage = 6;
+  const posts = await getCollection('blog', ({ data }: CollectionEntry<'blog'>) => !data.draft);
+  const totalPages = Math.ceil(posts.length / postsPerPage);
+  
+  return Array.from({ length: totalPages }, (_, i) => ({
+    params: { page: String(i + 1) },
+  }));
+}
+
+const { page } = Astro.params;
+const currentPage = parseInt(page!);
+
+const posts = await getCollection('blog', ({ data }: CollectionEntry<'blog'>) => !data.draft);
+const sortedPosts = posts.sort((a: CollectionEntry<'blog'>, b: CollectionEntry<'blog'>) => 
+  b.data.publishedDate.getTime() - a.data.publishedDate.getTime()
+);
+
+const totalPages = Math.ceil(sortedPosts.length / POSTS_PER_PAGE);
+const startIndex = (currentPage - 1) * POSTS_PER_PAGE;
+const paginatedPosts = sortedPosts.slice(startIndex, startIndex + POSTS_PER_PAGE);
+
+// Redirect page 1 to /blog
+if (currentPage === 1) {
+  return Astro.redirect('/blog');
+}
+
+// Get all unique tags
+const allTags = [...new Set(posts.flatMap((post: CollectionEntry<'blog'>) => post.data.tags))].sort();
+---
+
+<MarketingLayout 
+  title={`Blog - Page ${currentPage}`}
+  description={`Latest news, updates, and insights from the ${siteConfig.name} team. Page ${currentPage} of ${totalPages}.`}
+>
+  <section class="py-section">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-12">
+        <h1 class="text-4xl sm:text-5xl font-bold text-text">Blog</h1>
+        <p class="mt-4 text-lg text-text-muted max-w-2xl mx-auto">
+          Latest news, updates, and insights from the {siteConfig.name} team.
+        </p>
+      </div>
+
+      <!-- Tags Filter -->
+      {allTags.length > 0 && (
+        <div class="mb-10">
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="text-sm font-medium text-text-muted mr-2">Filter by tag:</span>
+            <a
+              href="/blog"
+              class="px-3 py-1.5 text-sm font-medium rounded-full bg-primary text-white"
+            >
+              All
+            </a>
+            {allTags.map((tag) => (
+              <a
+                href={`/blog/tag/${tag}`}
+                class="px-3 py-1.5 text-sm font-medium rounded-full bg-surface text-text-muted hover:bg-primary/10 hover:text-primary transition-colors"
+              >
+                {tag}
+              </a>
+            ))}
+          </div>
+        </div>
+      )}
+
+      <!-- Posts Grid -->
+      <div class="space-y-10">
+        {paginatedPosts.map((post) => (
+            <article class="group">
+              <a href={`/blog/${post.slug}`} class="block">
+                <div class="flex flex-col sm:flex-row gap-6">
+                  <div class="sm:w-48 sm:h-32 shrink-0 rounded-lg overflow-hidden bg-surface">
+                    {post.data.image ? (
+                      <img 
+                        src={post.data.image} 
+                        alt={post.data.title}
+                        class="w-full h-32 sm:h-full object-cover"
+                      />
+                    ) : (
+                      <div class="w-full h-32 sm:h-full bg-primary/10 flex items-center justify-center">
+                        <Icon name="lucide:image" class="w-12 h-12 text-primary/40" />
+                      </div>
+                    )}
+                  </div>
+                  <div class="flex-1">
+                    <div class="flex flex-wrap items-center gap-3 text-sm text-text-muted mb-2">
+                      <span>
+                        {post.data.publishedDate.toLocaleDateString('en-US', { 
+                          year: 'numeric', 
+                          month: 'long', 
+                          day: 'numeric' 
+                        })}
+                      </span>
+                      <span>·</span>
+                      <span>{calculateReadingTime(post.body || '')} min read</span>
+                    </div>
+                    <h2 class="text-xl font-bold text-text group-hover:text-primary transition-colors">
+                      {post.data.title}
+                    </h2>
+                    <p class="mt-2 text-text-muted line-clamp-2">
+                      {post.data.description}
+                    </p>
+                    {post.data.tags.length > 0 && (
+                      <div class="flex flex-wrap gap-2 mt-3">
+                        {post.data.tags.slice(0, 3).map((tag: string) => (
+                          <span 
+                            class="px-2 py-0.5 text-xs font-medium bg-surface text-text-muted rounded"
+                          >
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </a>
+            </article>
+          ))}
+      </div>
+
+      <!-- Pagination -->
+      <Pagination 
+        currentPage={currentPage} 
+        totalPages={totalPages} 
+        basePath="/blog" 
+      />
+    </div>
+  </section>
+</MarketingLayout>

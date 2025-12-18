@@ -1,0 +1,154 @@
+---
+import MarketingLayout from '../layouts/MarketingLayout.astro';
+import { siteConfig } from '@/config';
+
+const { legal, contact } = siteConfig;
+const fullAddress = `${contact.address.street}, ${contact.address.city}, ${contact.address.state} ${contact.address.zip}`;
+---
+
+<MarketingLayout 
+  title={`Privacy Policy - ${siteConfig.name}`}
+  description={`Privacy Policy for ${siteConfig.name}. Learn how we collect, use, and protect your personal information.`}
+>
+  <section class="py-section">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+      <header class="mb-12">
+        <h1 class="text-4xl font-bold text-text">Privacy Policy</h1>
+        <p class="mt-4 text-text-muted">Last updated: {legal.lastUpdated}</p>
+      </header>
+
+      <div class="prose prose-lg max-w-none dark:prose-invert">
+        <p>
+          At {siteConfig.name}, we take your privacy seriously. This Privacy Policy explains how we collect, 
+          use, disclose, and safeguard your information when you visit our website or use our services.
+        </p>
+
+        <h2>Information We Collect</h2>
+        
+        <h3>Personal Information</h3>
+        <p>We may collect personal information that you voluntarily provide to us when you:</p>
+        <ul>
+          <li>Register for an account</li>
+          <li>Subscribe to our newsletter</li>
+          <li>Fill out a contact form</li>
+          <li>Make a purchase or subscription</li>
+          <li>Participate in surveys or promotions</li>
+        </ul>
+        <p>This information may include:</p>
+        <ul>
+          <li>Name and email address</li>
+          <li>Billing address and payment information</li>
+          <li>Company name and job title</li>
+          <li>Phone number</li>
+        </ul>
+
+        <h3>Automatically Collected Information</h3>
+        <p>
+          When you access our services, we automatically collect certain information about your device 
+          and usage, including:
+        </p>
+        <ul>
+          <li>IP address and browser type</li>
+          <li>Operating system and device information</li>
+          <li>Pages visited and time spent on pages</li>
+          <li>Referring website addresses</li>
+          <li>Click patterns and feature usage</li>
+        </ul>
+
+        <h2>How We Use Your Information</h2>
+        <p>We use the information we collect to:</p>
+        <ul>
+          <li>Provide, maintain, and improve our services</li>
+          <li>Process transactions and send related information</li>
+          <li>Send promotional communications (with your consent)</li>
+          <li>Respond to your comments, questions, and support requests</li>
+          <li>Monitor and analyze usage patterns and trends</li>
+          <li>Detect, prevent, and address technical issues and fraud</li>
+          <li>Comply with legal obligations</li>
+        </ul>
+
+        <h2>Information Sharing</h2>
+        <p>We may share your information in the following situations:</p>
+        <ul>
+          <li><strong>Service Providers:</strong> With third-party vendors who perform services on our behalf (payment processing, analytics, email delivery)</li>
+          <li><strong>Business Transfers:</strong> In connection with a merger, acquisition, or sale of assets</li>
+          <li><strong>Legal Requirements:</strong> When required by law or to protect our rights and safety</li>
+          <li><strong>With Your Consent:</strong> When you have given us explicit permission</li>
+        </ul>
+        <p>We do not sell your personal information to third parties.</p>
+
+        <h2>Data Security</h2>
+        <p>
+          We implement appropriate technical and organizational security measures to protect your 
+          personal information against unauthorized access, alteration, disclosure, or destruction. 
+          However, no method of transmission over the Internet is 100% secure, and we cannot guarantee 
+          absolute security.
+        </p>
+
+        <h2>Data Retention</h2>
+        <p>
+          We retain your personal information for as long as necessary to fulfill the purposes outlined 
+          in this Privacy Policy, unless a longer retention period is required by law. When we no longer 
+          need your information, we will securely delete or anonymize it.
+        </p>
+
+        <h2>Your Rights</h2>
+        <p>Depending on your location, you may have the following rights:</p>
+        <ul>
+          <li><strong>Access:</strong> Request a copy of the personal information we hold about you</li>
+          <li><strong>Correction:</strong> Request correction of inaccurate or incomplete information</li>
+          <li><strong>Deletion:</strong> Request deletion of your personal information</li>
+          <li><strong>Portability:</strong> Request transfer of your data to another service</li>
+          <li><strong>Opt-out:</strong> Unsubscribe from marketing communications at any time</li>
+        </ul>
+        <p>
+          To exercise these rights, please contact us using the information provided below.
+        </p>
+
+        <h2>Cookies and Tracking</h2>
+        <p>
+          We use cookies and similar tracking technologies to collect information about your browsing 
+          activities. You can control cookies through your browser settings. For more information, 
+          please see our Cookie Policy.
+        </p>
+
+        <h2>Third-Party Links</h2>
+        <p>
+          Our website may contain links to third-party websites. We are not responsible for the privacy 
+          practices of these external sites. We encourage you to review their privacy policies before 
+          providing any personal information.
+        </p>
+
+        <h2>Children's Privacy</h2>
+        <p>
+          Our services are not intended for children under 16 years of age. We do not knowingly collect 
+          personal information from children. If you believe we have collected information from a child, 
+          please contact us immediately.
+        </p>
+
+        <h2>International Data Transfers</h2>
+        <p>
+          Your information may be transferred to and processed in countries other than your own. 
+          We ensure appropriate safeguards are in place to protect your information in accordance 
+          with this Privacy Policy.
+        </p>
+
+        <h2>Changes to This Policy</h2>
+        <p>
+          We may update this Privacy Policy from time to time. We will notify you of any changes by 
+          posting the new Privacy Policy on this page and updating the "Last updated" date. We encourage 
+          you to review this Privacy Policy periodically.
+        </p>
+
+        <h2>Contact Us</h2>
+        <p>
+          If you have any questions about this Privacy Policy or our privacy practices, please contact us at:
+        </p>
+        <ul>
+          <li>Email: {legal.privacyEmail}</li>
+          <li>Address: {fullAddress}</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+</MarketingLayout>

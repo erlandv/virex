@@ -1,0 +1,70 @@
+---
+/**
+ * Hero - Landing page hero section with headline, subtitle, and CTAs
+ *
+ * @description
+ * A full-width hero section designed for landing pages. Includes a main headline,
+ * supporting subtitle text, and up to two call-to-action buttons.
+ *
+ * @example
+ * ```astro
+ * <Hero
+ *   title="Ship faster. Scale effortlessly."
+ *   subtitle="The modern deployment platform for teams."
+ *   primaryCTA={{ label: "Get Started", href: "/signup" }}
+ * />
+ * ```
+ *
+ * @example With secondary CTA
+ * ```astro
+ * <Hero
+ *   title="Ship faster. Scale effortlessly."
+ *   subtitle="The modern deployment platform for teams."
+ *   primaryCTA={{ label: "Get Started", href: "/signup" }}
+ *   secondaryCTA={{ label: "Learn More", href: "/features" }}
+ * />
+ * ```
+ */
+
+interface Props {
+  /** Main headline text displayed prominently */
+  title: string;
+  /** Supporting text that appears below the headline */
+  subtitle: string;
+  /** Primary call-to-action button with label and link */
+  primaryCTA: { label: string; href: string };
+  /** Optional secondary call-to-action button */
+  secondaryCTA?: { label: string; href: string };
+}
+
+const { title, subtitle, primaryCTA, secondaryCTA } = Astro.props;
+---
+
+<section class="py-section">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="max-w-3xl mx-auto text-center">
+      <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold text-text tracking-tight">
+        {title}
+      </h1>
+      <p class="mt-6 text-lg sm:text-xl text-text-muted leading-relaxed">
+        {subtitle}
+      </p>
+      <div class="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
+        <a
+          href={primaryCTA.href}
+          class="inline-flex items-center justify-center px-6 py-3 rounded-md bg-primary text-white font-medium hover:bg-primary-dark transition-colors w-full sm:w-auto"
+        >
+          {primaryCTA.label}
+        </a>
+        {secondaryCTA && (
+          <a
+            href={secondaryCTA.href}
+            class="inline-flex items-center justify-center px-6 py-3 rounded-md border border-border text-text font-medium hover:bg-surface transition-colors w-full sm:w-auto"
+          >
+            {secondaryCTA.label}
+          </a>
+        )}
+      </div>
+    </div>
+  </div>
+</section>

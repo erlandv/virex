@@ -1,0 +1,176 @@
+---
+import MarketingLayout from '../layouts/MarketingLayout.astro';
+import { Icon } from 'astro-icon/components';
+import { siteConfig } from '@/config';
+
+const faqs = [
+  {
+    category: "General",
+    questions: [
+      {
+        question: "What is " + siteConfig.name + "?",
+        answer: siteConfig.name + " is a modern deployment platform that helps developers and teams build, deploy, and scale applications without the infrastructure headaches. We handle the complexity so you can focus on building great products."
+      },
+      {
+        question: "Who is " + siteConfig.name + " for?",
+        answer: "We built " + siteConfig.name + " for developers and teams of all sizes—from solo developers working on side projects to enterprise teams shipping production applications. If you write code and need to deploy it, we're here to help."
+      },
+      {
+        question: "What frameworks do you support?",
+        answer: "We support all major frameworks including Next.js, Astro, Remix, Nuxt, SvelteKit, and any static site generator. Our platform auto-detects your framework and configures the build process automatically."
+      }
+    ]
+  },
+  {
+    category: "Pricing & Billing",
+    questions: [
+      {
+        question: "Is there a free tier?",
+        answer: "Yes! Our Hobby plan is completely free and includes 3 projects, 100 GB bandwidth per month, automatic HTTPS, and preview deployments. No credit card required to get started."
+      },
+      {
+        question: "Can I change plans later?",
+        answer: "Absolutely. You can upgrade or downgrade your plan at any time. When upgrading, you'll be charged the prorated difference. When downgrading, the new rate applies at your next billing cycle."
+      },
+      {
+        question: "What happens if I exceed my bandwidth limit?",
+        answer: "We'll notify you when you're approaching your limit. If you exceed it, your sites will continue to work—we'll just reach out to discuss upgrading your plan or purchasing additional bandwidth."
+      },
+      {
+        question: "Do you offer discounts for annual billing?",
+        answer: "Yes! Annual plans come with a 20% discount. You can switch to annual billing from your account settings at any time."
+      },
+      {
+        question: "Can I get a refund if I'm not satisfied?",
+        answer: "Yes, we offer a 30-day money-back guarantee on all paid plans. If you're not happy with " + siteConfig.name + ", contact support for a full refund."
+      }
+    ]
+  },
+  {
+    category: "Technical",
+    questions: [
+      {
+        question: "How fast are deployments?",
+        answer: "Most deployments complete in under 60 seconds. Our optimized build pipeline caches dependencies and uses incremental builds to get your changes live as fast as possible."
+      },
+      {
+        question: "Do you support custom domains?",
+        answer: "Yes, you can connect unlimited custom domains to your projects. We automatically provision and renew SSL certificates for all domains at no extra cost."
+      },
+      {
+        question: "Can I use environment variables?",
+        answer: "Yes, you can set environment variables for each project with different values for development, preview, and production environments. All variables are encrypted at rest."
+      },
+      {
+        question: "What about serverless functions?",
+        answer: "We support serverless functions out of the box. Deploy API routes alongside your frontend with zero configuration. Functions run on our global edge network for low latency."
+      }
+    ]
+  },
+  {
+    category: "Security & Compliance",
+    questions: [
+      {
+        question: "Is my data secure?",
+        answer: "Security is our top priority. All data is encrypted in transit and at rest. We use industry-standard security practices and undergo regular security audits."
+      },
+      {
+        question: "Do you offer SSO?",
+        answer: "Yes, SSO with SAML is available on our Enterprise plan. We support integration with Okta, Azure AD, Google Workspace, and other identity providers."
+      },
+      {
+        question: "Are you SOC 2 compliant?",
+        answer: "Yes, we maintain SOC 2 Type II compliance. Enterprise customers can request our compliance reports and security documentation."
+      }
+    ]
+  },
+  {
+    category: "Support",
+    questions: [
+      {
+        question: "How can I get help?",
+        answer: "We offer multiple support channels: community Discord for quick questions, email support for all customers, and priority support with dedicated response times for Pro and Enterprise plans."
+      },
+      {
+        question: "Do you have documentation?",
+        answer: "Yes! Our comprehensive documentation covers everything from getting started to advanced configurations. Visit our docs section for guides, tutorials, and API references."
+      },
+      {
+        question: "What are your support hours?",
+        answer: "Our community Discord is active 24/7. Email support is available Monday-Friday, 9am-6pm PT. Enterprise customers have access to 24/7 priority support."
+      }
+    ]
+  }
+];
+---
+
+<MarketingLayout 
+  title={`FAQ - ${siteConfig.name}`}
+  description={`Frequently asked questions about ${siteConfig.name}. Find answers about pricing, features, security, and more.`}
+>
+  <section class="py-section">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center max-w-3xl mx-auto">
+        <h1 class="text-4xl sm:text-5xl font-bold text-text">
+          Frequently Asked Questions
+        </h1>
+        <p class="mt-6 text-lg text-text-muted">
+          Everything you need to know about {siteConfig.name}. Can't find what you're looking for?{' '}
+          <a href="/contact" class="text-primary hover:underline">Contact our team</a>.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="py-section">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+      {faqs.map((category, categoryIndex) => (
+        <div class:list={["mb-12", categoryIndex === faqs.length - 1 && "mb-0"]}>
+          <h2 class="text-xl font-bold text-text mb-6 pb-2 border-b border-border">
+            {category.category}
+          </h2>
+          <div class="space-y-6">
+            {category.questions.map((faq) => (
+              <details class="group">
+                <summary class="flex items-center justify-between cursor-pointer list-none p-4 rounded-lg bg-surface hover:bg-surface/80 transition-colors">
+                  <span class="font-medium text-text pr-4">{faq.question}</span>
+                  <span class="flex-shrink-0 text-text-muted group-open:rotate-180 transition-transform">
+                    <Icon name="lucide:chevron-down" class="w-5 h-5" />
+                  </span>
+                </summary>
+                <div class="px-4 pt-4 pb-2 text-text-muted leading-relaxed">
+                  {faq.answer}
+                </div>
+              </details>
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <section class="py-section bg-surface">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center">
+        <h2 class="text-2xl font-bold text-text">Still have questions?</h2>
+        <p class="mt-4 text-text-muted max-w-2xl mx-auto">
+          Can't find the answer you're looking for? Our team is here to help.
+        </p>
+        <div class="mt-6 flex flex-col sm:flex-row gap-4 justify-center">
+          <a
+            href="/contact"
+            class="inline-flex items-center justify-center px-6 py-3 rounded-md bg-primary text-white font-medium hover:bg-primary-dark transition-colors"
+          >
+            Contact Support
+          </a>
+          <a
+            href={siteConfig.social.discord}
+            class="inline-flex items-center justify-center px-6 py-3 rounded-md border border-border text-text font-medium hover:bg-background transition-colors"
+          >
+            Join Discord Community
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+</MarketingLayout>

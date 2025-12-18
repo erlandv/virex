@@ -1,0 +1,107 @@
+---
+/**
+ * Pagination - Reusable pagination navigation component
+ * 
+ * @description
+ * Displays pagination controls with previous/next buttons and page numbers.
+ * Automatically handles disabled states for first/last pages.
+ * Page 1 links to the basePath directly, while other pages link to basePath/page/{n}.
+ * 
+ * @example
+ * ```astro
+ * <Pagination
+ *   currentPage={1}
+ *   totalPages={5}
+ *   basePath="/blog"
+ * />
+ * ```
+ * 
+ * @example Custom button text
+ * ```astro
+ * <Pagination
+ *   currentPage={3}
+ *   totalPages={10}
+ *   basePath="/blog"
+ *   prevText="← Prev"
+ *   nextText="Next →"
+ * />
+ * ```
+ */
+
+interface Props {
+  /** Current active page number (1-indexed) */
+  currentPage: number;
+  /** Total number of pages */
+  totalPages: number;
+  /** Base path for pagination links (e.g., '/blog') */
+  basePath: string;
+  /** Optional: Text for previous button */
+  prevText?: string;
+  /** Optional: Text for next button */
+  nextText?: string;
+}
+
+const { 
+  currentPage, 
+  totalPages, 
+  basePath, 
+  prevText = 'Previous', 
+  nextText = 'Next' 
+} = Astro.props;
+
+// Helper to generate page URL
+function getPageUrl(page: number): string {
+  return page === 1 ? basePath : `${basePath}/page/${page}`;
+}
+
+const isPrevDisabled = currentPage === 1;
+const isNextDisabled = currentPage === totalPages;
+---
+
+{totalPages > 1 && (
+  <nav class="mt-12 flex items-center justify-center gap-2" aria-label="Pagination">
+    {/* Previous Button */}
+    {isPrevDisabled ? (
+      <span class="px-4 py-2 text-sm font-medium text-text-muted bg-surface rounded-md cursor-not-allowed">
+        {prevText}
+      </span>
+    ) : (
+      <a
+        href={getPageUrl(currentPage - 1)}
+        class="px-4 py-2 text-sm font-medium text-text bg-surface rounded-md hover:bg-primary/10 hover:text-primary transition-colors"
+      >
+        {prevText}
+      </a>
+    )}
+    
+    {/* Page Numbers */}
+    {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+      <a
+        href={getPageUrl(page)}
+        class:list={[
+          "px-4 py-2 text-sm font-medium rounded-md transition-colors",
+          page === currentPage
+            ? "bg-primary text-white"
+            : "bg-surface text-text-muted hover:bg-primary/10 hover:text-primary"
+        ]}
+        aria-current={page === currentPage ? "page" : undefined}
+      >
+        {page}
+      </a>
+    ))}
+    
+    {/* Next Button */}
+    {isNextDisabled ? (
+      <span class="px-4 py-2 text-sm font-medium text-text-muted bg-surface rounded-md cursor-not-allowed">
+        {nextText}
+      </span>
+    ) : (
+      <a
+        href={getPageUrl(currentPage + 1)}
+        class="px-4 py-2 text-sm font-medium text-text bg-surface rounded-md hover:bg-primary/10 hover:text-primary transition-colors"
+      >
+        {nextText}
+      </a>
+    )}
+  </nav>
+)}

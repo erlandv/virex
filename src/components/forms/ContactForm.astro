@@ -1,0 +1,352 @@
+---
+/**
+ * ContactForm - Contact form with validation and multiple backend support
+ *
+ * @description
+ * A fully-featured contact form with client-side validation, loading states,
+ * and success/error feedback. Supports Netlify Forms, Formspree, and custom endpoints.
+ * Runs in demo mode (simulates success) when no action URL is provided.
+ *
+ * @example Demo mode (no backend)
+ * ```astro
+ * <ContactForm />
+ * ```
+ *
+ * @example Netlify Forms
+ * ```astro
+ * <ContactForm netlify formName="contact" />
+ * ```
+ *
+ * @example Custom endpoint
+ * ```astro
+ * <ContactForm action="https://api.example.com/contact" method="POST" />
+ * ```
+ */
+
+interface Props {
+  /** Form action URL - leave empty for client-side only demo */
+  action?: string;
+  /** HTTP method for form submission */
+  method?: 'POST' | 'GET';
+  /** Enable Netlify Forms integration */
+  netlify?: boolean;
+  /** Form name for Netlify Forms */
+  formName?: string;
+}
+
+const { 
+  action = '', 
+  method = 'POST',
+  netlify = false,
+  formName = 'contact'
+} = Astro.props;
+---
+
+<form 
+  id="contact-form"
+  action={action}
+  method={method}
+  class="space-y-6"
+  data-netlify={netlify ? "true" : undefined}
+  name={netlify ? formName : undefined}
+  novalidate
+>
+  <!-- Honeypot field for spam protection -->
+  <div class="hidden" aria-hidden="true">
+    <label>
+      Don't fill this out if you're human:
+      <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" />
+    </label>
+  </div>
+
+  <!-- Netlify hidden field -->
+  {netlify && <input type="hidden" name="form-name" value={formName} />}
+
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+    <div>
+      <label for="firstName" class="block text-sm font-medium text-text mb-2">
+        First name <span class="text-red-500">*</span>
+      </label>
+      <input
+        type="text"
+        id="firstName"
+        name="firstName"
+        required
+        minlength="2"
+        class="w-full px-4 py-3 rounded-md border border-border bg-background text-text placeholder-text-muted focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-colors"
+        placeholder="Jane"
+      />
+      <p class="mt-1 text-sm text-red-500 hidden" data-error="firstName"></p>
+    </div>
+    <div>
+      <label for="lastName" class="block text-sm font-medium text-text mb-2">
+        Last name <span class="text-red-500">*</span>
+      </label>
+      <input
+        type="text"
+        id="lastName"
+        name="lastName"
+        required
+        minlength="2"
+        class="w-full px-4 py-3 rounded-md border border-border bg-background text-text placeholder-text-muted focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-colors"
+        placeholder="Doe"
+      />
+      <p class="mt-1 text-sm text-red-500 hidden" data-error="lastName"></p>
+    </div>
+  </div>
+
+  <div>
+    <label for="email" class="block text-sm font-medium text-text mb-2">
+      Email <span class="text-red-500">*</span>
+    </label>
+    <input
+      type="email"
+      id="email"
+      name="email"
+      required
+      class="w-full px-4 py-3 rounded-md border border-border bg-background text-text placeholder-text-muted focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-colors"
+      placeholder="jane@example.com"
+    />
+    <p class="mt-1 text-sm text-red-500 hidden" data-error="email"></p>
+  </div>
+
+  <div>
+    <label for="subject" class="block text-sm font-medium text-text mb-2">
+      Subject <span class="text-red-500">*</span>
+    </label>
+    <div class="relative">
+      <select
+        id="subject"
+        name="subject"
+        required
+        class="w-full px-4 py-3 pr-10 rounded-md border border-border bg-background text-text focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-colors appearance-none cursor-pointer"
+      >
+        <option value="">Select a topic</option>
+        <option value="general">General inquiry</option>
+        <option value="sales">Sales & pricing</option>
+        <option value="support">Technical support</option>
+        <option value="enterprise">Enterprise solutions</option>
+        <option value="partnership">Partnership opportunities</option>
+      </select>
+      <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-text-muted">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+        </svg>
+      </div>
+    </div>
+    <p class="mt-1 text-sm text-red-500 hidden" data-error="subject"></p>
+  </div>
+
+  <div>
+    <label for="message" class="block text-sm font-medium text-text mb-2">
+      Message <span class="text-red-500">*</span>
+    </label>
+    <textarea
+      id="message"
+      name="message"
+      rows="5"
+      required
+      minlength="10"
+      class="w-full px-4 py-3 rounded-md border border-border bg-background text-text placeholder-text-muted focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent resize-none transition-colors"
+      placeholder="Tell us how we can help..."
+    ></textarea>
+    <p class="mt-1 text-sm text-red-500 hidden" data-error="message"></p>
+  </div>
+
+  <!-- Form status messages -->
+  <div id="form-status" class="hidden">
+    <div id="form-success" class="hidden p-4 rounded-md bg-green-100 dark:bg-green-950 border border-green-300 dark:border-green-800">
+      <p class="text-green-900 dark:text-green-100 font-medium">Message sent successfully!</p>
+      <p class="text-green-800 dark:text-green-300 text-sm mt-1">We'll get back to you within 24 hours.</p>
+    </div>
+    <div id="form-error" class="hidden p-4 rounded-md bg-red-100 dark:bg-red-950 border border-red-300 dark:border-red-800">
+      <p class="text-red-900 dark:text-red-100 font-medium">Something went wrong</p>
+      <p class="text-red-800 dark:text-red-300 text-sm mt-1">Please try again or contact us directly via email.</p>
+    </div>
+  </div>
+
+  <div class="flex flex-col sm:flex-row sm:items-center gap-4">
+    <button
+      type="submit"
+      id="submit-button"
+      class="w-full sm:w-auto px-6 py-3 rounded-md bg-primary text-white font-medium hover:bg-primary-dark transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+    >
+      <span id="button-text">Send Message</span>
+      <span id="button-loading" class="hidden">
+        <svg class="animate-spin inline-block w-5 h-5 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+        Sending...
+      </span>
+    </button>
+    <p class="text-sm text-text-muted">
+      <span class="text-red-500">*</span> Required fields
+    </p>
+  </div>
+</form>
+
+<script>
+  const form = document.getElementById('contact-form') as HTMLFormElement;
+  const submitButton = document.getElementById('submit-button') as HTMLButtonElement;
+  const buttonText = document.getElementById('button-text');
+  const buttonLoading = document.getElementById('button-loading');
+  const formStatus = document.getElementById('form-status');
+  const formSuccess = document.getElementById('form-success');
+  const formError = document.getElementById('form-error');
+
+  // Validation rules
+  const validationRules: Record<string, (value: string) => string | null> = {
+    firstName: (value) => {
+      if (!value.trim()) return 'First name is required';
+      if (value.trim().length < 2) return 'First name must be at least 2 characters';
+      return null;
+    },
+    lastName: (value) => {
+      if (!value.trim()) return 'Last name is required';
+      if (value.trim().length < 2) return 'Last name must be at least 2 characters';
+      return null;
+    },
+    email: (value) => {
+      if (!value.trim()) return 'Email is required';
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(value)) return 'Please enter a valid email address';
+      return null;
+    },
+    subject: (value) => {
+      if (!value) return 'Please select a subject';
+      return null;
+    },
+    message: (value) => {
+      if (!value.trim()) return 'Message is required';
+      if (value.trim().length < 10) return 'Message must be at least 10 characters';
+      return null;
+    },
+  };
+
+  // Show/hide error message
+  function showError(fieldName: string, message: string | null) {
+    const errorEl = document.querySelector(`[data-error="${fieldName}"]`);
+    const inputEl = document.getElementById(fieldName);
+    
+    if (errorEl && inputEl) {
+      if (message) {
+        errorEl.textContent = message;
+        errorEl.classList.remove('hidden');
+        inputEl.classList.add('border-red-500');
+        inputEl.classList.remove('border-border');
+      } else {
+        errorEl.classList.add('hidden');
+        inputEl.classList.remove('border-red-500');
+        inputEl.classList.add('border-border');
+      }
+    }
+  }
+
+  // Validate single field
+  function validateField(fieldName: string): boolean {
+    const input = form.elements.namedItem(fieldName) as HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
+    if (!input || !validationRules[fieldName]) return true;
+    
+    const error = validationRules[fieldName](input.value);
+    showError(fieldName, error);
+    return !error;
+  }
+
+  // Validate all fields
+  function validateForm(): boolean {
+    let isValid = true;
+    for (const fieldName of Object.keys(validationRules)) {
+      if (!validateField(fieldName)) {
+        isValid = false;
+      }
+    }
+    return isValid;
+  }
+
+  // Real-time validation on blur
+  for (const fieldName of Object.keys(validationRules)) {
+    const input = form.elements.namedItem(fieldName) as HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement | null;
+    if (input && 'addEventListener' in input) {
+      input.addEventListener('blur', () => validateField(fieldName));
+      input.addEventListener('input', () => {
+        // Clear error on input if field was previously invalid
+        const errorEl = document.querySelector(`[data-error="${fieldName}"]`);
+        if (errorEl && !errorEl.classList.contains('hidden')) {
+          validateField(fieldName);
+        }
+      });
+    }
+  }
+
+  // Form submission
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    // Hide previous status messages
+    formStatus?.classList.add('hidden');
+    formSuccess?.classList.add('hidden');
+    formError?.classList.add('hidden');
+
+    // Validate form
+    if (!validateForm()) {
+      // Focus first invalid field
+      const firstError = form.querySelector('.border-red-500') as HTMLElement;
+      firstError?.focus();
+      return;
+    }
+
+    // Show loading state
+    submitButton.disabled = true;
+    buttonText?.classList.add('hidden');
+    buttonLoading?.classList.remove('hidden');
+
+    const formData = new FormData(form);
+    const action = form.action;
+
+    try {
+      // If no action URL, simulate success (demo mode)
+      if (!action) {
+        await new Promise(resolve => setTimeout(resolve, 1500));
+        showSuccess();
+        return;
+      }
+
+      // Submit to actual endpoint
+      const response = await fetch(action, {
+        method: form.method || 'POST',
+        body: formData,
+        headers: {
+          'Accept': 'application/json',
+        },
+      });
+
+      if (response.ok) {
+        showSuccess();
+      } else {
+        showErrorState();
+      }
+    } catch {
+      showErrorState();
+    }
+  });
+
+  function showSuccess() {
+    formStatus?.classList.remove('hidden');
+    formSuccess?.classList.remove('hidden');
+    form.reset();
+    resetButtonState();
+  }
+
+  function showErrorState() {
+    formStatus?.classList.remove('hidden');
+    formError?.classList.remove('hidden');
+    resetButtonState();
+  }
+
+  function resetButtonState() {
+    submitButton.disabled = false;
+    buttonText?.classList.remove('hidden');
+    buttonLoading?.classList.add('hidden');
+  }
+</script>

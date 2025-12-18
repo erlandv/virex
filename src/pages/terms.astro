@@ -1,0 +1,196 @@
+---
+import MarketingLayout from '../layouts/MarketingLayout.astro';
+import { siteConfig } from '@/config';
+
+const { legal, contact } = siteConfig;
+const fullAddress = `${contact.address.street}, ${contact.address.city}, ${contact.address.state} ${contact.address.zip}`;
+---
+
+<MarketingLayout 
+  title={`Terms of Service - ${siteConfig.name}`}
+  description={`Terms of Service for ${siteConfig.name}. Please read these terms carefully before using our services.`}
+>
+  <section class="py-section">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+      <header class="mb-12">
+        <h1 class="text-4xl font-bold text-text">Terms of Service</h1>
+        <p class="mt-4 text-text-muted">Last updated: {legal.lastUpdated}</p>
+      </header>
+
+      <div class="prose prose-lg max-w-none dark:prose-invert">
+        <p>
+          Welcome to {siteConfig.name}. These Terms of Service ("Terms") govern your access to and use of 
+          our website, products, and services ("Services"). By accessing or using our Services, you agree 
+          to be bound by these Terms.
+        </p>
+
+        <h2>1. Acceptance of Terms</h2>
+        <p>
+          By creating an account or using our Services, you confirm that you are at least 18 years old 
+          (or the age of majority in your jurisdiction) and have the legal capacity to enter into these Terms. 
+          If you are using our Services on behalf of an organization, you represent that you have the authority 
+          to bind that organization to these Terms.
+        </p>
+
+        <h2>2. Account Registration</h2>
+        <p>To access certain features of our Services, you must create an account. You agree to:</p>
+        <ul>
+          <li>Provide accurate, current, and complete information during registration</li>
+          <li>Maintain and promptly update your account information</li>
+          <li>Keep your password secure and confidential</li>
+          <li>Accept responsibility for all activities that occur under your account</li>
+          <li>Notify us immediately of any unauthorized use of your account</li>
+        </ul>
+        <p>
+          We reserve the right to suspend or terminate accounts that violate these Terms or for any other 
+          reason at our sole discretion.
+        </p>
+
+        <h2>3. Acceptable Use</h2>
+        <p>You agree not to use our Services to:</p>
+        <ul>
+          <li>Violate any applicable laws, regulations, or third-party rights</li>
+          <li>Upload or transmit malicious code, viruses, or harmful content</li>
+          <li>Attempt to gain unauthorized access to our systems or other users' accounts</li>
+          <li>Interfere with or disrupt the integrity or performance of our Services</li>
+          <li>Engage in any activity that could damage, disable, or impair our Services</li>
+          <li>Use our Services for any illegal, fraudulent, or harmful purpose</li>
+          <li>Scrape, crawl, or use automated means to access our Services without permission</li>
+          <li>Resell or redistribute our Services without authorization</li>
+        </ul>
+
+        <h2>4. Subscription and Payments</h2>
+        <h3>Billing</h3>
+        <p>
+          Paid subscriptions are billed in advance on a monthly or annual basis. You authorize us to charge 
+          your payment method for all fees associated with your subscription.
+        </p>
+        
+        <h3>Price Changes</h3>
+        <p>
+          We may change our prices at any time. Price changes will take effect at the start of your next 
+          billing cycle. We will provide reasonable notice of any price changes.
+        </p>
+        
+        <h3>Refunds</h3>
+        <p>
+          We offer a 30-day money-back guarantee for new subscriptions. After this period, payments are 
+          non-refundable except as required by law. You may cancel your subscription at any time, and 
+          you will continue to have access until the end of your current billing period.
+        </p>
+
+        <h2>5. Intellectual Property</h2>
+        <h3>Our Content</h3>
+        <p>
+          Our Services and all associated content, features, and functionality (including but not limited to 
+          text, graphics, logos, and software) are owned by {siteConfig.name} and are protected by copyright, 
+          trademark, and other intellectual property laws.
+        </p>
+        
+        <h3>Your Content</h3>
+        <p>
+          You retain ownership of any content you upload or create using our Services ("Your Content"). 
+          By uploading Your Content, you grant us a worldwide, non-exclusive, royalty-free license to use, 
+          store, and display Your Content solely for the purpose of providing our Services to you.
+        </p>
+        
+        <h3>Feedback</h3>
+        <p>
+          If you provide us with feedback, suggestions, or ideas, you grant us the right to use such 
+          feedback without restriction or compensation to you.
+        </p>
+
+        <h2>6. Service Availability</h2>
+        <p>
+          We strive to maintain high availability of our Services but do not guarantee uninterrupted access. 
+          We may temporarily suspend access for maintenance, updates, or circumstances beyond our control. 
+          We will make reasonable efforts to provide advance notice of planned maintenance.
+        </p>
+
+        <h2>7. Data and Privacy</h2>
+        <p>
+          Your use of our Services is also governed by our <a href="/privacy">Privacy Policy</a>, which 
+          describes how we collect, use, and protect your personal information. By using our Services, 
+          you consent to our data practices as described in the Privacy Policy.
+        </p>
+
+        <h2>8. Third-Party Services</h2>
+        <p>
+          Our Services may integrate with or contain links to third-party services. We are not responsible 
+          for the content, privacy practices, or terms of these third-party services. Your use of third-party 
+          services is at your own risk.
+        </p>
+
+        <h2>9. Disclaimer of Warranties</h2>
+        <p>
+          OUR SERVICES ARE PROVIDED "AS IS" AND "AS AVAILABLE" WITHOUT WARRANTIES OF ANY KIND, EITHER 
+          EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS 
+          FOR A PARTICULAR PURPOSE, AND NON-INFRINGEMENT. WE DO NOT WARRANT THAT OUR SERVICES WILL BE 
+          UNINTERRUPTED, ERROR-FREE, OR COMPLETELY SECURE.
+        </p>
+
+        <h2>10. Limitation of Liability</h2>
+        <p>
+          TO THE MAXIMUM EXTENT PERMITTED BY LAW, {siteConfig.name.toUpperCase()} AND ITS AFFILIATES, OFFICERS, 
+          DIRECTORS, EMPLOYEES, AND AGENTS SHALL NOT BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, 
+          CONSEQUENTIAL, OR PUNITIVE DAMAGES, INCLUDING BUT NOT LIMITED TO LOSS OF PROFITS, DATA, OR 
+          GOODWILL, ARISING OUT OF OR RELATED TO YOUR USE OF OUR SERVICES.
+        </p>
+        <p>
+          OUR TOTAL LIABILITY FOR ANY CLAIMS ARISING FROM THESE TERMS OR YOUR USE OF OUR SERVICES SHALL 
+          NOT EXCEED THE AMOUNT YOU PAID US IN THE TWELVE (12) MONTHS PRECEDING THE CLAIM.
+        </p>
+
+        <h2>11. Indemnification</h2>
+        <p>
+          You agree to indemnify, defend, and hold harmless {siteConfig.name} and its affiliates from any 
+          claims, damages, losses, and expenses (including reasonable attorney's fees) arising from your 
+          use of our Services, your violation of these Terms, or your violation of any third-party rights.
+        </p>
+
+        <h2>12. Termination</h2>
+        <p>
+          You may terminate your account at any time by contacting us or using the account settings. 
+          We may terminate or suspend your access to our Services immediately, without prior notice, 
+          for any reason, including breach of these Terms.
+        </p>
+        <p>
+          Upon termination, your right to use our Services will cease immediately. Provisions of these 
+          Terms that by their nature should survive termination will survive, including ownership provisions, 
+          warranty disclaimers, and limitations of liability.
+        </p>
+
+        <h2>13. Governing Law</h2>
+        <p>
+          These Terms shall be governed by and construed in accordance with the laws of the State of 
+          {contact.address.state === "CA" ? "California" : contact.address.state}, {contact.address.country}, without regard to its conflict of law provisions. Any disputes 
+          arising from these Terms shall be resolved in the courts located in {contact.address.city}, {contact.address.state === "CA" ? "California" : contact.address.state}.
+        </p>
+
+        <h2>14. Changes to Terms</h2>
+        <p>
+          We reserve the right to modify these Terms at any time. We will notify you of material changes 
+          by posting the updated Terms on our website and updating the "Last updated" date. Your continued 
+          use of our Services after such changes constitutes acceptance of the new Terms.
+        </p>
+
+        <h2>15. General Provisions</h2>
+        <ul>
+          <li><strong>Entire Agreement:</strong> These Terms constitute the entire agreement between you and {siteConfig.name} regarding our Services.</li>
+          <li><strong>Severability:</strong> If any provision of these Terms is found to be unenforceable, the remaining provisions will continue in effect.</li>
+          <li><strong>Waiver:</strong> Our failure to enforce any right or provision of these Terms will not be considered a waiver of those rights.</li>
+          <li><strong>Assignment:</strong> You may not assign or transfer these Terms without our prior written consent.</li>
+        </ul>
+
+        <h2>Contact Us</h2>
+        <p>
+          If you have any questions about these Terms of Service, please contact us at:
+        </p>
+        <ul>
+          <li>Email: {legal.legalEmail}</li>
+          <li>Address: {fullAddress}</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+</MarketingLayout>

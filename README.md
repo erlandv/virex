@@ -1,229 +1,93 @@
-# Astro SaaS Landing Theme
+# Virex - SaaS Landing Page Theme for Astro
 
-> **Role & Goal**
-> You are an expert Astro theme author and product-minded frontend engineer.
-> Your task is to build a **production-ready SaaS Landing Page Theme for Astro** that is suitable to be sold as a paid theme.
+[![Built with Astro](https://astro.badg.es/v2/built-with-astro/tiny.svg)](https://astro.build)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-This is **not** a demo or tutorial project.
-This is a **market-ready theme** focused on performance, developer experience, and clarity.
+A production-ready SaaS landing page theme for Astro. Built for those who want to launch marketing sites quickly. It focuses on simplicity and performance, making it effortless to customize and extend.
 
-***
+## Demo
 
-## 🧠 Product Requirements
+![Light Mode](./screenshots/light-mode.webp)
+![Dark Mode](./screenshots/dark-mode.webp)
 
-### Target users
+**Live Demo**: [https://virex.erland.me](https://virex.erland.me)
 
-* Indie hackers
-* SaaS founders
-* Developers building marketing sites
-* Small startups
+## Features
 
-### Core goals
+- **Astro 5** with TypeScript and Tailwind CSS v4
+- **Content Collections** for blog, docs, changelog, and testimonials
+- **Blog** with pagination, tag filtering, and reading time
+- **Documentation** with auto-generated sidebar
+- **Design Tokens** for easy brand customization (OKLCH colors)
+- **Dark Mode** with localStorage persistence and system preference detection
+- **SEO Ready** with meta tags, Open Graph, Twitter Cards, JSON-LD, sitemap, and RSS
+- **Feature Flags** to enable/disable sections (blog, docs, changelog, testimonials, roadmap)
+- **Contact Form** with validation and multiple backend support (Netlify, Formspree, custom)
+- **Legal Pages** for privacy policy and terms of service
+- **Accessibility** with focus states, reduced motion support, and semantic HTML
+- **200,000+ Icons** via astro-icon (Lucide + Simple Icons included)
 
-* Fast to install
-* Easy to customize
-* Clean architecture
-* Content-driven (blog, docs, changelog)
-* Excellent default UX without heavy customization
+## Quick Start
 
-***
+```bash
+# Clone the repository
+git clone https://github.com/erlandv/virex.git
+cd virex
 
-## 🧱 Tech Stack
+# Install dependencies
+npm install
 
-* Astro (latest stable)
-* Astro Content Collections
-* TypeScript
-* Tailwind CSS v4
-* MDX support for blog & docs
-* No React/Vue/Svelte unless strictly necessary
+# Start development server
+npm run dev
+```
 
-***
+Open [http://localhost:4321](http://localhost:4321) to see your site.
 
-## 📁 Project Structure (MANDATORY)
+## Documentation
+
+Full documentation is available in the [`docs/`](./docs/) folder:
+
+1. [Getting Started](./docs/01-getting-started.md) - Installation and project structure
+2. [Configuration](./docs/02-configuration.md) - Site settings and feature flags
+3. [Customization](./docs/03-customization.md) - Design tokens, logo, and branding
+4. [Content Guide](./docs/04-content-guide.md) - Blog, docs, changelog, testimonials
+5. [Components](./docs/05-components.md) - Icons, forms, and UI components
+6. [Pages](./docs/06-pages.md) - Available pages and routing
+7. [Deployment](./docs/07-deployment.md) - Deploy to Vercel, Netlify, Cloudflare
+
+## Project Structure
 
 ```
 src/
-  components/
-  layouts/
-  pages/
-  content/
-  styles/
-  lib/
-public/
-astro.config.mjs
-package.json
-README.md
-
+├── components/     # Reusable UI components
+├── config/         # Site configuration (edit these!)
+├── content/        # Blog, docs, changelog, testimonials (Markdown/MDX)
+├── layouts/        # Page layouts
+├── lib/            # Utilities and types
+├── pages/          # Route pages
+└── styles/         # Design tokens and global styles
 ```
 
-***
+## Configuration
 
-## 📄 Required Pages
+All configuration is centralized in `src/config/`:
 
-Create **fully working pages** with realistic demo content:
+| File | Purpose |
+|------|---------|
+| `site.ts` | Site name, description, URL, social links |
+| `features.ts` | Toggle blog, docs, changelog, testimonials, roadmap |
+| `navigation.ts` | Navbar links |
+| `contact.ts` | Contact information and methods |
+| `content.ts` | Announcement bar and newsletter text |
 
-### Marketing
+## Scripts
 
-* `/` → Landing page
-* `/features`
-* `/pricing`
-* `/about`
-* `/contact`
+| Command | Description |
+|---------|-------------|
+| `npm run dev` | Start development server at localhost:4321 |
+| `npm run build` | Build for production to `dist/` |
+| `npm run preview` | Preview production build locally |
 
-### Trust & Product
+## License
 
-* `/changelog`
-* `/roadmap`
-* `/testimonials`
-
-### Content
-
-* `/blog/[...slug].astro`
-* `/docs/[...slug].astro`
-
-***
-
-## 📚 Content Collections (REQUIRED)
-
-Define Astro content collections with schemas:
-
-```
-content/
-  blog/
-  docs/
-  changelog/
-  testimonials/
-
-```
-
-Each collection must:
-
-* Have a schema using `zod`
-* Use frontmatter (no JSON hacks)
-* Support drafts
-* Be extensible
-
-***
-
-## 🧩 Layouts
-
-Create **separate layouts** (do NOT merge them):
-
-* `BaseLayout`
-* `MarketingLayout`
-* `BlogLayout`
-* `DocsLayout`
-
-Rules:
-
-* Layouts must be minimal and composable
-* Navbar & Footer must be reusable
-* SEO handled at layout level
-
-***
-
-## 🧱 Components (Minimal but Practical)
-
-Required components:
-
-* `Navbar`
-* `Footer`
-* `Hero`
-* `FeatureGrid`
-* `PricingTable`
-* `CTA`
-* `TestimonialCard`
-* `SEO`
-* `ThemeToggle` (light/dark)
-
-Do NOT over-engineer components.
-Prioritize clarity and flexibility.
-
-***
-
-## 🎨 Styling Rules
-
-* Support **light and dark mode**
-* Use design tokens (colors, spacing, radius)
-* Avoid inline styles
-* Avoid hard-coded brand names
-* Easy to rebrand
-
-***
-
-## ⚙️ Configuration & DX
-
-Create a centralized config file:
-
-```
-src/lib/site.ts
-
-```
-
-It must include:
-
-* Site name
-* Description
-* Social links
-* Feature flags (blog, docs, etc.)
-
-Developers should be able to:
-
-* Rebrand the site by editing ONE file
-* Enable/disable sections easily
-
-***
-
-## 🔍 SEO & Performance (MANDATORY)
-
-* Meta tags
-* Open Graph
-* Canonical URLs
-* Sitemap support
-* RSS feed for blog
-* Optimized images
-
-This is a **selling point**, not optional.
-
-***
-
-## 📝 Demo Content Guidelines
-
-* NO lorem ipsum
-* Use realistic SaaS copy
-* Treat demo content as if it were a real startup
-* Content should make sense end-to-end
-
-***
-
-## 📖 Documentation
-
-Generate a **README.md** that includes:
-
-* Installation
-* Project structure
-* Content editing guide
-* Deployment tips
-* Customization guide
-
-***
-
-## ❌ Do NOT
-
-* Do not include framework lock-in
-* Do not add unnecessary dependencies
-* Do not hardcode branding
-* Do not treat this as a tutorial
-
-***
-
-## ✅ Final Output Expectation
-
-Deliver a **complete Astro theme project** that:
-
-* Can be installed and deployed immediately
-* Looks professional out of the box
-* Feels like a real SaaS product
-* Is suitable for sale on Astro Themes marketplaces
-
-Think like a **theme seller**, not a demo builder.
+Virex is free for personal and commercial use under the [MIT License](./LICENSE). A link back to this repo is appreciated but not required.

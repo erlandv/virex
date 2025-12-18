@@ -1,0 +1,17 @@
+---
+import ErrorLayout from '../layouts/ErrorLayout.astro';
+import ErrorPage from '../components/error/ErrorPage.astro';
+
+Astro.response.status = 500;
+---
+
+<ErrorLayout
+  title="Server Error"
+  description="Something went wrong on our end."
+>
+  <ErrorPage
+    code={500}
+    title="Server Error"
+    message="Something went wrong on our end. We're working to fix it. Please try again later."
+  />
+</ErrorLayout>
