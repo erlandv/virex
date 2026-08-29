@@ -1,67 +1,25 @@
 ---
 /**
- * PricingTable - Pricing plans with monthly/annual toggle
- *
- * @description
- * Displays pricing plans in a responsive grid with a billing period toggle.
- * Supports monthly/annual pricing with discount indicator, highlighting
- * a recommended plan, and customizable CTAs.
- *
- * @example Basic usage
- * ```astro
- * <PricingTable
- *   title="Simple, transparent pricing"
- *   subtitle="Start free and scale as you grow."
- *   plans={[...]}
- * />
- * ```
- *
- * @example With footer link
- * ```astro
- * <PricingTable
- *   title="Pricing"
- *   plans={[...]}
- *   footerLink={{ label: "View full pricing →", href: "/pricing" }}
- * />
- * ```
+ * PricingTable - 優化後的個人著作展示版
+ * 移除訂閱切換邏輯與 /month 時間標籤
  */
-
 import { Icon } from 'astro-icon/components';
 
-/** Individual pricing plan configuration */
 interface PricingPlan {
-  /** Plan name (e.g., "Free", "Pro", "Enterprise") */
   name: string;
-  /** Monthly price in dollars (null for custom pricing) */
   monthlyPrice: number | null;
-  /** Custom price text for enterprise plans (e.g., "Custom", "Contact us") */
   customPrice?: string;
-  /** Short description of the plan */
   description: string;
-  /** List of features included in the plan */
   features: string[];
-  /** Whether to highlight this plan as recommended */
   highlighted?: boolean;
-  /** Badge text override (default: "Most Popular" for highlighted) */
   badge?: string;
-  /** Call-to-action button configuration */
   cta: { label: string; href: string };
 }
 
 interface Props {
-  /** Optional section heading title */
   title?: string;
-  /** Optional section subtitle/description */
   subtitle?: string;
-  /** Array of pricing plans to display */
   plans: PricingPlan[];
-  /** Annual discount percentage (e.g., 20 for 20% off) */
-  annualDiscount?: number;
-  /** Default billing period */
-  defaultPeriod?: 'monthly' | 'annual';
-  /** Optional footer link for "View full pricing" etc. */
-  footerLink?: { label: string; href: string };
-  /** Section background style */
   background?: 'default' | 'muted' | 'accent';
 }
 
@@ -69,9 +27,6 @@ const {
   title,
   subtitle,
   plans,
-  annualDiscount = 20,
-  defaultPeriod = 'monthly',
-  footerLink,
   background = 'default',
 } = Astro.props;
 
@@ -83,13 +38,7 @@ const bgClass = {
   accent: 'bg-primary/5',
 }[background];
 
-// Calculate annual prices with discount
-function getAnnualPrice(monthlyPrice: number): number {
-  const yearlyTotal = monthlyPrice * 12;
-  const discountedTotal = yearlyTotal * (1 - annualDiscount / 100);
-  return Math.round(discountedTotal / 12);
-}
-
+// 格式化價格：在這裡我們讓它只回傳 $0 或空字串，因為我們主要用 customPrice
 function formatPrice(price: number): string {
   return price === 0 ? '$0' : `$${price}`;
 }
@@ -107,60 +56,10 @@ function formatPrice(price: number): string {
       )
     }
 
-    <!-- Billing Toggle -->
-    <div class="flex justify-center mb-12">
-      <div class="inline-flex items-center gap-3 p-1.5 bg-surface border border-border rounded-lg">
-        <button
-          type="button"
-          data-period="monthly"
-          class:list={[
-            'pricing-toggle-btn cursor-pointer px-4 py-2 text-sm font-medium rounded-md transition-all',
-            defaultPeriod === 'monthly'
-              ? 'bg-primary text-white shadow-sm'
-              : 'text-text-muted hover:text-text',
-          ]}
-          aria-pressed={defaultPeriod === 'monthly'}
-        >
-          Monthly
-        </button>
-        <button
-          type="button"
-          data-period="annual"
-          class:list={[
-            'pricing-toggle-btn cursor-pointer px-4 py-2 text-sm font-medium rounded-md transition-all flex items-center gap-2',
-            defaultPeriod === 'annual'
-              ? 'bg-primary text-white shadow-sm'
-              : 'text-text-muted hover:text-text',
-          ]}
-          aria-pressed={defaultPeriod === 'annual'}
-        >
-          Annual
-          {
-            annualDiscount > 0 && (
-              <span
-                class:list={[
-                  'text-xs px-1.5 py-0.5 rounded-full font-semibold',
-                  defaultPeriod === 'annual'
-                    ? 'bg-white/20 text-white'
-                    : 'bg-primary/10 text-primary',
-                ]}
-              >
-                -{annualDiscount}%
-              </span>
-            )
-          }
-        </button>
-      </div>
-    </div>
-
-    <!-- Pricing Cards -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="pricing-cards">
       {
         plans.map((plan) => {
-          const hasNumericPrice = plan.monthlyPrice !== null;
-          const monthlyPrice = plan.monthlyPrice ?? 0;
-          const annualPrice = hasNumericPrice ? getAnnualPrice(monthlyPrice) : 0;
-          const badgeText = plan.badge || (plan.highlighted ? 'Most Popular' : null);
+          const badgeText = plan.badge || (plan.highlighted ? '精選推薦' : null);
 
           return (
             <div
@@ -170,9 +69,6 @@ function formatPrice(price: number): string {
                   ? 'bg-primary/5 border-primary shadow-lg scale-[1.02]'
                   : 'bg-surface border-border hover:border-primary/50 hover:shadow-md',
               ]}
-              data-monthly-price={hasNumericPrice ? monthlyPrice : ''}
-              data-annual-price={hasNumericPrice ? annualPrice : ''}
-              data-custom-price={plan.customPrice || ''}
             >
               {badgeText && (
                 <div class="absolute -top-3 left-1/2 -translate-x-1/2">
@@ -187,47 +83,12 @@ function formatPrice(price: number): string {
                 <p class="mt-2 text-text-muted text-sm">{plan.description}</p>
 
                 <div class="mt-6 min-h-18 flex flex-col justify-center">
-                  {hasNumericPrice ? (
-                    <>
-                      {/* Monthly Price Display */}
-                      <div
-                        class:list={['price-display', defaultPeriod === 'monthly' ? '' : 'hidden']}
-                        data-period="monthly"
-                      >
-                        <span class="text-4xl font-bold text-text">
-                          {formatPrice(monthlyPrice)}
-                        </span>
-                        <span class="text-text-muted">/month</span>
-                      </div>
-
-                      {/* Annual Price Display */}
-                      <div
-                        class:list={['price-display', defaultPeriod === 'annual' ? '' : 'hidden']}
-                        data-period="annual"
-                      >
-                        <span class="text-4xl font-bold text-text">{formatPrice(annualPrice)}</span>
-                        <span class="text-text-muted">/month</span>
-                        {monthlyPrice > 0 && (
-                          <div class="mt-1">
-                            <span class="text-xs text-text-muted line-through mr-2">
-                              {formatPrice(monthlyPrice)}/mo
-                            </span>
-                            <span class="text-xs text-primary font-medium">
-                              Save {formatPrice((monthlyPrice - annualPrice) * 12)}
-                              /year
-                            </span>
-                          </div>
-                        )}
-                      </div>
-                    </>
-                  ) : (
-                    <div class="price-display">
-                      <span class="text-4xl font-bold text-text">
-                        {plan.customPrice || 'Custom'}
-                      </span>
-                      <span class="text-text-muted">/month</span>
-                    </div>
-                  )}
+                  <div class="price-display">
+                    {/* 關鍵修改：只顯示 customPrice，並移除所有 /month */}
+                    <span class="text-3xl font-bold text-text">
+                      {plan.customPrice || (plan.monthlyPrice !== null ? formatPrice(plan.monthlyPrice) : '精選')}
+                    </span>
+                  </div>
                 </div>
               </div>
 
@@ -235,7 +96,7 @@ function formatPrice(price: number): string {
                 {plan.features.map((feature) => (
                   <li class="flex items-start gap-3">
                     <Icon name="lucide:check" class="w-5 h-5 text-primary shrink-0 mt-0.5" />
-                    <span class="text-text-muted">{feature}</span>
+                    <span class="text-text-muted text-sm leading-relaxed">{feature}</span>
                   </li>
                 ))}
               </ul>
@@ -246,7 +107,7 @@ function formatPrice(price: number): string {
                   class:list={[
                     'block w-full text-center px-6 py-3 rounded-md font-medium transition-colors',
                     plan.highlighted
-                      ? 'bg-primary text-white hover:bg-primary-dark'
+                      ? 'bg-primary text-white hover:bg-primary-dark shadow-md'
                       : 'bg-surface border border-border text-text hover:bg-background hover:border-primary/50',
                   ]}
                 >
@@ -258,72 +119,5 @@ function formatPrice(price: number): string {
         })
       }
     </div>
-
-    {/* Footer Link */}
-    {
-      footerLink && (
-        <div class="text-center mt-10">
-          <a
-            href={footerLink.href}
-            class="text-primary hover:text-primary-dark font-medium transition-colors"
-          >
-            {footerLink.label}
-          </a>
-        </div>
-      )
-    }
   </div>
 </section>
-
-<script>
-  function initPricingToggle() {
-    const toggleButtons = document.querySelectorAll('.pricing-toggle-btn');
-    const priceDisplays = document.querySelectorAll('.price-display');
-    const discountBadge = document.querySelector('.pricing-toggle-btn[data-period="annual"] span');
-
-    toggleButtons.forEach((button) => {
-      button.addEventListener('click', () => {
-        const period = button.getAttribute('data-period');
-
-        // Update button states
-        toggleButtons.forEach((btn) => {
-          const isActive = btn.getAttribute('data-period') === period;
-          btn.setAttribute('aria-pressed', String(isActive));
-
-          if (isActive) {
-            btn.classList.add('bg-primary', 'text-white', 'shadow-sm');
-            btn.classList.remove('text-text-muted', 'hover:text-text');
-          } else {
-            btn.classList.remove('bg-primary', 'text-white', 'shadow-sm');
-            btn.classList.add('text-text-muted', 'hover:text-text');
-          }
-        });
-
-        // Update discount badge styling
-        if (discountBadge) {
-          if (period === 'annual') {
-            discountBadge.classList.add('bg-white/20', 'text-white');
-            discountBadge.classList.remove('bg-primary/10', 'text-primary');
-          } else {
-            discountBadge.classList.remove('bg-white/20', 'text-white');
-            discountBadge.classList.add('bg-primary/10', 'text-primary');
-          }
-        }
-
-        // Update price displays
-        priceDisplays.forEach((display) => {
-          const displayPeriod = display.getAttribute('data-period');
-          if (displayPeriod) {
-            display.classList.toggle('hidden', displayPeriod !== period);
-          }
-        });
-      });
-    });
-  }
-
-  // Initialize on page load
-  initPricingToggle();
-
-  // Re-initialize on Astro page transitions (View Transitions)
-  document.addEventListener('astro:page-load', initPricingToggle);
-</script>

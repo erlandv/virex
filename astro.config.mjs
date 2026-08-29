@@ -5,6 +5,8 @@ import icon from 'astro-icon';
 import tailwindcss from '@tailwindcss/vite';
 import { siteConfig } from './src/config';
 
+import cloudflare from "@astrojs/cloudflare";
+
 // Site URL from environment variable with localhost fallback
 const siteUrl = process.env.SITE_URL || 'http://localhost:4321';
 
@@ -28,6 +30,7 @@ function envCheckIntegration() {
 
 export default defineConfig({
   site: siteUrl,
+
   integrations: [
     mdx(),
     icon(),
@@ -47,7 +50,10 @@ export default defineConfig({
       },
     }),
   ],
+
   vite: {
     plugins: [tailwindcss()],
   },
+
+  adapter: cloudflare()
 });

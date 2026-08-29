@@ -1,31 +1,9 @@
 ---
 /**
- * Newsletter - Reusable newsletter subscription section
- *
- * @description
- * A standalone newsletter subscription component that can be placed anywhere
- * on the site. Includes email input, submit button, and configurable messaging.
- * Runs in demo mode by default - integrate with your newsletter service.
- *
- * @example Default (uses config values)
- * ```astro
- * <Newsletter />
- * ```
- *
- * @example Custom content
- * ```astro
- * <Newsletter
- *   title="Join our community"
- *   description="Get weekly tips and updates."
- *   buttonText="Join Now"
- *   variant="compact"
- * />
- * ```
- *
- * @example With custom action endpoint
- * ```astro
- * <Newsletter action="https://api.example.com/subscribe" />
- * ```
+ * Newsletter - 改良為直達 Kit 連結版本
+ * * 修改重點：
+ * 1. 移除輸入信箱的表單，改為大型呼籲按鈕。
+ * 2. 點擊後直接導向 Kit (ConvertKit) 的訂閱頁面。
  */
 import { siteConfig } from '@/config';
 
@@ -34,18 +12,10 @@ interface Props {
   title?: string;
   /** Section description */
   description?: string;
-  /** Input placeholder text */
-  placeholder?: string;
-  /** Submit button text */
+  /** Button text */
   buttonText?: string;
-  /** Success message after subscription */
-  successMessage?: string;
-  /** Error message on failure */
-  errorMessage?: string;
-  /** Privacy note text */
-  privacyNote?: string;
-  /** Form action URL - leave empty for demo mode */
-  action?: string;
+  /** Kit Landing Page URL */
+  kitUrl?: string;
   /** Visual variant */
   variant?: 'default' | 'compact' | 'card';
   /** Section background style */
@@ -54,21 +24,17 @@ interface Props {
 
 const { newsletter } = siteConfig.content;
 
+// 這裡填入你的 Kit 連結
+const DEFAULT_KIT_URL = "https://billy4select.kit.com/profile"; 
+
 const {
-  title = newsletter.title,
-  description = newsletter.description,
-  placeholder = newsletter.placeholder,
-  buttonText = newsletter.buttonText,
-  successMessage = newsletter.successMessage,
-  errorMessage = newsletter.errorMessage,
-  privacyNote = newsletter.privacyNote,
-  action = '',
+  title = "訂閱比利陳的電子報",
+  description = "每週分享 AI 工具實測與行銷判斷力觀點，與你一起建立不可替代的競爭力。",
+  buttonText = "立即訂閱電子報",
+  kitUrl = DEFAULT_KIT_URL,
   variant = 'default',
   background = 'muted',
 } = Astro.props;
-
-// Generate unique ID for this instance
-const formId = `newsletter-form-${Math.random().toString(36).substring(2, 11)}`;
 
 // Background classes
 const bgClass = {
@@ -79,107 +45,38 @@ const bgClass = {
 
 // Variant-specific classes
 const variantClasses = {
-  default: 'py-12',
-  compact: 'py-8',
-  card: 'py-8 rounded-lg border border-border',
+  default: 'py-16',
+  compact: 'py-10',
+  card: 'py-10 rounded-lg border border-border',
 };
 ---
 
 <section class:list={[bgClass, variantClasses[variant]]}>
-  <div
-    class:list={['max-w-7xl mx-auto px-4 sm:px-6 lg:px-8', variant === 'card' && 'px-6 sm:px-8']}
-  >
+  <div class:list={['max-w-7xl mx-auto px-4 sm:px-6 lg:px-8', variant === 'card' && 'px-6 sm:px-8']}>
     <div class="max-w-2xl mx-auto text-center">
-      <h3 class="text-xl font-semibold text-text">{title}</h3>
-      <p class="mt-2 text-sm text-text-muted">
+      <h3 class="text-2xl font-bold text-text sm:text-3xl">{title}</h3>
+      
+      <p class="mt-4 text-base text-text-muted leading-relaxed">
         {description}
       </p>
-      <form
-        id={formId}
-        action={action}
-        method="POST"
-        class="newsletter-form mt-6 flex flex-col sm:flex-row gap-3 max-w-md mx-auto"
-        data-success-message={successMessage}
-        data-error-message={errorMessage}
-      >
-        <label for={`${formId}-email`} class="sr-only">Email address</label>
-        <input
-          type="email"
-          id={`${formId}-email`}
-          name="email"
-          required
-          placeholder={placeholder}
-          class="flex-1 px-4 py-2.5 text-sm rounded-md border border-border bg-background text-text placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-        />
-        <button
-          type="submit"
-          class="px-6 py-2.5 text-sm cursor-pointer font-medium rounded-md bg-primary text-white hover:bg-primary-dark transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background disabled:opacity-50 disabled:cursor-not-allowed"
+
+      <div class="mt-8">
+        <a
+          href={kitUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="inline-flex items-center justify-center px-8 py-4 text-lg font-bold text-white bg-primary rounded-full hover:bg-primary-dark hover:scale-105 transition-all shadow-lg hover:shadow-primary/20"
         >
           {buttonText}
-        </button>
-      </form>
-      <p class="newsletter-message mt-3 text-sm hidden" data-form={formId}></p>
-      {privacyNote && <p class="mt-4 text-xs text-text-muted">{privacyNote}</p>}
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 ml-2" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd" />
+          </svg>
+        </a>
+      </div>
+
+      <p class="mt-4 text-xs text-text-muted">
+        點擊後將開啟新視窗跳轉至 Kit 訂閱頁面
+      </p>
     </div>
   </div>
 </section>
-
-<script>
-  // Handle all newsletter forms on the page
-  document.querySelectorAll('.newsletter-form').forEach((form) => {
-    const formEl = form as HTMLFormElement;
-    const formId = formEl.id;
-    const messageEl = document.querySelector(
-      `.newsletter-message[data-form="${formId}"]`
-    ) as HTMLElement;
-    const emailInput = formEl.querySelector('input[type="email"]') as HTMLInputElement;
-    const submitBtn = formEl.querySelector('button[type="submit"]') as HTMLButtonElement;
-
-    // Get configurable messages from data attributes
-    const successMessage = formEl.dataset.successMessage || 'Thanks for subscribing!';
-    const errorMessage = formEl.dataset.errorMessage || 'Something went wrong. Please try again.';
-
-    formEl.addEventListener('submit', async (e) => {
-      e.preventDefault();
-
-      const email = emailInput?.value;
-      if (!email || !messageEl) return;
-
-      const originalText = submitBtn.textContent;
-      submitBtn.disabled = true;
-      submitBtn.textContent = 'Subscribing...';
-
-      try {
-        const action = formEl.action;
-
-        // If no action URL or same page, simulate success (demo mode)
-        if (!action || action === window.location.href) {
-          await new Promise((resolve) => setTimeout(resolve, 1000));
-        } else {
-          // Submit to actual endpoint
-          const response = await fetch(action, {
-            method: 'POST',
-            body: new FormData(formEl),
-            headers: {
-              Accept: 'application/json',
-            },
-          });
-
-          if (!response.ok) {
-            throw new Error('Subscription failed');
-          }
-        }
-
-        messageEl.textContent = successMessage;
-        messageEl.className = 'newsletter-message mt-3 text-sm text-green-600 dark:text-green-400';
-        emailInput.value = '';
-      } catch {
-        messageEl.textContent = errorMessage;
-        messageEl.className = 'newsletter-message mt-3 text-sm text-red-600 dark:text-red-400';
-      } finally {
-        submitBtn.disabled = false;
-        submitBtn.textContent = originalText;
-      }
-    });
-  });
-</script>

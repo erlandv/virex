@@ -2,19 +2,19 @@
 @plugin "@tailwindcss/typography";
 
 @theme {
-  /* Brand Colors */
-  --color-primary: oklch(0.55 0.2 265);
-  --color-primary-dark: oklch(0.45 0.2 265);
-  --color-secondary: oklch(0.65 0.25 350);
+  /* 品牌顏色 - 已換成亮橘色 */
+  --color-primary: oklch(0.7 0.2 50);        /* 亮橘色 */
+  --color-primary-dark: oklch(0.6 0.2 45);   /* 深橘色（懸停） */
+  --color-secondary: oklch(0.85 0.15 80);    /* 輔助淺黃 */
 
-  /* Semantic Colors */
-  --color-background: oklch(1 0 0);
-  --color-surface: oklch(0.98 0 0);
+  /* 語意顏色 */
+  --color-background: oklch(1 0 0);          /* 白色底色 */
+  --color-surface: oklch(0.98 0.01 50);      /* 淺橘色表面 */
   --color-text: oklch(0.15 0 0);
   --color-text-muted: oklch(0.45 0 0);
   --color-border: oklch(0.9 0 0);
 
-  /* Dashboard Status Colors - Light Mode */
+  /* Dashboard 狀態顏色 - 日間模式 */
   --color-success: oklch(0.45 0.15 145);
   --color-success-bg: oklch(0.95 0.05 145);
   --color-warning: oklch(0.46 0.15 85);
@@ -24,17 +24,17 @@
   --color-info: oklch(0.45 0.15 240);
   --color-info-bg: oklch(0.95 0.05 240);
 
-  /* Spacing */
+  /* 間距 */
   --spacing-section: 6rem;
   --spacing-content: 2rem;
 
-  /* Border Radius */
+  /* 圓角 */
   --radius-sm: 0.375rem;
   --radius-md: 0.5rem;
   --radius-lg: 1rem;
 }
 
-/* Dark mode overrides */
+/* 深色模式覆寫 */
 .dark {
   --color-background: oklch(0.15 0 0);
   --color-surface: oklch(0.2 0 0);
@@ -42,7 +42,10 @@
   --color-text-muted: oklch(0.65 0 0);
   --color-border: oklch(0.3 0 0);
 
-  /* Dashboard Status Colors - Dark Mode */
+  /* 深色模式下的按鈕橘色稍微調亮一點 */
+  --color-primary: oklch(0.75 0.2 55);
+
+  /* Dashboard 狀態顏色 - 深色模式 */
   --color-success: oklch(0.65 0.15 145);
   --color-success-bg: oklch(0.25 0.05 145);
   --color-warning: oklch(0.7 0.15 85);
@@ -53,7 +56,7 @@
   --color-info-bg: oklch(0.25 0.05 240);
 }
 
-/* Base styles */
+/* 基礎樣式 */
 html {
   scroll-behavior: smooth;
 }
@@ -72,7 +75,7 @@ body {
     sans-serif;
 }
 
-/* Typography customizations to match theme */
+/* 排版自定義 */
 .prose {
   --tw-prose-body: var(--color-text);
   --tw-prose-headings: var(--color-text);
@@ -122,31 +125,27 @@ body {
   background-color: var(--color-surface);
 }
 
-/* Accessibility - Enhanced focus states */
+/* 焦點狀態 */
 :focus-visible {
   outline: 2px solid var(--color-primary);
   outline-offset: 2px;
 }
 
-/* Remove default focus outline for mouse users, keep for keyboard */
 :focus:not(:focus-visible) {
   outline: none;
 }
 
-/* Ensure links have visible focus states */
 a:focus-visible {
   outline: 2px solid var(--color-primary);
   outline-offset: 2px;
   border-radius: var(--radius-sm);
 }
 
-/* Button focus states */
 button:focus-visible {
   outline: 2px solid var(--color-primary);
   outline-offset: 2px;
 }
 
-/* Form input focus states */
 input:focus-visible,
 textarea:focus-visible,
 select:focus-visible {
@@ -154,7 +153,7 @@ select:focus-visible {
   outline-offset: 2px;
 }
 
-/* Reduced motion preference */
+/* 減少動態效果設定 */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

@@ -1,0 +1,11 @@
+{
+  "ssg": "astro",
+  "mode": "hosted",
+  "build": {
+    "hugoVersion": "0.157.0",
+    "rubyVersion": "3.4.8",
+    "nodeVersion": "22",
+    "denoVersion": "2.7.1",
+    "output_path": "dist"
+  }
+}

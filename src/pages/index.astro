@@ -1,257 +1,150 @@
 ---
+/**
+ * Index Page - 比利陳個人品牌
+ * 更新重點：
+ * 1. 串接真實讀者見證：自動從 src/content/testimonials 抓取留言。
+ * 2. 標題視覺重塑：強化「運用頂尖 AI 工具...」的權重，解決比重過輕問題。
+ * 3. 著作集模組化：移除所有軟體訂閱相關字眼，轉為專業著作展示。
+ */
 import { getCollection, type CollectionEntry } from 'astro:content';
 import MarketingLayout from '@/layouts/MarketingLayout.astro';
 import Hero from '@sections/marketing/Hero.astro';
 import LogoCloud from '@sections/marketing/LogoCloud.astro';
-import HowItWorks from '@sections/marketing/HowItWorks.astro';
-import FeaturesSection from '@sections/marketing/FeaturesSection.astro';
 import BentoGrid from '@sections/marketing/BentoGrid.astro';
 import PricingTable from '@sections/pricing/PricingTable.astro';
 import TestimonialsSection from '@sections/social-proof/TestimonialsSection.astro';
 import CTA from '@sections/marketing/CTA.astro';
 import Newsletter from '@sections/marketing/Newsletter.astro';
 import { siteConfig } from '@/config';
-import IntegrationsGrid from '@sections/marketing/IntegrationsGrid.astro';
 
 type TestimonialEntry = CollectionEntry<'testimonials'>;
 
+// 抓取真實讀者心得
 const testimonials = await getCollection(
   'testimonials',
   ({ data }: { data: TestimonialEntry['data'] }) => !data.draft
 );
-const sortedTestimonials = [...testimonials].sort(
-  (a: TestimonialEntry, b: TestimonialEntry) => a.data.order - b.data.order
-);
 
-const integrations = [
-  {
-    name: 'GitLab',
-    logo: '/images/integrations/gitlab.svg',
-    category: 'Development',
-    featured: true,
-    description: 'Full CI/CD integration with GitLab repositories.',
-    href: '/integrations',
-  },
-  {
-    name: 'Slack',
-    logo: '/images/integrations/slack.svg',
-    category: 'Communication',
-    featured: true,
-    description: 'Get deployment notifications and alerts in your Slack channels.',
-    href: '/integrations',
-  },
-  {
-    name: 'n8n',
-    logo: '/images/integrations/n8n.svg',
-    category: 'Automation',
-    featured: true,
-    description: 'Workflow automation with n8n integrations.',
-    href: '/integrations',
-  },
-];
+// 依照 order 排序，並將 featured 置前
+const sortedTestimonials = [...testimonials].sort((a, b) => {
+  if (a.data.featured !== b.data.featured) {
+    return a.data.featured ? -1 : 1;
+  }
+  return (a.data.order || 99) - (b.data.order || 99);
+});
 
-const featuredIntegrations = integrations.filter((i) => i.featured);
-
+/** Bento Grid：首頁導覽區塊 */
 const bentoItems = [
   {
-    title: 'Preview Deployments',
-    description:
-      'Every PR gets its own preview URL. Share with your team and get feedback before merging.',
-    icon: 'lucide:eye',
+    title: '行銷判斷力觀點',
+    description: '行銷不是廣告，是商業決策的視覺化。 從 PM 思維到整合行銷，這裡拆解的是真正影響銷量和品牌的關鍵判斷。',
+    icon: 'lucide:brain',
     size: 'large' as const,
     accent: 'primary' as const,
-    href: '/docs/previews',
+    href: '/blog/marketing',
   },
   {
-    title: 'Instant Rollbacks',
-    description: 'One-click rollback to any previous deployment.',
-    icon: 'lucide:history',
+    title: 'AI 工作流實踐',
+    description: '工具越來越便宜，但判斷力沒辦法外包。這裡談的是在 AI 浪潮下，如何用整合思維做決策，讓 AI 放大你的執行力，而不是替代你的判斷。',
+    icon: 'lucide:zap',
     accent: 'blue' as const,
-    href: '/docs/rollback',
+    href: '/blog/ai',
   },
   {
-    title: 'Edge Caching',
-    description: 'Smart caching at 200+ edge locations worldwide.',
-    icon: 'lucide:database',
+    title: '個人品牌資產化',
+    description: '不是追演算法，是建立商業邏輯。 從定位、內容到信任累積，只有自己走過才知道哪些方法真的有用，哪些只是讓你看起來很忙。',
+    icon: 'lucide:trending-up',
     accent: 'green' as const,
-    href: '/docs/edge-network',
+    href: '/blog/branding',
   },
   {
-    title: 'Team Collaboration',
-    description:
-      'Role-based access, deployment comments, and audit logs for your entire organization.',
-    icon: 'lucide:users',
+    title: '閱讀更多文章 →',
+    description: '瀏覽所有關於行銷與職場思維的深度好文。',
+    icon: 'lucide:arrow-right',
     size: 'medium' as const,
     accent: 'purple' as const,
-    href: '/docs/teams',
+    href: '/blog',
   },
 ];
 
-const features = [
+/** 個人著作集配置 */
+const ebookCollections = [
   {
-    icon: 'lucide:zap',
-    title: 'Lightning Fast Deploys',
-    description:
-      'Push to deploy in seconds, not minutes. Our optimized build pipeline gets your changes live faster than ever.',
-  },
-  {
-    icon: 'lucide:refresh-cw',
-    title: 'Automatic Rollbacks',
-    description:
-      'Something went wrong? Instantly roll back to any previous deployment with a single click.',
-  },
-  {
-    icon: 'lucide:globe',
-    title: 'Global Edge Network',
-    description:
-      'Your app runs on 200+ edge locations worldwide, ensuring blazing fast load times for every user.',
-  },
-  {
-    icon: 'lucide:shield',
-    title: 'Built-in Security',
-    description:
-      'SSL certificates, DDoS protection, and security headers configured automatically for every project.',
-  },
-  {
-    icon: 'lucide:bar-chart',
-    title: 'Real-time Analytics',
-    description:
-      'Monitor performance, track errors, and understand your users with built-in observability tools.',
-  },
-  {
-    icon: 'lucide:handshake',
-    title: 'Team Collaboration',
-    description:
-      'Preview deployments for every PR, role-based access control, and seamless Git integration.',
-  },
-];
-
-const pricingPlans = [
-  {
-    name: 'Hobby',
-    monthlyPrice: 0,
-    description: 'Perfect for side projects',
-    features: ['3 projects', '100 GB bandwidth/month', 'Automatic HTTPS', 'Community support'],
-    cta: { label: 'Start Free', href: '/register' },
-  },
-  {
-    name: 'Pro',
-    monthlyPrice: 20,
-    description: 'For professional developers',
-    features: [
-      'Unlimited projects',
-      '1 TB bandwidth/month',
-      'Team collaboration',
-      'Priority support',
-    ],
-    highlighted: true,
-    cta: { label: 'Start Free Trial', href: '/register' },
-  },
-  {
-    name: 'Enterprise',
+    name: '《從零開始自媒體》',
+    description: '10 年品牌行銷人的經營地圖',
     monthlyPrice: null,
-    customPrice: 'Custom',
-    description: 'For large organizations',
-    features: ['Unlimited everything', 'SSO & SAML', 'SLA guarantee', 'Dedicated support'],
-    cta: { label: 'Contact Sales', href: '/contact' },
+    price: '',
+    customPrice: '實戰指南',
+    features: ['零基礎經營策略', '個人品牌商業化路徑', '建立經營思維'],
+    cta: { label: '查看書籍詳情', href: 'https://portaly.cc/billyselect4/product/ioeupgO66jK7vB24yJzY' },
+  },
+  {
+    name: '《AI時代職場生存法則》',
+    description: '每天 1% 的資產化練習 (電子書)',
+    monthlyPrice: null, 
+    price: '', 
+    customPrice: '核心著作', 
+    highlighted: true, 
+    features: ['AI 浪潮下的自我定位', '建立個人知識資產', '不可替代的實戰練習'],
+    cta: { label: '立即前往閱讀', href: 'https://portaly.cc/billyselect4/product/jLrib0ZgLmXWs2WOTiy8' },
+  },
+  {
+    name: '更多個人著作系列',
+    description: '針對不同行銷場景的深度解析',
+    monthlyPrice: null,
+    price: '',
+    features: ['《流量騙局》', '《人人都得到知識變現》', '《寫給大家的行銷書》'],
+    cta: { label: '瀏覽所有作品', href: 'https://portaly.cc/billyselect4' },
   },
 ];
 ---
 
-<MarketingLayout
-  title={`${siteConfig.name} - ${siteConfig.description}`}
-  description={siteConfig.description}
->
+<MarketingLayout title={`${siteConfig.name}`} description={siteConfig.description}>
+  
   <Hero
-    title="The Deployment Platform Developers Love"
-    subtitle="Virex automates your entire workflow from GitHub to Global Edge. Build, preview, and ship applications with a single click. No server management needed."
-    primaryCTA={{ label: 'Get Started Free', href: '/register' }}
-    secondaryCTA={{ label: 'View Dashboard Demo', href: '/dashboard' }}
+    title="AI 時代，判斷力才是你唯一的護城河"
+    subtitle="我是比利陳。這裡記錄我如何用 AI 改善工作流程，並用思維邏輯建立不可替代的專業地位。"
+    primaryCTA={{ label: '加入 Line 群組', href: 'https://line.me/ti/g2/RSL2m-6lcwDLR6RJ-XfMGMZnomMixnbD3jrBUw' }}
+    secondaryCTA={{ label: '訂閱電子報', href: 'https://billy4select.kit.com/profile/posts' }}
   />
 
-  <LogoCloud
-    title="Trusted by innovative teams worldwide"
-    logos={[
-      { name: 'Logo Ipsum 1', src: '/images/logos/logoipsum-1.svg' },
-      { name: 'Logo Ipsum 2', src: '/images/logos/logoipsum-2.svg' },
-      { name: 'Logo Ipsum 3', src: '/images/logos/logoipsum-3.svg' },
-      { name: 'Logo Ipsum 4', src: '/images/logos/logoipsum-4.svg' },
-      { name: 'Logo Ipsum 5', src: '/images/logos/logoipsum-5.svg' },
-      { name: 'Logo Ipsum 6', src: '/images/logos/logoipsum-6.svg' },
-    ]}
-    grayscale={false}
-    logoSize="lg"
-  />
-
-  <HowItWorks
-    title="Deploy in 3 simple steps"
-    subtitle="From code to production in minutes, not hours."
-    steps={[
-      {
-        title: 'Connect your repo',
-        description:
-          "Link your GitHub, GitLab, or Bitbucket repository. We'll detect your framework automatically.",
-        icon: 'lucide:git-branch',
-      },
-      {
-        title: 'Configure & customize',
-        description:
-          'Set environment variables, custom domains, and build settings. Or use our smart defaults.',
-        icon: 'lucide:settings',
-      },
-      {
-        title: 'Deploy & scale',
-        description: 'Push your code and watch it go live globally. Auto-scaling handles the rest.',
-        icon: 'lucide:rocket',
-      },
-    ]}
-    variant="horizontal"
-    background="muted"
-  />
-
-  <IntegrationsGrid
-    title="Integrations"
-    subtitle="Our platform integrates seamlessly with the tools you already use."
-    integrations={featuredIntegrations}
-    variant="detailed"
-    invertOnDark={false}
-    columns={3}
-    background="default"
-    footerLink={{ label: 'View all integrations →', href: '/integrations' }}
-  />
-
-  <FeaturesSection
-    title="Everything you need to ship"
-    subtitle="From development to production, Virex provides all the tools your team needs to move fast and stay reliable."
-    features={features}
-    background="muted"
-    footerLink={{ label: 'View all feature →', href: '/features' }}
-  />
+  <div class="logo-section-wrapper">
+    <LogoCloud
+      title="讓我們運用頂尖 AI 工具提升行銷效率"
+      logos={[
+        { name: 'Notion', src: '/notion-icon.svg' },
+        { name: 'ChatGPT', src: '/openai-icon.svg' }, 
+        { name: 'Claude', src: '/claude-ai-icon.svg' },
+        { name: 'Gemini', src: '/google-gemini-icon.svg' },
+        { name: 'NotebookLM', src: '/notebooklm-icon.svg' },
+        { name: 'Canva', src: '/canva-icon.svg' },
+        { name: 'Grok', src: '/grok-icon.svg' },
+      ]}
+      grayscale={true} 
+      logoSize="lg" 
+    />
+  </div>
 
   <BentoGrid
-    title="Developer-First Features"
-    subtitle="Built by developers, for developers. Every feature designed to make your workflow smoother."
+    title="這裡在談什麼"
+    subtitle="從工具操作到頂層戰略，全方位提升你的職場競爭力。"
     items={bentoItems}
-    background="muted"
   />
 
   <PricingTable
-    title="Simple, transparent pricing"
-    subtitle="Start free and scale as you grow. No hidden fees."
-    plans={pricingPlans}
-    annualDiscount={20}
-    background="default"
-    footerLink={{ label: 'View full pricing details →', href: '/pricing' }}
+    title="個人著作與實戰指南"
+    subtitle="將 10 年行銷心法與AI使用心得整理，讓你少走彎路。"
+    plans={ebookCollections}
+    background="muted"
   />
 
   {
-    siteConfig.features.testimonials && sortedTestimonials.length > 0 && (
+    sortedTestimonials.length > 0 && (
       <TestimonialsSection
-        title="Loved by developers"
-        subtitle="Join thousands of teams who trust Virex to power their deployments."
-        background="muted"
+        title="讀者與夥伴的回饋"
+        subtitle=""
+        background="default"
         limit={4}
-        footerLink={{ label: 'View all testimonial →', href: '/testimonials' }}
         testimonials={sortedTestimonials.map((t) => ({
           quote: t.data.quote,
           author: t.data.author,
@@ -264,10 +157,58 @@ const pricingPlans = [
   }
 
   <CTA
-    title="Ready to ship faster?"
-    description="Get started with Virex today. No credit card required for the free tier."
-    action={{ label: 'Get Started', href: '/register' }}
+    title="準備好開始進階了嗎？"
+    description="現在就加入社群，讓我們一起在 AI 時代保持領先。"
+    action={{ label: '立即加入 Line 群組', href: 'https://line.me/ti/g2/RSL2m-6lcwDLR6RJ-XfMGMZnomMixnbD3jrBUw' }}
   />
 
   <Newsletter />
 </MarketingLayout>
+
+<style is:global>
+  /** * 1. 強化 LogoCloud 標題與間距 
+   */
+  .logo-section-wrapper {
+    background: linear-gradient(to bottom, transparent, rgba(0,0,0,0.01));
+    padding: 3rem 0 5rem 0;
+  }
+
+  .logo-cloud h2 {
+    font-size: 1.2rem !important;
+    font-weight: 800 !important;
+    color: #111 !important;
+    letter-spacing: 0.15em !important;
+    margin-bottom: 4rem !important;
+    opacity: 1 !important;
+  }
+
+  .logo-cloud img {
+    filter: grayscale(100%) brightness(0.6) contrast(1.2) !important;
+    opacity: 0.8 !important;
+    max-height: 50px !important;
+    transition: all 0.4s ease;
+  }
+
+  .logo-cloud img:hover {
+    filter: grayscale(0%) brightness(1) !important;
+    opacity: 1 !important;
+    transform: translateY(-5px);
+  }
+
+  /** * 2. 讀者見證視覺美化 
+   */
+  .testimonials-section blockquote {
+    font-size: 1.05rem !important;
+    line-height: 1.7;
+    color: #333;
+    font-weight: 500;
+  }
+
+  /** * 3. 移除 PricingTable 多餘的訂閱切換 UI 
+   */
+  .pricing-switcher, 
+  [data-period="annual"], 
+  .pricing-toggle-btn {
+    display: none !important;
+  }
+</style>

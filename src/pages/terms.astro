@@ -3,210 +3,161 @@ import MarketingLayout from '@/layouts/MarketingLayout.astro';
 import { siteConfig } from '@/config';
 
 const { legal, contact } = siteConfig;
-const fullAddress = `${contact.address.street}, ${contact.address.city}, ${contact.address.state} ${contact.address.zip}`;
+// 格式化地址，適應中文閱讀習慣
+const fullAddress = `${contact.address.zip} ${contact.address.state}${contact.address.city}${contact.address.street}`;
 ---
 
 <MarketingLayout
-  title={`Terms of Service - ${siteConfig.name}`}
-  description={`Terms of Service for ${siteConfig.name}. Please read these terms carefully before using our services.`}
+  title={`服務條款 - ${siteConfig.name}`}
+  description={`這是 ${siteConfig.name} 的服務條款。在使用我們的服務之前，請仔細閱讀這些條款。`}
 >
   <section class="py-section">
     <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
       <header class="mb-12">
-        <h1 class="text-4xl font-bold text-text">Terms of Service</h1>
-        <p class="mt-4 text-text-muted">Last updated: {legal.lastUpdated}</p>
+        <h1 class="text-4xl font-bold text-text">服務條款 (Terms of Service)</h1>
+        <p class="mt-4 text-text-muted">最後更新日期：{legal.lastUpdated}</p>
       </header>
 
       <div class="prose prose-lg max-w-none dark:prose-invert">
         <p>
-          Welcome to {siteConfig.name}. These Terms of Service ("Terms") govern your access to and
-          use of our website, products, and services ("Services"). By accessing or using our
-          Services, you agree to be bound by these Terms.
+          歡迎來到 {siteConfig.name}。本服務條款（簡稱「本條款」）旨在規範您對我們網站、產品及服務（簡稱「本服務」）的訪問與使用。當您訪問或使用本服務時，即表示您同意受本條款之約束。
         </p>
 
-        <h2>1. Acceptance of Terms</h2>
+        <h2>1. 條款接受</h2>
         <p>
-          By creating an account or using our Services, you confirm that you are at least 18 years
-          old (or the age of majority in your jurisdiction) and have the legal capacity to enter
-          into these Terms. If you are using our Services on behalf of an organization, you
-          represent that you have the authority to bind that organization to these Terms.
+          當您建立帳戶或使用本服務時，即確認您已年滿 18 歲（或您所在地法律規定的成年年齡），且具備簽署本條款的法律能力。如果您代表某個組織使用本服務，則表示您已獲得授權使該組織受本條款約束。
         </p>
 
-        <h2>2. Account Registration</h2>
-        <p>To access certain features of our Services, you must create an account. You agree to:</p>
+        <h2>2. 帳戶註冊</h2>
+        <p>為了使用本服務的某些功能，您必須註冊帳戶。您同意：</p>
         <ul>
-          <li>Provide accurate, current, and complete information during registration</li>
-          <li>Maintain and promptly update your account information</li>
-          <li>Keep your password secure and confidential</li>
-          <li>Accept responsibility for all activities that occur under your account</li>
-          <li>Notify us immediately of any unauthorized use of your account</li>
+          <li>在註冊時提供準確、最新且完整的資訊</li>
+          <li>維護並及時更新您的帳戶資訊</li>
+          <li>妥善保管您的密碼並負擔保密責任</li>
+          <li>對您帳戶下發生的所有活動負責</li>
+          <li>若發現帳戶遭未經授權使用，請立即通知我們</li>
         </ul>
         <p>
-          We reserve the right to suspend or terminate accounts that violate these Terms or for any
-          other reason at our sole discretion.
+          我們保留自行決定暫停或終止違反本條款（或出於其他任何原因）之帳戶的權利。
         </p>
 
-        <h2>3. Acceptable Use</h2>
-        <p>You agree not to use our Services to:</p>
+        <h2>3. 使用規範</h2>
+        <p>您同意不會將本服務用於以下行為：</p>
         <ul>
-          <li>Violate any applicable laws, regulations, or third-party rights</li>
-          <li>Upload or transmit malicious code, viruses, or harmful content</li>
-          <li>Attempt to gain unauthorized access to our systems or other users' accounts</li>
-          <li>Interfere with or disrupt the integrity or performance of our Services</li>
-          <li>Engage in any activity that could damage, disable, or impair our Services</li>
-          <li>Use our Services for any illegal, fraudulent, or harmful purpose</li>
-          <li>Scrape, crawl, or use automated means to access our Services without permission</li>
-          <li>Resell or redistribute our Services without authorization</li>
+          <li>違反任何適用法律、法規或第三方權利</li>
+          <li>上傳或傳輸惡意代碼、病毒或有害內容</li>
+          <li>嘗試未經授權訪問我們的系統或其他用戶的帳戶</li>
+          <li>干擾或破壞本服務的完整性或性能</li>
+          <li>從事任何可能損害、禁用或削弱本服務的活動</li>
+          <li>將本服務用於任何非法、欺詐或有害目的</li>
+          <li>未經許可使用自動化手段（如抓取、爬蟲）訪問本服務</li>
+          <li>未經授權轉售或重新分發我們的服務</li>
         </ul>
 
-        <h2>4. Subscription and Payments</h2>
-        <h3>Billing</h3>
+        <h2>4. 訂閱與付款</h2>
+        <h3>帳單</h3>
         <p>
-          Paid subscriptions are billed in advance on a monthly or annual basis. You authorize us to
-          charge your payment method for all fees associated with your subscription.
+          付費訂閱採預付制，按月或按年計費。您授權我們通過您的支付方式收取與訂閱相關的所有費用。
         </p>
 
-        <h3>Price Changes</h3>
+        <h3>價格變動</h3>
         <p>
-          We may change our prices at any time. Price changes will take effect at the start of your
-          next billing cycle. We will provide reasonable notice of any price changes.
+          我們保留隨時調整價格的權利。價格變動將於您的下一個計費週期開始時生效。我們會提前提供合理的價格變動通知。
         </p>
 
-        <h3>Refunds</h3>
+        <h3>退款政策</h3>
         <p>
-          We offer a 30-day money-back guarantee for new subscriptions. After this period, payments
-          are non-refundable except as required by law. You may cancel your subscription at any
-          time, and you will continue to have access until the end of your current billing period.
+          我們為新訂閱提供 30 天退款保證。超過此期限後，除法律要求外，支付的費用恕不退還。您可以隨時取消訂閱，並可繼續使用服務至當前計費週期結束。
         </p>
 
-        <h2>5. Intellectual Property</h2>
-        <h3>Our Content</h3>
+        <h2>5. 知識產權 (智慧財產權)</h2>
+        <h3>我們的內容</h3>
         <p>
-          Our Services and all associated content, features, and functionality (including but not
-          limited to text, graphics, logos, and software) are owned by {siteConfig.name} and are protected
-          by copyright, trademark, and other intellectual property laws.
+          本服務及其所有相關內容、功能（包括但不限於文字、圖形、標誌和軟體）均歸 {siteConfig.name} 所有，並受著作權、商標權及其他知識產權法保護。
         </p>
 
-        <h3>Your Content</h3>
+        <h3>您的內容</h3>
         <p>
-          You retain ownership of any content you upload or create using our Services ("Your
-          Content"). By uploading Your Content, you grant us a worldwide, non-exclusive,
-          royalty-free license to use, store, and display Your Content solely for the purpose of
-          providing our Services to you.
+          您保留對您使用本服務上傳或創建的任何內容（簡稱「您的內容」）的所有權。通過上傳您的內容，即表示您授予我們全球性、非獨佔、免版稅的許可，允許我們僅為向您提供服務之目的使用、存儲和顯示該內容。
         </p>
 
-        <h3>Feedback</h3>
+        <h3>意見回饋</h3>
         <p>
-          If you provide us with feedback, suggestions, or ideas, you grant us the right to use such
-          feedback without restriction or compensation to you.
+          如果您向我們提供回饋、建議或構想，即表示您授予我們無限制使用該回饋且無需對您進行補償的權利。
         </p>
 
-        <h2>6. Service Availability</h2>
+        <h2>6. 服務可用性</h2>
         <p>
-          We strive to maintain high availability of our Services but do not guarantee uninterrupted
-          access. We may temporarily suspend access for maintenance, updates, or circumstances
-          beyond our control. We will make reasonable efforts to provide advance notice of planned
-          maintenance.
+          我們致力於維持本服務的高可用性，但不保證服務不會中斷。我們可能會因維護、更新或超出我們控制的情況而暫時暫停服務。我們會盡合理努力提前通知計劃中的維護。
         </p>
 
-        <h2>7. Data and Privacy</h2>
+        <h2>7. 數據與隱私</h2>
         <p>
-          Your use of our Services is also governed by our <a href="/privacy">Privacy Policy</a>,
-          which describes how we collect, use, and protect your personal information. By using our
-          Services, you consent to our data practices as described in the Privacy Policy.
+          您對本服務的使用同時受我們的 <a href="/privacy">隱私權政策</a> 約束，該政策說明了我們如何收集、使用和保護您的個人資訊。使用本服務即表示您同意該政策中所述的數據處理實務。
         </p>
 
-        <h2>8. Third-Party Services</h2>
+        <h2>8. 第三方服務</h2>
         <p>
-          Our Services may integrate with or contain links to third-party services. We are not
-          responsible for the content, privacy practices, or terms of these third-party services.
-          Your use of third-party services is at your own risk.
+          我們的服務可能整合或包含第三方服務的連結。我們不對這些第三方服務的內容、隱私實務或條款負責，使用第三方服務的風險由您自行承擔。
         </p>
 
-        <h2>9. Disclaimer of Warranties</h2>
+        <h2>9. 免責聲明</h2>
         <p>
-          OUR SERVICES ARE PROVIDED "AS IS" AND "AS AVAILABLE" WITHOUT WARRANTIES OF ANY KIND,
-          EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO IMPLIED WARRANTIES OF
-          MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND NON-INFRINGEMENT. WE DO NOT WARRANT
-          THAT OUR SERVICES WILL BE UNINTERRUPTED, ERROR-FREE, OR COMPLETELY SECURE.
+          我們的服務按「現狀」及「可用狀態」提供，不附帶任何明示或暗示的保證，包括但不限於對適銷性、特定用途適用性及不侵權的暗示保證。我們不保證服務不中斷、無錯誤或完全安全。
         </p>
 
-        <h2>10. Limitation of Liability</h2>
+        <h2>10. 責任限制</h2>
         <p>
-          TO THE MAXIMUM EXTENT PERMITTED BY LAW, {siteConfig.name.toUpperCase()} AND ITS AFFILIATES,
-          OFFICERS, DIRECTORS, EMPLOYEES, AND AGENTS SHALL NOT BE LIABLE FOR ANY INDIRECT, INCIDENTAL,
-          SPECIAL, CONSEQUENTIAL, OR PUNITIVE DAMAGES, INCLUDING BUT NOT LIMITED TO LOSS OF PROFITS, DATA,
-          OR GOODWILL, ARISING OUT OF OR RELATED TO YOUR USE OF OUR SERVICES.
+          在法律允許的最大範圍內，{siteConfig.name.toUpperCase()} 及其關聯公司、主管、董事、員工或代理人，對於因您使用本服務而產生的任何間接、附隨、特殊、衍生或懲罰性損害（包括利潤損失、數據遺失或商譽損害）不承擔責任。
         </p>
         <p>
-          OUR TOTAL LIABILITY FOR ANY CLAIMS ARISING FROM THESE TERMS OR YOUR USE OF OUR SERVICES
-          SHALL NOT EXCEED THE AMOUNT YOU PAID US IN THE TWELVE (12) MONTHS PRECEDING THE CLAIM.
+          我們對因本條款或使用服務產生的任何索賠之總責任，不得超過您在索賠前十二 (12) 個月內支付給我們的總額。
         </p>
 
-        <h2>11. Indemnification</h2>
+        <h2>11. 賠償</h2>
         <p>
-          You agree to indemnify, defend, and hold harmless {siteConfig.name} and its affiliates from
-          any claims, damages, losses, and expenses (including reasonable attorney's fees) arising from
-          your use of our Services, your violation of these Terms, or your violation of any third-party
-          rights.
+          您同意對因您使用本服務、違反本條款或侵犯任何第三方權利而產生的任何索賠、損害、損失和費用（包括合理的律師費），為 {siteConfig.name} 及其關聯公司提供辯護、補償並使其免受損害。
         </p>
 
-        <h2>12. Termination</h2>
+        <h2>12. 終止</h2>
         <p>
-          You may terminate your account at any time by contacting us or using the account settings.
-          We may terminate or suspend your access to our Services immediately, without prior notice,
-          for any reason, including breach of these Terms.
+          您可以隨時聯繫我們或透過帳戶設定終止您的帳戶。我們亦可不經事先通知，隨時因任何原因（包括違反本條款）終止或暫停您對服務的訪問權限。
         </p>
         <p>
-          Upon termination, your right to use our Services will cease immediately. Provisions of
-          these Terms that by their nature should survive termination will survive, including
-          ownership provisions, warranty disclaimers, and limitations of liability.
+          服務終止後，您使用服務的權利將立即停止。本條款中性質上應在終止後繼續有效的規定（包括所有權規定、免責聲明和責任限制）將繼續有效。
         </p>
 
-        <h2>13. Governing Law</h2>
+        <h2>13. 準據法</h2>
         <p>
-          These Terms shall be governed by and construed in accordance with the laws of the State of
-          {contact.address.state === 'CA' ? 'California' : contact.address.state}, {
-            contact.address.country
-          }, without regard to its conflict of law provisions. Any disputes arising from these Terms
-          shall be resolved in the courts located in {contact.address.city}, {
-            contact.address.state === 'CA' ? 'California' : contact.address.state
-          }.
+          本條款應受 {contact.address.state} 法律管轄並依其解釋（不考慮其法律衝突規定）。任何因本條款引起的爭議，應提交至 {contact.address.city} 所在地之法院審理。
         </p>
 
-        <h2>14. Changes to Terms</h2>
+        <h2>14. 條款變更</h2>
         <p>
-          We reserve the right to modify these Terms at any time. We will notify you of material
-          changes by posting the updated Terms on our website and updating the "Last updated" date.
-          Your continued use of our Services after such changes constitutes acceptance of the new
-          Terms.
+          我們保留隨時修改本條款的權利。如有重大變更，我們會透過網站發布更新後的條款並更新「最後更新日期」。您在變更生效後繼續使用服務，即表示您接受新條款。
         </p>
 
-        <h2>15. General Provisions</h2>
+        <h2>15. 一般條款</h2>
         <ul>
           <li>
-            <strong>Entire Agreement:</strong> These Terms constitute the entire agreement between you
-            and {siteConfig.name} regarding our Services.
+            <strong>完整協議：</strong> 本條款構成您與 {siteConfig.name} 之間關於本服務的完整協議。
           </li>
           <li>
-            <strong>Severability:</strong> If any provision of these Terms is found to be unenforceable,
-            the remaining provisions will continue in effect.
+            <strong>可分割性：</strong> 若本條款的任何規定被判定為不可執行，其餘規定仍將繼續有效。
           </li>
           <li>
-            <strong>Waiver:</strong> Our failure to enforce any right or provision of these Terms will
-            not be considered a waiver of those rights.
+            <strong>棄權：</strong> 我們未能執行本條款中的任何權利或規定，不應被視為對該權利的棄權。
           </li>
           <li>
-            <strong>Assignment:</strong> You may not assign or transfer these Terms without our prior
-            written consent.
+            <strong>轉讓：</strong> 未經我們事先書面同意，您不得轉讓本條款。
           </li>
         </ul>
 
-        <h2>Contact Us</h2>
-        <p>If you have any questions about these Terms of Service, please contact us at:</p>
+        <h2>聯繫我們</h2>
+        <p>如果您對本服務條款有任何疑問，請透過以下方式與我們聯繫：</p>
         <ul>
-          <li>Email: {legal.legalEmail}</li>
-          <li>Address: {fullAddress}</li>
+          <li>電子郵件：{legal.legalEmail}</li>
+          <li>通訊地址：{fullAddress}</li>
         </ul>
       </div>
     </div>

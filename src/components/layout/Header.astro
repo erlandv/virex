@@ -1,16 +1,6 @@
 ---
 /**
  * Header - Site header with responsive navigation
- *
- * @description
- * A sticky site header that includes logo, navigation links, theme toggle,
- * and a mobile-friendly hamburger menu. Navigation items are automatically
- * filtered based on feature flags from site config.
- *
- * @example
- * ```astro
- * <Header />
- * ```
  */
 import { siteConfig } from '@/config';
 import { Icon } from 'astro-icon/components';
@@ -36,18 +26,26 @@ const primaryCTA = headerNav.cta.find((cta) => cta.variant === 'primary');
 >
   <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" aria-label="Main navigation">
     <div class="flex items-center justify-between h-16">
-      <!-- Logo / Site Name -->
-      <a href="/" class="flex items-center gap-2 font-semibold text-lg text-text">
+      <a href="/" class="flex items-center gap-3 group">
         {
           siteConfig.logo ? (
-            <img src={siteConfig.logo} alt={siteConfig.name} class="h-8 w-auto" />
-          ) : (
-            siteConfig.name
-          )
+            <img 
+              src={siteConfig.logo} 
+              alt={siteConfig.name} 
+              class="h-10 w-10 md:h-11 md:w-11 rounded-full object-cover border-2 border-primary/20 group-hover:border-primary transition-all duration-300 shadow-sm" 
+            />
+          ) : null
         }
+        <div class="flex flex-col leading-none">
+          <span class="font-bold text-lg md:text-xl text-text tracking-tight">
+            {siteConfig.name.split(' | ')[0]}
+          </span>
+          <span class="text-[10px] md:text-xs text-text-muted mt-1 font-medium">
+            {siteConfig.name.split(' | ')[1] || '比利陳 Billy Chen'}
+          </span>
+        </div>
       </a>
 
-      <!-- Desktop Navigation - Center -->
       <div class="hidden md:flex items-center gap-6">
         {
           mainNavItems.map((item) => (
@@ -61,7 +59,6 @@ const primaryCTA = headerNav.cta.find((cta) => cta.variant === 'primary');
         }
       </div>
 
-      <!-- Desktop Actions - Right -->
       <div class="hidden md:flex items-center gap-4">
         <ThemeToggle />
         {
@@ -86,7 +83,6 @@ const primaryCTA = headerNav.cta.find((cta) => cta.variant === 'primary');
         }
       </div>
 
-      <!-- Mobile menu button -->
       <div class="flex items-center gap-2 md:hidden">
         <ThemeToggle />
         <button
@@ -115,7 +111,6 @@ const primaryCTA = headerNav.cta.find((cta) => cta.variant === 'primary');
   </nav>
 </header>
 
-<!-- Mobile Navigation Overlay -->
 <div
   id="mobile-menu"
   class="fixed inset-0 z-40 hidden md:hidden"
@@ -123,9 +118,7 @@ const primaryCTA = headerNav.cta.find((cta) => cta.variant === 'primary');
   aria-modal="true"
   aria-label="Mobile navigation menu"
 >
-  <!-- Backdrop -->
   <div id="mobile-menu-backdrop" class="absolute inset-0 bg-background/80 backdrop-blur-sm"></div>
-  <!-- Menu Panel -->
   <nav
     id="mobile-menu-panel"
     class="absolute left-0 right-0 bg-surface border-b border-background shadow-lg"
@@ -142,9 +135,7 @@ const primaryCTA = headerNav.cta.find((cta) => cta.variant === 'primary');
           </a>
         ))
       }
-      <!-- Divider -->
       <div class="border-t border-border my-2"></div>
-      <!-- CTA links -->
       {
         ghostCTAs.map((cta) => (
           <a

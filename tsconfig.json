@@ -1,18 +1,42 @@
 {
-  "extends": "astro/tsconfigs/strict",
-  "compilerOptions": {
-    "baseUrl": ".",
-    "paths": {
-      "@/*": ["src/*"],
-      "@components/*": ["src/components/*"],
-      "@sections/*": ["src/components/sections/*"],
-      "@ui/*": ["src/components/ui/*"],
-      "@forms/*": ["src/components/forms/*"],
-      "@layout/*": ["src/components/layout/*"],
-      "@dashboard/*": ["src/components/dashboard/*"],
-      "@dashboard-ui/*": ["src/components/dashboard-ui/*"]
-    }
-  },
-  "include": ["src/**/*", "astro.config.mjs", ".astro/types.d.ts"],
-  "exclude": ["node_modules", "dist"]
+	"extends": "astro/tsconfigs/strict",
+	"compilerOptions": {
+		"baseUrl": ".",
+		"paths": {
+			"@/*": [
+				"src/*"
+			],
+			"@components/*": [
+				"src/components/*"
+			],
+			"@sections/*": [
+				"src/components/sections/*"
+			],
+			"@ui/*": [
+				"src/components/ui/*"
+			],
+			"@forms/*": [
+				"src/components/forms/*"
+			],
+			"@layout/*": [
+				"src/components/layout/*"
+			],
+			"@dashboard/*": [
+				"src/components/dashboard/*"
+			],
+			"@dashboard-ui/*": [
+				"src/components/dashboard-ui/*"
+			]
+		}
+	},
+	"include": [
+		"src/**/*",
+		"astro.config.mjs",
+		".astro/types.d.ts",
+		"./worker-configuration.d.ts"
+	],
+	"exclude": [
+		"node_modules",
+		"dist"
+	]
 }

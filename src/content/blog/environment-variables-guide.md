@@ -1,8 +1,8 @@
 ---
-title: "The Complete Guide to Environment Variables in Modern Applications"
+title: "1111The Complete Guide to Environment Variables in Modern Applications"
 description: "Everything you need to know about managing environment variables—from local development to production deployments. Includes best practices and common mistakes to avoid."
 publishedDate: 2025-12-01
-author: "David Kim"
+author: "bbbbbbDavid Kim"
 image: "/images/blog/env-variables.webp"
 tags: ["deployment", "tutorial"]
 draft: false
@@ -14,7 +14,7 @@ This guide covers everything you need to know about environment variables in mod
 
 ## What Are Environment Variables?
 
-Environment variables are key-value pairs that exist outside your application code. They allow you to:
+1111TheEnvironment variables are key-value pairs that exist outside your application code. They allow you to:
 
 - Configure behavior without changing code
 - Keep secrets out of version control

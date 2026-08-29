@@ -2,121 +2,106 @@
 import MarketingLayout from '@/layouts/MarketingLayout.astro';
 import PageHeader from '@sections/content/PageHeader.astro';
 import StatsSection from '@sections/social-proof/StatsSection.astro';
-import VideoEmbed from '@sections/content/VideoEmbed.astro';
 import ValuesSection from '@sections/team/ValuesSection.astro';
 import TeamSection from '@sections/team/TeamSection.astro';
 import ContentSection from '@sections/content/ContentSection.astro';
 import CTA from '@sections/marketing/CTA.astro';
 import { siteConfig } from '@/config';
 
-const team = [
-  {
-    name: 'Sarah Mitchell',
-    role: 'CEO & Co-founder',
-    bio: 'Former infrastructure lead at a major cloud provider. Sarah started Virex to make deployment accessible to every developer.',
-    avatar: '/images/team/sarah-mitchell.webp',
-  },
-  {
-    name: 'James Chen',
-    role: 'CTO & Co-founder',
-    bio: 'Built distributed systems at scale for 15 years. James leads our engineering team and architecture decisions.',
-    avatar: '/images/team/james-chen.webp',
-  },
-  {
-    name: 'Maria Rodriguez',
-    role: 'VP of Product',
-    bio: 'Product leader with a passion for developer tools. Maria ensures every feature we ship solves real problems.',
-    avatar: '/images/team/maria-rodriguez.webp',
-  },
-  {
-    name: 'David Kim',
-    role: 'VP of Engineering',
-    bio: 'Scaling expert who loves building reliable systems. David leads our platform and infrastructure teams.',
-    avatar: '/images/team/david-kim.webp',
-  },
+/**
+ * 2024 年的實驗數據
+ */
+const stats = [
+  { value: '35天', label: 'Threads 0 到 1,000 追蹤' },
+  { value: '140天', label: 'Threads 突破 10,000 追蹤' },
+  { value: '0元', label: '廣告費用投入' },
+  { value: '100%', label: '真實觀點' },
 ];
 
+/**
+ * 我關注的四件事 (Values)
+ */
 const values = [
   {
-    title: 'Developer First',
+    title: '思維比工具重要',
     description:
-      'We build for developers because we are developers. Every decision starts with how it impacts the people using our platform.',
+      '你現在學的 AI 工具，可能半年後就翻新。但你怎麼拆解問題、怎麼做判斷，這是 AI 再進步也沒辦法替你的事。',
   },
   {
-    title: 'Simplicity Wins',
+    title: '經驗就是你的資產',
     description:
-      'Complex problems deserve simple solutions. We work hard to hide complexity so you can focus on building.',
+      '你 Line 訊息裡那些別人常來問你的問題，就是市場對你的真實需求。解決困難的過程，才是最吸引人的賣點。',
   },
   {
-    title: 'Reliability Matters',
+    title: '變現是結果而非目的',
     description:
-      'Your users depend on your app, and you depend on us. We take that responsibility seriously.',
+      '持續輸出有價值內容，信任自然積累，變現是過程的自然結果。從變現出發只會讓你不知道自己為了什麼在做分享。',
   },
   {
-    title: 'Transparency Always',
+    title: '說真話的力量',
     description:
-      'No hidden fees, no surprise limits, no confusing pricing. What you see is what you get.',
+      '不追演算法、不買廣告。建立有結構的內容策略，並持續說真話，是建立影響力最短的路徑。',
   },
 ];
 
-const stats = [
-  { value: '50K+', label: 'Developers' },
-  { value: '10M+', label: 'Deployments' },
-  { value: '99.99%', label: 'Uptime' },
-  { value: '200+', label: 'Edge Locations' },
+/**
+ * 關於比利陳 (取代原本的 Team)
+ */
+const team = [
+  {
+    name: '比利陳 (Billy Chen)',
+    role: '行銷裡的路人甲 / 10年整合行銷實戰',
+    bio: '做過 PM、品牌行銷與整合行銷。我不是坐在辦公室看數據的理論家，我看過預算怎麼燒掉，也看過產品大賣，更理解決策背後的商業邏輯。',
+    avatar: '/public/avatar.webp', // 記得補上你的照片，或先用預設圖
+  }
 ];
 ---
 
 <MarketingLayout
-  title={`About - ${siteConfig.name}`}
-  description="Learn about the team and mission behind Virex, the modern deployment platform for developers."
+  title={`關於我 - ${siteConfig.name}`}
+  description="比利陳 (行銷裡的路人甲) 的個人背景、行銷理念與 AI 時代的職場觀察。"
 >
-  <PageHeader title="We're building the future of deployment" align="left" maxWidth="lg">
-    <p class="mt-6 text-lg text-text-muted leading-relaxed">
-      Virex started with a simple observation: deploying applications shouldn't be hard. Yet
-      developers everywhere were spending hours configuring CI/CD pipelines, managing
-      infrastructure, and debugging deployment issues.
-    </p>
-    <p class="mt-4 text-lg text-text-muted leading-relaxed">
-      We founded Virex in 2021 to change that. Our mission is to make deployment so simple that it
-      disappears—letting developers focus entirely on building great products.
-    </p>
+  <PageHeader title="判斷力，是 AI 時代唯一的護城河" align="center" maxWidth="lg">
+    <div class="max-w-3xl mx-auto">
+      <p class="mt-6 text-xl font-medium text-primary italic leading-relaxed">
+        「AI 放大你的執行力，但放大不了你對商業問題的判斷。那個判斷，才是你在這個時代真正值錢的東西。」
+      </p>
+      <div class="mt-8 space-y-4 text-lg text-text-muted leading-relaxed">
+        <p>
+          我是比利陳。我在職場前線跑了超過十年。做過 <strong>PM</strong>，從市調、商品開發、成本設算到通路策略一條龍跑過；做過 <strong>品牌行銷</strong>，操盤線上線下媒體；做過 <strong>整合行銷</strong>，將內容與廣告轉化為真實銷售。
+        </p>
+        <p>
+          我分享的多數時候只是我自己的經驗。我是這樣做的，我有效，你可以試試，但不代表我比你聰明。
+        </p>
+      </div>
+    </div>
   </PageHeader>
 
   <StatsSection stats={stats} background="muted" />
 
-  <VideoEmbed
-    title="See Virex in action"
-    subtitle="Watch how easy it is to deploy your first application in under 2 minutes."
-    videoId="dQw4w9WgXcQ"
-    provider="youtube"
-    maxWidth="lg"
-    background="default"
-  />
-
   <ValuesSection
-    title="Our values"
+    title="我關注的四件事"
     items={values}
     variant="card"
     columns={2}
     background="default"
   />
 
-  <TeamSection title="Meet the team" members={team} columns={4} background="muted" />
-
   <ContentSection
-    title="Backed by the best"
+    title="我在幫誰？"
     content={[
-      "We're proud to be backed by leading investors who share our vision for the future of developer tools. Our investors include top-tier venture capital firms and angels who have built and scaled developer-focused companies.",
-      "With their support, we're building a platform that will serve millions of developers worldwide.",
+      "我有真實的積累，但這些積累還沒有轉化成可以獨立運作的資產。我在幫你做的就是這件事：把你腦袋裡的東西，變成別人看得見、認得出、願意為它付費的資產。",
+      "不論你是卡住的中階主管、想建立品牌的個人、想用 AI 提效的工作者，或是正在考慮轉型的資深工作者，這裡的內容都是為了幫你建立那道「護城河」。"
     ]}
-    background="default"
+    background="muted"
   />
 
+  <TeamSection title="創作者背景" members={team} columns={1} background="default" />
+
   <CTA
-    title="Join us on our mission"
-    description="We're always looking for talented people who want to make deployment better for everyone."
-    action={{ label: 'View Open Positions', href: '/careers' }}
+    title="從這裡開始你的進化"
+    description="每週一篇不廢話的實踐筆記，給正在認真思考下一步的你。"
+    action={{ label: '立即訂閱電子報', href: 'https://billy4select.kit.com/profile/posts' }}
     background="muted"
   />
 </MarketingLayout>
