@@ -39,8 +39,8 @@ interface Props {
 
 // Default placeholder user data for demonstration
 const defaultUser = {
-  name: 'Alex Johnson',
-  email: 'alex@virex.com',
+  name: 'MarkChat Admin',
+  email: 'admin@markchat.co.ke',
   avatar: undefined,
 };
 
@@ -61,18 +61,23 @@ const initials = getInitials(user.name);
 // Menu items configuration
 const menuItems = [
   {
-    label: 'Profile',
-    href: '/dashboard/settings/profile',
-    icon: 'lucide:user',
+    label: 'Command Center',
+    href: '/dashboard',
+    icon: 'lucide:layout-dashboard',
   },
   {
-    label: 'Settings',
-    href: '/dashboard/settings',
-    icon: 'lucide:settings',
+    label: 'Pricing & Plans',
+    href: '/dashboard/pricing',
+    icon: 'lucide:credit-card',
+  },
+  {
+    label: 'View Public Site',
+    href: '/',
+    icon: 'lucide:external-link',
   },
   {
     label: 'Logout',
-    href: '/',
+    href: '/dashboard/login?logout=1',
     icon: 'lucide:log-out',
   },
 ];

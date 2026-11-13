@@ -1,0 +1,664 @@
+---
+import MarketingLayout from '@/layouts/MarketingLayout.astro';
+import { Icon } from 'astro-icon/components';
+import { siteConfig } from '@/config';
+import FAQSection from '@sections/content/FAQSection.astro';
+
+const APP_URL =
+  (typeof import.meta !== 'undefined' && import.meta.env?.PUBLIC_APP_URL) ||
+  'http://localhost:3000';
+
+const capabilities = [
+  {
+    title: 'Autonomous Deflection',
+    description:
+      'Resolve first-line inquiries 24/7 with an AI assistant grounded strictly in your store policies and catalog.',
+    icon: 'lucide:bot',
+    badge: 'Autonomous',
+    accent: 'blue',
+  },
+  {
+    title: 'Agent Copilot',
+    description:
+      'Assist human agents with 1-click contextual reply drafting, tone adjustment, and message expansion.',
+    icon: 'lucide:wand-2',
+    badge: 'Productivity',
+    accent: 'purple',
+  },
+  {
+    title: 'Multilingual Intelligence',
+    description:
+      'Native comprehension of English, commercial Swahili, and regional colloquial Sheng dialects.',
+    icon: 'lucide:languages',
+    badge: 'Localization',
+    accent: 'emerald',
+  },
+  {
+    title: 'Knowledge Grounding',
+    description:
+      'Strict adherence to your published product pricing, delivery zones, and return rules to eliminate hallucinations.',
+    icon: 'lucide:book-open',
+    badge: 'Accuracy',
+    accent: 'amber',
+  },
+];
+
+const markcopilotFaqs = [
+  {
+    question: 'How does Markcopilot prevent artificial intelligence hallucinations?',
+    answer:
+      'Markcopilot utilizes strict Retrieval-Augmented Generation (RAG). It only answers based on the documentation, product catalogs, shipping fees, and FAQ articles you explicitly upload to your workspace. If a customer asks a question outside your uploaded knowledge base, Markcopilot does not invent an answer; it politely flags the inquiry and routes it directly to a human agent.',
+  },
+  {
+    question: 'Can Markcopilot automatically trigger M-Pesa payments on its own?',
+    answer:
+      'No. For financial security and regulatory compliance, Markcopilot does not initiate automated payment pulls autonomously. Instead, it suggests the appropriate /stk command (with amount and phone number) to your authorized human agent, or presents the verified customer with an explicit checkout payment prompt.',
+  },
+  {
+    question: 'How does Markcopilot handle Sheng and colloquial Swahili phrasing?',
+    answer:
+      'Markcopilot is specifically adapted for East African conversational commerce. It recognizes everyday commercial Sheng terms (such as "bei ya mwisho", "kuorder", "boda delivery", "lipa na Paybill") and normalizes customer intent into actionable order parameters while responding in the customer\'s preferred language tone.',
+  },
+  {
+    question: 'Can I disable autonomous mode and use Markcopilot strictly as an agent helper?',
+    answer:
+      'Yes. In your MarkChat workspace settings, you can toggle between "Autonomous Mode" (handles incoming chats before agent intervention) and "Copilot Mode" (runs purely in the background to suggest draft answers for human agents to review and edit before sending).',
+  },
+  {
+    question: 'Is customer conversation data used to train public AI models?',
+    answer:
+      'No. Your conversation logs, customer phone numbers, and transaction records remain strictly confidential within your tenant database. In accordance with the Kenya Data Protection Act (KDPA 2019), customer data is never shared with third-party public foundation models.',
+  },
+];
+---
+
+<MarketingLayout
+  title={`Markcopilot AI - ${siteConfig.name}`}
+  description="Markcopilot is the AI agent for customer support and M-Pesa sales. Automate conversations, assist agents with AI-powered suggestions, and deliver support in English, Swahili, and Sheng."
+>
+  {/* SECTION 1: HERO SECTION */}
+  <section class="relative pt-24 pb-20 overflow-hidden bg-background">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="max-w-3xl mx-auto text-center">
+        <!-- Badge -->
+        <div
+          class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-primary/20 bg-primary/5 text-primary text-xs font-semibold uppercase tracking-wider mb-6"
+        >
+          <Icon name="lucide:sparkles" class="w-3.5 h-3.5 text-primary" />
+          <span>Markcopilot Intelligence</span>
+        </div>
+
+        <!-- Title -->
+        <h1
+          class="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight tracking-tight text-slate-900 dark:text-white"
+        >
+          The AI Copilot for Customer Support & <span class="text-primary">M-Pesa Sales</span>
+        </h1>
+
+        <!-- Subtitle -->
+        <p
+          class="mt-6 text-lg sm:text-xl leading-relaxed text-slate-600 dark:text-slate-400 max-w-2xl mx-auto"
+        >
+          A dual-mode intelligence engine built specifically for East African commerce. Automate
+          first-line ticket deflection, draft 1-click agent replies, and resolve customer chats
+          naturally in English, Swahili, and Sheng.
+        </p>
+
+        <!-- CTA Buttons -->
+        <div class="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
+          <a
+            href={`${APP_URL}/app/auth/signup`}
+            class="inline-flex items-center justify-center px-6 py-3 rounded-lg bg-primary text-white font-medium hover:bg-primary-dark transition-colors shadow-sm w-full sm:w-auto"
+          >
+            Start 14-day free trial
+          </a>
+          <a
+            href="/demo"
+            class="inline-flex items-center justify-center px-6 py-3 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 font-medium transition-colors shadow-sm w-full sm:w-auto"
+          >
+            Book live walkthrough
+          </a>
+        </div>
+      </div>
+
+      <!-- Hero Visual / Live Chat Interface Preview -->
+      <div
+        class="mt-12 sm:mt-16 relative mx-auto max-w-5xl rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-900/60 p-6 sm:p-12 overflow-hidden shadow-xl"
+      >
+        <!-- Subtle Dotted Background Pattern -->
+        <div
+          class="absolute inset-0 bg-[radial-gradient(#cbd5e1_1px,transparent_1px)] dark:bg-[radial-gradient(#334155_1px,transparent_1px)] [background-size:20px_20px] opacity-50 pointer-events-none"
+        >
+        </div>
+
+        <!-- Floating Chat Bubble (Customer) -->
+        <div
+          class="hidden md:block absolute left-8 top-10 max-w-xs p-4 rounded-2xl rounded-tl-sm bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-lg pointer-events-none transform -rotate-1"
+        >
+          <div class="flex items-center gap-2 mb-2">
+            <div
+              class="w-6 h-6 rounded-full bg-emerald-100 dark:bg-emerald-950/80 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-xs font-bold"
+            >
+              W
+            </div>
+            <span class="text-xs font-semibold text-slate-800 dark:text-slate-200"
+              >Customer (WhatsApp)</span
+            >
+            <span class="text-[10px] text-slate-400 ml-auto">10:32 AM</span>
+          </div>
+          <p class="text-xs text-slate-700 dark:text-slate-300 leading-snug">
+            "Niaje, nataka kuorder hizi viatu size 42. Mnaweza deliver Kilimani na lipa na Paybill?"
+          </p>
+        </div>
+
+        <!-- Floating Chat Bubble (Markcopilot AI) -->
+        <div
+          class="hidden md:block absolute right-8 bottom-10 max-w-sm p-4 rounded-2xl rounded-br-sm bg-white dark:bg-slate-800 border border-primary/20 shadow-lg pointer-events-none transform rotate-1"
+        >
+          <div class="flex items-center gap-2 mb-2">
+            <div
+              class="w-6 h-6 rounded-full bg-primary/10 text-primary flex items-center justify-center"
+            >
+              <Icon name="lucide:sparkles" class="w-3.5 h-3.5" />
+            </div>
+            <span class="text-xs font-semibold text-primary">Markcopilot AI</span>
+            <span
+              class="text-[10px] px-1.5 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-400 font-semibold ml-auto"
+              >Verified Knowledge</span
+            >
+          </div>
+          <p class="text-xs text-slate-700 dark:text-slate-300 leading-snug">
+            "Habari! Ndiyo, size 42 zipo kwa stock. Delivery hadi Kilimani ni KES 250 kwa boda.
+            Jumla ni KES 3,450. Nitumie nambari yako ya M-Pesa nikurushie STK prompt sasa hivi?"
+          </p>
+        </div>
+
+        <!-- Center Interactive Callout -->
+        <div
+          class="relative z-10 flex flex-col items-center justify-center py-12 sm:py-16 text-center"
+        >
+          <div
+            class="w-16 h-16 rounded-2xl bg-primary/10 text-primary flex items-center justify-center mb-4 border border-primary/20 shadow-sm"
+          >
+            <Icon name="lucide:sparkles" class="w-8 h-8" />
+          </div>
+          <h3 class="text-xl font-bold text-slate-900 dark:text-white">
+            Dual-Mode Intelligence: Copilot & Autonomous Agent
+          </h3>
+          <p class="text-sm text-slate-600 dark:text-slate-400 mt-2 max-w-md">
+            Choose whether Markcopilot responds directly to customers after hours or assists human
+            agents with 1-click draft replies during business rush hours.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {/* SECTION 2: 4-COLUMN CAPABILITIES MATRIX */}
+  <section class="py-20 sm:py-24 border-t border-slate-200 dark:border-slate-800 bg-surface">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="max-w-3xl mx-auto text-center">
+        <h2 class="text-3xl font-bold tracking-tight text-slate-900 dark:text-white">
+          Engineered for Real Support Teams
+        </h2>
+        <p class="mt-3 text-lg text-slate-600 dark:text-slate-400">
+          Four foundational capabilities designed around local commercial communication and
+          operational reliability.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-12">
+        {
+          capabilities.map((item) => (
+            <div class="p-6 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-xs hover:shadow-md transition-shadow">
+              <div class="w-10 h-10 rounded-lg bg-primary/10 text-primary flex items-center justify-center mb-4">
+                <Icon name={item.icon} class="w-5 h-5" />
+              </div>
+              <div class="flex items-center justify-between mb-2">
+                <h3 class="text-lg font-bold text-slate-900 dark:text-white">{item.title}</h3>
+                <span class="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-surface-hover text-text-muted border border-border">
+                  {item.badge}
+                </span>
+              </div>
+              <p class="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+                {item.description}
+              </p>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  {/* SECTION 3: THREE DEEP-DIVE ALTERNATING FEATURE SECTIONS */}
+  <section class="py-20 sm:py-28 bg-background space-y-24">
+    <!-- Deep Dive 1: Autonomous First-Response & Order Deflection -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+        <!-- Text Column (Left) -->
+        <div class="space-y-6">
+          <div
+            class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-primary/10 text-primary border border-primary/20"
+          >
+            <Icon name="lucide:bot" class="w-3.5 h-3.5" />
+            <span>Autonomous Mode</span>
+          </div>
+
+          <h2 class="text-3xl font-bold tracking-tight text-slate-900 dark:text-white">
+            24/7 First-Line Support Without Ticket Backlogs
+          </h2>
+
+          <p class="text-base text-slate-600 dark:text-slate-400 leading-relaxed">
+            Resolve everyday inquiries instantly across WhatsApp Cloud, Bulk SMS, and Live Chat.
+            Markcopilot accesses your verified catalog and policy documents to answer delivery
+            questions, office hours, and return rules with zero latency.
+          </p>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5 pt-2">
+            <div class="flex items-center gap-2.5">
+              <Icon name="lucide:check-circle-2" class="w-4 h-4 text-primary shrink-0" />
+              <span class="text-sm font-medium text-slate-800 dark:text-slate-200"
+                >Grounded in verified docs</span
+              >
+            </div>
+            <div class="flex items-center gap-2.5">
+              <Icon name="lucide:check-circle-2" class="w-4 h-4 text-primary shrink-0" />
+              <span class="text-sm font-medium text-slate-800 dark:text-slate-200"
+                >Immediate human handoff</span
+              >
+            </div>
+            <div class="flex items-center gap-2.5">
+              <Icon name="lucide:check-circle-2" class="w-4 h-4 text-primary shrink-0" />
+              <span class="text-sm font-medium text-slate-800 dark:text-slate-200"
+                >Business-hours scheduling</span
+              >
+            </div>
+            <div class="flex items-center gap-2.5">
+              <Icon name="lucide:check-circle-2" class="w-4 h-4 text-primary shrink-0" />
+              <span class="text-sm font-medium text-slate-800 dark:text-slate-200"
+                >Zero response latency</span
+              >
+            </div>
+          </div>
+        </div>
+
+        <!-- UI Mockup (Right) - Pure Tailwind Chat Preview -->
+        <div class="relative">
+          <div
+            class="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-xl overflow-hidden"
+          >
+            <div
+              class="flex items-center justify-between px-4 py-3 border-b border-slate-100 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-800/40"
+            >
+              <div class="flex items-center gap-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-rose-400"></span>
+                <span class="w-2.5 h-2.5 rounded-full bg-amber-400"></span>
+                <span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
+                <span class="ml-2 text-xs font-semibold text-slate-700 dark:text-slate-300">
+                  Customer Support • WhatsApp
+                </span>
+              </div>
+              <div
+                class="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 text-[11px] font-medium"
+              >
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                <span>Autonomous Active</span>
+              </div>
+            </div>
+
+            <div class="p-5 space-y-4">
+              <!-- Customer Message -->
+              <div class="flex items-start gap-3 justify-end">
+                <div class="max-w-[82%]">
+                  <div
+                    class="p-3.5 rounded-2xl rounded-tr-xs bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 text-xs sm:text-sm leading-relaxed"
+                  >
+                    Where is your physical store located in Nairobi, and do you open on Sundays?
+                  </div>
+                  <span class="text-[10px] text-slate-400 block text-right mt-1">2:14 PM</span>
+                </div>
+              </div>
+
+              <!-- Markcopilot Answer -->
+              <div class="flex items-start gap-3">
+                <div
+                  class="w-7 h-7 rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0 mt-0.5"
+                >
+                  <Icon name="lucide:sparkles" class="w-3.5 h-3.5" />
+                </div>
+                <div class="max-w-[85%] space-y-2">
+                  <div
+                    class="p-4 rounded-2xl rounded-tl-xs bg-primary/5 dark:bg-primary/10 border border-primary/15 text-slate-800 dark:text-slate-200 text-xs sm:text-sm leading-relaxed space-y-2"
+                  >
+                    <p>
+                      Our flagship showroom is located at <strong
+                        >Sarit Centre, Ground Floor, Westlands</strong
+                      >.
+                    </p>
+                    <p class="text-xs text-slate-700 dark:text-slate-300">
+                      • Mon – Sat: 9:00 AM – 7:30 PM<br />
+                      • Sundays: 10:00 AM – 5:00 PM
+                    </p>
+                    <p class="text-xs text-slate-600 dark:text-slate-400">
+                      Need directions or want to reserve an item before visiting?
+                    </p>
+                  </div>
+                  <span class="text-[10px] text-slate-400 block"
+                    >2:14 PM • Grounded in Store Docs</span
+                  >
+                </div>
+              </div>
+
+              <!-- Action Buttons -->
+              <div class="pl-10 flex flex-wrap gap-2 pt-1">
+                <button
+                  type="button"
+                  class="px-2.5 py-1 text-xs font-medium rounded-lg bg-surface border border-border text-text hover:border-primary/50"
+                >
+                  Reserve an item
+                </button>
+                <button
+                  type="button"
+                  class="px-2.5 py-1 text-xs font-medium rounded-lg bg-surface border border-border text-text hover:border-primary/50"
+                >
+                  Speak with human agent
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Deep Dive 2: Multilingual Swahili & Sheng Comprehension (Alternating) -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+        <!-- UI Mockup (Left on Desktop) -->
+        <div class="order-2 lg:order-1 relative">
+          <div
+            class="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-xl overflow-hidden"
+          >
+            <div
+              class="px-5 py-4 border-b border-slate-100 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-800/40 flex items-center justify-between"
+            >
+              <div>
+                <h4 class="text-sm font-bold text-slate-900 dark:text-white">
+                  Multilingual Intent Parsing
+                </h4>
+                <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                  Natural Sheng &amp; Swahili interpretation without rigid keyword menus
+                </p>
+              </div>
+              <span
+                class="px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-xs font-semibold"
+              >
+                Sheng / Swahili
+              </span>
+            </div>
+
+            <div class="p-5 space-y-4">
+              <!-- Sheng Inquiry -->
+              <div
+                class="p-3.5 rounded-xl border border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/30"
+              >
+                <div class="flex items-center justify-between text-xs text-text-muted mb-1.5">
+                  <span class="font-semibold text-text">Customer Phrasing (Sheng)</span>
+                  <span>Direct WhatsApp</span>
+                </div>
+                <p class="text-xs sm:text-sm text-text font-mono">
+                  "Niaje boss, nataka hizi airpods pro. Bei ya mwisho ni ngapi mkiniwekea delivery
+                  ya Thika Road?"
+                </p>
+              </div>
+
+              <!-- AI Intent Breakdown -->
+              <div class="p-4 rounded-xl border border-primary/20 bg-primary/5 space-y-2">
+                <div class="text-xs font-bold text-primary uppercase tracking-wider">
+                  Markcopilot Intent Extraction
+                </div>
+                <div class="grid grid-cols-2 gap-2 text-xs">
+                  <div>
+                    <span class="text-text-muted">Item:</span>
+                    <span class="font-semibold text-text ml-1">AirPods Pro Gen 2</span>
+                  </div>
+                  <div>
+                    <span class="text-text-muted">Price:</span>
+                    <span class="font-semibold text-text ml-1">KES 28,500 (Fixed)</span>
+                  </div>
+                  <div>
+                    <span class="text-text-muted">Destination:</span>
+                    <span class="font-semibold text-text ml-1">Thika Road (Zone B)</span>
+                  </div>
+                  <div>
+                    <span class="text-text-muted">Delivery Fee:</span>
+                    <span class="font-semibold text-text ml-1">KES 350</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Draft Response Generated -->
+              <div
+                class="p-3.5 rounded-xl border border-emerald-500/20 bg-emerald-500/5 text-xs text-emerald-300"
+              >
+                <div class="font-bold text-[10px] uppercase tracking-wider mb-1 text-emerald-400">
+                  Grounded Natural Response
+                </div>
+                <p class="leading-relaxed">
+                  "Sasa! AirPods Pro Gen 2 ni KES 28,500 (bei imeshuka kutoka 31k). Delivery hadi
+                  Thika Road ni KES 350. Jumla ni KES 28,850. Ukilipa sasa na M-Pesa, tunazi
+                  dispatch kwa rider mara moja."
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Text Column (Right on Desktop) -->
+        <div class="order-1 lg:order-2 space-y-6">
+          <div
+            class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20"
+          >
+            <Icon name="lucide:languages" class="w-3.5 h-3.5" />
+            <span>Local Language Native</span>
+          </div>
+
+          <h2 class="text-3xl font-bold tracking-tight text-slate-900 dark:text-white">
+            Engage Customers in Natural Swahili &amp; Sheng
+          </h2>
+
+          <p class="text-base text-slate-600 dark:text-slate-400 leading-relaxed">
+            Most chatbots fail in East Africa because they force customers into artificial keyword
+            menus like "Press 1 for Sales". Markcopilot interprets contextual nuances, colloquial
+            colloquialisms, and regional spelling variations effortlessly.
+          </p>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5 pt-2">
+            <div class="flex items-center gap-2.5">
+              <Icon name="lucide:check-circle-2" class="w-4 h-4 text-emerald-500 shrink-0" />
+              <span class="text-sm font-medium text-slate-800 dark:text-slate-200"
+                >No rigid menu trees</span
+              >
+            </div>
+            <div class="flex items-center gap-2.5">
+              <Icon name="lucide:check-circle-2" class="w-4 h-4 text-emerald-500 shrink-0" />
+              <span class="text-sm font-medium text-slate-800 dark:text-slate-200"
+                >Bilingual translations</span
+              >
+            </div>
+            <div class="flex items-center gap-2.5">
+              <Icon name="lucide:check-circle-2" class="w-4 h-4 text-emerald-500 shrink-0" />
+              <span class="text-sm font-medium text-slate-800 dark:text-slate-200"
+                >Respects polite formalities</span
+              >
+            </div>
+            <div class="flex items-center gap-2.5">
+              <Icon name="lucide:check-circle-2" class="w-4 h-4 text-emerald-500 shrink-0" />
+              <span class="text-sm font-medium text-slate-800 dark:text-slate-200"
+                >Higher conversation conversion</span
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Deep Dive 3: Human Agent Copilot & 1-Click Drafting -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+        <!-- Text Column (Left) -->
+        <div class="space-y-6">
+          <div
+            class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20"
+          >
+            <Icon name="lucide:wand-2" class="w-3.5 h-3.5" />
+            <span>Agent-Assist Mode</span>
+          </div>
+
+          <h2 class="text-3xl font-bold tracking-tight text-slate-900 dark:text-white">
+            1-Click Draft Suggestions for Busy Support Desks
+          </h2>
+
+          <p class="text-base text-slate-600 dark:text-slate-400 leading-relaxed">
+            During heavy sales surges, agents can review AI-generated response suggestions with one
+            click. Agents retain full control to edit, expand, or translate messages before sending,
+            reducing reply times from minutes to seconds.
+          </p>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5 pt-2">
+            <div class="flex items-center gap-2.5">
+              <Icon name="lucide:check-circle-2" class="w-4 h-4 text-purple-500 shrink-0" />
+              <span class="text-sm font-medium text-slate-800 dark:text-slate-200"
+                >1-click insert &amp; edit</span
+              >
+            </div>
+            <div class="flex items-center gap-2.5">
+              <Icon name="lucide:check-circle-2" class="w-4 h-4 text-purple-500 shrink-0" />
+              <span class="text-sm font-medium text-slate-800 dark:text-slate-200"
+                >Tone switcher (Formal / Friendly)</span
+              >
+            </div>
+            <div class="flex items-center gap-2.5">
+              <Icon name="lucide:check-circle-2" class="w-4 h-4 text-purple-500 shrink-0" />
+              <span class="text-sm font-medium text-slate-800 dark:text-slate-200"
+                >Conversation summarization</span
+              >
+            </div>
+            <div class="flex items-center gap-2.5">
+              <Icon name="lucide:check-circle-2" class="w-4 h-4 text-purple-500 shrink-0" />
+              <span class="text-sm font-medium text-slate-800 dark:text-slate-200"
+                >Cuts agent typing fatigue</span
+              >
+            </div>
+          </div>
+        </div>
+
+        <!-- UI Mockup (Right) - Agent Copilot Composer -->
+        <div class="relative">
+          <div
+            class="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-xl overflow-hidden"
+          >
+            <div
+              class="px-5 py-3 border-b border-slate-100 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-800/40 flex items-center justify-between"
+            >
+              <div class="flex items-center gap-2">
+                <Icon name="lucide:inbox" class="w-4 h-4 text-primary" />
+                <span class="text-xs font-semibold text-text">Agent View: Conversation #4910</span>
+              </div>
+              <span class="text-[11px] text-text-muted">Assigned to: Sarah W.</span>
+            </div>
+
+            <div class="p-5 space-y-4">
+              <!-- Customer Question -->
+              <div class="p-3 rounded-lg bg-surface-hover text-xs text-text border border-border">
+                <span class="font-bold block text-text-muted text-[10px] uppercase mb-1"
+                  >Customer</span
+                >
+                "Can I exchange the blue dress for a smaller size if it doesn't fit properly?"
+              </div>
+
+              <!-- AI Suggestion Bar inside composer -->
+              <div class="rounded-xl border border-purple-500/30 bg-purple-500/5 p-4 space-y-3">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-2 text-xs font-bold text-purple-400">
+                    <Icon name="lucide:sparkles" class="w-3.5 h-3.5" />
+                    <span>Markcopilot Draft Suggestion</span>
+                  </div>
+                  <span
+                    class="text-[10px] px-2 py-0.5 rounded bg-purple-500/20 text-purple-300 font-semibold"
+                  >
+                    Policy Grounded
+                  </span>
+                </div>
+
+                <p class="text-xs text-text leading-relaxed">
+                  "Yes, absolutely! We offer free size exchanges within 7 days of purchase, provided
+                  tags remain attached. Would you like our Nairobi dispatch team to book the return
+                  rider for you?"
+                </p>
+
+                <div class="flex items-center gap-2 pt-1">
+                  <button
+                    type="button"
+                    class="px-3 py-1.5 rounded-lg bg-primary text-white text-xs font-semibold hover:bg-primary-dark"
+                  >
+                    Insert to Composer
+                  </button>
+                  <button
+                    type="button"
+                    class="px-2.5 py-1.5 rounded-lg bg-surface border border-border text-xs text-text hover:bg-surface-hover"
+                  >
+                    Make More Formal
+                  </button>
+                  <button
+                    type="button"
+                    class="px-2.5 py-1.5 rounded-lg bg-surface border border-border text-xs text-text hover:bg-surface-hover"
+                  >
+                    Translate to Swahili
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {/* SECTION 4: FREQUENTLY ASKED QUESTIONS */}
+  <FAQSection
+    title="Markcopilot Intelligence FAQ"
+    subtitle="Clear, factual answers regarding training, privacy safeguards, and operational reliability."
+    faqs={markcopilotFaqs}
+  />
+
+  {/* SECTION 5: BOTTOM ACTION CTA */}
+  <section class="py-20 sm:py-24 border-t border-slate-200 dark:border-slate-800 bg-surface">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div
+        class="max-w-4xl mx-auto rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-8 sm:p-14 text-center shadow-lg"
+      >
+        <h2 class="text-3xl sm:text-4xl font-bold tracking-tight text-slate-900 dark:text-white">
+          Ready to deploy Markcopilot to your team?
+        </h2>
+        <p class="mt-4 text-base sm:text-lg text-slate-600 dark:text-slate-400 max-w-xl mx-auto">
+          Equip your support agents with 1-click drafting and provide 24/7 autonomous answers to
+          common customer questions.
+        </p>
+        <div class="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
+          <a
+            href={`${APP_URL}/app/auth/signup`}
+            class="inline-flex items-center justify-center px-6 py-3 rounded-lg bg-primary text-white font-medium hover:bg-primary-dark transition-colors shadow-sm w-full sm:w-auto"
+          >
+            Start 14-day free trial
+          </a>
+          <a
+            href="/demo"
+            class="inline-flex items-center justify-center px-6 py-3 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 font-medium transition-colors shadow-sm w-full sm:w-auto"
+          >
+            Book a live walkthrough
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+</MarketingLayout>

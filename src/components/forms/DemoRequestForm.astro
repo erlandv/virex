@@ -346,9 +346,29 @@ const { action = '', method = 'POST', netlify = false, formName = 'demo-request'
     const action = form.action;
 
     try {
-      // If no action URL, simulate success (demo mode)
+      // If no action URL, persist lead via CMS API
       if (!action) {
-        await new Promise((resolve) => setTimeout(resolve, 1500));
+        try {
+          const { submitLead } = await import('@/lib/cms-api');
+          const firstName = (formData.get('firstName') as string) || '';
+          const lastName = (formData.get('lastName') as string) || '';
+          const email = (formData.get('email') as string) || '';
+          const phone = (formData.get('phone') as string) || '+254 700 000 000';
+          const company = (formData.get('company') as string) || '';
+          const volume = (formData.get('teamSize') as string) || '5,000 - 20,000 msgs/mo';
+          const message = (formData.get('message') as string) || '';
+          await submitLead({
+            fullName: `${firstName} ${lastName}`.trim(),
+            email,
+            phone,
+            company,
+            monthlyVolume: volume,
+            source: 'Demo Request Page (/demo)',
+            message,
+          });
+        } catch (err) {
+          console.warn('submitLead error:', err);
+        }
         showSuccess();
         return;
       }

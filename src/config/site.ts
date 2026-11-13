@@ -1,42 +1,32 @@
 /**
- * Site Configuration
+ * Site Configuration for MarkChat
  *
- * @description
- * Core site metadata and branding settings.
- * These values can be customized via environment variables or by editing the defaults below.
+ * Core site metadata and branding settings for MarkChat Kenya.
  */
 
 import type { SocialLinks, LegalConfig } from '../lib/types';
 
-/** Site name displayed in header, footer, and meta tags */
-export const name = import.meta.env.SITE_NAME || 'Virex';
+export const name = 'MarkChat';
 
-/** Site description for SEO and meta tags */
 export const description =
-  import.meta.env.SITE_DESCRIPTION || 'The modern platform for building and shipping faster';
+  'The omnichannel customer communication, bulk messaging, and in-chat M-Pesa checkout platform for Kenyan businesses.';
 
-/** Production URL of your site (used for sitemap, RSS, canonical URLs) */
 export const url = import.meta.env.SITE_URL || 'http://localhost:4321';
 
-/** Author name for meta tags and copyright */
-export const author = import.meta.env.SITE_AUTHOR || 'Virex Team';
+export const author = 'MarkChat Technologies Ltd';
 
-/** Path to logo file (relative to /public) */
 export const logo = '/logo.svg';
 
-/** Path to Open Graph image (relative to /public) */
 export const ogImage = '/images/og-image.png';
 
-/** Social media links */
 export const social: SocialLinks = {
-  twitter: 'https://twitter.com/virex',
-  github: 'https://github.com/virex',
-  discord: 'https://discord.gg/virex',
+  twitter: 'https://twitter.com/markchatke',
+  github: 'https://github.com/markchat',
+  discord: 'https://whatsapp.com/channel/markchat',
 };
 
-/** Legal configuration for privacy policy and terms pages */
 export const legal: LegalConfig = {
-  privacyEmail: 'privacy@virex.example.com',
-  legalEmail: 'legal@virex.example.com',
-  lastUpdated: 'December 17, 2024',
+  privacyEmail: 'privacy@markchat.co.ke',
+  legalEmail: 'legal@markchat.co.ke',
+  lastUpdated: 'November 12, 2026',
 };

@@ -1,62 +1,59 @@
 /**
- * Contact Page Configuration
+ * Contact Page Configuration for MarkChat
  *
- * @description
- * Contact information, methods, and FAQ data for the contact page.
- * Modify these values to customize your contact page content.
+ * Contact details, channels, and FAQs tailored for Kenyan businesses.
  */
 
 import type { ContactInfo, ContactMethod, ContactFAQ } from '../lib/types';
 
-/** Contact information used across contact page and legal pages */
 export const contact: ContactInfo = {
-  email: 'hello@virex.example.com',
-  supportEmail: 'support@virex.example.com',
-  salesEmail: 'sales@virex.example.com',
+  email: 'hello@markchat.co.ke',
+  supportEmail: 'support@markchat.co.ke',
+  salesEmail: 'sales@markchat.co.ke',
   address: {
-    street: '123 Market Street, Suite 400',
-    city: 'San Francisco',
-    state: 'CA',
-    zip: '94102',
-    country: 'United States',
+    street: 'Nairobi Operations Center',
+    city: 'Nairobi',
+    state: 'Nairobi County',
+    zip: '00100',
+    country: 'Kenya',
   },
 };
 
-/** Contact methods displayed on the contact page */
 export const contactMethods: ContactMethod[] = [
   {
     icon: 'lucide:mail',
-    label: 'Email',
-    value: contact.email,
-    href: `mailto:${contact.email}`,
+    label: 'Sales & Onboarding',
+    value: contact.salesEmail || contact.email,
+    href: `mailto:${contact.salesEmail || contact.email}`,
   },
   {
-    icon: 'simple-icons:discord',
-    label: 'Discord',
-    value: 'Join Discord',
-    href: 'https://discord.gg/virex',
+    icon: 'lucide:headphones',
+    label: 'Technical Support',
+    value: contact.supportEmail || contact.email,
+    href: `mailto:${contact.supportEmail || contact.email}`,
   },
   {
-    icon: 'lucide:twitter',
-    label: 'Twitter',
-    value: '@virex',
-    href: 'https://twitter.com/virex',
+    icon: 'simple-icons:whatsapp',
+    label: 'Merchant Concierge',
+    value: 'Direct In-App & WhatsApp Assistance',
+    href: '/demo',
   },
 ];
 
-/** FAQ items displayed on the contact page */
 export const contactFAQs: ContactFAQ[] = [
   {
-    question: "What's your typical response time?",
-    answer: 'We respond to most inquiries within 24 hours during business days.',
-  },
-  {
-    question: 'Do you offer phone support?',
+    question: "What is MarkChat's typical support response time?",
     answer:
-      'Phone support is available for Enterprise customers. Others can reach us via email or Discord.',
+      'Our Nairobi support operations team responds to WhatsApp inquiries within 2 minutes and emails within 1 hour during business hours (8am - 8pm EAT, Monday to Saturday).',
   },
   {
-    question: 'How do I report a bug?',
-    answer: 'Use the form with "Technical support" as subject, or open an issue on our GitHub.',
+    question: 'Can you help set up our Safaricom Daraja API Paybill credentials?',
+    answer:
+      'Yes! Our merchant success specialists guide you step-by-step through Safaricom Daraja portal verification, shortcode provisioning, and live testing.',
+  },
+  {
+    question: 'Do you offer on-site demos in Nairobi, Mombasa, or Nakuru?',
+    answer:
+      'Yes! For retail franchises and Pro/Enterprise teams, our local solution engineers can schedule on-site visits across Nairobi or conduct guided Google Meet walkthroughs.',
   },
 ];

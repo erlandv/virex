@@ -329,9 +329,27 @@ const { action = '', method = 'POST', netlify = false, formName = 'contact' } = 
     const action = form.action;
 
     try {
-      // If no action URL, simulate success (demo mode)
+      // If no action URL, submit through cms-api lead pipeline
       if (!action) {
-        await new Promise((resolve) => setTimeout(resolve, 1500));
+        try {
+          const { submitLead } = await import('@/lib/cms-api');
+          const firstName = (formData.get('firstName') as string) || '';
+          const lastName = (formData.get('lastName') as string) || '';
+          const email = (formData.get('email') as string) || '';
+          const subject = (formData.get('subject') as string) || '';
+          const message = (formData.get('message') as string) || '';
+          await submitLead({
+            fullName: `${firstName} ${lastName}`.trim(),
+            email,
+            phone: '+254 700 000 000',
+            company: 'General Inquiry',
+            monthlyVolume: 'Direct Contact Form',
+            source: `Contact Page (/contact): ${subject}`,
+            message,
+          });
+        } catch (err) {
+          console.warn('Contact form lead submission error:', err);
+        }
         showSuccess();
         return;
       }

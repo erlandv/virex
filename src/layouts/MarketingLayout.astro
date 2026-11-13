@@ -3,6 +3,7 @@ import BaseLayout from './BaseLayout.astro';
 import Header from '@layout/Header.astro';
 import Footer from '@layout/Footer.astro';
 import AnnouncementBar from '@layout/AnnouncementBar.astro';
+import MarkcopilotWidget from '@/components/common/MarkcopilotWidget.astro';
 import { siteConfig } from '@/config';
 
 interface Props {
@@ -60,4 +61,5 @@ const { announcement } = siteConfig;
     </main>
     <Footer />
   </div>
+  <MarkcopilotWidget />
 </BaseLayout>

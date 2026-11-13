@@ -1,0 +1,362 @@
+---
+/**
+ * MarkChat CMS Admin Login Gate
+ */
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { Icon } from 'astro-icon/components';
+
+const bridgeApiUrl =
+  (typeof import.meta !== 'undefined' && import.meta.env?.PUBLIC_BRIDGE_API_URL) ||
+  'http://localhost:4000';
+---
+
+<BaseLayout
+  title="MarkChat CMS Admin Login"
+  description="Single-Admin Website Content Management System for MarkChat Kenya"
+>
+  <div class="cms-login-page">
+    <div class="cms-login-container">
+      <div class="cms-login-card">
+        <div class="cms-login-header">
+          <div class="cms-logo-badge">
+            <svg
+              class="w-8 h-8 text-primary"
+              viewBox="0 0 40 40"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <rect width="40" height="40" rx="10" fill="currentColor" fill-opacity="0.12"></rect>
+              <path
+                d="M12 14C12 12.8954 12.8954 12 14 12H26C27.1046 12 28 12.8954 28 14V22C28 23.1046 27.1046 24 26 24H18L13 28V14Z"
+                stroke="currentColor"
+                stroke-width="2.2"
+                stroke-linecap="round"
+                stroke-linejoin="round"></path>
+              <path d="M18 18H22" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"
+              ></path>
+            </svg>
+          </div>
+          <h1 class="cms-login-title">MarkChat CMS</h1>
+          <p class="cms-login-subtitle">Single-Admin Portal &amp; Plan Matrix Engine</p>
+        </div>
+
+        <div id="logout-alert" class="alert-box alert-success" style="display: none;">
+          <Icon name="lucide:check-circle" class="w-4 h-4" />
+          <span>You have been safely signed out.</span>
+        </div>
+
+        <div id="error-alert" class="alert-box alert-error" style="display: none;">
+          <Icon name="lucide:alert-triangle" class="w-4 h-4 shrink-0" />
+          <span id="error-text">Authentication failed. Please verify your passkey.</span>
+        </div>
+
+        <form id="cms-login-form" class="cms-login-form">
+          <div class="form-group">
+            <label for="admin-passkey" class="form-label">
+              Admin Passkey
+              <span class="text-error">*</span>
+            </label>
+            <div class="input-wrapper">
+              <input
+                type="password"
+                id="admin-passkey"
+                name="passkey"
+                class="form-input"
+                placeholder="Enter your administrative passkey"
+                required
+                autocomplete="current-password"
+              />
+              <button
+                type="button"
+                id="toggle-visibility"
+                class="visibility-toggle"
+                aria-label="Toggle password visibility"
+              >
+                <Icon name="lucide:eye" class="w-4 h-4" />
+              </button>
+            </div>
+            <p class="form-hint">Single-admin authentication verified by central CMS API.</p>
+          </div>
+
+          <button type="submit" id="submit-btn" class="btn btn-primary w-full">
+            <Icon name="lucide:lock" class="w-4 h-4" />
+            <span id="submit-btn-text">Access CMS Dashboard</span>
+          </button>
+        </form>
+
+        <div class="cms-login-footer">
+          <a href="/" class="return-link">
+            <Icon name="lucide:arrow-left" class="w-3.5 h-3.5" />
+            <span>Return to public website</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .cms-login-page {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+    background-color: var(--color-background, #0a0a0c);
+  }
+
+  .cms-login-container {
+    width: 100%;
+    max-width: 26rem;
+  }
+
+  .cms-login-card {
+    background: var(--color-surface, #141418);
+    border: 1px solid var(--color-border, #27272a);
+    border-radius: var(--radius-xl, 1rem);
+    padding: 2.25rem 2rem;
+    box-shadow:
+      0 20px 25px -5px rgba(0, 0, 0, 0.4),
+      0 8px 10px -6px rgba(0, 0, 0, 0.3);
+  }
+
+  .cms-login-header {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+
+  .cms-logo-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1rem;
+    color: var(--color-primary, #6366f1);
+  }
+
+  .cms-login-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--color-text, #fafafa);
+    margin: 0 0 0.35rem 0;
+  }
+
+  .cms-login-subtitle {
+    font-size: 0.875rem;
+    color: var(--color-text-muted, #a1a1aa);
+    margin: 0;
+  }
+
+  .alert-box {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    padding: 0.75rem 1rem;
+    border-radius: var(--radius-md, 0.5rem);
+    font-size: 0.8125rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .alert-success {
+    background: rgba(34, 197, 94, 0.12);
+    border: 1px solid rgba(34, 197, 94, 0.3);
+    color: #4ade80;
+  }
+
+  .alert-error {
+    background: rgba(239, 68, 68, 0.12);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    color: #f87171;
+  }
+
+  .cms-login-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .form-label {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--color-text, #fafafa);
+  }
+
+  .input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+
+  .form-input {
+    width: 100%;
+    padding: 0.65rem 2.5rem 0.65rem 0.875rem;
+    font-size: 0.875rem;
+    font-family: inherit;
+    background: var(--color-surface-hover, #1f1f23);
+    border: 1px solid var(--color-border, #3f3f46);
+    border-radius: var(--radius-md, 0.5rem);
+    color: var(--color-text, #fafafa);
+    transition: all 150ms ease;
+  }
+
+  .form-input:focus {
+    outline: none;
+    border-color: var(--color-primary, #6366f1);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+  }
+
+  .visibility-toggle {
+    position: absolute;
+    right: 0.75rem;
+    background: none;
+    border: none;
+    color: var(--color-text-muted, #a1a1aa);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    padding: 0;
+  }
+
+  .visibility-toggle:hover {
+    color: var(--color-text, #fafafa);
+  }
+
+  .form-hint {
+    font-size: 0.75rem;
+    color: var(--color-text-muted, #71717a);
+    margin: 0;
+  }
+
+  .form-hint code {
+    font-family: monospace;
+    background: rgba(255, 255, 255, 0.08);
+    padding: 0.1rem 0.3rem;
+    border-radius: 0.25rem;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.65rem 1.25rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    border-radius: var(--radius-md, 0.5rem);
+    cursor: pointer;
+    transition: all 150ms ease;
+    border: 1px solid transparent;
+  }
+
+  .btn-primary {
+    background: var(--color-primary, #6366f1);
+    color: #ffffff;
+  }
+
+  .btn-primary:hover {
+    opacity: 0.92;
+  }
+
+  .w-full {
+    width: 100%;
+  }
+
+  .cms-login-footer {
+    margin-top: 1.75rem;
+    text-align: center;
+  }
+
+  .return-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.8125rem;
+    color: var(--color-text-muted, #a1a1aa);
+    text-decoration: none;
+    transition: color 150ms ease;
+  }
+
+  .return-link:hover {
+    color: var(--color-text, #fafafa);
+  }
+</style>
+
+<script is:inline define:vars={{ bridgeApiUrl }}>
+  document.addEventListener('DOMContentLoaded', () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const logoutAlert = document.getElementById('logout-alert');
+    const errorAlert = document.getElementById('error-alert');
+    const errorText = document.getElementById('error-text');
+    const form = document.getElementById('cms-login-form');
+    const passkeyInput = document.getElementById('admin-passkey');
+    const toggleBtn = document.getElementById('toggle-visibility');
+    const submitBtn = document.getElementById('submit-btn');
+    const submitBtnText = document.getElementById('submit-btn-text');
+
+    if (urlParams.get('logout') === '1') {
+      sessionStorage.removeItem('markchat_admin_token');
+      document.cookie = 'markchat_admin_token=; path=/; max-age=0; SameSite=Strict';
+      if (logoutAlert) logoutAlert.style.display = 'flex';
+    }
+
+    if (toggleBtn && passkeyInput) {
+      toggleBtn.addEventListener('click', () => {
+        const isPassword = passkeyInput.type === 'password';
+        passkeyInput.type = isPassword ? 'text' : 'password';
+      });
+    }
+
+    function showError(msg) {
+      if (errorText) errorText.textContent = msg;
+      if (errorAlert) errorAlert.style.display = 'flex';
+      if (passkeyInput) passkeyInput.select();
+    }
+
+    if (form) {
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const entered = passkeyInput.value.trim();
+        if (!entered) return;
+
+        if (errorAlert) errorAlert.style.display = 'none';
+        if (logoutAlert) logoutAlert.style.display = 'none';
+
+        if (submitBtn) submitBtn.disabled = true;
+        if (submitBtnText) submitBtnText.textContent = 'Verifying with CMS API...';
+
+        try {
+          const authEndpoint = `${bridgeApiUrl}/api/admin/cms/auth`;
+          const response = await fetch(authEndpoint, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ passkey: entered }),
+          });
+
+          if (response.ok) {
+            const data = await response.json();
+            const token = data.token || entered;
+            sessionStorage.setItem('markchat_admin_token', token);
+            document.cookie = `markchat_admin_token=${encodeURIComponent(token)}; path=/; max-age=86400; SameSite=Strict`;
+            const redirect = urlParams.get('redirect') || '/dashboard';
+            window.location.href = redirect;
+          } else {
+            const errData = await response.json().catch(() => ({}));
+            showError(errData.message || 'Authentication failed: Invalid admin passkey.');
+          }
+        } catch {
+          showError(
+            `Central CMS authentication service is currently unreachable (${bridgeApiUrl}). Ensure central API service is active.`
+          );
+        } finally {
+          if (submitBtn) submitBtn.disabled = false;
+          if (submitBtnText) submitBtnText.textContent = 'Access CMS Dashboard';
+        }
+      });
+    }
+  });
+</script>

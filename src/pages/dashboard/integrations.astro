@@ -1,0 +1,482 @@
+---
+/**
+ * MarkChat CMS — Integrations Manager
+ */
+import DashboardLayout from '@/layouts/DashboardLayout.astro';
+import Card from '@dashboard-ui/Card.astro';
+import Modal from '@dashboard-ui/Modal.astro';
+import { Icon } from 'astro-icon/components';
+import IntegrationIcon from '@/components/ui/IntegrationIcon.astro';
+import { fetchIntegrations } from '@/lib/cms-api';
+
+const integrations = await fetchIntegrations();
+---
+
+<DashboardLayout
+  title="Integrations Manager"
+  description="Manage public integrations catalog, brand icons, how-it-works flows, and business benefits"
+  breadcrumbs={[{ label: 'Dashboard', href: '/dashboard' }, { label: 'Integrations Manager' }]}
+>
+  <div class="cms-integrations-page">
+    <div class="page-header flex justify-between items-center mb-6">
+      <div>
+        <h1 class="text-2xl font-bold tracking-tight text-text">Integrations Manager</h1>
+        <p class="text-sm text-text-muted mt-1">
+          Add, edit, or feature Kenyan mobile money, telecom, and messaging connectors.
+        </p>
+      </div>
+      <div class="header-actions flex gap-3">
+        <a href="/integrations" target="_blank" class="btn btn-secondary text-sm">
+          <Icon name="lucide:external-link" class="w-4 h-4 mr-1.5 inline" />
+          View Live /integrations
+        </a>
+        <button
+          type="button"
+          id="open-integration-modal"
+          class="btn btn-primary text-sm cursor-pointer"
+        >
+          <Icon name="lucide:plus" class="w-4 h-4 mr-1.5 inline" />
+          Add Integration
+        </button>
+      </div>
+    </div>
+
+    <Card title="All Integrations" description="Manage visibility and metadata" padding="none">
+      <div class="table-responsive overflow-x-auto">
+        <table class="cms-table w-full text-left text-sm">
+          <thead>
+            <tr class="border-b border-border bg-surface/50 text-text-muted">
+              <th class="py-3 px-4 w-16">Icon</th>
+              <th class="py-3 px-4">Integration Details</th>
+              <th class="py-3 px-4 w-36">Category</th>
+              <th class="py-3 px-4 w-28">Featured</th>
+              <th class="py-3 px-4 w-28">Popular</th>
+              <th class="py-3 px-4 w-32">Status</th>
+              <th class="text-right py-3 px-4 w-44">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="integrations-table-body" class="divide-y divide-border">
+            {
+              integrations.map((item) => (
+                <tr
+                  data-id={item.id}
+                  data-integration={JSON.stringify(item)}
+                  class="hover:bg-surface/30"
+                >
+                  <td class="py-3 px-4">
+                    <IntegrationIcon
+                      iconKey={item.iconKey}
+                      logoUrl={item.logoUrl}
+                      name={item.name}
+                      size="sm"
+                    />
+                  </td>
+                  <td class="py-3 px-4">
+                    <div class="font-semibold text-text">{item.name}</div>
+                    <div class="text-xs text-text-muted font-mono">/{item.slug}</div>
+                  </td>
+                  <td class="py-3 px-4">
+                    <span class="inline-block bg-surface-hover px-2 py-0.5 rounded border border-border text-xs">
+                      {item.category}
+                    </span>
+                  </td>
+                  <td class="py-3 px-4">
+                    <span
+                      class:list={[
+                        'text-xs font-semibold px-2 py-0.5 rounded',
+                        item.isFeatured ? 'bg-primary/10 text-primary' : 'text-text-muted',
+                      ]}
+                    >
+                      {item.isFeatured ? 'Yes' : 'No'}
+                    </span>
+                  </td>
+                  <td class="py-3 px-4">
+                    <span
+                      class:list={[
+                        'text-xs font-semibold px-2 py-0.5 rounded',
+                        item.isPopular ? 'bg-emerald-500/10 text-emerald-400' : 'text-text-muted',
+                      ]}
+                    >
+                      {item.isPopular ? 'Yes' : 'No'}
+                    </span>
+                  </td>
+                  <td class="py-3 px-4">
+                    <span class={`status-pill status-${item.status}`}>
+                      {item.status.toUpperCase()}
+                    </span>
+                  </td>
+                  <td class="py-3 px-4 text-right">
+                    <div class="flex items-center justify-end gap-2">
+                      <button
+                        type="button"
+                        class="action-btn edit-integration-btn p-1.5 rounded hover:bg-surface"
+                        data-id={item.id}
+                        title="Edit"
+                      >
+                        <Icon name="lucide:edit-3" class="w-4 h-4 text-text" />
+                      </button>
+                      <select
+                        class="status-select text-xs bg-surface border border-border rounded px-2 py-1"
+                        data-id={item.id}
+                      >
+                        <option value="published" selected={item.status === 'published'}>
+                          Published
+                        </option>
+                        <option value="draft" selected={item.status === 'draft'}>
+                          Draft
+                        </option>
+                        <option value="paused" selected={item.status === 'paused'}>
+                          Paused
+                        </option>
+                        <option value="archived" selected={item.status === 'archived'}>
+                          Archived
+                        </option>
+                      </select>
+                      <button
+                        type="button"
+                        class="action-btn text-error delete-integration-btn p-1.5 rounded hover:bg-surface"
+                        data-id={item.id}
+                        title="Delete"
+                      >
+                        <Icon name="lucide:trash-2" class="w-4 h-4 text-red-400" />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))
+            }
+          </tbody>
+        </table>
+      </div>
+    </Card>
+
+    <!-- Modal for Create / Edit Integration -->
+    <Modal id="integration-modal" title="Integration Editor" size="lg">
+      <form id="integration-form" class="space-y-4">
+        <input type="hidden" id="int-id" name="id" />
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div class="form-group">
+            <label class="form-label text-xs font-semibold" for="int-name">Name *</label>
+            <input type="text" id="int-name" name="name" class="form-input w-full" required />
+          </div>
+          <div class="form-group">
+            <label class="form-label text-xs font-semibold" for="int-slug">Slug</label>
+            <input
+              type="text"
+              id="int-slug"
+              name="slug"
+              class="form-input w-full"
+              placeholder="auto-generated if empty"
+            />
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div class="form-group">
+            <label class="form-label text-xs font-semibold" for="int-category">Category *</label>
+            <select id="int-category" name="category" class="form-input w-full" required>
+              <option value="Payments">Payments</option>
+              <option value="Messaging">Messaging</option>
+              <option value="SMS Gateway">SMS Gateway</option>
+              <option value="Social Commerce">Social Commerce</option>
+              <option value="E-Commerce">E-Commerce</option>
+              <option value="AI Automation">AI Automation</option>
+              <option value="Productivity">Productivity</option>
+              <option value="Authentication">Authentication</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label text-xs font-semibold" for="int-icon-key"
+              >Brand Icon Preset</label
+            >
+            <select id="int-icon-key" name="iconKey" class="form-input w-full">
+              <option value="mpesa">Safaricom M-Pesa</option>
+              <option value="whatsapp">WhatsApp Business Cloud</option>
+              <option value="africas-talking">Africa's Talking Bulk SMS</option>
+              <option value="markcopilot">Markcopilot AI</option>
+              <option value="shopify">Shopify</option>
+              <option value="instagram">Instagram & Messenger</option>
+              <option value="pochi">Pochi la Biashara & Till</option>
+              <option value="bank-paybill">Shared Bank Paybill</option>
+              <option value="tiktok">TikTok Business Messaging</option>
+              <option value="telegram">Telegram</option>
+              <option value="live-chat">Website Live Chat & Help Center</option>
+              <option value="email">Email (Gmail, Outlook & SMTP)</option>
+              <option value="line">LINE</option>
+              <option value="stripe">Stripe</option>
+              <option value="slack">Slack</option>
+              <option value="linear">Linear</option>
+              <option value="notion">Notion</option>
+              <option value="sso">Google & Microsoft SSO</option>
+              <option value="custom">Custom (Use Logo URL below)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label text-xs font-semibold" for="int-logo-url"
+            >Custom Logo URL (Optional)</label
+          >
+          <input
+            type="text"
+            id="int-logo-url"
+            name="logoUrl"
+            class="form-input w-full"
+            placeholder="https://..."
+          />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label text-xs font-semibold" for="int-short-desc"
+            >Short Description *</label
+          >
+          <input
+            type="text"
+            id="int-short-desc"
+            name="shortDescription"
+            class="form-input w-full"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label text-xs font-semibold" for="int-overview"
+            >Architectural Overview</label
+          >
+          <textarea id="int-overview" name="overview" rows="3" class="form-input w-full"></textarea>
+        </div>
+
+        <div class="border-t border-border pt-3">
+          <label class="block text-xs font-bold uppercase tracking-wider text-primary mb-2"
+            >3 How It Works Steps</label
+          >
+          <div class="space-y-2">
+            <input
+              type="text"
+              id="int-step-1"
+              class="form-input w-full text-xs"
+              placeholder="Step 1..."
+              required
+            />
+            <input
+              type="text"
+              id="int-step-2"
+              class="form-input w-full text-xs"
+              placeholder="Step 2..."
+              required
+            />
+            <input
+              type="text"
+              id="int-step-3"
+              class="form-input w-full text-xs"
+              placeholder="Step 3..."
+              required
+            />
+          </div>
+        </div>
+
+        <div class="border-t border-border pt-3">
+          <label class="block text-xs font-bold uppercase tracking-wider text-emerald-400 mb-2"
+            >4 Kenyan Business Benefits</label
+          >
+          <div class="space-y-2">
+            <input
+              type="text"
+              id="int-benefit-1"
+              class="form-input w-full text-xs"
+              placeholder="Benefit 1..."
+              required
+            />
+            <input
+              type="text"
+              id="int-benefit-2"
+              class="form-input w-full text-xs"
+              placeholder="Benefit 2..."
+              required
+            />
+            <input
+              type="text"
+              id="int-benefit-3"
+              class="form-input w-full text-xs"
+              placeholder="Benefit 3..."
+              required
+            />
+            <input
+              type="text"
+              id="int-benefit-4"
+              class="form-input w-full text-xs"
+              placeholder="Benefit 4..."
+              required
+            />
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 border-t border-border pt-3">
+          <div class="form-group">
+            <label class="form-label text-xs font-semibold" for="int-status">Status</label>
+            <select id="int-status" name="status" class="form-input w-full">
+              <option value="published">Published</option>
+              <option value="draft">Draft</option>
+              <option value="paused">Paused</option>
+              <option value="archived">Archived</option>
+            </select>
+          </div>
+          <div class="flex items-center gap-2 pt-6">
+            <input type="checkbox" id="int-featured" name="isFeatured" class="rounded" />
+            <label for="int-featured" class="text-xs font-semibold">Featured on Home</label>
+          </div>
+          <div class="flex items-center gap-2 pt-6">
+            <input type="checkbox" id="int-popular" name="isPopular" class="rounded" />
+            <label for="int-popular" class="text-xs font-semibold">Popular Badge</label>
+          </div>
+        </div>
+
+        <div class="modal-actions flex justify-end gap-3 pt-4 border-t border-border">
+          <button type="button" class="btn btn-secondary close-modal">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Integration</button>
+        </div>
+      </form>
+    </Modal>
+  </div>
+</DashboardLayout>
+
+<script>
+  import {
+    upsertIntegration,
+    updateItemStatus,
+    deleteCmsItem,
+    type MarketingIntegrationCategory,
+    type CmsLifecycleStatus,
+  } from '@/lib/cms-api';
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const modal = document.getElementById('integration-modal') as HTMLElement;
+    const openBtn = document.getElementById('open-integration-modal');
+    const form = document.getElementById('integration-form') as HTMLFormElement;
+
+    openBtn?.addEventListener('click', () => {
+      form.reset();
+      (document.getElementById('int-id') as HTMLInputElement).value = '';
+      modal.classList.remove('hidden');
+    });
+
+    document.querySelectorAll('.close-modal').forEach((btn) => {
+      btn.addEventListener('click', () => modal.classList.add('hidden'));
+    });
+
+    // Edit handler
+    document.querySelectorAll('.edit-integration-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const row = btn.closest('tr');
+        if (!row) return;
+        const raw = row.getAttribute('data-integration');
+        if (!raw) return;
+        const item = JSON.parse(raw);
+
+        (document.getElementById('int-id') as HTMLInputElement).value = item.id || '';
+        (document.getElementById('int-name') as HTMLInputElement).value = item.name || '';
+        (document.getElementById('int-slug') as HTMLInputElement).value = item.slug || '';
+        (document.getElementById('int-category') as HTMLSelectElement).value =
+          item.category || 'Payments';
+        (document.getElementById('int-icon-key') as HTMLSelectElement).value =
+          item.iconKey || 'custom';
+        (document.getElementById('int-logo-url') as HTMLInputElement).value = item.logoUrl || '';
+        (document.getElementById('int-short-desc') as HTMLInputElement).value =
+          item.shortDescription || '';
+        (document.getElementById('int-overview') as HTMLTextAreaElement).value =
+          item.overview || '';
+        (document.getElementById('int-step-1') as HTMLInputElement).value =
+          item.howItWorksSteps?.[0] || '';
+        (document.getElementById('int-step-2') as HTMLInputElement).value =
+          item.howItWorksSteps?.[1] || '';
+        (document.getElementById('int-step-3') as HTMLInputElement).value =
+          item.howItWorksSteps?.[2] || '';
+        (document.getElementById('int-benefit-1') as HTMLInputElement).value =
+          item.businessBenefits?.[0] || '';
+        (document.getElementById('int-benefit-2') as HTMLInputElement).value =
+          item.businessBenefits?.[1] || '';
+        (document.getElementById('int-benefit-3') as HTMLInputElement).value =
+          item.businessBenefits?.[2] || '';
+        (document.getElementById('int-benefit-4') as HTMLInputElement).value =
+          item.businessBenefits?.[3] || '';
+        (document.getElementById('int-status') as HTMLSelectElement).value =
+          item.status || 'published';
+        (document.getElementById('int-featured') as HTMLInputElement).checked = !!item.isFeatured;
+        (document.getElementById('int-popular') as HTMLInputElement).checked = !!item.isPopular;
+
+        modal.classList.remove('hidden');
+      });
+    });
+
+    // Form submit
+    form?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const id = (document.getElementById('int-id') as HTMLInputElement).value;
+      const name = (document.getElementById('int-name') as HTMLInputElement).value;
+      const slug = (document.getElementById('int-slug') as HTMLInputElement).value;
+      const category = (document.getElementById('int-category') as HTMLSelectElement)
+        .value as MarketingIntegrationCategory;
+      const iconKey = (document.getElementById('int-icon-key') as HTMLSelectElement).value;
+      const logoUrl = (document.getElementById('int-logo-url') as HTMLInputElement).value;
+      const shortDescription = (document.getElementById('int-short-desc') as HTMLInputElement)
+        .value;
+      const overview = (document.getElementById('int-overview') as HTMLTextAreaElement).value;
+      const steps = [
+        (document.getElementById('int-step-1') as HTMLInputElement).value,
+        (document.getElementById('int-step-2') as HTMLInputElement).value,
+        (document.getElementById('int-step-3') as HTMLInputElement).value,
+      ].filter(Boolean);
+      const benefits = [
+        (document.getElementById('int-benefit-1') as HTMLInputElement).value,
+        (document.getElementById('int-benefit-2') as HTMLInputElement).value,
+        (document.getElementById('int-benefit-3') as HTMLInputElement).value,
+        (document.getElementById('int-benefit-4') as HTMLInputElement).value,
+      ].filter(Boolean);
+      const status = (document.getElementById('int-status') as HTMLSelectElement)
+        .value as CmsLifecycleStatus;
+      const isFeatured = (document.getElementById('int-featured') as HTMLInputElement).checked;
+      const isPopular = (document.getElementById('int-popular') as HTMLInputElement).checked;
+
+      await upsertIntegration({
+        id: id || undefined,
+        name,
+        slug: slug || undefined,
+        category,
+        iconKey,
+        logoUrl: logoUrl || undefined,
+        shortDescription,
+        overview,
+        howItWorksSteps: steps,
+        businessBenefits: benefits,
+        status,
+        isFeatured,
+        isPopular,
+      });
+
+      window.location.reload();
+    });
+
+    // Status select change
+    document.querySelectorAll('.status-select').forEach((sel) => {
+      sel.addEventListener('change', async (e) => {
+        const target = e.target as HTMLSelectElement;
+        const id = target.getAttribute('data-id');
+        if (id) {
+          await updateItemStatus('integrations', id, target.value as CmsLifecycleStatus);
+        }
+      });
+    });
+
+    // Delete handler
+    document.querySelectorAll('.delete-integration-btn').forEach((btn) => {
+      btn.addEventListener('click', async () => {
+        const id = btn.getAttribute('data-id');
+        if (id && confirm('Delete this integration from CMS?')) {
+          await deleteCmsItem('integrations', id);
+          window.location.reload();
+        }
+      });
+    });
+  });
+</script>

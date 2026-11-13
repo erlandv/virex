@@ -1,4 +1,7 @@
 ---
+/**
+ * MarkChat Kenya — Book a Live Demo
+ */
 import MarketingLayout from '@/layouts/MarketingLayout.astro';
 import DemoRequestForm from '@forms/DemoRequestForm.astro';
 import { Icon } from 'astro-icon/components';
@@ -7,68 +10,75 @@ import { siteConfig } from '@/config';
 const benefits = [
   {
     icon: 'lucide:presentation',
-    title: 'Personalized Demo',
-    description: 'See how Virex can solve your specific deployment challenges.',
+    title: 'Live STK Prompt Demo',
+    description:
+      'Experience an instant /stk payment prompt sent directly to your phone in real time.',
   },
   {
     icon: 'lucide:message-circle',
-    title: 'Expert Guidance',
-    description: 'Get answers to your technical questions from our solutions team.',
+    title: 'Kenyan Commerce Guidance',
+    description:
+      'Learn how to set up your Safaricom Paybill, Till, or Pochi la Biashara line in under 5 minutes.',
   },
   {
     icon: 'lucide:calculator',
-    title: 'Custom Pricing',
-    description: 'Receive a tailored quote based on your team size and needs.',
+    title: 'Bulk SMS Carrier Rates',
+    description:
+      'Review Africa’s Talking SMS pricing bundles vs Bring Your Own Carrier (BYOC) zero markup.',
   },
   {
-    icon: 'lucide:rocket',
-    title: 'Migration Support',
-    description: 'Learn about our white-glove migration assistance program.',
+    icon: 'lucide:sparkles',
+    title: 'Markcopilot AI Demonstration',
+    description:
+      'See how Markcopilot understands Sheng, Swahili, and English to answer catalog questions 24/7.',
   },
 ];
 
 const faqs = [
   {
-    question: 'How long is the demo?',
-    answer: 'Demos typically last 30-45 minutes, including time for Q&A.',
-  },
-  {
-    question: 'Who should attend?',
+    question: 'How long does the demonstration take?',
     answer:
-      'We recommend including technical decision-makers and team leads who will be using the platform.',
+      'Demos typically take 20 to 30 minutes, including guided STK checkout simulations and Q&A with our Nairobi engineering team.',
   },
   {
-    question: 'Is there any commitment?',
-    answer: 'No commitment required. The demo is completely free with no strings attached.',
+    question: 'Do I need my own Safaricom Paybill before the demo?',
+    answer:
+      'No! You can test using our sandbox shortcode or learn how to pair your personal/Pochi line with our Android SMS forwarder.',
   },
   {
-    question: 'Can I get a trial after the demo?',
-    answer: 'Yes! We offer extended trials for teams evaluating Virex for enterprise use.',
+    question: 'Can you show us multi-agent inbox workflows?',
+    answer:
+      'Yes! We demonstrate how 5+ agents handle customer inquiries concurrently on a single official WhatsApp number.',
+  },
+  {
+    question: 'Is there any commitment required?',
+    answer:
+      'Zero commitment. The demonstration is 100% free and includes 50 trial SMS credits to continue testing on your own.',
   },
 ];
 ---
 
 <MarketingLayout
-  title={`Request a Demo - ${siteConfig.name}`}
-  description="Schedule a personalized demo with our team and see how Virex can transform your deployment workflow."
+  title={`Book a Live Demo - ${siteConfig.name}`}
+  description="Schedule a guided demonstration of MarkChat with our Nairobi team. See in-chat M-Pesa STK push and Markcopilot AI in action."
 >
   <section class="py-section bg-background">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16">
-        {/* Left: Content */}
+        <!-- Left: Content -->
         <div>
           <span
             class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-primary/10 text-primary mb-4"
           >
-            Book a Demo
+            🇰🇪 Live Nairobi Walkthrough
           </span>
-          <h1 class="text-4xl sm:text-5xl font-bold text-text mb-6">See Virex in Action</h1>
+          <h1 class="text-4xl sm:text-5xl font-bold text-text mb-6">See MarkChat in Action</h1>
           <p class="text-xl text-text-muted mb-8 leading-relaxed">
-            Get a personalized walkthrough of our platform and discover how Virex can help your team
-            deploy faster, scale effortlessly, and ship with confidence.
+            Get a personalized walkthrough with our Kenyan solutions engineers and discover how
+            MarkChat turns customer chats into instant, verified M-Pesa sales.
           </p>
 
-          {/* Benefits */}
+          <!-- Benefits -->
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-12">
             {
               benefits.map((benefit) => (
@@ -85,48 +95,51 @@ const faqs = [
             }
           </div>
 
-          {/* Social proof */}
+          <!-- Social proof -->
           <div class="flex items-center gap-4 p-4 rounded-xl bg-surface border border-border">
             <div class="flex -space-x-2">
               {
-                [1, 2, 3, 4].map((i) => (
-                  <div class="w-10 h-10 rounded-full bg-primary/20 border-2 border-background flex items-center justify-center text-xs font-medium text-primary">
-                    {String.fromCharCode(64 + i)}
+                ['KW', 'JO', 'EM', 'SC'].map((initials) => (
+                  <div class="w-10 h-10 rounded-full bg-primary/20 border-2 border-background flex items-center justify-center text-xs font-semibold text-primary">
+                    {initials}
                   </div>
                 ))
               }
             </div>
             <div>
-              <p class="text-sm font-medium text-text">Join 10,000+ teams</p>
-              <p class="text-xs text-text-muted">who trust Virex for deployments</p>
+              <p class="text-sm font-medium text-text">Trusted by 2,400+ Kenyan Businesses</p>
+              <p class="text-xs text-text-muted">
+                Retail shops, clinics, salons, and e-commerce across Nairobi &amp; Mombasa
+              </p>
             </div>
           </div>
         </div>
 
-        {/* Right: Form */}
-        <div class="lg:pl-8">
-          <div class="bg-surface border border-border rounded-2xl p-8">
-            <h2 class="text-2xl font-bold text-text mb-6">Schedule Your Demo</h2>
-            <DemoRequestForm />
-          </div>
+        <!-- Right: Form Card -->
+        <div class="p-8 sm:p-10 rounded-2xl bg-surface border border-border shadow-xl">
+          <h2 class="text-2xl font-bold text-text mb-2">Request Your Live Walkthrough</h2>
+          <p class="text-sm text-text-muted mb-6">
+            Fill in your details below and our team will get in touch via WhatsApp or phone.
+          </p>
+          <DemoRequestForm />
         </div>
       </div>
-    </div>
-  </section>
 
-  {/* FAQ Section */}
-  <section class="py-section bg-surface">
-    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-      <h2 class="text-2xl font-bold text-text text-center mb-8">Frequently Asked Questions</h2>
-      <div class="space-y-4">
-        {
-          faqs.map((faq) => (
-            <div class="p-6 rounded-xl bg-background border border-border">
-              <h3 class="font-semibold text-text mb-2">{faq.question}</h3>
-              <p class="text-text-muted">{faq.answer}</p>
-            </div>
-          ))
-        }
+      <!-- FAQ Section -->
+      <div class="mt-20 pt-16 border-t border-border">
+        <h2 class="text-2xl font-bold text-text text-center mb-10">
+          Frequently Asked Demo Questions
+        </h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+          {
+            faqs.map((faq) => (
+              <div class="p-6 rounded-xl bg-surface border border-border">
+                <h3 class="font-semibold text-text mb-2">{faq.question}</h3>
+                <p class="text-sm text-text-muted leading-relaxed">{faq.answer}</p>
+              </div>
+            ))
+          }
+        </div>
       </div>
     </div>
   </section>

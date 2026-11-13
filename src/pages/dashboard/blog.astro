@@ -1,0 +1,467 @@
+---
+/**
+ * MarkChat CMS — Blog & Resource Manager
+ */
+import DashboardLayout from '@/layouts/DashboardLayout.astro';
+import Card from '@dashboard-ui/Card.astro';
+import Modal from '@dashboard-ui/Modal.astro';
+import { Icon } from 'astro-icon/components';
+import { fetchBlogPosts } from '@/lib/cms-api';
+
+const posts = await fetchBlogPosts();
+---
+
+<DashboardLayout
+  title="Blog & Resource Manager"
+  description="Manage Kenyan commerce articles, technical guides, and announcements"
+  breadcrumbs={[{ label: 'Dashboard', href: '/dashboard' }, { label: 'Blog & Articles' }]}
+>
+  <div class="cms-blog-page">
+    <div class="page-header flex justify-between items-center mb-6">
+      <div>
+        <h1 class="text-2xl font-bold tracking-tight text-text">
+          Blog &amp; Knowledge Base Manager
+        </h1>
+        <p class="text-sm text-text-muted mt-1">
+          Publish and edit articles on M-Pesa STK checkout, Meta Cloud API, and Bulk SMS strategies.
+        </p>
+      </div>
+      <div class="header-actions flex gap-3">
+        <a href="/blog" target="_blank" class="btn btn-secondary text-sm">
+          <Icon name="lucide:external-link" class="w-4 h-4 mr-1.5 inline" />
+          View Live Blog
+        </a>
+        <button type="button" id="open-create-modal" class="btn btn-primary text-sm">
+          <Icon name="lucide:plus" class="w-4 h-4 mr-1.5 inline" />
+          Add New Article
+        </button>
+      </div>
+    </div>
+
+    <Card
+      title="Published & Staged Articles"
+      description="Lifecycle management: Published, Draft, Paused, and Archived"
+      padding="none"
+    >
+      <div class="table-responsive">
+        <table class="cms-table w-full">
+          <thead>
+            <tr>
+              <th class="text-left py-3 px-4">Title &amp; Slug</th>
+              <th class="text-left py-3 px-4">Category</th>
+              <th class="text-left py-3 px-4">Author</th>
+              <th class="text-left py-3 px-4">Status</th>
+              <th class="text-right py-3 px-4">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="blog-table-body">
+            {
+              posts.map((post) => (
+                <tr data-id={post.id} data-post={JSON.stringify(post)}>
+                  <td class="py-3 px-4">
+                    <div class="font-medium text-text">{post.title}</div>
+                    <div class="text-xs font-mono text-text-muted">/blog/{post.slug}</div>
+                  </td>
+                  <td class="py-3 px-4 text-xs">
+                    <span class="inline-block bg-surface-hover px-2 py-0.5 rounded border border-border">
+                      {post.category}
+                    </span>
+                  </td>
+                  <td class="py-3 px-4 text-xs text-text-muted">{post.author.name}</td>
+                  <td class="py-3 px-4 text-xs">
+                    <span class={`status-pill status-${post.status}`}>
+                      {post.status.toUpperCase()}
+                    </span>
+                  </td>
+                  <td class="py-3 px-4 text-right">
+                    <div class="flex items-center justify-end gap-2">
+                      <button
+                        type="button"
+                        class="action-btn edit-post-btn"
+                        data-id={post.id}
+                        title="Edit Article"
+                      >
+                        <Icon name="lucide:edit-3" class="w-4 h-4" />
+                      </button>
+                      <select class="status-select text-xs" data-id={post.id}>
+                        <option value="published" selected={post.status === 'published'}>
+                          Published
+                        </option>
+                        <option value="draft" selected={post.status === 'draft'}>
+                          Draft
+                        </option>
+                        <option value="paused" selected={post.status === 'paused'}>
+                          Paused
+                        </option>
+                        <option value="archived" selected={post.status === 'archived'}>
+                          Archived
+                        </option>
+                      </select>
+                      <button
+                        type="button"
+                        class="action-btn text-error delete-post-btn"
+                        data-id={post.id}
+                        title="Delete"
+                      >
+                        <Icon name="lucide:trash-2" class="w-4 h-4" />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))
+            }
+          </tbody>
+        </table>
+      </div>
+    </Card>
+
+    <!-- Modal for Create / Edit Article -->
+    <Modal id="post-modal" title="Article Editor" size="lg">
+      <form id="post-form" class="space-y-4">
+        <input type="hidden" id="post-id" name="id" />
+
+        <div class="form-group">
+          <label class="form-label" for="post-title">Article Title *</label>
+          <input
+            type="text"
+            id="post-title"
+            name="title"
+            class="form-input"
+            required
+            placeholder="e.g. How to Automate M-Pesa STK in WhatsApp"
+          />
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div class="form-group">
+            <label class="form-label" for="post-slug">URL Slug</label>
+            <input
+              type="text"
+              id="post-slug"
+              name="slug"
+              class="form-input"
+              placeholder="auto-generated-from-title"
+            />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="post-category">Category</label>
+            <select id="post-category" name="category" class="form-input">
+              <option value="Fintech & Security">Fintech &amp; Security</option>
+              <option value="Product Guides">Product Guides</option>
+              <option value="Bulk Messaging">Bulk Messaging</option>
+              <option value="Artificial Intelligence">Artificial Intelligence</option>
+              <option value="Commerce Stories">Commerce Stories</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div class="form-group">
+            <label class="form-label" for="post-author-name">Author Name</label>
+            <input
+              type="text"
+              id="post-author-name"
+              name="authorName"
+              class="form-input"
+              value="MarkChat Editorial"
+            />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="post-status">Lifecycle Status</label>
+            <select id="post-status" name="status" class="form-input">
+              <option value="published">Published (Live)</option>
+              <option value="draft">Draft (Unpublished)</option>
+              <option value="paused">Paused (Temporarily Hidden)</option>
+              <option value="archived">Archived</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="post-excerpt">Short Summary / Excerpt *</label>
+          <textarea
+            id="post-excerpt"
+            name="excerpt"
+            rows="2"
+            class="form-textarea"
+            required
+            placeholder="Brief preview text..."></textarea>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="post-content">Article Content (Markdown Supported) *</label
+          >
+          <textarea
+            id="post-content"
+            name="content"
+            rows="6"
+            class="form-textarea"
+            required
+            placeholder="Write article content here..."></textarea>
+        </div>
+      </form>
+
+      <div slot="footer" class="flex justify-end gap-3">
+        <button type="button" class="btn btn-secondary" onclick="window.closeModal('post-modal')">
+          Cancel
+        </button>
+        <button type="submit" form="post-form" class="btn btn-primary"> Save Article </button>
+      </div>
+    </Modal>
+  </div>
+</DashboardLayout>
+
+<style>
+  .cms-blog-page {
+    max-width: 80rem;
+    margin: 0 auto;
+  }
+
+  .table-responsive {
+    overflow-x: auto;
+  }
+
+  .cms-table {
+    border-collapse: collapse;
+    width: 100%;
+    font-size: 0.875rem;
+  }
+
+  .cms-table th {
+    background: var(--color-surface-hover, #1f1f23);
+    color: var(--color-text-muted, #a1a1aa);
+    font-weight: 600;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-bottom: 1px solid var(--color-border, #27272a);
+  }
+
+  .cms-table td {
+    border-bottom: 1px solid var(--color-border, #27272a);
+  }
+
+  .status-pill {
+    padding: 0.2rem 0.5rem;
+    border-radius: 9999px;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.025em;
+  }
+
+  .status-published {
+    background: rgba(34, 197, 94, 0.15);
+    color: #4ade80;
+  }
+
+  .status-draft {
+    background: rgba(234, 179, 8, 0.15);
+    color: #facc15;
+  }
+
+  .status-paused {
+    background: rgba(59, 130, 246, 0.15);
+    color: #60a5fa;
+  }
+
+  .status-archived {
+    background: rgba(148, 163, 184, 0.15);
+    color: #94a3b8;
+  }
+
+  .action-btn {
+    background: transparent;
+    border: none;
+    color: var(--color-text-muted, #a1a1aa);
+    cursor: pointer;
+    padding: 0.35rem;
+    border-radius: var(--radius-sm, 0.25rem);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .action-btn:hover {
+    color: var(--color-text, #fafafa);
+    background: var(--color-surface-hover, #1f1f23);
+  }
+
+  .status-select {
+    padding: 0.25rem 0.5rem;
+    background: var(--color-surface, #141418);
+    border: 1px solid var(--color-border, #27272a);
+    border-radius: var(--radius-sm, 0.25rem);
+    color: var(--color-text, #fafafa);
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+
+  .form-label {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--color-text, #fafafa);
+  }
+
+  .form-input,
+  .form-textarea {
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.875rem;
+    background: var(--color-surface, #141418);
+    border: 1px solid var(--color-border, #27272a);
+    border-radius: var(--radius-md, 0.5rem);
+    color: var(--color-text, #fafafa);
+  }
+
+  .form-input:focus,
+  .form-textarea:focus {
+    outline: none;
+    border-color: var(--color-primary, #6366f1);
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    border-radius: var(--radius-md, 0.5rem);
+    cursor: pointer;
+    transition: all 150ms ease;
+    text-decoration: none;
+    border: 1px solid transparent;
+  }
+
+  .btn-primary {
+    background: var(--color-primary, #6366f1);
+    color: #ffffff;
+  }
+
+  .btn-secondary {
+    background: var(--color-surface, #141418);
+    border-color: var(--color-border, #27272a);
+    color: var(--color-text, #fafafa);
+  }
+</style>
+
+<script>
+  import {
+    upsertBlogPost,
+    updateItemStatus,
+    deleteCmsItem,
+    type CmsLifecycleStatus,
+  } from '@/lib/cms-api';
+
+  function initBlogAdmin() {
+    const createBtn = document.getElementById('open-create-modal');
+    const form = document.getElementById('post-form') as HTMLFormElement;
+
+    if (createBtn) {
+      createBtn.addEventListener('click', () => {
+        form?.reset();
+        (document.getElementById('post-id') as HTMLInputElement).value = '';
+        window.openModal?.('post-modal');
+      });
+    }
+
+    // Edit button listeners
+    document.querySelectorAll('.edit-post-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const row = btn.closest('tr');
+        if (!row) return;
+        const postData = JSON.parse(row.getAttribute('data-post') || '{}');
+        (document.getElementById('post-id') as HTMLInputElement).value = postData.id || '';
+        (document.getElementById('post-title') as HTMLInputElement).value = postData.title || '';
+        (document.getElementById('post-slug') as HTMLInputElement).value = postData.slug || '';
+        (document.getElementById('post-category') as HTMLSelectElement).value =
+          postData.category || 'Fintech & Security';
+        (document.getElementById('post-author-name') as HTMLInputElement).value =
+          postData.author?.name || 'MarkChat Editorial';
+        (document.getElementById('post-status') as HTMLSelectElement).value =
+          postData.status || 'published';
+        (document.getElementById('post-excerpt') as HTMLTextAreaElement).value =
+          postData.excerpt || '';
+        (document.getElementById('post-content') as HTMLTextAreaElement).value =
+          postData.content || '';
+        window.openModal?.('post-modal');
+      });
+    });
+
+    // Form submission
+    if (form) {
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const id = (document.getElementById('post-id') as HTMLInputElement).value;
+        const title = (document.getElementById('post-title') as HTMLInputElement).value;
+        const slug = (document.getElementById('post-slug') as HTMLInputElement).value;
+        const category = (document.getElementById('post-category') as HTMLSelectElement).value;
+        const authorName = (document.getElementById('post-author-name') as HTMLInputElement).value;
+        const status = (document.getElementById('post-status') as HTMLSelectElement)
+          .value as CmsLifecycleStatus;
+        const excerpt = (document.getElementById('post-excerpt') as HTMLTextAreaElement).value;
+        const content = (document.getElementById('post-content') as HTMLTextAreaElement).value;
+
+        await upsertBlogPost({
+          id: id || undefined,
+          title,
+          slug,
+          category,
+          author: { name: authorName, role: 'Staff Writer' },
+          status,
+          excerpt,
+          content,
+        });
+
+        window.closeModal?.('post-modal');
+        if (window.showToast) {
+          window.showToast({
+            message: 'Article saved successfully!',
+            variant: 'success',
+            duration: 3000,
+          });
+        }
+        setTimeout(() => window.location.reload(), 600);
+      });
+    }
+
+    // Status quick change
+    document.querySelectorAll('.status-select').forEach((sel) => {
+      sel.addEventListener('change', async (e) => {
+        const id = sel.getAttribute('data-id');
+        const status = (e.target as HTMLSelectElement).value as CmsLifecycleStatus;
+        if (id) {
+          await updateItemStatus('blogs', id, status);
+          if (window.showToast) {
+            window.showToast({
+              message: `Status updated to ${status}`,
+              variant: 'success',
+              duration: 2500,
+            });
+          }
+        }
+      });
+    });
+
+    // Delete post
+    document.querySelectorAll('.delete-post-btn').forEach((btn) => {
+      btn.addEventListener('click', async () => {
+        const id = btn.getAttribute('data-id');
+        if (id && confirm('Are you sure you want to delete this article?')) {
+          await deleteCmsItem('blogs', id);
+          btn.closest('tr')?.remove();
+          if (window.showToast) {
+            window.showToast({ message: 'Article deleted', variant: 'success', duration: 2500 });
+          }
+        }
+      });
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', initBlogAdmin);
+  document.addEventListener('astro:page-load', initBlogAdmin);
+</script>

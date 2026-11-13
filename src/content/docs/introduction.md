@@ -1,52 +1,27 @@
 ---
-title: "Introduction"
-description: "Welcome to Virex—the modern platform for building and shipping software faster. Learn what Virex is and how it can help your team."
-section: "Getting Started"
+title: "Introduction to MarkChat"
+description: "Quickstart guide to MarkChat’s omnichannel inbox, in-chat M-Pesa STK push, and Markcopilot AI."
 order: 1
+section: "Getting Started"
 draft: false
 ---
 
-Welcome to Virex! This documentation will help you get up and running quickly and make the most of the platform.
+Welcome to **MarkChat** — the conversational commerce and omnichannel communication platform built specifically for Kenyan enterprises and fast-growing SMEs.
 
-## What is Virex?
+## Why MarkChat?
 
-Virex is a modern development platform designed to help teams build, deploy, and scale applications with confidence. We handle the infrastructure complexity so you can focus on building great products.
+Traditional customer service tools are designed for Western email-first workflows. In Kenya, business happens over WhatsApp, SMS, and Safaricom M-Pesa. MarkChat brings these native Kenyan commerce channels into a unified, collaborative team inbox.
 
-### Key Features
+### Core Capabilities
+- **In-Chat M-Pesa Checkout (`/stk`):** Prompt STK pushes to customer phones with a single command.
+- **Automated C2B Receipting:** Prevent fake SMS screenshot fraud with real-time server-side verification.
+- **4 Payment Modes:** Dedicated Paybill/Till (Daraja), Shared Bank Paybills (Equity, KCB, Co-op), Pochi la Biashara SMS sync, and SMS-Only mode.
+- **Africa’s Talking Bulk SMS:** 50 free credits on registration + BYOC zero-markup support.
+- **Markcopilot Dual-Mode AI:** 24/7 Swahili, Sheng, and English support for customers and agents.
 
-- **Instant Deployments** — Push code and see it live in seconds, not minutes
-- **Automatic Scaling** — Handle traffic spikes without manual intervention
-- **Built-in Analytics** — Understand how your application performs in production
-- **Team Collaboration** — Work together seamlessly with real-time features
+## Next Steps
+- [Configure Safaricom M-Pesa Daraja](/docs/mpesa-setup)
+- [Connect Africa's Talking Bulk SMS](/docs/sms-gateway)
+- [Set up WhatsApp Cloud API](/docs/whatsapp-cloud)
+- [Activate Markcopilot AI](/docs/markcopilot-ai)
 
-## Who is Virex For?
-
-Virex is built for:
-
-- **Startups** looking to move fast without sacrificing reliability
-- **Growing teams** that need to scale their infrastructure alongside their product
-- **Enterprise organizations** requiring security, compliance, and control
-
-## Core Concepts
-
-Before diving in, here are a few concepts you'll encounter:
-
-### Projects
-
-A project is your application. It contains your code, configuration, and deployment history.
-
-### Environments
-
-Environments are isolated instances of your project. Most teams use staging and production environments, but you can create as many as you need.
-
-### Deployments
-
-A deployment is a specific version of your code running in an environment. Virex keeps a history of all deployments, making rollbacks instant.
-
-## Getting Help
-
-- **Documentation** — You're here! Browse the sidebar for detailed guides
-- **Discord Community** — Join thousands of developers in our [Discord server](https://discord.gg/virex)
-- **Support** — Enterprise customers can reach our support team directly
-
-Ready to get started? Head to the [Installation guide](/docs/installation) to set up your first project.

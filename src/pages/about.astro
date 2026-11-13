@@ -1,122 +1,114 @@
 ---
+/**
+ * MarkChat Kenya — About Us
+ */
 import MarketingLayout from '@/layouts/MarketingLayout.astro';
 import PageHeader from '@sections/content/PageHeader.astro';
 import StatsSection from '@sections/social-proof/StatsSection.astro';
-import VideoEmbed from '@sections/content/VideoEmbed.astro';
 import ValuesSection from '@sections/team/ValuesSection.astro';
 import TeamSection from '@sections/team/TeamSection.astro';
-import ContentSection from '@sections/content/ContentSection.astro';
 import CTA from '@sections/marketing/CTA.astro';
 import { siteConfig } from '@/config';
 
 const team = [
   {
-    name: 'Sarah Mitchell',
+    name: 'Kevin Otieno',
     role: 'CEO & Co-founder',
-    bio: 'Former infrastructure lead at a major cloud provider. Sarah started Virex to make deployment accessible to every developer.',
-    avatar: '/images/team/sarah-mitchell.webp',
+    bio: 'Former fintech infrastructure engineer in Nairobi. Kevin founded MarkChat to solve the epidemic of fake M-Pesa screenshot fraud in chat commerce.',
+    avatar: '/images/team/kevin-otieno.webp',
   },
   {
-    name: 'James Chen',
+    name: 'Faith Mwangi',
     role: 'CTO & Co-founder',
-    bio: 'Built distributed systems at scale for 15 years. James leads our engineering team and architecture decisions.',
-    avatar: '/images/team/james-chen.webp',
+    bio: 'Pioneered high-throughput webhook pipelines for Safaricom Daraja and Meta Cloud API across East Africa.',
+    avatar: '/images/team/faith-mwangi.webp',
   },
   {
-    name: 'Maria Rodriguez',
-    role: 'VP of Product',
-    bio: 'Product leader with a passion for developer tools. Maria ensures every feature we ship solves real problems.',
-    avatar: '/images/team/maria-rodriguez.webp',
+    name: 'Brian Kiprop',
+    role: 'Head of Telecommunications',
+    bio: 'Telecommunications routing specialist with 8+ years optimizing Africa’s Talking and local carrier SMS delivery.',
+    avatar: '/images/team/brian-kiprop.webp',
   },
   {
-    name: 'David Kim',
-    role: 'VP of Engineering',
-    bio: 'Scaling expert who loves building reliable systems. David leads our platform and infrastructure teams.',
-    avatar: '/images/team/david-kim.webp',
+    name: 'Amina Hassan',
+    role: 'Head of AI & NLP',
+    bio: 'Natural language processing researcher leading the development of Markcopilot’s Swahili, Sheng, and English retail models.',
+    avatar: '/images/team/amina-hassan.webp',
   },
 ];
 
 const values = [
   {
-    title: 'Developer First',
+    title: 'Built for Kenya First',
     description:
-      'We build for developers because we are developers. Every decision starts with how it impacts the people using our platform.',
+      'We design exclusively for local commerce reality: Safaricom Paybill, Buy Goods Tills, Pochi la Biashara, and WhatsApp-driven sales.',
   },
   {
-    title: 'Simplicity Wins',
+    title: 'Zero Payment Fraud',
     description:
-      'Complex problems deserve simple solutions. We work hard to hide complexity so you can focus on building.',
+      'We protect hardworking merchants from counterfeit M-Pesa SMS screenshots by cryptographically validating every TransID server-side.',
   },
   {
-    title: 'Reliability Matters',
+    title: 'Conversational Speed',
     description:
-      'Your users depend on your app, and you depend on us. We take that responsibility seriously.',
+      'Every second a customer waits for a Till number is an abandoned sale. We prompt instant STK PIN popups in under 10 seconds.',
   },
   {
-    title: 'Transparency Always',
+    title: 'Radical Simplicity',
     description:
-      'No hidden fees, no surprise limits, no confusing pricing. What you see is what you get.',
+      'No complex enterprise installations. Onboard your sales team, connect your WhatsApp number, and start selling today.',
   },
 ];
 
 const stats = [
-  { value: '50K+', label: 'Developers' },
-  { value: '10M+', label: 'Deployments' },
-  { value: '99.99%', label: 'Uptime' },
-  { value: '200+', label: 'Edge Locations' },
+  { value: '6 Channels', label: 'Unified in One Inbox' },
+  { value: 'Direct C2B', label: 'Safaricom Webhook Sync' },
+  { value: 'BYOC', label: 'Africa’s Talking Support' },
+  { value: '< 10s', label: 'Direct /stk Prompt Delivery' },
 ];
+
+const APP_URL = import.meta.env.PUBLIC_APP_URL || 'http://localhost:3000';
 ---
 
 <MarketingLayout
-  title={`About - ${siteConfig.name}`}
-  description="Learn about the team and mission behind Virex, the modern deployment platform for developers."
+  title={`About Us - ${siteConfig.name}`}
+  description="Learn about MarkChat Kenya: our Nairobi engineering team, mission to stop fake M-Pesa screenshots, and omnichannel commerce platform."
 >
-  <PageHeader title="We're building the future of deployment" align="left" maxWidth="lg">
+  <PageHeader
+    title="Empowering African Commerce Through Instant Conversational Sales"
+    align="left"
+    maxWidth="lg"
+  >
     <p class="mt-6 text-lg text-text-muted leading-relaxed">
-      Virex started with a simple observation: deploying applications shouldn't be hard. Yet
-      developers everywhere were spending hours configuring CI/CD pipelines, managing
-      infrastructure, and debugging deployment issues.
+      MarkChat was born in Westlands, Nairobi, out of a simple observation: Kenyan merchants were
+      closing over 70% of their sales on WhatsApp, Instagram, and SMS, but payment collection
+      remained manual, error-prone, and vulnerable to counterfeit M-Pesa confirmation screenshots.
     </p>
     <p class="mt-4 text-lg text-text-muted leading-relaxed">
-      We founded Virex in 2021 to change that. Our mission is to make deployment so simple that it
-      disappears—letting developers focus entirely on building great products.
+      We united official Meta WhatsApp Cloud API, Africa’s Talking Bulk SMS, and Safaricom Daraja
+      STK push into one seamless platform. Today, thousands of retail stores, pharmacies, salons,
+      and logistics businesses use MarkChat to turn conversations into confirmed mobile money
+      revenue.
     </p>
   </PageHeader>
 
   <StatsSection stats={stats} background="muted" />
 
-  <VideoEmbed
-    title="See Virex in action"
-    subtitle="Watch how easy it is to deploy your first application in under 2 minutes."
-    videoId="dQw4w9WgXcQ"
-    provider="youtube"
-    maxWidth="lg"
-    background="default"
-  />
+  <ValuesSection title="Our Core Principles" items={values} variant="card" background="default" />
 
-  <ValuesSection
-    title="Our values"
-    items={values}
-    variant="card"
-    columns={2}
-    background="default"
-  />
-
-  <TeamSection title="Meet the team" members={team} columns={4} background="muted" />
-
-  <ContentSection
-    title="Backed by the best"
-    content={[
-      "We're proud to be backed by leading investors who share our vision for the future of developer tools. Our investors include top-tier venture capital firms and angels who have built and scaled developer-focused companies.",
-      "With their support, we're building a platform that will serve millions of developers worldwide.",
-    ]}
-    background="default"
+  <TeamSection
+    title="The Nairobi Team Behind MarkChat"
+    subtitle="Engineers, fintech operators, and telecommunications specialists dedicated to African merchant success."
+    members={team}
+    columns={4}
+    background="muted"
   />
 
   <CTA
-    title="Join us on our mission"
-    description="We're always looking for talented people who want to make deployment better for everyone."
-    action={{ label: 'View Open Positions', href: '/careers' }}
-    background="muted"
+    title="Ready to accelerate your conversational sales?"
+    description="Sign up in 30 seconds. 50 free Bulk SMS credits included on all accounts."
+    action={{ label: 'Get Started Free', href: `${APP_URL}/app/auth/signup` }}
+    secondaryAction={{ label: 'Explore Open Careers', href: '/careers' }}
+    background="default"
   />
 </MarketingLayout>

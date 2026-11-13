@@ -91,7 +91,7 @@ function getAnnualPrice(monthlyPrice: number): number {
 }
 
 function formatPrice(price: number): string {
-  return price === 0 ? '$0' : `$${price}`;
+  return price === 0 ? 'KES 0' : `KES ${price.toLocaleString()}`;
 }
 ---
 

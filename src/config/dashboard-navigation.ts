@@ -1,67 +1,65 @@
 /**
- * Dashboard Navigation Configuration
+ * Dashboard Navigation Configuration for MarkChat Single-Admin Website CMS
  *
- * @description
- * Defines the sidebar navigation structure for dashboard pages.
- * Supports nested navigation (up to 2 levels) and section headers.
+ * Defines the 6 core CMS routes:
+ * 1. Overview / Command Center (/dashboard)
+ * 2. Pricing & Plan Feature Matrix (/dashboard/pricing)
+ * 3. Blog & Resources (/dashboard/blog)
+ * 4. Careers & Applicants (/dashboard/careers)
+ * 5. FAQs Manager (/dashboard/faqs)
+ * 6. Inbound Leads & Demo Requests (/dashboard/leads)
  */
 
 export interface DashboardNavItem {
   label: string;
   href: string;
-  icon: string; // Lucide icon name
+  icon: string; // Lucide icon name without prefix
   children?: DashboardNavItem[];
 }
 
 export interface DashboardNavSection {
-  title?: string; // Optional section header
+  title?: string;
   items: DashboardNavItem[];
 }
 
 export const dashboardNavigation: DashboardNavSection[] = [
   {
+    title: 'CMS Administration',
     items: [
       {
-        label: 'Overview',
+        label: 'Command Center',
         href: '/dashboard',
         icon: 'layout-dashboard',
       },
-    ],
-  },
-  {
-    title: 'Management',
-    items: [
       {
-        label: 'Projects',
-        href: '/dashboard/projects',
-        icon: 'folder',
+        label: 'Pricing & Plans',
+        href: '/dashboard/pricing',
+        icon: 'credit-card',
       },
       {
-        label: 'Team',
-        href: '/dashboard/settings/team',
-        icon: 'users',
+        label: 'Blog & Articles',
+        href: '/dashboard/blog',
+        icon: 'file-text',
       },
-    ],
-  },
-  {
-    title: 'Settings',
-    items: [
       {
-        label: 'Settings',
-        href: '/dashboard/settings',
-        icon: 'settings',
-        children: [
-          {
-            label: 'Profile',
-            href: '/dashboard/settings/profile',
-            icon: 'user',
-          },
-          {
-            label: 'Billing',
-            href: '/dashboard/settings/billing',
-            icon: 'credit-card',
-          },
-        ],
+        label: 'Careers & Jobs',
+        href: '/dashboard/careers',
+        icon: 'briefcase',
+      },
+      {
+        label: 'Integrations',
+        href: '/dashboard/integrations',
+        icon: 'blocks',
+      },
+      {
+        label: 'FAQs',
+        href: '/dashboard/faqs',
+        icon: 'help-circle',
+      },
+      {
+        label: 'Inbound Leads',
+        href: '/dashboard/leads',
+        icon: 'inbox',
       },
     ],
   },

@@ -1,0 +1,357 @@
+---
+/**
+ * MarkcopilotExplainer - Interactive Tabbed Node Tree
+ *
+ * Demonstrates how Markcopilot ingests Kenyan business assets (PDFs, menus, policies)
+ * and operates in Customer 24/7 Mode vs Agent Copilot Mode.
+ */
+import { Icon } from 'astro-icon/components';
+---
+
+<section class="py-16 sm:py-24 bg-background">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center max-w-3xl mx-auto mb-12">
+      <div
+        class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 mb-4"
+      >
+        <Icon name="lucide:sparkles" class="w-3.5 h-3.5" />
+        <span>Dual-Mode AI Engine</span>
+      </div>
+      <h2 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-text">
+        Meet Markcopilot: Built for Kenyan Commerce
+      </h2>
+      <p class="mt-4 text-base sm:text-lg text-text-muted">
+        Trained on East African retail speech patterns, local geography, and your business’s actual
+        documents. Fluent in English, Conversational Swahili, and Sheng.
+      </p>
+    </div>
+
+    <!-- Interactive Node Tree Architecture -->
+    <div
+      class="max-w-5xl mx-auto bg-surface border border-border rounded-2xl p-6 sm:p-10 shadow-xl"
+    >
+      <!-- Tabs Selector -->
+      <div
+        class="flex flex-wrap items-center justify-center gap-2 mb-8 p-1 bg-surface-hover rounded-xl border border-border"
+        role="tablist"
+      >
+        <button
+          type="button"
+          class="explainer-tab active"
+          data-tab="ingest"
+          role="tab"
+          aria-selected="true"
+        >
+          <Icon name="lucide:file-text" class="w-4 h-4" />
+          <span>1. Knowledge Ingestion</span>
+        </button>
+        <button
+          type="button"
+          class="explainer-tab"
+          data-tab="customer"
+          role="tab"
+          aria-selected="false"
+        >
+          <Icon name="lucide:bot" class="w-4 h-4" />
+          <span>2. Customer 24/7 Mode</span>
+        </button>
+        <button
+          type="button"
+          class="explainer-tab"
+          data-tab="agent"
+          role="tab"
+          aria-selected="false"
+        >
+          <Icon name="lucide:user-check" class="w-4 h-4" />
+          <span>3. Agent Copilot Mode</span>
+        </button>
+      </div>
+
+      <!-- Tab 1: Knowledge Ingestion -->
+      <div id="tab-ingest" class="tab-panel active">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+          <div>
+            <span class="text-xs font-mono font-semibold text-primary uppercase"
+              >Knowledge Vault Ingestion</span
+            >
+            <h3 class="text-2xl font-bold text-text mt-1">
+              Grounds Every Response in Your True Inventory
+            </h3>
+            <p class="text-sm text-text-muted mt-3 leading-relaxed">
+              Markcopilot never hallucinates prices or makes false promises. Simply drop in your
+              existing shop PDF price sheets, Google Sheets, clinic schedules, or refund guidelines.
+              It extracts stock levels, size variants, delivery zones, and M-Pesa Till instructions
+              automatically.
+            </p>
+            <ul class="mt-4 space-y-2.5 text-xs text-text-muted">
+              <li class="flex items-center gap-2">
+                <Icon name="lucide:check-circle-2" class="w-4 h-4 text-emerald-400" />
+                <span
+                  >PDF Catalogs, Menus, &amp; Price Lists (e.g. Nairobi Hardware &amp; Spares)</span
+                >
+              </li>
+              <li class="flex items-center gap-2">
+                <Icon name="lucide:check-circle-2" class="w-4 h-4 text-emerald-400" />
+                <span>Delivery matrices (CBD KES 150, Westlands KES 250, Upcountry shuttle)</span>
+              </li>
+              <li class="flex items-center gap-2">
+                <Icon name="lucide:check-circle-2" class="w-4 h-4 text-emerald-400" />
+                <span>Return &amp; exchange policies (7-day exchange with original receipt)</span>
+              </li>
+            </ul>
+          </div>
+
+          <div
+            class="bg-background rounded-xl p-5 border border-border shadow-inner font-mono text-xs"
+          >
+            <div
+              class="flex items-center justify-between pb-3 border-b border-border/80 text-text-muted text-[11px]"
+            >
+              <span>knowledge_vault/pricing_2026.pdf</span>
+              <span class="text-emerald-400">Indexed &bull; Ready</span>
+            </div>
+            <div class="mt-3 space-y-2 text-text">
+              <div class="p-2 rounded bg-surface/70 border border-border/50">
+                <span class="text-primary font-bold">Item:</span> Bosch 18V Cordless Drill Set<br />
+                <span class="text-emerald-400 font-bold">Price:</span> KES 14,500 (VAT Incl)<br />
+                <span class="text-text-muted">Warranty:</span> 12 Months Official Service
+              </div>
+              <div class="p-2 rounded bg-surface/70 border border-border/50">
+                <span class="text-primary font-bold">Item:</span> Makita Angle Grinder 900W<br />
+                <span class="text-emerald-400 font-bold">Price:</span> KES 8,200<br />
+                <span class="text-text-muted">Stock:</span> 14 Units in Westlands Branch
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab 2: Customer 24/7 Mode -->
+      <div id="tab-customer" class="tab-panel">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+          <div>
+            <span class="text-xs font-mono font-semibold text-emerald-400 uppercase"
+              >Autonomous Customer Support</span
+            >
+            <h3 class="text-2xl font-bold text-text mt-1">
+              Sheng, Swahili &amp; English Comprehension
+            </h3>
+            <p class="text-sm text-text-muted mt-3 leading-relaxed">
+              When customers message at 11:30 PM, Markcopilot engages naturally, confirms product
+              availability, quotes exact delivery fees for their estate, and triggers M-Pesa `/stk`
+              payment when they confirm readiness.
+            </p>
+            <div class="mt-4 flex flex-wrap gap-2">
+              <span
+                class="px-2.5 py-1 rounded bg-surface-hover border border-border text-xs text-text"
+              >
+                Native Sheng Slang
+              </span>
+              <span
+                class="px-2.5 py-1 rounded bg-surface-hover border border-border text-xs text-text"
+              >
+                Estate-by-Estate Delivery Logic
+              </span>
+              <span
+                class="px-2.5 py-1 rounded bg-surface-hover border border-border text-xs text-text"
+              >
+                Zero Repetitive Inquiry Burnout
+              </span>
+            </div>
+          </div>
+
+          <div class="chat-mockup bg-background rounded-xl p-4 border border-border">
+            <div
+              class="flex items-center gap-2 pb-3 mb-3 border-b border-border text-xs font-medium text-text"
+            >
+              <div class="w-2.5 h-2.5 rounded-full bg-emerald-400"></div>
+              <span>WhatsApp Chat with Customer (Kileleshwa)</span>
+            </div>
+            <div class="space-y-3 text-xs">
+              <div class="chat-msg customer">
+                <p>Niaje, mko na ile drill ya Bosch na mnadeliver Kileleshwa leo?</p>
+                <span class="chat-time">11:32 PM</span>
+              </div>
+              <div class="chat-msg bot">
+                <p>
+                  Niaje! Ndio, Bosch 18V Cordless Drill iko in stock kwa KES 14,500. Delivery to
+                  Kileleshwa ni KES 250 kupitia rider wetu kesho 9:00 AM.
+                  <br /><br />
+                  Total ni <strong>KES 14,750</strong>. Ungependa nikutumie prompt ya M-Pesa STK
+                  ulipie sasa hivi?
+                </p>
+                <span class="chat-time text-primary">Markcopilot 24/7 &bull; 11:32 PM</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab 3: Agent Copilot Mode -->
+      <div id="tab-agent" class="tab-panel">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+          <div>
+            <span class="text-xs font-mono font-semibold text-purple-400 uppercase"
+              >Agent Productivity Copilot</span
+            >
+            <h3 class="text-2xl font-bold text-text mt-1">1-Click Drafts &amp; Urgency Tagging</h3>
+            <p class="text-sm text-text-muted mt-3 leading-relaxed">
+              Equip your support agents with a real-time copilot. When a long, multi-question thread
+              arrives, Markcopilot summarizes the key intent, checks warranty policies, drafts a
+              courteous response, and prepares the `/stk` shortcut so your agent can reply in 3
+              seconds.
+            </p>
+            <ul class="mt-4 space-y-2 text-xs text-text-muted">
+              <li class="flex items-center gap-2">
+                <Icon name="lucide:check-circle-2" class="w-4 h-4 text-purple-400" />
+                <span>Summarizes 30-message histories in 3 concise bullet points</span>
+              </li>
+              <li class="flex items-center gap-2">
+                <Icon name="lucide:check-circle-2" class="w-4 h-4 text-purple-400" />
+                <span
+                  >Prepopulates <code>/stk &lt;amount&gt; &lt;phone&gt;</code> command ready to trigger</span
+                >
+              </li>
+              <li class="flex items-center gap-2">
+                <Icon name="lucide:check-circle-2" class="w-4 h-4 text-purple-400" />
+                <span>Detects frustrated customers and escalates to managers</span>
+              </li>
+            </ul>
+          </div>
+
+          <div class="bg-background rounded-xl p-4 border border-border">
+            <div class="flex items-center justify-between pb-2 mb-3 border-b border-border text-xs">
+              <span class="font-semibold text-purple-400">Agent Copilot Suggestion</span>
+              <button
+                type="button"
+                class="px-2 py-0.5 rounded bg-primary text-white text-[11px] font-semibold"
+              >
+                Insert Draft (1-Click)
+              </button>
+            </div>
+            <div
+              class="bg-surface/80 rounded-lg p-3 border border-purple-500/30 text-xs text-text space-y-2"
+            >
+              <div class="text-[11px] font-mono text-purple-300">
+                [Intent: Bulk Price Quote &bull; Sentiment: High Urgency &bull; Tier: Wholesale]
+              </div>
+              <p class="text-text-muted leading-relaxed">
+                "Habari Brian, asante kwa kuwasiliana nasi. Kwa oda ya unit 5 za Makita Grinder,
+                tunakupatia discount ya 8% (KES 7,544 kila unit). Total: KES 37,720 na free delivery
+                to Industrial Area."
+              </p>
+              <div
+                class="p-2 rounded bg-background border border-border font-mono text-[11px] text-emerald-400"
+              >
+                &gt; Pre-filled command: /stk 37720 0722998877
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .explainer-tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    border-radius: var(--radius-lg, 0.75rem);
+    border: none;
+    background: transparent;
+    color: var(--color-text-muted, #a1a1aa);
+    cursor: pointer;
+    transition: all 150ms ease;
+  }
+
+  .explainer-tab:hover {
+    color: var(--color-text, #fafafa);
+  }
+
+  .explainer-tab.active {
+    background: var(--color-surface, #141418);
+    color: var(--color-text, #fafafa);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  }
+
+  .tab-panel {
+    display: none;
+  }
+
+  .tab-panel.active {
+    display: block;
+    animation: fadeIn 200ms ease-in-out;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(4px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .chat-msg {
+    max-width: 85%;
+    padding: 0.625rem 0.875rem;
+    border-radius: 0.75rem;
+    line-height: 1.4;
+  }
+
+  .chat-msg.customer {
+    margin-left: auto;
+    background: var(--color-surface-hover, #1f1f23);
+    color: var(--color-text, #fafafa);
+    border-bottom-right-radius: 0.2rem;
+  }
+
+  .chat-msg.bot {
+    margin-right: auto;
+    background: rgba(99, 102, 241, 0.12);
+    border: 1px solid rgba(99, 102, 241, 0.25);
+    color: var(--color-text, #fafafa);
+    border-bottom-left-radius: 0.2rem;
+  }
+
+  .chat-time {
+    display: block;
+    font-size: 0.625rem;
+    margin-top: 0.25rem;
+    text-align: right;
+    color: var(--color-text-muted, #71717a);
+  }
+</style>
+
+<script>
+  function initExplainerTabs() {
+    const tabs = document.querySelectorAll('.explainer-tab');
+    tabs.forEach((tab) => {
+      tab.addEventListener('click', () => {
+        tabs.forEach((t) => {
+          t.classList.remove('active');
+          t.setAttribute('aria-selected', 'false');
+        });
+        document.querySelectorAll('.tab-panel').forEach((panel) => {
+          panel.classList.remove('active');
+        });
+
+        tab.classList.add('active');
+        tab.setAttribute('aria-selected', 'true');
+        const target = tab.getAttribute('data-tab');
+        const panel = document.getElementById(`tab-${target}`);
+        if (panel) panel.classList.add('active');
+      });
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', initExplainerTabs);
+  document.addEventListener('astro:page-load', initExplainerTabs);
+</script>

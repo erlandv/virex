@@ -1,4 +1,7 @@
 ---
+/**
+ * MarkChat Kenya — Pricing & Plan Feature Matrix
+ */
 import MarketingLayout from '@/layouts/MarketingLayout.astro';
 import PricingTable from '@sections/pricing/PricingTable.astro';
 import ComparisonTable from '@sections/pricing/ComparisonTable.astro';
@@ -6,141 +9,154 @@ import TrustBadges from '@sections/pricing/TrustBadges.astro';
 import FAQSection from '@sections/content/FAQSection.astro';
 import CTA from '@sections/marketing/CTA.astro';
 import { siteConfig } from '@/config';
+import { fetchPricingMatrix, fetchFaqs } from '@/lib/cms-api';
 
-const planNames = ['Hobby', 'Pro', 'Enterprise'];
+const [matrix, faqsList] = await Promise.all([fetchPricingMatrix(), fetchFaqs()]);
 
-const plans = [
-  {
-    name: 'Hobby',
-    monthlyPrice: 0,
-    description: 'Perfect for side projects and experiments',
-    features: [
-      '3 projects',
-      '100 GB bandwidth/month',
-      'Automatic HTTPS',
-      'Preview deployments',
-      'Community support',
-    ],
-    highlighted: false,
-    cta: { label: 'Start Free', href: '/register' },
-  },
-  {
-    name: 'Pro',
-    monthlyPrice: 20,
-    description: 'For professional developers and small teams',
-    features: [
-      'Unlimited projects',
-      '1 TB bandwidth/month',
-      'Team collaboration (5 members)',
-      'Priority builds',
-      'Advanced analytics',
-      'Email support',
-    ],
-    highlighted: true,
-    cta: { label: 'Start Free Trial', href: '/register' },
-  },
-  {
-    name: 'Enterprise',
-    monthlyPrice: null,
-    customPrice: 'Custom',
-    description: 'For organizations with advanced needs',
-    features: [
-      'Unlimited everything',
-      'Custom bandwidth limits',
-      'Unlimited team members',
-      'SSO & SAML',
-      'SLA guarantee',
-      'Dedicated support',
-      'Custom contracts',
-    ],
-    highlighted: false,
-    cta: { label: 'Contact Sales', href: '/contact' },
-  },
-];
+const planNames = matrix.tiers.map((t) => t.name);
 
-const faqs = [
-  {
-    question: 'Can I change plans later?',
-    answer:
-      "Yes, you can upgrade or downgrade your plan at any time. When upgrading, you'll be charged the prorated difference. When downgrading, the new rate applies at your next billing cycle.",
+const plans = matrix.tiers.map((tier) => ({
+  name: tier.name,
+  monthlyPrice: tier.monthlyPrice,
+  customPrice: tier.monthlyPrice === null ? 'Custom' : undefined,
+  description: tier.description,
+  features: tier.features,
+  highlighted: tier.highlighted,
+  badge: tier.badge,
+  cta: {
+    label: tier.ctaLabel,
+    href: tier.ctaHref,
   },
-  {
-    question: 'What happens if I exceed my bandwidth limit?',
-    answer:
-      "We'll notify you when you're approaching your limit. If you exceed it, your sites will continue to work—we'll just reach out to discuss upgrading your plan or purchasing additional bandwidth.",
-  },
-  {
-    question: 'Do you offer discounts for annual billing?',
-    answer:
-      'Yes! Annual plans come with a 20% discount. You can switch to annual billing from your account settings at any time.',
-  },
-  {
-    question: 'Is there a free trial for paid plans?',
-    answer:
-      "Absolutely. All paid plans come with a 14-day free trial. No credit card required to start—you'll only be charged if you decide to continue after the trial.",
-  },
-  {
-    question: 'What payment methods do you accept?',
-    answer:
-      'We accept all major credit cards (Visa, Mastercard, American Express) and PayPal. Enterprise customers can also pay via invoice with NET-30 terms.',
-  },
-  {
-    question: "Can I get a refund if I'm not satisfied?",
-    answer:
-      "Yes, we offer a 30-day money-back guarantee on all paid plans. If you're not happy with Virex, contact support for a full refund.",
-  },
-];
+}));
+
+// Build comparison matrix based on the CMS feature-gating matrix
+const featMap = new Map(matrix.featureMatrix.map((f) => [f.key, f]));
 
 const comparisonCategories = [
   {
-    name: 'Usage',
+    name: 'Channels & Inboxes',
     features: [
-      { name: 'Projects', values: ['3', 'Unlimited', 'Unlimited'] },
-      { name: 'Bandwidth', values: ['100 GB/mo', '1 TB/mo', 'Custom'] },
-      { name: 'Build minutes', values: ['100/mo', '1,000/mo', 'Unlimited'] },
-      { name: 'Concurrent builds', values: ['1', '3', '10+'] },
+      {
+        name: 'Official WhatsApp Cloud API',
+        values: [
+          featMap.get('whatsapp_api')?.starter ?? true,
+          featMap.get('whatsapp_api')?.pro ?? true,
+          featMap.get('whatsapp_api')?.enterprise ?? true,
+        ],
+        tooltip: 'Direct Meta Cloud API integration with zero phone ban risk',
+      },
+      {
+        name: 'Bulk SMS Gateway (Africa’s Talking)',
+        values: [
+          '50 Trial SMS',
+          featMap.get('bulk_ai_campaigns')?.pro ? '500 SMS / mo Included' : false,
+          'BYOC Zero Markup / Custom',
+        ],
+        tooltip: 'Prepaid bundles via M-Pesa or Bring Your Own Carrier credentials',
+      },
+      {
+        name: 'Instagram DMs & Facebook Messenger',
+        values: [false, true, true],
+        tooltip: 'Centralize social messages into your shared team inbox',
+      },
     ],
   },
   {
-    name: 'Features',
+    name: 'M-Pesa & Mobile Money Modes',
     features: [
-      { name: 'Preview deployments', values: [true, true, true] },
-      { name: 'Automatic HTTPS', values: [true, true, true] },
-      { name: 'Custom domains', values: ['1', '10', 'Unlimited'] },
-      { name: 'Edge functions', values: [false, true, true] },
-      { name: 'Analytics', values: [false, true, true] },
-      { name: 'Password protection', values: [false, true, true] },
+      {
+        name: 'In-Chat /stk PIN Prompt Checkout',
+        values: [
+          featMap.get('mpesa_stk_checkout')?.starter ?? false,
+          featMap.get('mpesa_stk_checkout')?.pro ?? true,
+          featMap.get('mpesa_stk_checkout')?.enterprise ?? true,
+        ],
+        tooltip: 'Trigger instant M-Pesa PIN popup on customer phone directly in chat',
+      },
+      {
+        name: 'Daraja C2B Auto-Verification (Stops Fake SMS)',
+        values: ['Manual Log', true, 'Dedicated Route'],
+        tooltip: 'Server-side TransID validation that eliminates screenshot fraud',
+      },
+      {
+        name: 'Pochi la Biashara & Till Forwarder Sync',
+        values: [
+          featMap.get('pochi_sms_sync')?.starter ?? false,
+          featMap.get('pochi_sms_sync')?.pro ?? true,
+          featMap.get('pochi_sms_sync')?.enterprise ?? true,
+        ],
+        tooltip: 'Real-time Android SMS sync forwarder for personal/Pochi lines',
+      },
+      {
+        name: 'Shared Bank Paybill (KCB, Equity, Co-op)',
+        values: [false, true, true],
+        tooltip: 'Auto-routes incoming bank payments by customer account reference',
+      },
     ],
   },
   {
-    name: 'Collaboration',
+    name: 'Markcopilot AI Automation',
     features: [
-      { name: 'Team members', values: [false, '5', 'Unlimited'] },
-      { name: 'Role-based access', values: [false, true, true] },
-      { name: 'Audit logs', values: [false, false, true] },
-      { name: 'SSO/SAML', values: [false, false, true] },
+      {
+        name: 'Dual-Mode AI Engine (Swahili / English)',
+        values: ['50 msgs / mo', featMap.get('markcopilot_ai')?.pro ?? true, 'Custom Fine-Tuning'],
+        tooltip: 'Trained on your catalog, price lists, and delivery guidelines',
+      },
+      {
+        name: 'Agent 1-Click Reply Drafts & Summaries',
+        values: [false, true, true],
+        tooltip: 'Accelerates human agent response times by 4x',
+      },
+      {
+        name: 'Sentiment & Urgency Order Tagging',
+        values: [false, true, true],
+        tooltip: 'Alerts supervisors to ready-to-pay wholesale leads',
+      },
     ],
   },
   {
-    name: 'Support',
+    name: 'Team Scale & Administration',
     features: [
-      { name: 'Community support', values: [true, true, true] },
-      { name: 'Email support', values: [false, true, true] },
-      { name: 'Priority support', values: [false, false, true] },
-      { name: 'Dedicated account manager', values: [false, false, true] },
-      { name: 'SLA guarantee', values: [false, false, true] },
+      {
+        name: 'Team Agent Seats',
+        values: ['1 Agent', '5 Agents included', 'Unlimited Seats'],
+      },
+      {
+        name: 'Workspace Performance & SLA Reports',
+        values: [
+          featMap.get('workspace_analytics')?.starter ?? false,
+          featMap.get('workspace_analytics')?.pro ?? true,
+          featMap.get('workspace_analytics')?.enterprise ?? true,
+        ],
+      },
+      {
+        name: 'Custom Domain Whitelabeling & Branding',
+        values: [
+          featMap.get('custom_whitelabel')?.starter ?? false,
+          featMap.get('custom_whitelabel')?.pro ?? true,
+          featMap.get('custom_whitelabel')?.enterprise ?? true,
+        ],
+      },
+      {
+        name: 'Customer Support',
+        values: ['Community & Email', 'Priority WhatsApp Support', '24/7 Dedicated Account Lead'],
+      },
     ],
   },
 ];
+
+const pricingFaqs = faqsList
+  .filter((f) => f.category === 'pricing' || f.category === 'mpesa' || f.category === 'general')
+  .slice(0, 6);
 ---
 
 <MarketingLayout
-  title={`Pricing - ${siteConfig.name}`}
-  description="Simple, transparent pricing for teams of all sizes. Start free and scale as you grow."
+  title={`Pricing & Plans - ${siteConfig.name} Kenya`}
+  description="Transparent KES pricing for MarkChat. Starter KES 0/mo, Pro KES 3,500/mo, Enterprise scale. In-Chat M-Pesa STK, Bulk SMS, and Markcopilot AI."
 >
   <PricingTable
-    title="Simple, transparent pricing"
-    subtitle="Start free and scale as you grow. No hidden fees, no surprises."
+    title="Simple, Transparent KES Pricing"
+    subtitle="All plans include official WhatsApp Cloud API access and 50 free Bulk SMS credits to test. Save 20% when billed annually."
     plans={plans}
     annualDiscount={20}
     defaultPeriod="monthly"
@@ -148,15 +164,15 @@ const comparisonCategories = [
 
   <TrustBadges
     guarantee={{
-      title: '30-day money-back guarantee',
+      title: '14-Day Free Trial on Pro Plans',
       description:
-        'Try risk-free. Not satisfied? Get a full refund within 30 days, no questions asked.',
+        'Try all MarkChat Pro features risk-free. No credit card required to start—pay via M-Pesa only when satisfied.',
     }}
   />
 
   <ComparisonTable
-    title="Compare plans in detail"
-    subtitle="See exactly what's included in each plan."
+    title="Detailed Plan & Feature Gating Matrix"
+    subtitle="Inspect exact channel boundaries, M-Pesa modes, and Markcopilot AI capabilities across all tiers."
     plans={planNames}
     categories={comparisonCategories}
     highlightedPlan={1}
@@ -164,16 +180,16 @@ const comparisonCategories = [
   />
 
   <FAQSection
-    title="Frequently asked questions"
-    faqs={faqs}
+    title="Frequently Asked Billing & M-Pesa Questions"
+    faqs={pricingFaqs.map((f) => ({ question: f.question, answer: f.answer }))}
     variant="simple"
     background="default"
   />
 
   <CTA
-    title="Need something custom?"
-    description="Have specific requirements or need a custom solution? Our team is happy to discuss your needs and create a plan that works for you."
-    action={{ label: 'Talk to Sales', href: '/contact' }}
+    title="Need custom Paybill routing or high SMS volume?"
+    description="Our Nairobi engineering team will configure dedicated shortcodes and custom ERP webhooks for your enterprise."
+    action={{ label: 'Book Technical Consultation', href: '/demo' }}
     background="muted"
   />
 </MarketingLayout>

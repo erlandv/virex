@@ -1,83 +1,64 @@
 ---
+/**
+ * MarkChat Kenya — Careers & Open Roles
+ */
 import MarketingLayout from '@/layouts/MarketingLayout.astro';
 import PageHeader from '@sections/content/PageHeader.astro';
 import ValuesSection from '@sections/team/ValuesSection.astro';
 import JobListings from '@sections/team/JobListings.astro';
 import { siteConfig } from '@/config';
+import { fetchCareers } from '@/lib/cms-api';
+import { Icon } from 'astro-icon/components';
+
+const careers = await fetchCareers();
 
 const benefits = [
   {
-    icon: 'lucide:globe',
-    title: 'Remote First',
+    icon: 'lucide:map-pin',
+    title: 'Nairobi Hub & Flexible Hybrid',
     description:
-      "Work from anywhere in the world. We believe great talent isn't limited by geography.",
+      'Work from our Westlands office or hybrid anywhere in Kenya with modern Mac/Linux setups.',
   },
   {
-    icon: 'lucide:bar-chart',
-    title: 'Competitive Salary',
-    description:
-      'We offer top-of-market compensation with equity options for all full-time employees.',
+    icon: 'lucide:credit-card',
+    title: 'Competitive KES Compensation',
+    description: 'Top-tier Kenyan salary packages, performance bonuses, and annual equity grants.',
   },
   {
-    icon: 'lucide:users',
-    title: 'Great Team',
+    icon: 'lucide:heart-pulse',
+    title: 'Comprehensive Medical Cover',
     description:
-      'Join a diverse team of talented individuals who are passionate about what they build.',
+      'Full inpatient, outpatient, dental, and optical insurance for you and your family.',
   },
   {
-    icon: 'lucide:zap',
-    title: 'Learning Budget',
-    description:
-      'Annual budget for courses, conferences, and books to help you grow professionally.',
+    icon: 'lucide:sparkles',
+    title: 'Continuous Learning Budget',
+    description: 'Annual stipend for cloud certifications, tech conferences, books, and courses.',
   },
 ];
 
-// Sample job openings - replace with your actual positions or integrate with an ATS
-const openings = [
-  {
-    title: 'Senior Frontend Engineer',
-    department: 'Engineering',
-    location: 'Remote',
-    type: 'Full-time',
-    href: '#',
-  },
-  {
-    title: 'Product Designer',
-    department: 'Design',
-    location: 'Remote',
-    type: 'Full-time',
-    href: '#',
-  },
-  {
-    title: 'Developer Advocate',
-    department: 'Marketing',
-    location: 'Remote',
-    type: 'Full-time',
-    href: '#',
-  },
-  {
-    title: 'Customer Success Manager',
-    department: 'Support',
-    location: 'Remote (US/EU)',
-    type: 'Full-time',
-    href: '#',
-  },
-];
+const formattedJobs = careers.map((job) => ({
+  title: job.title,
+  department: job.department,
+  location: job.location,
+  type: `${job.type} (${job.salaryRange || 'Competitive'})`,
+  href: `#apply-${job.id}`,
+}));
 ---
 
 <MarketingLayout
   title={`Careers - ${siteConfig.name}`}
-  description={`Join the ${siteConfig.name} team. We're building the future of deployment and looking for talented people to help us get there.`}
+  description="Join MarkChat in Nairobi. Help build the future of in-chat M-Pesa payments, Bulk SMS, and cultural AI for African commerce."
 >
   <PageHeader
-    title="Join our team"
-    subtitle="We're on a mission to make deployment effortless for every developer. Join us and help shape the future of how software gets shipped."
+    title="Build the Future of African Chat Commerce"
+    subtitle="We are assembling an ambitious team of engineers, telecom experts, and merchant success leads in Nairobi, Kenya."
     align="left"
     maxWidth="lg"
   />
 
   <ValuesSection
-    title="Why work with us"
+    title="Why Build at MarkChat"
     items={benefits}
     variant="with-icon"
     columns={2}
@@ -85,10 +66,206 @@ const openings = [
   />
 
   <JobListings
-    title="Open positions"
-    jobs={openings}
-    emptyMessage="No open positions at the moment. Check back soon or send us your resume anyway!"
+    title="Open Roles in Nairobi & Remote Kenya"
+    subtitle="Join us in scaling conversational mobile money payments across East Africa."
+    jobs={formattedJobs}
+    emptyMessage="No open roles at the moment. Send your CV to careers@markchat.co.ke anyway!"
     contactEmail={siteConfig.contact.email}
     background="default"
   />
+
+  <!-- Interactive Application Section -->
+  <section class="py-16 bg-surface/50 border-t border-border" id="apply-section">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="p-8 rounded-2xl bg-surface border border-border shadow-xl">
+        <div
+          class="flex items-center gap-2 mb-2 text-primary font-mono text-xs uppercase font-bold"
+        >
+          <Icon name="lucide:send" class="w-4 h-4" />
+          <span>Quick Application Portal</span>
+        </div>
+        <h2 class="text-2xl font-bold text-text mb-2">Apply for an Open Position</h2>
+        <p class="text-xs text-text-muted mb-6">
+          Submit your application directly to our Nairobi engineering and operations team.
+        </p>
+
+        <form id="career-apply-form" class="space-y-4">
+          <div class="form-group">
+            <label class="form-label" for="apply-job-select">Target Position *</label>
+            <select id="apply-job-select" class="form-input" required>
+              {
+                careers.map((job) => (
+                  <option value={job.id}>
+                    {job.title} — {job.department}
+                  </option>
+                ))
+              }
+            </select>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="form-group">
+              <label class="form-label" for="apply-name">Full Name *</label>
+              <input
+                type="text"
+                id="apply-name"
+                class="form-input"
+                required
+                placeholder="e.g. Achieng Odhiambo"
+              />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="apply-email">Email Address *</label>
+              <input
+                type="email"
+                id="apply-email"
+                class="form-input"
+                required
+                placeholder="name@domain.com"
+              />
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="form-group">
+              <label class="form-label" for="apply-phone">Kenyan Phone *</label>
+              <input
+                type="tel"
+                id="apply-phone"
+                class="form-input"
+                required
+                placeholder="+254 7XX XXX XXX"
+              />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="apply-linkedin">LinkedIn / GitHub Profile</label>
+              <input
+                type="url"
+                id="apply-linkedin"
+                class="form-input"
+                placeholder="https://linkedin.com/in/..."
+              />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="apply-letter">Brief Background &amp; Motivation *</label>
+            <textarea
+              id="apply-letter"
+              rows="4"
+              class="form-textarea"
+              required
+              placeholder="Tell us about relevant projects, APIs you’ve built, or merchant experience in Kenya..."
+            ></textarea>
+          </div>
+
+          <button type="submit" id="apply-submit-btn" class="btn btn-primary w-full">
+            Submit Application
+          </button>
+        </form>
+
+        <div
+          id="apply-success-msg"
+          class="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs text-center mt-4 hidden"
+        >
+          &check; Asante sana! Your application has been received. Our talent team will review your
+          profile and respond within 48 hours.
+        </div>
+      </div>
+    </div>
+  </section>
 </MarketingLayout>
+
+<style>
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+
+  .form-label {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--color-text, #fafafa);
+  }
+
+  .form-input,
+  .form-textarea {
+    width: 100%;
+    padding: 0.55rem 0.75rem;
+    font-size: 0.875rem;
+    background: var(--color-background, #0a0a0c);
+    border: 1px solid var(--color-border, #27272a);
+    border-radius: var(--radius-md, 0.5rem);
+    color: var(--color-text, #fafafa);
+  }
+
+  .form-input:focus,
+  .form-textarea:focus {
+    outline: none;
+    border-color: var(--color-primary, #6366f1);
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.65rem 1.25rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    border-radius: var(--radius-md, 0.5rem);
+    cursor: pointer;
+    transition: all 150ms ease;
+    border: 1px solid transparent;
+  }
+
+  .btn-primary {
+    background: var(--color-primary, #6366f1);
+    color: #ffffff;
+  }
+
+  .btn-primary:hover {
+    opacity: 0.92;
+  }
+
+  .w-full {
+    width: 100%;
+  }
+</style>
+
+<script>
+  import { submitCareerApplication } from '@/lib/cms-api';
+
+  function initCareerApply() {
+    const form = document.getElementById('career-apply-form');
+    const successMsg = document.getElementById('apply-success-msg');
+    const submitBtn = document.getElementById('apply-submit-btn') as HTMLButtonElement;
+
+    form?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const careerId = (document.getElementById('apply-job-select') as HTMLSelectElement).value;
+      const fullName = (document.getElementById('apply-name') as HTMLInputElement).value;
+      const email = (document.getElementById('apply-email') as HTMLInputElement).value;
+      const phone = (document.getElementById('apply-phone') as HTMLInputElement).value;
+      const linkedinUrl = (document.getElementById('apply-linkedin') as HTMLInputElement).value;
+      const coverLetter = (document.getElementById('apply-letter') as HTMLTextAreaElement).value;
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Submitting...';
+
+      await submitCareerApplication(careerId, {
+        fullName,
+        email,
+        phone,
+        linkedinUrl,
+        coverLetter,
+      });
+
+      form.classList.add('hidden');
+      successMsg?.classList.remove('hidden');
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', initCareerApply);
+  document.addEventListener('astro:page-load', initCareerApply);
+</script>

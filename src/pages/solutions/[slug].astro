@@ -1,0 +1,195 @@
+---
+/**
+ * Dynamic Solutions Landing Page
+ */
+import MarketingLayout from '@/layouts/MarketingLayout.astro';
+import { Icon } from 'astro-icon/components';
+import CTA from '@sections/marketing/CTA.astro';
+import { solutionsPages, type MarketingPageItem } from '@/data/marketing-content';
+
+export function getStaticPaths() {
+  return solutionsPages.map((page) => ({
+    params: { slug: page.slug },
+    props: { page },
+  }));
+}
+
+interface Props {
+  page: MarketingPageItem;
+}
+
+const { page } = Astro.props;
+---
+
+<MarketingLayout title={`${page.title} - MarkChat Solutions`} description={page.subtitle}>
+  <!-- Hero Section -->
+  <section class="py-16 sm:py-24 bg-surface/50 border-b border-border">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <!-- Breadcrumb -->
+      <nav class="flex items-center gap-2 text-xs text-text-muted mb-8" aria-label="Breadcrumb">
+        <a href="/" class="hover:text-text">Home</a>
+        <Icon name="lucide:chevron-right" class="w-3.5 h-3.5" />
+        <a href="/solutions" class="hover:text-text">Solutions</a>
+        <Icon name="lucide:chevron-right" class="w-3.5 h-3.5" />
+        <span class="text-text font-medium">{page.title}</span>
+      </nav>
+
+      <div class="max-w-3xl">
+        <div class="flex items-center gap-3 mb-4">
+          <div
+            class="w-12 h-12 rounded-xl bg-primary/10 text-primary border border-primary/20 flex items-center justify-center shrink-0"
+          >
+            <Icon name={page.icon} class="w-6 h-6" />
+          </div>
+          {
+            page.badge && (
+              <span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-primary/10 text-primary border border-primary/20">
+                {page.badge}
+              </span>
+            )
+          }
+          <span
+            class="px-2.5 py-1 rounded-full text-xs font-semibold bg-surface text-text-muted border border-border"
+          >
+            {page.category}
+          </span>
+        </div>
+
+        <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-text tracking-tight">
+          {page.title}
+        </h1>
+        <p class="mt-6 text-lg sm:text-xl text-text-muted leading-relaxed">
+          {page.subtitle}
+        </p>
+
+        <!-- Hero CTAs -->
+        <div class="mt-8 flex flex-wrap gap-4">
+          <a
+            href={page.cta.primaryHref}
+            class="px-6 py-3 rounded-xl bg-primary text-white font-semibold text-sm hover:bg-primary-dark transition-colors shadow-xs"
+          >
+            {page.cta.primaryLabel}
+          </a>
+          {
+            page.cta.secondaryLabel && page.cta.secondaryHref && (
+              <a
+                href={page.cta.secondaryHref}
+                class="px-6 py-3 rounded-xl border border-border bg-background text-text font-semibold text-sm hover:border-primary hover:text-primary transition-colors shadow-xs"
+              >
+                {page.cta.secondaryLabel}
+              </a>
+            )
+          }
+        </div>
+      </div>
+
+      <!-- Key Stats Bar -->
+      {
+        page.keyStats && page.keyStats.length > 0 && (
+          <div class="mt-14 pt-10 border-t border-border grid grid-cols-2 md:grid-cols-3 gap-6">
+            {page.keyStats.map((stat) => (
+              <div>
+                <div class="text-2xl sm:text-3xl font-extrabold text-text">{stat.value}</div>
+                <div class="text-xs sm:text-sm text-text-muted font-medium mt-1">{stat.label}</div>
+              </div>
+            ))}
+          </div>
+        )
+      }
+    </div>
+  </section>
+
+  <!-- Deep Architectural Overview -->
+  <section class="py-16 sm:py-20 bg-background border-b border-border">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="max-w-3xl mb-12">
+        <span class="text-xs font-mono font-semibold text-primary uppercase tracking-wider"
+          >Tailored Solution</span
+        >
+        <h2 class="text-2xl sm:text-3xl font-extrabold text-text mt-1">
+          Engineered for Your Industry Requirements
+        </h2>
+        <p class="mt-4 text-base text-text-muted leading-relaxed">
+          {page.overview}
+        </p>
+      </div>
+
+      <!-- How to Connect / How it Works 3-Step Guide -->
+      <div class="mt-14">
+        <div class="text-center max-w-2xl mx-auto mb-12">
+          <span class="text-xs font-mono font-semibold text-primary uppercase tracking-wider"
+            >Deployment Guide</span
+          >
+          <h2 class="text-2xl sm:text-3xl font-extrabold text-text mt-1">
+            How to Onboard in 3 Fast Steps
+          </h2>
+          <p class="text-sm text-text-muted mt-2">
+            Tailored onboarding with zero interruption to your daily operations.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {
+            page.howToConnect.map((step) => (
+              <div class="p-8 rounded-2xl border border-border bg-surface/50 relative flex flex-col justify-between hover:border-primary/40 hover:shadow-lg transition-all">
+                <div>
+                  <div class="w-12 h-12 rounded-xl bg-primary text-white font-extrabold flex items-center justify-center text-lg mb-6 shadow-xs">
+                    0{step.step}
+                  </div>
+                  <h3 class="text-lg font-bold text-text mb-3">{step.title}</h3>
+                  <p class="text-sm text-text-muted leading-relaxed">{step.description}</p>
+                </div>
+                <div class="mt-6 pt-4 border-t border-border/60 flex items-center gap-2 text-xs font-semibold text-primary">
+                  <Icon name="lucide:check-circle-2" class="w-4 h-4 text-primary" />
+                  <span>Production Ready</span>
+                </div>
+              </div>
+            ))
+          }
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Kenyan Business Benefits -->
+  <section class="py-16 sm:py-20 bg-surface/30 border-b border-border">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="max-w-3xl mb-12">
+        <span class="text-xs font-mono font-semibold text-primary uppercase tracking-wider"
+          >Sector Advantage</span
+        >
+        <h2 class="text-2xl sm:text-3xl font-extrabold text-text mt-1">
+          Proven Impact for Kenyan Organizations
+        </h2>
+        <p class="mt-2 text-sm text-text-muted">
+          Scale engagement, reduce manual administrative overhead, and delight customers.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        {
+          page.benefits.map((benefit) => (
+            <div class="p-6 rounded-2xl border border-border bg-background hover:border-primary/40 transition-all">
+              <div class="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-4">
+                <Icon name="lucide:check" class="w-5 h-5" />
+              </div>
+              <h3 class="text-base font-bold text-text mb-2">{benefit.title}</h3>
+              <p class="text-sm text-text-muted leading-relaxed">{benefit.description}</p>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <CTA
+    title={page.cta.title}
+    description={page.cta.description}
+    action={{ label: page.cta.primaryLabel, href: page.cta.primaryHref }}
+    secondaryAction={page.cta.secondaryLabel && page.cta.secondaryHref
+      ? { label: page.cta.secondaryLabel, href: page.cta.secondaryHref }
+      : undefined}
+    background="muted"
+  />
+</MarketingLayout>

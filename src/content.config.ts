@@ -26,17 +26,6 @@ const docs = defineCollection({
   }),
 });
 
-const changelog = defineCollection({
-  loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/changelog' }),
-  schema: z.object({
-    version: z.string(),
-    date: z.coerce.date(),
-    title: z.string(),
-    type: z.enum(['major', 'minor', 'patch']),
-    draft: z.boolean().default(false),
-  }),
-});
-
 const testimonials = defineCollection({
   loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/testimonials' }),
   schema: z.object({
@@ -51,4 +40,4 @@ const testimonials = defineCollection({
   }),
 });
 
-export const collections = { blog, docs, changelog, testimonials };
+export const collections = { blog, docs, testimonials };

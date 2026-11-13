@@ -1,0 +1,390 @@
+---
+/**
+ * MarkChat CMS — Inbound Leads & Demo Requests Manager
+ */
+import DashboardLayout from '@/layouts/DashboardLayout.astro';
+import Card from '@dashboard-ui/Card.astro';
+import Modal from '@dashboard-ui/Modal.astro';
+import { Icon } from 'astro-icon/components';
+
+// Initial leads for SSR / fallback
+const initialLeads = [
+  {
+    id: 'lead-1',
+    fullName: 'Grace Wambui',
+    email: 'grace@mamambogamart.co.ke',
+    phone: '+254 722 112 233',
+    company: 'Mama Mboga Mart (Nairobi)',
+    monthlyVolume: '5,000 - 15,000 msgs',
+    source: 'Website Markcopilot Widget',
+    message:
+      'Need automated WhatsApp STK checkout for our fresh produce deliveries across Kilimani and Kileleshwa.',
+    createdAt: '2026-11-10T11:20:00Z',
+    status: 'new',
+  },
+  {
+    id: 'lead-2',
+    fullName: 'Dr. John Omondi',
+    email: 'jomondi@coastalpharma.co.ke',
+    phone: '+254 733 445 566',
+    company: 'Coastal Pharma & Clinic (Mombasa)',
+    monthlyVolume: '15,000 - 50,000 msgs',
+    source: 'Demo Request Form',
+    message:
+      'Looking to integrate prescription refill reminders via SMS and appointment bookings via WhatsApp with M-Pesa prepayment.',
+    createdAt: '2026-11-11T09:45:00Z',
+    status: 'qualified',
+  },
+  {
+    id: 'lead-3',
+    fullName: 'Erick Mutua',
+    email: 'erick@riftvalleyspares.com',
+    phone: '+254 710 998 877',
+    company: 'Rift Valley Auto Spares (Nakuru)',
+    monthlyVolume: '1,000 - 5,000 msgs',
+    source: 'Pricing Page CTA',
+    message:
+      'Want to stop fake Till screenshots when sending motor spare parts upcountry via shuttle.',
+    createdAt: '2026-11-11T16:10:00Z',
+    status: 'contacted',
+  },
+  {
+    id: 'lead-4',
+    fullName: 'Stella Chebet',
+    email: 'stella@afrobeautylounge.ke',
+    phone: '+254 720 554 433',
+    company: 'Afro Beauty Lounge (Eldoret)',
+    monthlyVolume: '500 - 1,000 msgs',
+    source: 'Website Markcopilot Widget',
+    message: 'Interested in automatic appointment deposits using Pochi la Biashara sync.',
+    createdAt: '2026-11-12T08:30:00Z',
+    status: 'new',
+  },
+];
+---
+
+<DashboardLayout
+  title="Inbound Leads & Demo Requests"
+  description="Inspect merchant leads captured via the floating Markcopilot widget and demo booking form"
+  breadcrumbs={[{ label: 'Dashboard', href: '/dashboard' }, { label: 'Inbound Leads' }]}
+>
+  <div class="cms-leads-page">
+    <div class="page-header flex justify-between items-center mb-6">
+      <div>
+        <h1 class="text-2xl font-bold tracking-tight text-text">Inbound Merchant Leads</h1>
+        <p class="text-sm text-text-muted mt-1">
+          Review business inquiries, estimated monthly message volume, and direct WhatsApp contact
+          links.
+        </p>
+      </div>
+      <div class="header-actions flex gap-3">
+        <a href="/demo" target="_blank" class="btn btn-secondary text-sm">
+          <Icon name="lucide:external-link" class="w-4 h-4 mr-1.5 inline" />
+          View Public /demo Form
+        </a>
+      </div>
+    </div>
+
+    <Card
+      title="Captured Leads & Demo Inquiries"
+      description="Direct inquiries from Kenyan retailers, clinics, salons, and e-commerce brands"
+      padding="none"
+    >
+      <div class="table-responsive">
+        <table class="cms-table w-full">
+          <thead>
+            <tr>
+              <th class="text-left py-3 px-4">Merchant Name &amp; Business</th>
+              <th class="text-left py-3 px-4">Contact Details</th>
+              <th class="text-left py-3 px-4">Est. Volume</th>
+              <th class="text-left py-3 px-4">Source</th>
+              <th class="text-left py-3 px-4">Status</th>
+              <th class="text-right py-3 px-4">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="leads-table-body">
+            {
+              initialLeads.map((lead) => (
+                <tr data-id={lead.id} data-lead={JSON.stringify(lead)}>
+                  <td class="py-3 px-4">
+                    <div class="font-medium text-text">{lead.fullName}</div>
+                    <div class="text-xs text-text-muted">{lead.company}</div>
+                  </td>
+                  <td class="py-3 px-4 text-xs">
+                    <div class="font-mono text-text">{lead.phone}</div>
+                    <div class="text-text-muted">{lead.email}</div>
+                  </td>
+                  <td class="py-3 px-4 text-xs font-medium text-primary">{lead.monthlyVolume}</td>
+                  <td class="py-3 px-4 text-xs text-text-muted">
+                    <span class="inline-block bg-surface-hover px-2 py-0.5 rounded border border-border">
+                      {lead.source}
+                    </span>
+                  </td>
+                  <td class="py-3 px-4 text-xs">
+                    <select class="lead-status-select text-xs" data-id={lead.id}>
+                      <option value="new" selected={lead.status === 'new'}>
+                        New
+                      </option>
+                      <option value="contacted" selected={lead.status === 'contacted'}>
+                        Contacted
+                      </option>
+                      <option value="qualified" selected={lead.status === 'qualified'}>
+                        Qualified
+                      </option>
+                      <option value="closed" selected={lead.status === 'closed'}>
+                        Closed
+                      </option>
+                    </select>
+                  </td>
+                  <td class="py-3 px-4 text-right">
+                    <div class="flex items-center justify-end gap-2">
+                      <a
+                        href={`https://wa.me/${lead.phone.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(`Hi ${lead.fullName}, thank you for reaching out to MarkChat! We saw your inquiry regarding ${lead.company}.`)}`}
+                        target="_blank"
+                        class="action-btn text-emerald-400 hover:text-emerald-300"
+                        title="Open WhatsApp Chat"
+                      >
+                        <Icon name="simple-icons:whatsapp" class="w-4 h-4" />
+                      </a>
+                      <button
+                        type="button"
+                        class="action-btn view-lead-btn"
+                        data-id={lead.id}
+                        title="Inspect Details"
+                      >
+                        <Icon name="lucide:eye" class="w-4 h-4" />
+                      </button>
+                      <button
+                        type="button"
+                        class="action-btn text-error delete-lead-btn"
+                        data-id={lead.id}
+                        title="Delete"
+                      >
+                        <Icon name="lucide:trash-2" class="w-4 h-4" />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))
+            }
+          </tbody>
+        </table>
+      </div>
+    </Card>
+
+    <!-- Modal for Inspecting Lead -->
+    <Modal id="lead-modal" title="Merchant Lead Details" size="md">
+      <div class="space-y-4 text-sm" id="lead-modal-content">
+        <div>
+          <span class="text-xs font-semibold text-text-muted uppercase">Merchant Contact</span>
+          <div id="modal-lead-name" class="font-bold text-base text-text mt-0.5"></div>
+          <div id="modal-lead-company" class="text-text-muted text-xs"></div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4 bg-surface-hover p-3 rounded-lg border border-border">
+          <div>
+            <span class="text-xs text-text-muted">Phone:</span>
+            <div id="modal-lead-phone" class="font-mono font-medium text-text mt-0.5"></div>
+          </div>
+          <div>
+            <span class="text-xs text-text-muted">Email:</span>
+            <div id="modal-lead-email" class="text-text mt-0.5"></div>
+          </div>
+          <div>
+            <span class="text-xs text-text-muted">Estimated Volume:</span>
+            <div id="modal-lead-volume" class="font-medium text-primary mt-0.5"></div>
+          </div>
+          <div>
+            <span class="text-xs text-text-muted">Capture Source:</span>
+            <div id="modal-lead-source" class="text-text-muted mt-0.5"></div>
+          </div>
+        </div>
+
+        <div>
+          <span class="text-xs font-semibold text-text-muted uppercase"
+            >Inquiry Message / Requirement</span
+          >
+          <div
+            id="modal-lead-message"
+            class="mt-1.5 p-3 rounded bg-surface border border-border text-text text-xs leading-relaxed"
+          >
+          </div>
+        </div>
+      </div>
+
+      <div slot="footer" class="flex justify-between items-center w-full">
+        <a id="modal-lead-whatsapp-btn" href="#" target="_blank" class="btn btn-primary text-xs">
+          <Icon name="simple-icons:whatsapp" class="w-3.5 h-3.5 mr-1.5 inline" />
+          Chat on WhatsApp
+        </a>
+        <button
+          type="button"
+          class="btn btn-secondary text-xs"
+          onclick="window.closeModal('lead-modal')"
+        >
+          Close
+        </button>
+      </div>
+    </Modal>
+  </div>
+</DashboardLayout>
+
+<style>
+  .cms-leads-page {
+    max-width: 80rem;
+    margin: 0 auto;
+  }
+
+  .table-responsive {
+    overflow-x: auto;
+  }
+
+  .cms-table {
+    border-collapse: collapse;
+    width: 100%;
+    font-size: 0.875rem;
+  }
+
+  .cms-table th {
+    background: var(--color-surface-hover, #1f1f23);
+    color: var(--color-text-muted, #a1a1aa);
+    font-weight: 600;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-bottom: 1px solid var(--color-border, #27272a);
+  }
+
+  .cms-table td {
+    border-bottom: 1px solid var(--color-border, #27272a);
+  }
+
+  .lead-status-select {
+    padding: 0.25rem 0.5rem;
+    background: var(--color-surface, #141418);
+    border: 1px solid var(--color-border, #27272a);
+    border-radius: var(--radius-sm, 0.25rem);
+    color: var(--color-text, #fafafa);
+  }
+
+  .action-btn {
+    background: transparent;
+    border: none;
+    color: var(--color-text-muted, #a1a1aa);
+    cursor: pointer;
+    padding: 0.35rem;
+    border-radius: var(--radius-sm, 0.25rem);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+  }
+
+  .action-btn:hover {
+    background: var(--color-surface-hover, #1f1f23);
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    border-radius: var(--radius-md, 0.5rem);
+    cursor: pointer;
+    transition: all 150ms ease;
+    text-decoration: none;
+    border: 1px solid transparent;
+  }
+
+  .btn-primary {
+    background: var(--color-primary, #6366f1);
+    color: #ffffff;
+  }
+
+  .btn-secondary {
+    background: var(--color-surface, #141418);
+    border-color: var(--color-border, #27272a);
+    color: var(--color-text, #fafafa);
+  }
+</style>
+
+<script>
+  import { updateItemStatus, deleteCmsItem } from '@/lib/cms-api';
+
+  function initLeadsAdmin() {
+    // Inspect lead modal
+    document.querySelectorAll('.view-lead-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const row = btn.closest('tr');
+        if (!row) return;
+        const lead = JSON.parse(row.getAttribute('data-lead') || '{}');
+
+        (document.getElementById('modal-lead-name') as HTMLElement).textContent =
+          lead.fullName || 'Lead';
+        (document.getElementById('modal-lead-company') as HTMLElement).textContent =
+          lead.company || '';
+        (document.getElementById('modal-lead-phone') as HTMLElement).textContent = lead.phone || '';
+        (document.getElementById('modal-lead-email') as HTMLElement).textContent = lead.email || '';
+        (document.getElementById('modal-lead-volume') as HTMLElement).textContent =
+          lead.monthlyVolume || 'Standard';
+        (document.getElementById('modal-lead-source') as HTMLElement).textContent =
+          lead.source || 'Website';
+        (document.getElementById('modal-lead-message') as HTMLElement).textContent =
+          lead.message || 'No additional message provided.';
+
+        const cleanPhone = (lead.phone || '').replace(/[^0-9]/g, '');
+        const waLink = document.getElementById('modal-lead-whatsapp-btn') as HTMLAnchorElement;
+        if (waLink) {
+          waLink.href = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(`Hi ${lead.fullName}, thank you for contacting MarkChat! We are reaching out regarding your inquiry.`)}`;
+        }
+
+        window.openModal?.('lead-modal');
+      });
+    });
+
+    // Quick status change
+    document.querySelectorAll('.lead-status-select').forEach((sel) => {
+      sel.addEventListener('change', async (e) => {
+        const id = sel.getAttribute('data-id');
+        const status = (e.target as HTMLSelectElement).value as
+          | 'new'
+          | 'contacted'
+          | 'qualified'
+          | 'closed';
+        if (id) {
+          await updateItemStatus('leads', id, status);
+          if (window.showToast) {
+            window.showToast({
+              message: `Lead status updated to ${status}`,
+              variant: 'success',
+              duration: 2500,
+            });
+          }
+        }
+      });
+    });
+
+    // Delete lead
+    document.querySelectorAll('.delete-lead-btn').forEach((btn) => {
+      btn.addEventListener('click', async () => {
+        const id = btn.getAttribute('data-id');
+        if (id && confirm('Are you sure you want to delete this lead?')) {
+          await deleteCmsItem('leads', id);
+          btn.closest('tr')?.remove();
+          if (window.showToast) {
+            window.showToast({
+              message: 'Lead record removed',
+              variant: 'success',
+              duration: 2500,
+            });
+          }
+        }
+      });
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', initLeadsAdmin);
+  document.addEventListener('astro:page-load', initLeadsAdmin);
+</script>

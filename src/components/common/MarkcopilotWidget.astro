@@ -1,0 +1,540 @@
+---
+/**
+ * MarkcopilotWidget - Interactive Floating AI Concierge & Chatwoot-Style Widget Shell
+ *
+ * Positioned in bottom-4 right-4 (bottom-6 right-6 on desktop).
+ * Implements a floating circular launcher with smooth Chat/Close transition,
+ * a 360x550px popover window, clean scrollable chat stream, legible outline action pills,
+ * typing indicator, lead capture, and an API-ready state machine prepared for OpenAI hookup.
+ */
+import { Icon } from 'astro-icon/components';
+---
+
+<div
+  id="markcopilot-root"
+  class="fixed bottom-4 right-4 md:bottom-6 md:right-6 z-50 font-sans flex flex-col items-end pointer-events-none"
+>
+  <!-- Widget Panel (Popover) -->
+  <div
+    id="markcopilot-panel"
+    class="hidden w-[360px] max-w-[calc(100vw-2rem)] h-[550px] max-h-[calc(100vh-6rem)] mb-4 bg-white dark:bg-gray-900 rounded-2xl shadow-2xl flex-col overflow-hidden border border-gray-100 dark:border-gray-800 transition-all duration-200 origin-bottom-right pointer-events-auto"
+    role="dialog"
+    aria-label="Markcopilot AI Chat Concierge"
+    aria-hidden="true"
+  >
+    <!-- Header: Sticky top header -->
+    <div
+      class="px-4 py-3.5 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between shrink-0"
+    >
+      <div class="flex items-center gap-3">
+        <!-- Markcopilot Avatar / Logo -->
+        <div
+          class="w-9 h-9 rounded-full bg-blue-600/10 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800 flex items-center justify-center shrink-0"
+        >
+          <Icon name="lucide:sparkles" class="w-4 h-4" />
+        </div>
+        <div>
+          <div class="font-bold text-sm text-slate-900 dark:text-white flex items-center gap-1.5">
+            <span>Markcopilot</span>
+            <span
+              class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800"
+            >
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+              Online
+            </span>
+          </div>
+          <div class="text-xs text-slate-500 dark:text-slate-400">
+            Speaks English, Swahili &amp; Sheng
+          </div>
+        </div>
+      </div>
+
+      <!-- Header Close Button -->
+      <button
+        type="button"
+        id="markcopilot-header-close"
+        class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors cursor-pointer"
+        aria-label="Close widget"
+      >
+        <Icon name="lucide:x" class="w-4 h-4" />
+      </button>
+    </div>
+
+    <!-- Chat Area (Scrollable) -->
+    <div
+      id="markcopilot-messages"
+      class="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50/50 dark:bg-gray-900/50 text-sm"
+    >
+      <!-- Initial Greeting Bubble from Markcopilot -->
+      <div class="flex items-start gap-2.5">
+        <div
+          class="w-7 h-7 rounded-full bg-blue-600/10 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800 flex items-center justify-center shrink-0 mt-0.5"
+        >
+          <Icon name="lucide:bot" class="w-3.5 h-3.5" />
+        </div>
+        <div
+          class="bg-white dark:bg-gray-800 text-slate-800 dark:text-slate-100 p-3.5 rounded-2xl rounded-tl-sm shadow-xs border border-gray-100 dark:border-gray-800 leading-relaxed max-w-[85%]"
+        >
+          <p>
+            Habari! I am <strong>Markcopilot</strong>, your MarkChat AI concierge. How can I help
+            your Kenyan business today?
+          </p>
+          <p class="text-xs text-slate-500 dark:text-slate-400 mt-2">
+            Select a quick question below or ask anything about M-Pesa STK push, SMS rates, or
+            booking a live demo:
+          </p>
+        </div>
+      </div>
+
+      <!-- Action Pills (Suggested Questions) -->
+      <div id="markcopilot-action-pills" class="flex flex-wrap gap-2 pt-1 pl-9">
+        <button
+          type="button"
+          class="action-pill px-3 py-1.5 rounded-full border border-blue-100 bg-blue-50 text-blue-700 text-xs hover:bg-blue-100 cursor-pointer transition-colors dark:bg-blue-950/40 dark:border-blue-900/50 dark:text-blue-300 dark:hover:bg-blue-900/50 font-medium text-left"
+          data-prompt="How does /stk checkout work?"
+        >
+          How does /stk checkout work?
+        </button>
+        <button
+          type="button"
+          class="action-pill px-3 py-1.5 rounded-full border border-blue-100 bg-blue-50 text-blue-700 text-xs hover:bg-blue-100 cursor-pointer transition-colors dark:bg-blue-950/40 dark:border-blue-900/50 dark:text-blue-300 dark:hover:bg-blue-900/50 font-medium text-left"
+          data-prompt="What are your KES pricing plans?"
+        >
+          KES Pricing Plans
+        </button>
+        <button
+          type="button"
+          class="action-pill px-3 py-1.5 rounded-full border border-blue-100 bg-blue-50 text-blue-700 text-xs hover:bg-blue-100 cursor-pointer transition-colors dark:bg-blue-950/40 dark:border-blue-900/50 dark:text-blue-300 dark:hover:bg-blue-900/50 font-medium text-left"
+          data-prompt="Can I use Pochi la Biashara or Till?"
+        >
+          Pochi la Biashara Sync
+        </button>
+        <button
+          type="button"
+          class="action-pill px-3 py-1.5 rounded-full border border-blue-200 bg-blue-100/70 text-blue-800 text-xs hover:bg-blue-200 cursor-pointer transition-colors dark:bg-blue-900/50 dark:border-blue-800 dark:text-blue-200 dark:hover:bg-blue-900/80 font-semibold text-left flex items-center gap-1"
+          data-prompt="Book a Live Demo"
+        >
+          <span>📅</span>
+          <span>Book Live Demo</span>
+        </button>
+      </div>
+
+      <!-- Typing Indicator (Initially Hidden) -->
+      <div id="markcopilot-typing" class="hidden items-start gap-2.5">
+        <div
+          class="w-7 h-7 rounded-full bg-blue-600/10 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800 flex items-center justify-center shrink-0 mt-0.5"
+        >
+          <Icon name="lucide:bot" class="w-3.5 h-3.5" />
+        </div>
+        <div
+          class="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-800 px-4 py-3 rounded-2xl rounded-tl-sm shadow-xs flex items-center gap-1.5"
+        >
+          <span class="w-2 h-2 rounded-full bg-blue-500 animate-bounce [animation-delay:-0.3s]"
+          ></span>
+          <span class="w-2 h-2 rounded-full bg-blue-500 animate-bounce [animation-delay:-0.15s]"
+          ></span>
+          <span class="w-2 h-2 rounded-full bg-blue-500 animate-bounce"></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Inline Lead Capture Template (Cloned into Chat Stream when Demo is Requested) -->
+    <template id="lead-card-template">
+      <div
+        class="p-4 bg-white dark:bg-gray-800 border border-blue-200 dark:border-blue-900/60 rounded-xl shadow-xs space-y-3"
+      >
+        <div class="flex items-center gap-2 text-xs font-bold text-blue-600 dark:text-blue-400">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+            ></path>
+          </svg>
+          <span>Schedule Tailored Merchant Demo</span>
+        </div>
+        <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+          Leave your details and our Nairobi solution engineer will show you how to close chat
+          orders in 10s:
+        </p>
+
+        <form class="widget-lead-form space-y-2">
+          <input
+            type="text"
+            name="fullName"
+            class="w-full px-3 py-1.5 text-xs rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-blue-500"
+            placeholder="Your Name *"
+            required
+          />
+          <input
+            type="email"
+            name="email"
+            class="w-full px-3 py-1.5 text-xs rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-blue-500"
+            placeholder="Work Email *"
+            required
+          />
+          <input
+            type="tel"
+            name="phone"
+            class="w-full px-3 py-1.5 text-xs rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-blue-500"
+            placeholder="Kenyan Phone (+254 7XX...) *"
+            required
+          />
+          <select
+            name="monthlyVolume"
+            class="w-full px-3 py-1.5 text-xs rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-slate-900 dark:text-white focus:outline-none focus:border-blue-500"
+          >
+            <option value="Under 1,000 msgs/mo">Under 1,000 messages/mo</option>
+            <option value="1,000 - 5,000 msgs/mo">1,000 - 5,000 messages/mo</option>
+            <option value="5,000 - 20,000 msgs/mo">5,000 - 20,000 messages/mo</option>
+            <option value="20,000+ msgs/mo">20,000+ messages/mo (Enterprise)</option>
+          </select>
+          <button
+            type="submit"
+            class="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold text-xs transition-colors cursor-pointer"
+          >
+            Submit Demo Request
+          </button>
+        </form>
+      </div>
+    </template>
+
+    <!-- Composer: Sticky bottom input area -->
+    <form
+      id="markcopilot-composer"
+      class="p-3 bg-white dark:bg-gray-900 border-t border-gray-100 dark:border-gray-800 flex items-center gap-2 shrink-0"
+    >
+      <input
+        type="text"
+        id="markcopilot-input"
+        class="flex-1 px-3 py-2 text-sm text-slate-800 dark:text-slate-100 placeholder:text-slate-400 bg-transparent focus:outline-none"
+        placeholder="Uliza swali lolote kuhusu MarkChat..."
+        autocomplete="off"
+      />
+      <button
+        type="submit"
+        id="markcopilot-send-btn"
+        class="w-9 h-9 rounded-full bg-blue-600 hover:bg-blue-700 text-white flex items-center justify-center transition-colors shadow-xs shrink-0 cursor-pointer disabled:opacity-40"
+        aria-label="Send message"
+      >
+        <Icon name="lucide:send" class="w-4 h-4" />
+      </button>
+    </form>
+  </div>
+
+  <!-- Launcher Button: Floating circular button (Chatwoot style) -->
+  <button
+    type="button"
+    id="markcopilot-launcher"
+    class="relative w-14 h-14 rounded-full bg-blue-600 shadow-xl flex items-center justify-center cursor-pointer hover:bg-blue-700 transition-colors pointer-events-auto focus:outline-none focus-visible:ring-4 focus-visible:ring-blue-300"
+    aria-label="Toggle Markcopilot AI Assistant"
+    aria-expanded="false"
+  >
+    <!-- Closed Icon: White Chat Icon -->
+    <Icon
+      name="lucide:message-square"
+      id="launcher-chat-icon"
+      class="w-6 h-6 text-white transition-transform duration-200"
+    />
+
+    <!-- Open Icon: White 'X' Icon -->
+    <Icon
+      name="lucide:x"
+      id="launcher-close-icon"
+      class="w-6 h-6 text-white hidden transition-transform duration-200"
+    />
+
+    <!-- Online Activity Ping -->
+    <span
+      id="launcher-ping"
+      class="absolute top-0 right-0 w-3.5 h-3.5 bg-emerald-400 border-2 border-white dark:border-gray-900 rounded-full"
+    ></span>
+  </button>
+</div>
+
+<script>
+  import { submitLead } from '@/lib/cms-api';
+
+  interface ChatMessage {
+    id: string;
+    role: 'assistant' | 'user';
+    content: string;
+    time: string;
+    leadForm?: boolean;
+  }
+
+  function setupMarkcopilotWidget() {
+    const root = document.getElementById('markcopilot-root');
+    const panel = document.getElementById('markcopilot-panel');
+    const launcher = document.getElementById('markcopilot-launcher');
+    const chatIcon = document.getElementById('launcher-chat-icon');
+    const closeIcon = document.getElementById('launcher-close-icon');
+    const headerClose = document.getElementById('markcopilot-header-close');
+    const composer = document.getElementById('markcopilot-composer');
+    const input = document.getElementById('markcopilot-input') as HTMLInputElement | null;
+    const sendBtn = document.getElementById('markcopilot-send-btn') as HTMLButtonElement | null;
+    const messagesContainer = document.getElementById('markcopilot-messages');
+    const typingIndicator = document.getElementById('markcopilot-typing');
+    const actionPills = document.querySelectorAll('.action-pill');
+    const leadTemplate = document.getElementById(
+      'lead-card-template'
+    ) as HTMLTemplateElement | null;
+
+    if (!root || !panel || !launcher) return;
+
+    // --- State Variables (API Readiness) ---
+    let isOpen = false;
+    let isTyping = false;
+    const messages: ChatMessage[] = [];
+
+    function formatTime(date: Date): string {
+      return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    }
+
+    function scrollToBottom() {
+      if (messagesContainer) {
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+      }
+    }
+
+    function toggleWidget(forceState?: boolean) {
+      isOpen = typeof forceState === 'boolean' ? forceState : !isOpen;
+
+      if (isOpen) {
+        panel?.classList.remove('hidden');
+        panel?.classList.add('flex');
+        chatIcon?.classList.add('hidden');
+        closeIcon?.classList.remove('hidden');
+        launcher?.setAttribute('aria-expanded', 'true');
+        panel?.setAttribute('aria-hidden', 'false');
+        setTimeout(() => input?.focus(), 100);
+        scrollToBottom();
+      } else {
+        panel?.classList.add('hidden');
+        panel?.classList.remove('flex');
+        closeIcon?.classList.add('hidden');
+        chatIcon?.classList.remove('hidden');
+        launcher?.setAttribute('aria-expanded', 'false');
+        panel?.setAttribute('aria-hidden', 'true');
+      }
+    }
+
+    launcher.addEventListener('click', () => toggleWidget());
+    headerClose?.addEventListener('click', () => toggleWidget(false));
+
+    function setTyping(typing: boolean) {
+      isTyping = typing;
+      if (typingIndicator) {
+        if (typing) {
+          typingIndicator.classList.remove('hidden');
+          typingIndicator.classList.add('flex');
+          if (messagesContainer) {
+            messagesContainer.appendChild(typingIndicator);
+          }
+        } else {
+          typingIndicator.classList.add('hidden');
+          typingIndicator.classList.remove('flex');
+        }
+      }
+      scrollToBottom();
+    }
+
+    function renderMessage(msg: ChatMessage) {
+      if (!messagesContainer) return;
+
+      const row = document.createElement('div');
+      row.className = `flex items-start gap-2.5 ${msg.role === 'user' ? 'justify-end' : ''}`;
+
+      if (msg.role === 'user') {
+        row.innerHTML = `
+          <div class="bg-blue-600 text-white p-3 rounded-2xl rounded-tr-sm text-sm leading-relaxed max-w-[85%] shadow-xs">
+            ${escapeHtml(msg.content)}
+            <div class="text-[10px] text-blue-100/75 text-right mt-1">${msg.time}</div>
+          </div>
+        `;
+      } else {
+        row.innerHTML = `
+          <div class="w-7 h-7 rounded-full bg-blue-600/10 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800 flex items-center justify-center shrink-0 mt-0.5">
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2 2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zM4 11a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-7z"/><path d="M9 16h6"/><path d="M9 12h.01"/><path d="M15 12h.01"/></svg>
+          </div>
+          <div class="bg-white dark:bg-gray-800 text-slate-800 dark:text-slate-100 p-3.5 rounded-2xl rounded-tl-sm shadow-xs border border-gray-100 dark:border-gray-800 leading-relaxed max-w-[85%]">
+            <div>${msg.content}</div>
+            <div class="text-[10px] text-slate-400 dark:text-slate-500 mt-1">${msg.time}</div>
+          </div>
+        `;
+
+        if (msg.leadForm && leadTemplate) {
+          const formClone = leadTemplate.content.cloneNode(true) as HTMLElement;
+          const formEl = formClone.querySelector('.widget-lead-form');
+
+          formEl?.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const form = e.target as HTMLFormElement;
+            const submitBtn = form.querySelector('button[type="submit"]') as HTMLButtonElement;
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Submitting...';
+
+            const formData = new FormData(form);
+            const fullName = String(formData.get('fullName') || '');
+            const email = String(formData.get('email') || '');
+            const phone = String(formData.get('phone') || '');
+            const monthlyVolume = String(formData.get('monthlyVolume') || '');
+
+            const res = await submitLead({
+              fullName,
+              email,
+              phone,
+              monthlyVolume,
+              source: 'Markcopilot Floating Widget',
+            });
+
+            form.innerHTML = `
+              <div class="p-3 text-center text-xs text-emerald-600 dark:text-emerald-400 font-medium bg-emerald-50 dark:bg-emerald-950/40 rounded-lg border border-emerald-200 dark:border-emerald-800">
+                &check; Asante sana, ${fullName}! ${res.message}
+              </div>
+            `;
+          });
+
+          const bubble = row.querySelector('.bg-white, .dark\\:bg-gray-800');
+          bubble?.appendChild(formClone);
+        }
+      }
+
+      messagesContainer.appendChild(row);
+      scrollToBottom();
+    }
+
+    function escapeHtml(str: string): string {
+      return str
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    // --- Mock OpenAI Handler (Prepared for Production Endpoint Integration) ---
+    async function mockOpenAIReply(
+      prompt: string
+    ): Promise<{ text: string; showLeadForm?: boolean }> {
+      // Future production OpenAI invocation:
+      // const response = await fetch('/api/chat', {
+      //   method: 'POST',
+      //   headers: { 'Content-Type': 'application/json' },
+      //   body: JSON.stringify({ messages: [...messages.map(m => ({ role: m.role, content: m.content })), { role: 'user', content: prompt }] }),
+      // });
+      // const data = await response.json();
+      // return { text: data.choices[0].message.content };
+
+      await new Promise((resolve) => setTimeout(resolve, 600));
+
+      const lower = prompt.toLowerCase();
+      if (
+        lower.includes('/stk') ||
+        lower.includes('checkout') ||
+        lower.includes('mpesa') ||
+        lower.includes('m-pesa')
+      ) {
+        return {
+          text: `In MarkChat, agents type <code>/stk &lt;amount&gt; &lt;phone&gt;</code> in any customer conversation. Safaricom instantly pushes an STK prompt popup requesting the customer's PIN. When entered, Daraja C2B validates the unique TransID, marks the order Paid, and posts an official receipt automatically!`,
+        };
+      } else if (
+        lower.includes('pricing') ||
+        lower.includes('kes') ||
+        lower.includes('plan') ||
+        lower.includes('cost')
+      ) {
+        return {
+          text: `Our transparent KES pricing plans:<br/>
+          &bull; <strong>Starter:</strong> KES 0/mo (Free forever with 50 trial SMS)<br/>
+          &bull; <strong>Pro:</strong> KES 3,500/mo (or KES 2,800/mo billed annually) with all 6 channels, /stk checkout &amp; Markcopilot AI<br/>
+          &bull; <strong>Enterprise:</strong> Tailored high-throughput SLA with dedicated routing.`,
+        };
+      } else if (lower.includes('pochi') || lower.includes('till') || lower.includes('forwarder')) {
+        return {
+          text: `Yes! You don't need an expensive corporate Paybill. Our lightweight Android forwarder syncs personal lines and Pochi la Biashara SMS alerts in real time so your chat orders are reconciled automatically without human manual verification.`,
+        };
+      } else if (lower.includes('demo') || lower.includes('sales') || lower.includes('book')) {
+        return {
+          text: `We would love to show you MarkChat live in action! Please fill in your details below and our team will get in touch immediately:`,
+          showLeadForm: true,
+        };
+      } else {
+        return {
+          text: `MarkChat unifies WhatsApp Cloud API, Africa's Talking Bulk SMS, Instagram DMs, and Safaricom M-Pesa into one collaborative team inbox. Would you like to schedule a quick 15-minute live demo with our Nairobi team?`,
+          showLeadForm: true,
+        };
+      }
+    }
+
+    // --- Message Dispatcher ---
+    async function handleSendMessage(text: string) {
+      if (!text || !text.trim() || isTyping) return;
+      const userText = text.trim();
+
+      // 1. Append User Message
+      const userMsg: ChatMessage = {
+        id: `user-${Date.now()}`,
+        role: 'user',
+        content: userText,
+        time: formatTime(new Date()),
+      };
+      messages.push(userMsg);
+      renderMessage(userMsg);
+
+      // 2. Set Typing State
+      setTyping(true);
+      if (sendBtn) sendBtn.disabled = true;
+
+      // 3. Obtain Response (Mock OpenAI / Backend API)
+      try {
+        const reply = await mockOpenAIReply(userText);
+        setTyping(false);
+
+        const botMsg: ChatMessage = {
+          id: `bot-${Date.now()}`,
+          role: 'assistant',
+          content: reply.text,
+          time: formatTime(new Date()),
+          leadForm: reply.showLeadForm,
+        };
+        messages.push(botMsg);
+        renderMessage(botMsg);
+      } catch {
+        setTyping(false);
+        const errorMsg: ChatMessage = {
+          id: `err-${Date.now()}`,
+          role: 'assistant',
+          content: 'Pole sana! An error occurred while processing your request. Please try again.',
+          time: formatTime(new Date()),
+        };
+        messages.push(errorMsg);
+        renderMessage(errorMsg);
+      } finally {
+        if (sendBtn) sendBtn.disabled = false;
+      }
+    }
+
+    // --- Event Listeners ---
+    composer?.addEventListener('submit', (e) => {
+      e.preventDefault();
+      if (!input) return;
+      const val = input.value;
+      input.value = '';
+      handleSendMessage(val);
+    });
+
+    actionPills.forEach((pill) => {
+      pill.addEventListener('click', () => {
+        const prompt = pill.getAttribute('data-prompt');
+        if (prompt) {
+          handleSendMessage(prompt);
+        }
+      });
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', setupMarkcopilotWidget);
+  document.addEventListener('astro:page-load', setupMarkcopilotWidget);
+</script>

@@ -1,0 +1,67 @@
+---
+/**
+ * MarkChat Product Suite Overview
+ */
+import MarketingLayout from '@/layouts/MarketingLayout.astro';
+import PageHeader from '@sections/content/PageHeader.astro';
+import { Icon } from 'astro-icon/components';
+import CTA from '@sections/marketing/CTA.astro';
+import { productPages } from '@/data/marketing-content';
+---
+
+<MarketingLayout
+  title="Product Suite - MarkChat Kenya"
+  description="Explore MarkChat's products: Markcopilot AI, Shared Inbox, Help Center, CRM Workspace, and Self-Hosted deployments."
+>
+  <PageHeader
+    title="The MarkChat Product Suite"
+    subtitle="Everything you need to turn customer conversations into verified revenue across WhatsApp, SMS, and digital channels."
+  />
+
+  <section class="py-16 sm:py-24 bg-surface/50 border-b border-border">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {
+          productPages.map((item) => (
+            <a
+              href={`/product/${item.slug}`}
+              class="group flex flex-col justify-between p-8 rounded-2xl border border-border bg-background hover:border-primary/50 hover:shadow-lg transition-all"
+            >
+              <div>
+                <div class="flex items-center justify-between mb-6">
+                  <div class="w-12 h-12 rounded-xl bg-primary/10 text-primary border border-primary/20 flex items-center justify-center group-hover:scale-105 transition-transform">
+                    <Icon name={item.icon} class="w-6 h-6" />
+                  </div>
+                  {item.badge && (
+                    <span class="px-2.5 py-0.5 text-xs font-semibold rounded-full bg-primary/10 text-primary border border-primary/20">
+                      {item.badge}
+                    </span>
+                  )}
+                </div>
+                <h3 class="text-xl font-bold text-text group-hover:text-primary transition-colors">
+                  {item.title}
+                </h3>
+                <p class="text-sm text-text-muted mt-3 line-clamp-3 leading-relaxed">
+                  {item.subtitle}
+                </p>
+              </div>
+
+              <div class="mt-8 pt-4 border-t border-border/50 flex items-center justify-between text-xs font-semibold text-primary">
+                <span>Explore product features</span>
+                <span class="group-hover:translate-x-1 transition-transform">→</span>
+              </div>
+            </a>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <CTA
+    title="Ready to transform your customer operations?"
+    description="Start your 14-day free trial or talk to our Nairobi technical team."
+    action={{ label: 'Start Free Trial', href: '/pricing' }}
+    secondaryAction={{ label: 'Book Demo', href: '/demo' }}
+    background="muted"
+  />
+</MarketingLayout>

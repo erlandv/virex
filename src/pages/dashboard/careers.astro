@@ -1,0 +1,536 @@
+---
+/**
+ * MarkChat CMS — Careers & Applicants Manager
+ */
+import DashboardLayout from '@/layouts/DashboardLayout.astro';
+import Card from '@dashboard-ui/Card.astro';
+import Modal from '@dashboard-ui/Modal.astro';
+import { Icon } from 'astro-icon/components';
+import { fetchCareers } from '@/lib/cms-api';
+
+const careers = await fetchCareers();
+
+// Seed initial demo applicant for review
+const sampleApplications = [
+  {
+    id: 'app-1',
+    fullName: 'Peter Mwangi',
+    email: 'pmwangi@gmail.com',
+    phone: '+254 712 334 455',
+    careerTitle: 'Senior Full-Stack Engineer (Fintech & WhatsApp Cloud API)',
+    linkedinUrl: 'https://linkedin.com/in/petermwangi',
+    submittedAt: '2026-11-10T14:20:00Z',
+    status: 'new',
+    coverLetter:
+      '4 years experience integrating Safaricom Daraja API and Meta Cloud API at a regional payments gateway in Nairobi.',
+  },
+  {
+    id: 'app-2',
+    fullName: 'Naomi Chepkemoi',
+    email: 'naomi.chep@outlook.com',
+    phone: '+254 722 889 900',
+    careerTitle: 'Kenya Customer Success & M-Pesa Onboarding Lead',
+    linkedinUrl: 'https://linkedin.com/in/naomichep',
+    submittedAt: '2026-11-11T10:15:00Z',
+    status: 'reviewed',
+    coverLetter:
+      'Experienced onboarding 150+ Kenyan retail shops onto electronic POS and mobile till solutions.',
+  },
+];
+---
+
+<DashboardLayout
+  title="Careers & Applicants Manager"
+  description="Manage open Nairobi and remote job openings and review candidate applications"
+  breadcrumbs={[{ label: 'Dashboard', href: '/dashboard' }, { label: 'Careers & Applicants' }]}
+>
+  <div class="cms-careers-page">
+    <div class="page-header flex justify-between items-center mb-6">
+      <div>
+        <h1 class="text-2xl font-bold tracking-tight text-text">
+          Careers &amp; Applicants Manager
+        </h1>
+        <p class="text-sm text-text-muted mt-1">
+          Post roles for Nairobi engineering, merchant success, and partner growth teams.
+        </p>
+      </div>
+      <div class="header-actions flex gap-3">
+        <a href="/careers" target="_blank" class="btn btn-secondary text-sm">
+          <Icon name="lucide:external-link" class="w-4 h-4 mr-1.5 inline" />
+          View Live /careers
+        </a>
+        <button type="button" id="open-job-modal" class="btn btn-primary text-sm">
+          <Icon name="lucide:plus" class="w-4 h-4 mr-1.5 inline" />
+          Post New Role
+        </button>
+      </div>
+    </div>
+
+    <!-- Active Job Openings Table -->
+    <div class="mb-8">
+      <Card
+        title="Open Job Listings"
+        description="Published and draft positions shown on /careers"
+        padding="none"
+      >
+        <div class="table-responsive">
+          <table class="cms-table w-full">
+            <thead>
+              <tr>
+                <th class="text-left py-3 px-4">Role Title &amp; Department</th>
+                <th class="text-left py-3 px-4">Location</th>
+                <th class="text-left py-3 px-4">Salary Range</th>
+                <th class="text-left py-3 px-4">Status</th>
+                <th class="text-right py-3 px-4">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="job-table-body">
+              {
+                careers.map((job) => (
+                  <tr data-id={job.id} data-job={JSON.stringify(job)}>
+                    <td class="py-3 px-4">
+                      <div class="font-medium text-text">{job.title}</div>
+                      <div class="text-xs text-text-muted">
+                        {job.department} &bull; {job.type}
+                      </div>
+                    </td>
+                    <td class="py-3 px-4 text-xs text-text-muted">{job.location}</td>
+                    <td class="py-3 px-4 text-xs font-mono text-text">
+                      {job.salaryRange || 'Competitive'}
+                    </td>
+                    <td class="py-3 px-4 text-xs">
+                      <span class={`status-pill status-${job.status}`}>
+                        {job.status.toUpperCase()}
+                      </span>
+                    </td>
+                    <td class="py-3 px-4 text-right">
+                      <div class="flex items-center justify-end gap-2">
+                        <button
+                          type="button"
+                          class="action-btn edit-job-btn"
+                          data-id={job.id}
+                          title="Edit Role"
+                        >
+                          <Icon name="lucide:edit-3" class="w-4 h-4" />
+                        </button>
+                        <select class="status-select text-xs" data-id={job.id}>
+                          <option value="published" selected={job.status === 'published'}>
+                            Published
+                          </option>
+                          <option value="draft" selected={job.status === 'draft'}>
+                            Draft
+                          </option>
+                          <option value="paused" selected={job.status === 'paused'}>
+                            Paused
+                          </option>
+                          <option value="archived" selected={job.status === 'archived'}>
+                            Archived
+                          </option>
+                        </select>
+                        <button
+                          type="button"
+                          class="action-btn text-error delete-job-btn"
+                          data-id={job.id}
+                          title="Delete"
+                        >
+                          <Icon name="lucide:trash-2" class="w-4 h-4" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              }
+            </tbody>
+          </table>
+        </div>
+      </Card>
+    </div>
+
+    <!-- Candidate Applications Section -->
+    <Card
+      title="Candidate Applications"
+      description="Inbound candidate submissions submitted via the public career application portal"
+      padding="none"
+    >
+      <div class="table-responsive">
+        <table class="cms-table w-full">
+          <thead>
+            <tr>
+              <th class="text-left py-3 px-4">Candidate</th>
+              <th class="text-left py-3 px-4">Target Role</th>
+              <th class="text-left py-3 px-4">Phone &amp; Profile</th>
+              <th class="text-left py-3 px-4">Submitted</th>
+              <th class="text-right py-3 px-4">Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {
+              sampleApplications.map((app) => (
+                <tr>
+                  <td class="py-3 px-4">
+                    <div class="font-medium text-text">{app.fullName}</div>
+                    <div class="text-xs text-text-muted">{app.email}</div>
+                  </td>
+                  <td class="py-3 px-4 text-xs text-text">{app.careerTitle}</td>
+                  <td class="py-3 px-4 text-xs text-text-muted">
+                    <div>{app.phone}</div>
+                    {app.linkedinUrl && (
+                      <a
+                        href={app.linkedinUrl}
+                        target="_blank"
+                        class="text-primary hover:underline text-xs inline-flex items-center gap-1"
+                      >
+                        <span>LinkedIn Profile</span>
+                        <Icon name="lucide:external-link" class="w-3 h-3" />
+                      </a>
+                    )}
+                  </td>
+                  <td class="py-3 px-4 text-xs text-text-muted">
+                    {new Date(app.submittedAt).toLocaleDateString('en-KE', {
+                      month: 'short',
+                      day: 'numeric',
+                      year: 'numeric',
+                    })}
+                  </td>
+                  <td class="py-3 px-4 text-right">
+                    <span class="status-pill status-published text-xs">
+                      {app.status.toUpperCase()}
+                    </span>
+                  </td>
+                </tr>
+              ))
+            }
+          </tbody>
+        </table>
+      </div>
+    </Card>
+
+    <!-- Modal for Posting / Editing Role -->
+    <Modal id="job-modal" title="Role Specification" size="lg">
+      <form id="job-form" class="space-y-4">
+        <input type="hidden" id="job-id" name="id" />
+
+        <div class="form-group">
+          <label class="form-label" for="job-title">Job Title *</label>
+          <input
+            type="text"
+            id="job-title"
+            name="title"
+            class="form-input"
+            required
+            placeholder="e.g. Senior Backend Engineer (Daraja API)"
+          />
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div class="form-group">
+            <label class="form-label" for="job-department">Department *</label>
+            <input
+              type="text"
+              id="job-department"
+              name="department"
+              class="form-input"
+              required
+              placeholder="Engineering / Growth"
+            />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="job-location">Location *</label>
+            <input
+              type="text"
+              id="job-location"
+              name="location"
+              class="form-input"
+              required
+              placeholder="Nairobi, Kenya (Hybrid)"
+            />
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div class="form-group">
+            <label class="form-label" for="job-salary">Salary Range (KES)</label>
+            <input
+              type="text"
+              id="job-salary"
+              name="salaryRange"
+              class="form-input"
+              placeholder="KES 200,000 - 300,000 / mo"
+            />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="job-status">Lifecycle Status</label>
+            <select id="job-status" name="status" class="form-input">
+              <option value="published">Published (Live)</option>
+              <option value="draft">Draft</option>
+              <option value="paused">Paused</option>
+              <option value="archived">Archived</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="job-description">Role Description *</label>
+          <textarea
+            id="job-description"
+            name="description"
+            rows="4"
+            class="form-textarea"
+            required
+            placeholder="Describe core mission and impact..."></textarea>
+        </div>
+      </form>
+
+      <div slot="footer" class="flex justify-end gap-3">
+        <button type="button" class="btn btn-secondary" onclick="window.closeModal('job-modal')">
+          Cancel
+        </button>
+        <button type="submit" form="job-form" class="btn btn-primary"> Save Position </button>
+      </div>
+    </Modal>
+  </div>
+</DashboardLayout>
+
+<style>
+  .cms-careers-page {
+    max-width: 80rem;
+    margin: 0 auto;
+  }
+
+  .table-responsive {
+    overflow-x: auto;
+  }
+
+  .cms-table {
+    border-collapse: collapse;
+    width: 100%;
+    font-size: 0.875rem;
+  }
+
+  .cms-table th {
+    background: var(--color-surface-hover, #1f1f23);
+    color: var(--color-text-muted, #a1a1aa);
+    font-weight: 600;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-bottom: 1px solid var(--color-border, #27272a);
+  }
+
+  .cms-table td {
+    border-bottom: 1px solid var(--color-border, #27272a);
+  }
+
+  .status-pill {
+    padding: 0.2rem 0.5rem;
+    border-radius: 9999px;
+    font-size: 0.6875rem;
+    font-weight: 700;
+  }
+
+  .status-published {
+    background: rgba(34, 197, 94, 0.15);
+    color: #4ade80;
+  }
+
+  .status-draft {
+    background: rgba(234, 179, 8, 0.15);
+    color: #facc15;
+  }
+
+  .status-paused {
+    background: rgba(59, 130, 246, 0.15);
+    color: #60a5fa;
+  }
+
+  .status-archived {
+    background: rgba(148, 163, 184, 0.15);
+    color: #94a3b8;
+  }
+
+  .action-btn {
+    background: transparent;
+    border: none;
+    color: var(--color-text-muted, #a1a1aa);
+    cursor: pointer;
+    padding: 0.35rem;
+    border-radius: var(--radius-sm, 0.25rem);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .action-btn:hover {
+    color: var(--color-text, #fafafa);
+    background: var(--color-surface-hover, #1f1f23);
+  }
+
+  .status-select {
+    padding: 0.25rem 0.5rem;
+    background: var(--color-surface, #141418);
+    border: 1px solid var(--color-border, #27272a);
+    border-radius: var(--radius-sm, 0.25rem);
+    color: var(--color-text, #fafafa);
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+
+  .form-label {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--color-text, #fafafa);
+  }
+
+  .form-input,
+  .form-textarea {
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.875rem;
+    background: var(--color-surface, #141418);
+    border: 1px solid var(--color-border, #27272a);
+    border-radius: var(--radius-md, 0.5rem);
+    color: var(--color-text, #fafafa);
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    border-radius: var(--radius-md, 0.5rem);
+    cursor: pointer;
+    transition: all 150ms ease;
+    text-decoration: none;
+    border: 1px solid transparent;
+  }
+
+  .btn-primary {
+    background: var(--color-primary, #6366f1);
+    color: #ffffff;
+  }
+
+  .btn-secondary {
+    background: var(--color-surface, #141418);
+    border-color: var(--color-border, #27272a);
+    color: var(--color-text, #fafafa);
+  }
+</style>
+
+<script>
+  import {
+    upsertCareer,
+    updateItemStatus,
+    deleteCmsItem,
+    type CmsLifecycleStatus,
+  } from '@/lib/cms-api';
+
+  function initCareersAdmin() {
+    const createBtn = document.getElementById('open-job-modal');
+    const form = document.getElementById('job-form') as HTMLFormElement;
+
+    if (createBtn) {
+      createBtn.addEventListener('click', () => {
+        form?.reset();
+        (document.getElementById('job-id') as HTMLInputElement).value = '';
+        window.openModal?.('job-modal');
+      });
+    }
+
+    // Edit button listeners
+    document.querySelectorAll('.edit-job-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const row = btn.closest('tr');
+        if (!row) return;
+        const job = JSON.parse(row.getAttribute('data-job') || '{}');
+        (document.getElementById('job-id') as HTMLInputElement).value = job.id || '';
+        (document.getElementById('job-title') as HTMLInputElement).value = job.title || '';
+        (document.getElementById('job-department') as HTMLInputElement).value =
+          job.department || '';
+        (document.getElementById('job-location') as HTMLInputElement).value = job.location || '';
+        (document.getElementById('job-salary') as HTMLInputElement).value = job.salaryRange || '';
+        (document.getElementById('job-status') as HTMLSelectElement).value =
+          job.status || 'published';
+        (document.getElementById('job-description') as HTMLTextAreaElement).value =
+          job.description || '';
+        window.openModal?.('job-modal');
+      });
+    });
+
+    // Form submission
+    if (form) {
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const id = (document.getElementById('job-id') as HTMLInputElement).value;
+        const title = (document.getElementById('job-title') as HTMLInputElement).value;
+        const department = (document.getElementById('job-department') as HTMLInputElement).value;
+        const location = (document.getElementById('job-location') as HTMLInputElement).value;
+        const salaryRange = (document.getElementById('job-salary') as HTMLInputElement).value;
+        const status = (document.getElementById('job-status') as HTMLSelectElement)
+          .value as CmsLifecycleStatus;
+        const description = (document.getElementById('job-description') as HTMLTextAreaElement)
+          .value;
+
+        await upsertCareer({
+          id: id || undefined,
+          title,
+          department,
+          location,
+          salaryRange,
+          status,
+          description,
+        });
+
+        window.closeModal?.('job-modal');
+        if (window.showToast) {
+          window.showToast({
+            message: 'Career role saved successfully!',
+            variant: 'success',
+            duration: 3000,
+          });
+        }
+        setTimeout(() => window.location.reload(), 600);
+      });
+    }
+
+    // Status quick change
+    document.querySelectorAll('.status-select').forEach((sel) => {
+      sel.addEventListener('change', async (e) => {
+        const id = sel.getAttribute('data-id');
+        const status = (e.target as HTMLSelectElement).value as CmsLifecycleStatus;
+        if (id) {
+          await updateItemStatus('careers', id, status);
+          if (window.showToast) {
+            window.showToast({
+              message: `Status updated to ${status}`,
+              variant: 'success',
+              duration: 2500,
+            });
+          }
+        }
+      });
+    });
+
+    // Delete role
+    document.querySelectorAll('.delete-job-btn').forEach((btn) => {
+      btn.addEventListener('click', async () => {
+        const id = btn.getAttribute('data-id');
+        if (id && confirm('Are you sure you want to delete this position?')) {
+          await deleteCmsItem('careers', id);
+          btn.closest('tr')?.remove();
+          if (window.showToast) {
+            window.showToast({ message: 'Position deleted', variant: 'success', duration: 2500 });
+          }
+        }
+      });
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', initCareersAdmin);
+  document.addEventListener('astro:page-load', initCareersAdmin);
+</script>

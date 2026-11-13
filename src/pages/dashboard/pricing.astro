@@ -1,0 +1,386 @@
+---
+/**
+ * MarkChat CMS — Pricing & Plan Feature Matrix Manager
+ */
+import DashboardLayout from '@/layouts/DashboardLayout.astro';
+import Card from '@dashboard-ui/Card.astro';
+import { Icon } from 'astro-icon/components';
+import { fetchPricingMatrix } from '@/lib/cms-api';
+
+const matrix = await fetchPricingMatrix();
+---
+
+<DashboardLayout
+  title="Pricing & Plan Feature Matrix"
+  description="Configure KES pricing and binary feature gating for Starter, Pro, and Enterprise tiers"
+  breadcrumbs={[{ label: 'Dashboard', href: '/dashboard' }, { label: 'Pricing & Plan Matrix' }]}
+>
+  <div class="pricing-matrix-page">
+    <div class="page-header flex justify-between items-center mb-6">
+      <div>
+        <h1 class="text-2xl font-bold tracking-tight text-text">
+          Pricing &amp; Plan Feature Matrix
+        </h1>
+        <p class="text-sm text-text-muted mt-1">
+          Control KES subscription rates and toggle binary feature gating across public pages.
+        </p>
+      </div>
+      <div class="header-actions flex gap-3">
+        <a href="/pricing" target="_blank" class="btn btn-secondary text-sm">
+          <Icon name="lucide:external-link" class="w-4 h-4 mr-1.5 inline" />
+          Preview /pricing
+        </a>
+        <button type="button" id="save-matrix-btn" class="btn btn-primary text-sm">
+          <Icon name="lucide:save" class="w-4 h-4 mr-1.5 inline" />
+          Save Plan Matrix
+        </button>
+      </div>
+    </div>
+
+    <!-- Tier Price Configurations -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+      <!-- Starter Tier Card -->
+      <Card
+        title="Starter Plan"
+        description="Free forever for solo dukas & IG sellers"
+        padding="md"
+      >
+        <div class="space-y-4">
+          <div class="form-group">
+            <label class="form-label text-xs">Monthly Price (KES)</label>
+            <div class="input-prefix-wrapper">
+              <span class="input-prefix">KES</span>
+              <input
+                type="number"
+                id="price-starter-monthly"
+                class="form-input with-prefix"
+                value="0"
+                readonly
+              />
+            </div>
+            <p class="text-xs text-text-muted">Always KES 0 for entry tier</p>
+          </div>
+          <div class="form-group">
+            <label class="form-label text-xs">Annual Billed Rate (KES/mo)</label>
+            <div class="input-prefix-wrapper">
+              <span class="input-prefix">KES</span>
+              <input
+                type="number"
+                id="price-starter-annual"
+                class="form-input with-prefix"
+                value="0"
+                readonly
+              />
+            </div>
+          </div>
+          <div class="badge-tag bg-emerald-500/10 text-emerald-400 text-xs px-2.5 py-1 rounded">
+            Free Forever Tier
+          </div>
+        </div>
+      </Card>
+
+      <!-- Pro Tier Card -->
+      <Card
+        title="Pro Plan (Most Popular)"
+        description="For retail, clinics, salons & e-commerce"
+        padding="md"
+      >
+        <div class="space-y-4">
+          <div class="form-group">
+            <label class="form-label text-xs">Monthly Price (KES)</label>
+            <div class="input-prefix-wrapper">
+              <span class="input-prefix">KES</span>
+              <input
+                type="number"
+                id="price-pro-monthly"
+                class="form-input with-prefix"
+                value={matrix.tiers.find((t) => t.id === 'pro')?.monthlyPrice || 3500}
+              />
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label text-xs">Annual Rate (-20% discount)</label>
+            <div class="input-prefix-wrapper">
+              <span class="input-prefix">KES</span>
+              <input
+                type="number"
+                id="price-pro-annual"
+                class="form-input with-prefix"
+                value={matrix.tiers.find((t) => t.id === 'pro')?.annualMonthlyPrice || 2800}
+              />
+            </div>
+          </div>
+          <div class="badge-tag bg-primary/10 text-primary text-xs px-2.5 py-1 rounded">
+            Highlighted as Most Popular
+          </div>
+        </div>
+      </Card>
+
+      <!-- Enterprise Tier Card -->
+      <Card title="Enterprise Plan" description="High-volume chains & institutions" padding="md">
+        <div class="space-y-4">
+          <div class="form-group">
+            <label class="form-label text-xs">Monthly Billing</label>
+            <input
+              type="text"
+              id="price-enterprise-monthly"
+              class="form-input"
+              value="Custom"
+              readonly
+            />
+            <p class="text-xs text-text-muted">Bespoke SLA &amp; dedicated Daraja routing</p>
+          </div>
+          <div class="form-group">
+            <label class="form-label text-xs">Contract Terms</label>
+            <input type="text" class="form-input" value="Annual SLA / Invoiced" readonly />
+          </div>
+          <div class="badge-tag bg-purple-500/10 text-purple-400 text-xs px-2.5 py-1 rounded">
+            Contact Sales Driven
+          </div>
+        </div>
+      </Card>
+    </div>
+
+    <!-- Binary Feature Gating Matrix Table -->
+    <Card
+      title="Binary Feature-Gating Matrix"
+      description="Check or uncheck capabilities to govern public plan features and subscription boundaries"
+      padding="none"
+    >
+      <div class="table-responsive">
+        <table class="cms-table w-full">
+          <thead>
+            <tr>
+              <th class="text-left py-3 px-4">Feature / Service Module</th>
+              <th class="text-left py-3 px-4">Key Identifier</th>
+              <th class="text-center py-3 px-4 w-32">Starter</th>
+              <th class="text-center py-3 px-4 w-32">Pro</th>
+              <th class="text-center py-3 px-4 w-32">Enterprise</th>
+            </tr>
+          </thead>
+          <tbody id="matrix-tbody">
+            {
+              matrix.featureMatrix.map((item) => (
+                <tr data-key={item.key}>
+                  <td class="py-3 px-4">
+                    <div class="font-medium text-text">{item.name}</div>
+                    <div class="text-xs text-text-muted">{item.description}</div>
+                  </td>
+                  <td class="py-3 px-4 font-mono text-xs text-text-muted">{item.key}</td>
+                  <td class="py-3 px-4 text-center">
+                    <input
+                      type="checkbox"
+                      class="feature-checkbox"
+                      data-tier="starter"
+                      data-key={item.key}
+                      checked={item.starter}
+                    />
+                  </td>
+                  <td class="py-3 px-4 text-center">
+                    <input
+                      type="checkbox"
+                      class="feature-checkbox"
+                      data-tier="pro"
+                      data-key={item.key}
+                      checked={item.pro}
+                    />
+                  </td>
+                  <td class="py-3 px-4 text-center">
+                    <input
+                      type="checkbox"
+                      class="feature-checkbox"
+                      data-tier="enterprise"
+                      data-key={item.key}
+                      checked={item.enterprise}
+                    />
+                  </td>
+                </tr>
+              ))
+            }
+          </tbody>
+        </table>
+      </div>
+      <div slot="footer" class="p-4 flex justify-between items-center text-xs text-text-muted">
+        <span
+          >Changes made here take effect immediately in your local admin preview and sync to
+          /pricing.</span
+        >
+        <button type="button" id="footer-save-btn" class="btn btn-primary text-xs">
+          Save All Changes
+        </button>
+      </div>
+    </Card>
+  </div>
+</DashboardLayout>
+
+<style>
+  .pricing-matrix-page {
+    max-width: 80rem;
+    margin: 0 auto;
+  }
+
+  .table-responsive {
+    overflow-x: auto;
+  }
+
+  .cms-table {
+    border-collapse: collapse;
+    width: 100%;
+    font-size: 0.875rem;
+  }
+
+  .cms-table th {
+    background: var(--color-surface-hover, #1f1f23);
+    color: var(--color-text-muted, #a1a1aa);
+    font-weight: 600;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-bottom: 1px solid var(--color-border, #27272a);
+  }
+
+  .cms-table td {
+    border-bottom: 1px solid var(--color-border, #27272a);
+  }
+
+  .cms-table tr:hover td {
+    background: rgba(255, 255, 255, 0.02);
+  }
+
+  .feature-checkbox {
+    width: 1.15rem;
+    height: 1.15rem;
+    cursor: pointer;
+    accent-color: var(--color-primary, #6366f1);
+  }
+
+  .input-prefix-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+
+  .input-prefix {
+    position: absolute;
+    left: 0.75rem;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--color-text-muted, #a1a1aa);
+  }
+
+  .form-input.with-prefix {
+    padding-left: 3rem;
+  }
+
+  .form-input {
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.875rem;
+    background: var(--color-surface, #141418);
+    border: 1px solid var(--color-border, #27272a);
+    border-radius: var(--radius-md, 0.5rem);
+    color: var(--color-text, #fafafa);
+  }
+
+  .form-input:focus {
+    outline: none;
+    border-color: var(--color-primary, #6366f1);
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    border-radius: var(--radius-md, 0.5rem);
+    cursor: pointer;
+    transition: all 150ms ease;
+    text-decoration: none;
+    border: 1px solid transparent;
+  }
+
+  .btn-primary {
+    background: var(--color-primary, #6366f1);
+    color: #ffffff;
+  }
+
+  .btn-secondary {
+    background: var(--color-surface, #141418);
+    border-color: var(--color-border, #27272a);
+    color: var(--color-text, #fafafa);
+  }
+</style>
+
+<script>
+  import { fetchPricingMatrix, savePlanMatrix } from '@/lib/cms-api';
+
+  async function handleSave() {
+    try {
+      const current = await fetchPricingMatrix();
+
+      const proMonthly = parseInt(
+        (document.getElementById('price-pro-monthly') as HTMLInputElement)?.value || '3500',
+        10
+      );
+      const proAnnual = parseInt(
+        (document.getElementById('price-pro-annual') as HTMLInputElement)?.value || '2800',
+        10
+      );
+
+      const updatedTiers = current.tiers.map((t) => {
+        if (t.id === 'pro') {
+          return { ...t, monthlyPrice: proMonthly, annualMonthlyPrice: proAnnual };
+        }
+        return t;
+      });
+
+      const updatedFeatureMatrix = current.featureMatrix.map((feat) => {
+        const starterEl = document.querySelector<HTMLInputElement>(
+          `.feature-checkbox[data-key="${feat.key}"][data-tier="starter"]`
+        );
+        const proEl = document.querySelector<HTMLInputElement>(
+          `.feature-checkbox[data-key="${feat.key}"][data-tier="pro"]`
+        );
+        const entEl = document.querySelector<HTMLInputElement>(
+          `.feature-checkbox[data-key="${feat.key}"][data-tier="enterprise"]`
+        );
+
+        return {
+          ...feat,
+          starter: starterEl ? starterEl.checked : feat.starter,
+          pro: proEl ? proEl.checked : feat.pro,
+          enterprise: entEl ? entEl.checked : feat.enterprise,
+        };
+      });
+
+      await savePlanMatrix({
+        tiers: updatedTiers,
+        featureMatrix: updatedFeatureMatrix,
+      });
+
+      if (window.showToast) {
+        window.showToast({
+          message: 'Plan matrix & feature gates saved successfully!',
+          variant: 'success',
+          duration: 3000,
+        });
+      } else {
+        alert('Plan matrix & feature gates saved successfully!');
+      }
+    } catch (e) {
+      console.error(e);
+      alert('Error saving plan matrix.');
+    }
+  }
+
+  document.getElementById('save-matrix-btn')?.addEventListener('click', handleSave);
+  document.getElementById('footer-save-btn')?.addEventListener('click', handleSave);
+</script>

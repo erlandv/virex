@@ -1,56 +1,33 @@
 ---
 /**
- * IntegrationsGrid - Display supported integrations/apps
- *
- * @description
- * Shows a grid of integrations with optional category filtering.
- * Common in SaaS to showcase ecosystem and compatibility.
- *
- * @example Basic usage
- * ```astro
- * <IntegrationsGrid
- *   title="Integrations"
- *   integrations={[
- *     { name: "Slack", logo: "/images/integrations/slack.svg", category: "Communication" },
- *     { name: "GitHub", logo: "/images/integrations/github.svg", category: "Development" },
- *   ]}
- * />
- * ```
+ * IntegrationsGrid - Display supported Kenyan integrations
  */
+import IntegrationIcon from '@/components/ui/IntegrationIcon.astro';
 
-interface Integration {
-  /** Integration name */
+export interface IntegrationCardItem {
+  slug?: string;
   name: string;
-  /** Logo image URL */
-  logo: string;
-  /** Optional description */
-  description?: string;
-  /** Category for filtering */
   category?: string;
-  /** Link to integration details or docs */
+  iconKey?: string;
+  logoUrl?: string;
+  logo?: string;
+  description?: string;
+  shortDescription?: string;
   href?: string;
-  /** Whether this is a featured/popular integration */
   featured?: boolean;
+  popular?: boolean;
+  isPopular?: boolean;
 }
 
 interface Props {
-  /** Section title */
   title?: string;
-  /** Section subtitle */
   subtitle?: string;
-  /** Array of integrations */
-  integrations: Integration[];
-  /** Show category filter tabs */
+  integrations: IntegrationCardItem[];
   showFilter?: boolean;
-  /** Display variant */
   variant?: 'grid' | 'compact' | 'detailed';
-  /** Number of columns */
   columns?: 3 | 4 | 5 | 6;
-  /** Invert logo colors in dark mode (for monochrome logos) */
   invertOnDark?: boolean;
-  /** Optional footer link for "View full Integrations" */
   footerLink?: { label: string; href: string };
-  /** Section background style */
   background?: 'default' | 'muted' | 'accent';
 }
 
@@ -59,48 +36,45 @@ const {
   subtitle,
   integrations,
   showFilter = false,
-  variant = 'grid',
-  columns = 4,
-  invertOnDark = true,
+  variant = 'detailed',
+  columns = 3,
   background = 'default',
   footerLink,
 } = Astro.props;
 
 const bgClass = {
   default: 'bg-background',
-  muted: 'bg-surface',
+  muted: 'bg-surface/50',
   accent: 'bg-primary/5',
 }[background];
 
-const columnClass = {
-  3: 'grid-cols-2 sm:grid-cols-3',
-  4: 'grid-cols-2 sm:grid-cols-3 lg:grid-cols-4',
-  5: 'grid-cols-2 sm:grid-cols-3 lg:grid-cols-5',
-  6: 'grid-cols-3 sm:grid-cols-4 lg:grid-cols-6',
+const gridColsClass = {
+  3: 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3',
+  4: 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4',
+  5: 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5',
+  6: 'grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6',
 }[columns];
 
-const hasHeading = title || subtitle;
+const isCompact = variant === 'compact';
 
-// Extract unique categories
 const categories = showFilter
   ? ['All', ...new Set(integrations.map((i) => i.category).filter(Boolean))]
   : [];
-
-const logoClass = invertOnDark ? 'dark:invert' : '';
 ---
 
-<section class:list={['py-section', bgClass]}>
+<section class:list={['py-16 sm:py-24 border-y border-border', bgClass]}>
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     {
-      hasHeading && (
-        <div class="text-center mb-12">
-          {title && <h2 class="text-3xl sm:text-4xl font-bold text-text">{title}</h2>}
-          {subtitle && <p class="mt-4 text-lg text-text-muted max-w-2xl mx-auto">{subtitle}</p>}
+      (title || subtitle) && (
+        <div class="text-center max-w-3xl mx-auto mb-14">
+          {title && (
+            <h2 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-text">{title}</h2>
+          )}
+          {subtitle && <p class="mt-4 text-base sm:text-lg text-text-muted">{subtitle}</p>}
         </div>
       )
     }
 
-    {/* Category Filter */}
     {
       showFilter && categories.length > 1 && (
         <div class="flex flex-wrap justify-center gap-2 mb-10" data-filter-tabs>
@@ -108,10 +82,10 @@ const logoClass = invertOnDark ? 'dark:invert' : '';
             <button
               type="button"
               class:list={[
-                'px-4 py-2 rounded-full text-sm font-medium transition-colors',
+                'px-4 py-2 rounded-full text-xs font-semibold transition-all cursor-pointer',
                 index === 0
-                  ? 'bg-primary text-white'
-                  : 'bg-surface text-text-muted hover:bg-surface/80',
+                  ? 'bg-primary text-white shadow-sm'
+                  : 'bg-surface border border-border text-text-muted hover:text-text hover:bg-surface-hover',
               ]}
               data-category={category}
             >
@@ -122,154 +96,74 @@ const logoClass = invertOnDark ? 'dark:invert' : '';
       )
     }
 
-    {/* Grid Variant */}
-    {
-      variant === 'grid' && (
-        <div class:list={['grid gap-6', columnClass]} data-integrations-grid>
-          {integrations.map((integration) => (
-            <a
-              href={integration.href || '#'}
-              class="group flex flex-col items-center p-6 rounded-xl border border-border bg-background hover:border-primary hover:shadow-lg transition-all"
-              data-category={integration.category || 'All'}
-            >
-              <div class="w-16 h-16 flex items-center justify-center mb-4">
-                <img
-                  src={integration.logo}
-                  alt={integration.name}
-                  class:list={['max-w-full max-h-full object-contain', logoClass]}
-                  loading="lazy"
-                />
-              </div>
-              <h3 class="font-medium text-text group-hover:text-primary transition-colors">
-                {integration.name}
-              </h3>
-              {integration.featured && (
-                <span class="mt-2 px-2 py-0.5 text-xs font-medium rounded-full bg-primary/10 text-primary">
-                  Popular
-                </span>
-              )}
-            </a>
-          ))}
-        </div>
-      )
-    }
+    <!-- Integrations Grid -->
+    <div
+      class:list={['grid gap-6', gridColsClass, isCompact && 'text-center']}
+      data-integrations-grid
+    >
+      {
+        integrations.map((item) => {
+          const itemHref =
+            item.href || (item.slug ? `/integrations/${item.slug}` : '/integrations');
+          const isItemPopular = item.isPopular ?? item.popular ?? item.featured ?? false;
+          const desc = item.description || item.shortDescription || '';
 
-    {/* Compact Variant */}
-    {
-      variant === 'compact' && (
-        <div class:list={['grid gap-4', columnClass]} data-integrations-grid>
-          {integrations.map((integration) => (
+          return (
             <a
-              href={integration.href || '#'}
-              class="group flex items-center gap-3 p-4 rounded-lg border border-border bg-background hover:border-primary transition-colors"
-              data-category={integration.category || 'All'}
+              href={itemHref}
+              class="group relative flex flex-col justify-between p-6 rounded-2xl border border-border bg-background hover:border-primary/50 hover:shadow-lg transition-all"
+              data-category={item.category || 'All'}
             >
-              <div class="w-10 h-10 shrink-0 flex items-center justify-center">
-                <img
-                  src={integration.logo}
-                  alt={integration.name}
-                  class:list={['max-w-full max-h-full object-contain', logoClass]}
-                  loading="lazy"
-                />
-              </div>
-              <span class="font-medium text-text group-hover:text-primary transition-colors truncate">
-                {integration.name}
-              </span>
-            </a>
-          ))}
-        </div>
-      )
-    }
-
-    {/* Detailed Variant */}
-    {
-      variant === 'detailed' && (
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" data-integrations-grid>
-          {integrations.map((integration) => (
-            <a
-              href={integration.href || '#'}
-              class="group p-6 rounded-xl border border-border bg-background hover:border-primary hover:shadow-lg transition-all"
-              data-category={integration.category || 'All'}
-            >
-              <div class="flex items-start gap-4">
-                <div class="w-14 h-14 shrink-0 flex items-center justify-center rounded-lg bg-surface p-2">
-                  <img
-                    src={integration.logo}
-                    alt={integration.name}
-                    class:list={['max-w-full max-h-full object-contain', logoClass]}
-                    loading="lazy"
+              <div>
+                <div class="flex items-center justify-between gap-4 mb-4">
+                  <IntegrationIcon
+                    iconKey={item.iconKey || item.name}
+                    logoUrl={item.logoUrl || item.logo}
+                    name={item.name}
+                    size="md"
                   />
-                </div>
-                <div class="flex-1 min-w-0">
-                  <div class="flex items-center gap-2">
-                    <h3 class="font-semibold text-text group-hover:text-primary transition-colors">
-                      {integration.name}
-                    </h3>
-                    {integration.featured && (
-                      <span class="px-2 py-0.5 text-xs font-medium rounded-full bg-primary/10 text-primary">
-                        Popular
-                      </span>
-                    )}
-                  </div>
-                  {integration.category && (
-                    <p class="text-sm text-text-muted mt-1">{integration.category}</p>
-                  )}
-                  {integration.description && (
-                    <p class="text-sm text-text-muted mt-2 line-clamp-2">
-                      {integration.description}
-                    </p>
+                  {isItemPopular && (
+                    <span class="px-2.5 py-1 text-xs font-semibold rounded-full bg-primary/10 text-primary border border-primary/20">
+                      Popular
+                    </span>
                   )}
                 </div>
+
+                <h3 class="text-lg font-bold text-text group-hover:text-primary transition-colors">
+                  {item.name}
+                </h3>
+                {item.category && (
+                  <p class="text-xs font-mono font-medium text-text-muted mt-1 uppercase tracking-wider">
+                    {item.category}
+                  </p>
+                )}
+                {desc && (
+                  <p class="text-sm text-text-muted mt-3 line-clamp-2 leading-relaxed">{desc}</p>
+                )}
+              </div>
+
+              <div class="mt-5 pt-4 border-t border-border/50 flex items-center justify-between text-xs font-semibold text-primary">
+                <span>View integration architecture</span>
+                <span class="group-hover:translate-x-1 transition-transform">→</span>
               </div>
             </a>
-          ))}
-        </div>
-      )
-    }
-    {/* Footer Link */}
+          );
+        })
+      }
+    </div>
+
     {
       footerLink && (
-        <div class="text-center mt-10">
+        <div class="text-center mt-12">
           <a
             href={footerLink.href}
-            class="text-primary hover:text-primary-dark font-medium transition-colors"
+            class="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-border bg-surface text-text hover:border-primary hover:text-primary font-semibold text-sm transition-all shadow-xs"
           >
-            {footerLink.label}
+            <span>{footerLink.label}</span>
           </a>
         </div>
       )
     }
   </div>
 </section>
-
-<script>
-  document.addEventListener('DOMContentLoaded', () => {
-    const tabs = document.querySelectorAll('[data-filter-tabs] button');
-    if (!tabs.length) return;
-    const items = document.querySelectorAll<HTMLElement>('[data-integrations-grid] > a');
-
-    tabs.forEach((tab) => {
-      tab.addEventListener('click', () => {
-        const category = tab.getAttribute('data-category');
-
-        // Update active tab
-        tabs.forEach((t) => {
-          t.classList.remove('bg-primary', 'text-white');
-          t.classList.add('bg-surface', 'text-text-muted');
-        });
-        tab.classList.remove('bg-surface', 'text-text-muted');
-        tab.classList.add('bg-primary', 'text-white');
-
-        // Filter items
-        items.forEach((item) => {
-          const itemCategory = item.getAttribute('data-category');
-          if (category === 'All' || itemCategory === category) {
-            item.style.display = '';
-          } else {
-            item.style.display = 'none';
-          }
-        });
-      });
-    });
-  });
-</script>
+``

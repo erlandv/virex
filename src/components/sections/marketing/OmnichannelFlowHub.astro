@@ -1,0 +1,282 @@
+---
+/**
+ * OmnichannelFlowHub - Interactive Visual Hub
+ *
+ * Pure inline SVG + CSS @keyframes stroke-dashoffset animation
+ * demonstrating WhatsApp, SMS, M-Pesa, Instagram, Messenger, and Email
+ * streams converging into the central MarkChat Unified Inbox and STK checkout engine.
+ */
+import { Icon } from 'astro-icon/components';
+---
+
+<section class="py-16 sm:py-24 bg-surface/50 border-y border-border overflow-hidden">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center max-w-3xl mx-auto mb-12">
+      <div
+        class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-primary/10 text-primary border border-primary/20 mb-4"
+      >
+        <Icon name="lucide:git-merge" class="w-3.5 h-3.5" />
+        <span>Omnichannel Convergence Architecture</span>
+      </div>
+      <h2 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-text">
+        Every Channel In, Instant M-Pesa STK Out
+      </h2>
+      <p class="mt-4 text-base sm:text-lg text-text-muted">
+        Stop juggling 4 phones and 6 open browser tabs. WhatsApp Cloud, Africa’s Talking Bulk SMS,
+        Instagram DMs, and Safaricom Daraja flow seamlessly into a single collaborative team inbox.
+      </p>
+    </div>
+
+    <!-- Interactive Animated Flow Diagram -->
+    <div
+      class="flow-container relative bg-surface border border-border rounded-2xl p-6 sm:p-10 shadow-2xl"
+    >
+      <!-- Top Badges / Stream Channels -->
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4 mb-8">
+        <div class="channel-pill">
+          <Icon name="simple-icons:whatsapp" class="w-4 h-4 text-emerald-400" />
+          <span class="text-xs font-semibold text-text">WhatsApp Cloud</span>
+        </div>
+        <div class="channel-pill">
+          <Icon name="lucide:message-square" class="w-4 h-4 text-sky-400" />
+          <span class="text-xs font-semibold text-text">Bulk SMS (AT)</span>
+        </div>
+        <div class="channel-pill">
+          <Icon name="lucide:smartphone" class="w-4 h-4 text-emerald-500" />
+          <span class="text-xs font-semibold text-text">M-Pesa Daraja</span>
+        </div>
+        <div class="channel-pill">
+          <Icon name="simple-icons:instagram" class="w-4 h-4 text-pink-400" />
+          <span class="text-xs font-semibold text-text">Instagram DMs</span>
+        </div>
+        <div class="channel-pill">
+          <Icon name="simple-icons:facebook" class="w-4 h-4 text-blue-400" />
+          <span class="text-xs font-semibold text-text">Messenger</span>
+        </div>
+        <div class="channel-pill">
+          <Icon name="lucide:mail" class="w-4 h-4 text-amber-400" />
+          <span class="text-xs font-semibold text-text">Live Chat &amp; Email</span>
+        </div>
+      </div>
+
+      <!-- SVG Animated Vector Stream Canvas -->
+      <div class="svg-canvas-wrapper relative w-full h-44 sm:h-52">
+        <svg class="w-full h-full" viewBox="0 0 1000 200" fill="none" preserveAspectRatio="none">
+          <defs>
+            <linearGradient id="stream-gradient-1" x1="0%" y1="0%" x2="50%" y2="100%">
+              <stop offset="0%" stop-color="#34D399" stop-opacity="0.8"></stop>
+              <stop offset="100%" stop-color="#6366F1" stop-opacity="1"></stop>
+            </linearGradient>
+            <linearGradient id="stream-gradient-2" x1="0%" y1="0%" x2="50%" y2="100%">
+              <stop offset="0%" stop-color="#38BDF8" stop-opacity="0.8"></stop>
+              <stop offset="100%" stop-color="#6366F1" stop-opacity="1"></stop>
+            </linearGradient>
+            <linearGradient id="stream-gradient-3" x1="0%" y1="0%" x2="50%" y2="100%">
+              <stop offset="0%" stop-color="#10B981" stop-opacity="0.8"></stop>
+              <stop offset="100%" stop-color="#6366F1" stop-opacity="1"></stop>
+            </linearGradient>
+            <linearGradient id="stream-gradient-4" x1="100%" y1="0%" x2="50%" y2="100%">
+              <stop offset="0%" stop-color="#F472B6" stop-opacity="0.8"></stop>
+              <stop offset="100%" stop-color="#6366F1" stop-opacity="1"></stop>
+            </linearGradient>
+            <linearGradient id="stream-gradient-5" x1="100%" y1="0%" x2="50%" y2="100%">
+              <stop offset="0%" stop-color="#60A5FA" stop-opacity="0.8"></stop>
+              <stop offset="100%" stop-color="#6366F1" stop-opacity="1"></stop>
+            </linearGradient>
+            <linearGradient id="stream-gradient-6" x1="100%" y1="0%" x2="50%" y2="100%">
+              <stop offset="0%" stop-color="#FBBF24" stop-opacity="0.8"></stop>
+              <stop offset="100%" stop-color="#6366F1" stop-opacity="1"></stop>
+            </linearGradient>
+          </defs>
+
+          <!-- Static Guide Lines -->
+          <path
+            d="M 85 10 C 85 90, 500 90, 500 190"
+            stroke="rgba(255,255,255,0.06)"
+            stroke-width="2"
+            fill="none"></path>
+          <path
+            d="M 250 10 C 250 90, 500 100, 500 190"
+            stroke="rgba(255,255,255,0.06)"
+            stroke-width="2"
+            fill="none"></path>
+          <path
+            d="M 415 10 C 415 80, 500 120, 500 190"
+            stroke="rgba(255,255,255,0.06)"
+            stroke-width="2"
+            fill="none"></path>
+          <path
+            d="M 585 10 C 585 80, 500 120, 500 190"
+            stroke="rgba(255,255,255,0.06)"
+            stroke-width="2"
+            fill="none"></path>
+          <path
+            d="M 750 10 C 750 90, 500 100, 500 190"
+            stroke="rgba(255,255,255,0.06)"
+            stroke-width="2"
+            fill="none"></path>
+          <path
+            d="M 915 10 C 915 90, 500 90, 500 190"
+            stroke="rgba(255,255,255,0.06)"
+            stroke-width="2"
+            fill="none"></path>
+
+          <!-- Dynamic Pulsing Animated Dash Lines -->
+          <path
+            d="M 85 10 C 85 90, 500 90, 500 190"
+            stroke="url(#stream-gradient-1)"
+            stroke-width="2.5"
+            stroke-dasharray="6,8"
+            class="stream-line line-1"
+            fill="none"></path>
+          <path
+            d="M 250 10 C 250 90, 500 100, 500 190"
+            stroke="url(#stream-gradient-2)"
+            stroke-width="2.5"
+            stroke-dasharray="6,8"
+            class="stream-line line-2"
+            fill="none"></path>
+          <path
+            d="M 415 10 C 415 80, 500 120, 500 190"
+            stroke="url(#stream-gradient-3)"
+            stroke-width="2.5"
+            stroke-dasharray="6,8"
+            class="stream-line line-3"
+            fill="none"></path>
+          <path
+            d="M 585 10 C 585 80, 500 120, 500 190"
+            stroke="url(#stream-gradient-4)"
+            stroke-width="2.5"
+            stroke-dasharray="6,8"
+            class="stream-line line-4"
+            fill="none"></path>
+          <path
+            d="M 750 10 C 750 90, 500 100, 500 190"
+            stroke="url(#stream-gradient-5)"
+            stroke-width="2.5"
+            stroke-dasharray="6,8"
+            class="stream-line line-5"
+            fill="none"></path>
+          <path
+            d="M 915 10 C 915 90, 500 90, 500 190"
+            stroke="url(#stream-gradient-6)"
+            stroke-width="2.5"
+            stroke-dasharray="6,8"
+            class="stream-line line-6"
+            fill="none"></path>
+        </svg>
+      </div>
+
+      <!-- Central MarkChat Core Hub Card -->
+      <div
+        class="hub-center-box max-w-xl mx-auto -mt-4 bg-background border-2 border-primary/40 rounded-xl p-5 shadow-xl text-center relative z-10"
+      >
+        <div class="flex items-center justify-center gap-2 mb-2">
+          <div class="w-3 h-3 rounded-full bg-emerald-500 animate-pulse"></div>
+          <span class="text-xs font-mono font-bold tracking-wider text-primary uppercase"
+            >MarkChat Central Command</span
+          >
+        </div>
+        <h3 class="text-lg font-bold text-text">Unified Team Inbox &amp; STK Checkout Core</h3>
+        <p class="text-xs text-text-muted mt-1 max-w-md mx-auto">
+          Auto-matches incoming customer inquiries, suggests Markcopilot AI drafts, verifies M-Pesa
+          TransIDs, and receipts payments automatically.
+        </p>
+
+        <!-- Simulated Live Event Pills -->
+        <div
+          class="flex flex-wrap items-center justify-center gap-2 mt-4 pt-3 border-t border-border/60"
+        >
+          <span class="event-pill">
+            <span class="event-dot bg-emerald-400"></span>
+            <span>WhatsApp STK: KES 2,500 Paid</span>
+          </span>
+          <span class="event-pill">
+            <span class="event-dot bg-blue-400"></span>
+            <span>Markcopilot Drafted Swahili Reply</span>
+          </span>
+          <span class="event-pill">
+            <span class="event-dot bg-purple-400"></span>
+            <span>TransID Verified: QA29X91KL3</span>
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .channel-pill {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.625rem 0.75rem;
+    background: var(--color-surface-hover, #1f1f23);
+    border: 1px solid var(--color-border, #27272a);
+    border-radius: var(--radius-md, 0.5rem);
+    justify-content: center;
+    transition: all 200ms ease;
+  }
+
+  .channel-pill:hover {
+    border-color: var(--color-primary, #6366f1);
+    transform: translateY(-2px);
+  }
+
+  .stream-line {
+    animation: flowPulse 2s linear infinite;
+  }
+
+  .line-1 {
+    animation-duration: 2.2s;
+  }
+  .line-2 {
+    animation-duration: 1.8s;
+  }
+  .line-3 {
+    animation-duration: 1.5s;
+  }
+  .line-4 {
+    animation-duration: 1.6s;
+  }
+  .line-5 {
+    animation-duration: 1.9s;
+  }
+  .line-6 {
+    animation-duration: 2.3s;
+  }
+
+  @keyframes flowPulse {
+    from {
+      stroke-dashoffset: 28;
+    }
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+
+  .event-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.6875rem;
+    font-family: monospace;
+    padding: 0.2rem 0.5rem;
+    border-radius: 9999px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--color-text-muted, #a1a1aa);
+  }
+
+  .event-dot {
+    width: 0.375rem;
+    height: 0.375rem;
+    border-radius: 50%;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .stream-line {
+      animation: none;
+    }
+  }
+</style>
