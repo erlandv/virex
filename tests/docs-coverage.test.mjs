@@ -31,7 +31,10 @@ test('Documentation Coverage & Frontmatter Integrity', async (t) => {
       const kv = line.match(/^([a-zA-Z0-9_]+):\s*(.*)$/);
       if (kv) {
         let val = kv[2].trim();
-        if ((val.startsWith('"') && val.endsWith('"')) || (val.startsWith("'") && val.endsWith("'"))) {
+        if (
+          (val.startsWith('"') && val.endsWith('"')) ||
+          (val.startsWith("'") && val.endsWith("'"))
+        ) {
           val = val.slice(1, -1);
         }
         fm[kv[1]] = val;

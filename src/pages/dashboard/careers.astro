@@ -5,56 +5,37 @@
 import DashboardLayout from '@/layouts/DashboardLayout.astro';
 import Card from '@dashboard-ui/Card.astro';
 import Modal from '@dashboard-ui/Modal.astro';
+import StatCard from '@dashboard-ui/StatCard.astro';
 import { Icon } from 'astro-icon/components';
-import { fetchCareers } from '@/lib/cms-api';
+import { fetchCareers, fetchCareerApplications } from '@/lib/cms-api';
 
 const careers = await fetchCareers();
+const applications = await fetchCareerApplications();
 
-// Seed initial demo applicant for review
-const sampleApplications = [
-  {
-    id: 'app-1',
-    fullName: 'Peter Mwangi',
-    email: 'pmwangi@gmail.com',
-    phone: '+254 712 334 455',
-    careerTitle: 'Senior Full-Stack Engineer (Fintech & WhatsApp Cloud API)',
-    linkedinUrl: 'https://linkedin.com/in/petermwangi',
-    submittedAt: '2026-11-10T14:20:00Z',
-    status: 'new',
-    coverLetter:
-      '4 years experience integrating Safaricom Daraja API and Meta Cloud API at a regional payments gateway in Nairobi.',
-  },
-  {
-    id: 'app-2',
-    fullName: 'Naomi Chepkemoi',
-    email: 'naomi.chep@outlook.com',
-    phone: '+254 722 889 900',
-    careerTitle: 'Kenya Customer Success & M-Pesa Onboarding Lead',
-    linkedinUrl: 'https://linkedin.com/in/naomichep',
-    submittedAt: '2026-11-11T10:15:00Z',
-    status: 'reviewed',
-    coverLetter:
-      'Experienced onboarding 150+ Kenyan retail shops onto electronic POS and mobile till solutions.',
-  },
-];
+const totalCareers = careers.length;
+const publishedCareers = careers.filter((c) => c.status === 'published').length;
+const totalApps = applications.length;
+const newApps = applications.filter((a) => a.status === 'new').length;
 ---
 
 <DashboardLayout
   title="Careers & Applicants Manager"
-  description="Manage open Nairobi and remote job openings and review candidate applications"
+  description="Manage open Nairobi and remote job openings, role specifications, and candidate applications"
   breadcrumbs={[{ label: 'Dashboard', href: '/dashboard' }, { label: 'Careers & Applicants' }]}
 >
-  <div class="cms-careers-page">
-    <div class="page-header flex justify-between items-center mb-6">
+  <div class="cms-careers-page space-y-8">
+    <!-- Header -->
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
       <div>
         <h1 class="text-2xl font-bold tracking-tight text-text">
           Careers &amp; Applicants Manager
         </h1>
         <p class="text-sm text-text-muted mt-1">
-          Post roles for Nairobi engineering, merchant success, and partner growth teams.
+          Post roles for Nairobi engineering, merchant success, and partner growth teams. Full KDPA
+          2019 compliance.
         </p>
       </div>
-      <div class="header-actions flex gap-3">
+      <div class="flex flex-wrap items-center gap-3">
         <a href="/careers" target="_blank" class="btn btn-secondary text-sm">
           <Icon name="lucide:external-link" class="w-4 h-4 mr-1.5 inline" />
           View Live /careers
@@ -66,90 +47,139 @@ const sampleApplications = [
       </div>
     </div>
 
-    <!-- Active Job Openings Table -->
-    <div class="mb-8">
-      <Card
-        title="Open Job Listings"
-        description="Published and draft positions shown on /careers"
-        padding="none"
-      >
-        <div class="table-responsive">
-          <table class="cms-table w-full">
-            <thead>
-              <tr>
-                <th class="text-left py-3 px-4">Role Title &amp; Department</th>
-                <th class="text-left py-3 px-4">Location</th>
-                <th class="text-left py-3 px-4">Salary Range</th>
-                <th class="text-left py-3 px-4">Status</th>
-                <th class="text-right py-3 px-4">Actions</th>
-              </tr>
-            </thead>
-            <tbody id="job-table-body">
-              {
-                careers.map((job) => (
-                  <tr data-id={job.id} data-job={JSON.stringify(job)}>
-                    <td class="py-3 px-4">
-                      <div class="font-medium text-text">{job.title}</div>
-                      <div class="text-xs text-text-muted">
-                        {job.department} &bull; {job.type}
-                      </div>
-                    </td>
-                    <td class="py-3 px-4 text-xs text-text-muted">{job.location}</td>
-                    <td class="py-3 px-4 text-xs font-mono text-text">
-                      {job.salaryRange || 'Competitive'}
-                    </td>
-                    <td class="py-3 px-4 text-xs">
-                      <span class={`status-pill status-${job.status}`}>
-                        {job.status.toUpperCase()}
-                      </span>
-                    </td>
-                    <td class="py-3 px-4 text-right">
-                      <div class="flex items-center justify-end gap-2">
-                        <button
-                          type="button"
-                          class="action-btn edit-job-btn"
-                          data-id={job.id}
-                          title="Edit Role"
-                        >
-                          <Icon name="lucide:edit-3" class="w-4 h-4" />
-                        </button>
-                        <select class="status-select text-xs" data-id={job.id}>
-                          <option value="published" selected={job.status === 'published'}>
-                            Published
-                          </option>
-                          <option value="draft" selected={job.status === 'draft'}>
-                            Draft
-                          </option>
-                          <option value="paused" selected={job.status === 'paused'}>
-                            Paused
-                          </option>
-                          <option value="archived" selected={job.status === 'archived'}>
-                            Archived
-                          </option>
-                        </select>
-                        <button
-                          type="button"
-                          class="action-btn text-error delete-job-btn"
-                          data-id={job.id}
-                          title="Delete"
-                        >
-                          <Icon name="lucide:trash-2" class="w-4 h-4" />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))
-              }
-            </tbody>
-          </table>
-        </div>
-      </Card>
+    <!-- Quick Stats -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <StatCard
+        title="Total Openings"
+        value={totalCareers}
+        icon="briefcase"
+        description="All registered role listings"
+      />
+      <StatCard
+        title="Live Vacancies"
+        value={publishedCareers}
+        icon="check-circle"
+        description="Publicly listed on /careers"
+      />
+      <StatCard
+        title="Candidate Applications"
+        value={totalApps}
+        icon="users"
+        description="Submissions received to date"
+      />
+      <StatCard
+        title="Pending Review"
+        value={newApps}
+        icon="clock"
+        description="Awaiting recruiter review"
+      />
     </div>
+
+    <!-- Active Job Openings Table -->
+    <Card
+      title="Open Job Listings"
+      description="Published, draft, paused, and archived roles shown on /careers"
+      padding="none"
+    >
+      <div class="table-responsive">
+        <table class="cms-table w-full">
+          <thead>
+            <tr>
+              <th class="text-left py-3 px-4">Role Title &amp; Department</th>
+              <th class="text-left py-3 px-4">Slug &amp; Live Link</th>
+              <th class="text-left py-3 px-4">Arrangement &amp; Location</th>
+              <th class="text-left py-3 px-4">Salary (KES)</th>
+              <th class="text-left py-3 px-4">Status</th>
+              <th class="text-right py-3 px-4">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="job-table-body">
+            {
+              careers.map((job) => (
+                <tr data-id={job.id} data-job={JSON.stringify(job)}>
+                  <td class="py-3 px-4">
+                    <div class="font-medium text-text flex items-center gap-2">
+                      <span>{job.title}</span>
+                      {job.featured && (
+                        <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold bg-primary/10 text-primary border border-primary/20">
+                          Featured
+                        </span>
+                      )}
+                    </div>
+                    <div class="text-xs text-text-muted mt-0.5">
+                      {job.department} &bull; {job.type} &bull; {job.experienceLevel || 'Mid-Level'}
+                    </div>
+                  </td>
+                  <td class="py-3 px-4 text-xs font-mono">
+                    <a
+                      href={`/careers/${job.slug}`}
+                      target="_blank"
+                      class="text-primary hover:underline inline-flex items-center gap-1"
+                    >
+                      <span>/{job.slug}</span>
+                      <Icon name="lucide:external-link" class="w-3 h-3 text-text-muted" />
+                    </a>
+                  </td>
+                  <td class="py-3 px-4 text-xs">
+                    <span class="inline-flex items-center px-2 py-0.5 rounded bg-surface border border-border text-text font-medium mr-1.5">
+                      {job.workArrangement || 'Hybrid'}
+                    </span>
+                    <span class="text-text-muted">{job.location}</span>
+                  </td>
+                  <td class="py-3 px-4 text-xs font-mono text-text">
+                    {job.salaryRange || 'Competitive'}
+                  </td>
+                  <td class="py-3 px-4 text-xs">
+                    <span class={`status-pill status-${job.status}`}>
+                      {job.status.toUpperCase()}
+                    </span>
+                  </td>
+                  <td class="py-3 px-4 text-right">
+                    <div class="flex items-center justify-end gap-2">
+                      <button
+                        type="button"
+                        class="action-btn edit-job-btn"
+                        data-id={job.id}
+                        title="Edit Role"
+                      >
+                        <Icon name="lucide:edit-3" class="w-4 h-4" />
+                      </button>
+                      <select class="status-select text-xs" data-id={job.id}>
+                        <option value="published" selected={job.status === 'published'}>
+                          Published
+                        </option>
+                        <option value="draft" selected={job.status === 'draft'}>
+                          Draft
+                        </option>
+                        <option value="paused" selected={job.status === 'paused'}>
+                          Paused
+                        </option>
+                        <option value="archived" selected={job.status === 'archived'}>
+                          Archived
+                        </option>
+                      </select>
+                      <button
+                        type="button"
+                        class="action-btn text-error hover:text-red-400 delete-job-btn"
+                        data-id={job.id}
+                        title="Delete Role"
+                      >
+                        <Icon name="lucide:trash-2" class="w-4 h-4" />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))
+            }
+          </tbody>
+        </table>
+      </div>
+    </Card>
 
     <!-- Candidate Applications Section -->
     <Card
       title="Candidate Applications"
-      description="Inbound candidate submissions submitted via the public career application portal"
+      description="Inbound candidate submissions submitted via the public career application portal (KDPA 2019 compliant)"
       padding="none"
     >
       <div class="table-responsive">
@@ -158,32 +188,34 @@ const sampleApplications = [
             <tr>
               <th class="text-left py-3 px-4">Candidate</th>
               <th class="text-left py-3 px-4">Target Role</th>
-              <th class="text-left py-3 px-4">Phone &amp; Profile</th>
+              <th class="text-left py-3 px-4">Phone &amp; Location</th>
+              <th class="text-left py-3 px-4">KDPA Consent</th>
               <th class="text-left py-3 px-4">Submitted</th>
-              <th class="text-right py-3 px-4">Status</th>
+              <th class="text-left py-3 px-4">Review Status</th>
+              <th class="text-right py-3 px-4">Actions</th>
             </tr>
           </thead>
           <tbody>
             {
-              sampleApplications.map((app) => (
-                <tr>
+              applications.map((app) => (
+                <tr data-app-id={app.id} data-app={JSON.stringify(app)}>
                   <td class="py-3 px-4">
                     <div class="font-medium text-text">{app.fullName}</div>
                     <div class="text-xs text-text-muted">{app.email}</div>
                   </td>
-                  <td class="py-3 px-4 text-xs text-text">{app.careerTitle}</td>
+                  <td class="py-3 px-4 text-xs">
+                    <div class="font-medium text-text">{app.careerTitle}</div>
+                    <div class="text-[11px] text-text-muted">ID: {app.careerId}</div>
+                  </td>
                   <td class="py-3 px-4 text-xs text-text-muted">
                     <div>{app.phone}</div>
-                    {app.linkedinUrl && (
-                      <a
-                        href={app.linkedinUrl}
-                        target="_blank"
-                        class="text-primary hover:underline text-xs inline-flex items-center gap-1"
-                      >
-                        <span>LinkedIn Profile</span>
-                        <Icon name="lucide:external-link" class="w-3 h-3" />
-                      </a>
-                    )}
+                    <div class="text-[11px] text-text-muted">{app.location || 'Kenya'}</div>
+                  </td>
+                  <td class="py-3 px-4 text-xs">
+                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                      <Icon name="lucide:shield-check" class="w-3 h-3" />
+                      KDPA Verified
+                    </span>
                   </td>
                   <td class="py-3 px-4 text-xs text-text-muted">
                     {new Date(app.submittedAt).toLocaleDateString('en-KE', {
@@ -192,10 +224,31 @@ const sampleApplications = [
                       year: 'numeric',
                     })}
                   </td>
+                  <td class="py-3 px-4 text-xs">
+                    <select class="app-status-select text-xs" data-app-id={app.id}>
+                      <option value="new" selected={app.status === 'new'}>
+                        New
+                      </option>
+                      <option value="reviewed" selected={app.status === 'reviewed'}>
+                        Reviewed
+                      </option>
+                      <option value="contacted" selected={app.status === 'contacted'}>
+                        Contacted
+                      </option>
+                      <option value="rejected" selected={app.status === 'rejected'}>
+                        Rejected
+                      </option>
+                    </select>
+                  </td>
                   <td class="py-3 px-4 text-right">
-                    <span class="status-pill status-published text-xs">
-                      {app.status.toUpperCase()}
-                    </span>
+                    <button
+                      type="button"
+                      class="btn btn-secondary text-xs py-1 px-2.5 view-app-btn"
+                      data-app-id={app.id}
+                    >
+                      <Icon name="lucide:eye" class="w-3.5 h-3.5 mr-1 inline" />
+                      View Details
+                    </button>
                   </td>
                 </tr>
               ))
@@ -210,19 +263,31 @@ const sampleApplications = [
       <form id="job-form" class="space-y-4">
         <input type="hidden" id="job-id" name="id" />
 
-        <div class="form-group">
-          <label class="form-label" for="job-title">Job Title *</label>
-          <input
-            type="text"
-            id="job-title"
-            name="title"
-            class="form-input"
-            required
-            placeholder="e.g. Senior Backend Engineer (Daraja API)"
-          />
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div class="sm:col-span-2 form-group">
+            <label class="form-label" for="job-title">Job Title *</label>
+            <input
+              type="text"
+              id="job-title"
+              name="title"
+              class="form-input"
+              required
+              placeholder="e.g. Senior Full-Stack Engineer (Fintech)"
+            />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="job-slug">URL Slug</label>
+            <input
+              type="text"
+              id="job-slug"
+              name="slug"
+              class="form-input"
+              placeholder="auto-generated-if-empty"
+            />
+          </div>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div class="form-group">
             <label class="form-label" for="job-department">Department *</label>
             <input
@@ -231,7 +296,7 @@ const sampleApplications = [
               name="department"
               class="form-input"
               required
-              placeholder="Engineering / Growth"
+              placeholder="Engineering / Customer Success"
             />
           </div>
           <div class="form-group">
@@ -242,12 +307,48 @@ const sampleApplications = [
               name="location"
               class="form-input"
               required
-              placeholder="Nairobi, Kenya (Hybrid)"
+              placeholder="Nairobi, Kenya"
             />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="job-arrangement">Work Arrangement</label>
+            <select id="job-arrangement" name="workArrangement" class="form-input">
+              <option value="Hybrid">Hybrid (Nairobi)</option>
+              <option value="Remote">Remote</option>
+              <option value="On-site">On-site</option>
+            </select>
           </div>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
+          <div class="form-group">
+            <label class="form-label" for="job-type">Employment Type</label>
+            <select id="job-type" name="type" class="form-input">
+              <option value="Full-time">Full-time</option>
+              <option value="Contract">Contract</option>
+              <option value="Part-time">Part-time</option>
+              <option value="Internship">Internship</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="job-level">Experience Level</label>
+            <select id="job-level" name="experienceLevel" class="form-input">
+              <option value="Senior">Senior</option>
+              <option value="Mid-Level">Mid-Level</option>
+              <option value="Lead">Lead</option>
+              <option value="Junior">Junior</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="job-experience">Years Experience</label>
+            <input
+              type="text"
+              id="job-experience"
+              name="experience"
+              class="form-input"
+              placeholder="e.g. 3+ years"
+            />
+          </div>
           <div class="form-group">
             <label class="form-label" for="job-salary">Salary Range (KES)</label>
             <input
@@ -255,9 +356,12 @@ const sampleApplications = [
               id="job-salary"
               name="salaryRange"
               class="form-input"
-              placeholder="KES 200,000 - 300,000 / mo"
+              placeholder="KES 250,000 - 350,000 / mo"
             />
           </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 items-center">
           <div class="form-group">
             <label class="form-label" for="job-status">Lifecycle Status</label>
             <select id="job-status" name="status" class="form-input">
@@ -267,17 +371,104 @@ const sampleApplications = [
               <option value="archived">Archived</option>
             </select>
           </div>
+          <div class="form-group">
+            <label class="form-label" for="job-deadline">Application Deadline</label>
+            <input type="date" id="job-deadline" name="applicationDeadline" class="form-input" />
+          </div>
+          <div class="form-group pt-5 flex items-center gap-2">
+            <input
+              type="checkbox"
+              id="job-featured"
+              name="featured"
+              class="w-4 h-4 rounded border-border text-primary focus:ring-primary"
+            />
+            <label
+              for="job-featured"
+              class="text-xs font-medium text-text cursor-pointer select-none"
+            >
+              Highlight as Featured Role
+            </label>
+          </div>
         </div>
 
         <div class="form-group">
-          <label class="form-label" for="job-description">Role Description *</label>
+          <label class="form-label" for="job-short-desc">Short Teaser Description</label>
+          <input
+            type="text"
+            id="job-short-desc"
+            name="shortDescription"
+            class="form-input"
+            placeholder="1-2 sentences summarizing the role for directory cards..."
+          />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="job-description">Role Mission &amp; Overview *</label>
           <textarea
             id="job-description"
             name="description"
-            rows="4"
+            rows="3"
             class="form-textarea"
             required
-            placeholder="Describe core mission and impact..."></textarea>
+            placeholder="Describe the department mission, challenge, and impact..."></textarea>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div class="form-group">
+            <label class="form-label" for="job-responsibilities"
+              >Key Responsibilities (One per line) *</label
+            >
+            <textarea
+              id="job-responsibilities"
+              name="responsibilities"
+              rows="4"
+              class="form-textarea"
+              required
+              placeholder="Architect core Daraja webhook integrations
+Lead tech talks for merchant devs"
+            ></textarea>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="job-requirements"
+              >Requirements &amp; Skills (One per line) *</label
+            >
+            <textarea
+              id="job-requirements"
+              name="requirements"
+              rows="4"
+              class="form-textarea"
+              required
+              placeholder="3+ years production TypeScript/Ruby experience
+Hands-on Safaricom Daraja or payments API background"
+            ></textarea>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div class="form-group">
+            <label class="form-label" for="job-qualifications"
+              >Preferred Qualifications (One per line)</label
+            >
+            <textarea
+              id="job-qualifications"
+              name="preferredQualifications"
+              rows="3"
+              class="form-textarea"
+              placeholder="Meta Cloud API webhook optimization
+Docker and Redis clustering experience"
+            ></textarea>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="job-benefits">Role Benefits (One per line)</label>
+            <textarea
+              id="job-benefits"
+              name="benefits"
+              rows="3"
+              class="form-textarea"
+              placeholder="Comprehensive health cover for you and dependents
+Monthly home internet & co-working allowance"
+            ></textarea>
+          </div>
         </div>
       </form>
 
@@ -288,12 +479,42 @@ const sampleApplications = [
         <button type="submit" form="job-form" class="btn btn-primary"> Save Position </button>
       </div>
     </Modal>
+
+    <!-- Modal for Reviewing Candidate Application -->
+    <Modal id="applicant-modal" title="Candidate Application Details" size="lg">
+      <div id="applicant-details" class="space-y-4">
+        <!-- Injected via JavaScript -->
+      </div>
+      <div slot="footer" class="flex justify-between items-center w-full">
+        <div class="flex items-center gap-2">
+          <span class="text-xs text-text-muted">Review Status:</span>
+          <select id="modal-app-status" class="status-select text-xs">
+            <option value="new">New</option>
+            <option value="reviewed">Reviewed</option>
+            <option value="contacted">Contacted</option>
+            <option value="rejected">Rejected</option>
+          </select>
+        </div>
+        <div class="flex gap-2">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            onclick="window.closeModal('applicant-modal')"
+          >
+            Close
+          </button>
+          <button type="button" id="save-modal-app-status-btn" class="btn btn-primary">
+            Update Status
+          </button>
+        </div>
+      </div>
+    </Modal>
   </div>
 </DashboardLayout>
 
 <style>
   .cms-careers-page {
-    max-width: 80rem;
+    max-width: 84rem;
     margin: 0 auto;
   }
 
@@ -358,6 +579,7 @@ const sampleApplications = [
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    transition: all 150ms ease;
   }
 
   .action-btn:hover {
@@ -365,7 +587,8 @@ const sampleApplications = [
     background: var(--color-surface-hover, #1f1f23);
   }
 
-  .status-select {
+  .status-select,
+  .app-status-select {
     padding: 0.25rem 0.5rem;
     background: var(--color-surface, #141418);
     border: 1px solid var(--color-border, #27272a);
@@ -427,17 +650,23 @@ const sampleApplications = [
     upsertCareer,
     updateItemStatus,
     deleteCmsItem,
+    updateCareerApplicationStatus,
+    type Career,
+    type CareerApplication,
     type CmsLifecycleStatus,
   } from '@/lib/cms-api';
 
   function initCareersAdmin() {
     const createBtn = document.getElementById('open-job-modal');
     const form = document.getElementById('job-form') as HTMLFormElement;
+    let currentSelectedAppId = '';
 
     if (createBtn) {
       createBtn.addEventListener('click', () => {
         form?.reset();
         (document.getElementById('job-id') as HTMLInputElement).value = '';
+        (document.getElementById('job-slug') as HTMLInputElement).value = '';
+        (document.getElementById('job-featured') as HTMLInputElement).checked = false;
         window.openModal?.('job-modal');
       });
     }
@@ -447,17 +676,44 @@ const sampleApplications = [
       btn.addEventListener('click', () => {
         const row = btn.closest('tr');
         if (!row) return;
-        const job = JSON.parse(row.getAttribute('data-job') || '{}');
+        const job: Career = JSON.parse(row.getAttribute('data-job') || '{}');
+
         (document.getElementById('job-id') as HTMLInputElement).value = job.id || '';
         (document.getElementById('job-title') as HTMLInputElement).value = job.title || '';
+        (document.getElementById('job-slug') as HTMLInputElement).value = job.slug || '';
         (document.getElementById('job-department') as HTMLInputElement).value =
           job.department || '';
         (document.getElementById('job-location') as HTMLInputElement).value = job.location || '';
+        (document.getElementById('job-arrangement') as HTMLSelectElement).value =
+          job.workArrangement || 'Hybrid';
+        (document.getElementById('job-type') as HTMLSelectElement).value = job.type || 'Full-time';
+        (document.getElementById('job-level') as HTMLSelectElement).value =
+          job.experienceLevel || 'Mid-Level';
+        (document.getElementById('job-experience') as HTMLInputElement).value =
+          job.experience || '';
         (document.getElementById('job-salary') as HTMLInputElement).value = job.salaryRange || '';
         (document.getElementById('job-status') as HTMLSelectElement).value =
           job.status || 'published';
+        (document.getElementById('job-deadline') as HTMLInputElement).value =
+          job.applicationDeadline || '';
+        (document.getElementById('job-featured') as HTMLInputElement).checked = !!job.featured;
+        (document.getElementById('job-short-desc') as HTMLInputElement).value =
+          job.shortDescription || '';
         (document.getElementById('job-description') as HTMLTextAreaElement).value =
           job.description || '';
+        (document.getElementById('job-responsibilities') as HTMLTextAreaElement).value = (
+          job.responsibilities || []
+        ).join('\n');
+        (document.getElementById('job-requirements') as HTMLTextAreaElement).value = (
+          job.requirements || []
+        ).join('\n');
+        (document.getElementById('job-qualifications') as HTMLTextAreaElement).value = (
+          job.preferredQualifications || []
+        ).join('\n');
+        (document.getElementById('job-benefits') as HTMLTextAreaElement).value = (
+          job.benefits || []
+        ).join('\n');
+
         window.openModal?.('job-modal');
       });
     });
@@ -468,22 +724,76 @@ const sampleApplications = [
         e.preventDefault();
         const id = (document.getElementById('job-id') as HTMLInputElement).value;
         const title = (document.getElementById('job-title') as HTMLInputElement).value;
+        const slug = (document.getElementById('job-slug') as HTMLInputElement).value.trim();
         const department = (document.getElementById('job-department') as HTMLInputElement).value;
         const location = (document.getElementById('job-location') as HTMLInputElement).value;
+        const workArrangement = (document.getElementById('job-arrangement') as HTMLSelectElement)
+          .value as 'Hybrid' | 'Remote' | 'On-site';
+        const type = (document.getElementById('job-type') as HTMLSelectElement).value as
+          | 'Full-time'
+          | 'Contract'
+          | 'Part-time'
+          | 'Internship';
+        const experienceLevel = (document.getElementById('job-level') as HTMLSelectElement)
+          .value as 'Senior' | 'Mid-Level' | 'Lead' | 'Junior';
+        const experience = (document.getElementById('job-experience') as HTMLInputElement).value;
         const salaryRange = (document.getElementById('job-salary') as HTMLInputElement).value;
         const status = (document.getElementById('job-status') as HTMLSelectElement)
           .value as CmsLifecycleStatus;
+        const applicationDeadline = (document.getElementById('job-deadline') as HTMLInputElement)
+          .value;
+        const featured = (document.getElementById('job-featured') as HTMLInputElement).checked;
+        const shortDescription = (document.getElementById('job-short-desc') as HTMLInputElement)
+          .value;
         const description = (document.getElementById('job-description') as HTMLTextAreaElement)
           .value;
 
+        const responsibilities = (
+          document.getElementById('job-responsibilities') as HTMLTextAreaElement
+        ).value
+          .split('\n')
+          .map((s) => s.trim())
+          .filter(Boolean);
+
+        const requirements = (
+          document.getElementById('job-requirements') as HTMLTextAreaElement
+        ).value
+          .split('\n')
+          .map((s) => s.trim())
+          .filter(Boolean);
+
+        const preferredQualifications = (
+          document.getElementById('job-qualifications') as HTMLTextAreaElement
+        ).value
+          .split('\n')
+          .map((s) => s.trim())
+          .filter(Boolean);
+
+        const benefits = (document.getElementById('job-benefits') as HTMLTextAreaElement).value
+          .split('\n')
+          .map((s) => s.trim())
+          .filter(Boolean);
+
         await upsertCareer({
           id: id || undefined,
+          slug: slug || undefined,
           title,
           department,
           location,
+          workArrangement,
+          type,
+          experienceLevel,
+          experience,
           salaryRange,
           status,
+          applicationDeadline: applicationDeadline || undefined,
+          featured,
+          shortDescription: shortDescription || undefined,
           description,
+          responsibilities,
+          requirements,
+          preferredQualifications,
+          benefits,
         });
 
         window.closeModal?.('job-modal');
@@ -498,7 +808,7 @@ const sampleApplications = [
       });
     }
 
-    // Status quick change
+    // Role Status quick change
     document.querySelectorAll('.status-select').forEach((sel) => {
       sel.addEventListener('change', async (e) => {
         const id = sel.getAttribute('data-id');
@@ -507,7 +817,7 @@ const sampleApplications = [
           await updateItemStatus('careers', id, status);
           if (window.showToast) {
             window.showToast({
-              message: `Status updated to ${status}`,
+              message: `Role status updated to ${status}`,
               variant: 'success',
               duration: 2500,
             });
@@ -524,11 +834,142 @@ const sampleApplications = [
           await deleteCmsItem('careers', id);
           btn.closest('tr')?.remove();
           if (window.showToast) {
-            window.showToast({ message: 'Position deleted', variant: 'success', duration: 2500 });
+            window.showToast({
+              message: 'Role removed from listings',
+              variant: 'success',
+              duration: 2500,
+            });
           }
         }
       });
     });
+
+    // Candidate Application Status quick change
+    document.querySelectorAll('.app-status-select').forEach((sel) => {
+      sel.addEventListener('change', async (e) => {
+        const appId = sel.getAttribute('data-app-id');
+        const status = (e.target as HTMLSelectElement).value as CareerApplication['status'];
+        if (appId) {
+          await updateCareerApplicationStatus(appId, status);
+          if (window.showToast) {
+            window.showToast({
+              message: `Applicant status marked as ${status}`,
+              variant: 'success',
+              duration: 2500,
+            });
+          }
+        }
+      });
+    });
+
+    // View Application Details Modal
+    document.querySelectorAll('.view-app-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const row = btn.closest('tr');
+        if (!row) return;
+        const app: CareerApplication = JSON.parse(row.getAttribute('data-app') || '{}');
+        currentSelectedAppId = app.id;
+
+        const detailsEl = document.getElementById('applicant-details');
+        const statusSelect = document.getElementById('modal-app-status') as HTMLSelectElement;
+
+        if (statusSelect) {
+          statusSelect.value = app.status;
+        }
+
+        if (detailsEl) {
+          detailsEl.innerHTML = `
+            <div class="p-4 rounded-xl bg-surface border border-border space-y-3">
+              <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 border-b border-border pb-3">
+                <div>
+                  <h3 class="text-base font-semibold text-text">${app.fullName}</h3>
+                  <div class="text-xs text-text-muted mt-0.5">${app.email} &bull; ${app.phone}</div>
+                </div>
+                <div class="text-xs font-mono text-text-muted">
+                  Submitted: ${new Date(app.submittedAt).toLocaleString('en-KE')}
+                </div>
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                <div>
+                  <span class="text-text-muted font-medium">Applied Position:</span>
+                  <div class="text-text font-semibold mt-0.5">${app.careerTitle}</div>
+                </div>
+                <div>
+                  <span class="text-text-muted font-medium">Candidate Location:</span>
+                  <div class="text-text mt-0.5">${app.location || 'Kenya'}</div>
+                </div>
+                <div>
+                  <span class="text-text-muted font-medium">LinkedIn Profile:</span>
+                  <div class="mt-0.5">
+                    ${
+                      app.linkedinUrl
+                        ? `<a href="${app.linkedinUrl}" target="_blank" class="text-primary hover:underline inline-flex items-center gap-1">${app.linkedinUrl}</a>`
+                        : '<span class="text-text-muted">Not provided</span>'
+                    }
+                  </div>
+                </div>
+                <div>
+                  <span class="text-text-muted font-medium">Portfolio / GitHub:</span>
+                  <div class="mt-0.5">
+                    ${
+                      app.portfolioUrl
+                        ? `<a href="${app.portfolioUrl}" target="_blank" class="text-primary hover:underline inline-flex items-center gap-1">${app.portfolioUrl}</a>`
+                        : '<span class="text-text-muted">Not provided</span>'
+                    }
+                  </div>
+                </div>
+              </div>
+
+              <div class="pt-2">
+                <span class="text-xs text-text-muted font-medium">Cover Note &amp; Experience Summary:</span>
+                <div class="mt-1.5 p-3 rounded-lg bg-surface-hover text-xs text-text leading-relaxed whitespace-pre-wrap border border-border">
+                  ${app.coverLetter || 'No cover letter provided with this application.'}
+                </div>
+              </div>
+
+              <div class="flex items-center gap-2 pt-2 border-t border-border text-[11px] text-emerald-400">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                </svg>
+                <span>Kenya Data Protection Act, 2019 candidate consent agreement verified.</span>
+              </div>
+            </div>
+          `;
+        }
+
+        window.openModal?.('applicant-modal');
+      });
+    });
+
+    // Save Status from within Applicant Modal
+    const saveModalAppStatusBtn = document.getElementById('save-modal-app-status-btn');
+    if (saveModalAppStatusBtn) {
+      saveModalAppStatusBtn.addEventListener('click', async () => {
+        const statusSelect = document.getElementById('modal-app-status') as HTMLSelectElement;
+        if (!currentSelectedAppId || !statusSelect) return;
+
+        const newStatus = statusSelect.value as CareerApplication['status'];
+        await updateCareerApplicationStatus(currentSelectedAppId, newStatus);
+
+        // Update the select on the table row
+        const rowSelect = document.querySelector(
+          `.app-status-select[data-app-id="${currentSelectedAppId}"]`
+        ) as HTMLSelectElement;
+        if (rowSelect) {
+          rowSelect.value = newStatus;
+        }
+
+        window.closeModal?.('applicant-modal');
+        if (window.showToast) {
+          window.showToast({
+            message: `Applicant status updated to ${newStatus}`,
+            variant: 'success',
+            duration: 2500,
+          });
+        }
+      });
+    }
   }
 
   document.addEventListener('DOMContentLoaded', initCareersAdmin);

@@ -32,7 +32,10 @@ function getReadingTime(body: string = ''): string {
 }
 
 // Category visual accents
-const CATEGORY_ACCENTS: Record<string, { bg: string; text: string; border: string; pillBg: string; pillText: string }> = {
+const CATEGORY_ACCENTS: Record<
+  string,
+  { bg: string; text: string; border: string; pillBg: string; pillText: string }
+> = {
   'Getting Started': {
     bg: 'bg-blue-50 dark:bg-blue-950/70',
     text: 'text-blue-600 dark:text-blue-400',
@@ -40,7 +43,7 @@ const CATEGORY_ACCENTS: Record<string, { bg: string; text: string; border: strin
     pillBg: 'bg-blue-100/70 dark:bg-blue-950/80',
     pillText: 'text-blue-700 dark:text-blue-300',
   },
-  'Channels': {
+  Channels: {
     bg: 'bg-emerald-50 dark:bg-emerald-950/70',
     text: 'text-emerald-600 dark:text-emerald-400',
     border: 'border-emerald-200/80 dark:border-emerald-800/80',
@@ -75,7 +78,7 @@ const CATEGORY_ACCENTS: Record<string, { bg: string; text: string; border: strin
     pillBg: 'bg-cyan-100/70 dark:bg-cyan-950/80',
     pillText: 'text-cyan-700 dark:text-cyan-300',
   },
-  'Troubleshooting': {
+  Troubleshooting: {
     bg: 'bg-amber-50 dark:bg-amber-950/70',
     text: 'text-amber-600 dark:text-amber-400',
     border: 'border-amber-200/80 dark:border-amber-800/80',
@@ -151,8 +154,12 @@ const categoriesList = [
               placeholder="Search guides, channels, APIs, webhooks, or M-Pesa (Press '/' to focus)..."
               class="w-full pl-11 pr-24 py-3.5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all"
             />
-            <div class="absolute inset-y-0 right-0 pr-3 flex items-center gap-1.5 pointer-events-none">
-              <kbd class="hidden sm:inline-block px-2 py-0.5 text-[11px] font-mono text-slate-400 dark:text-slate-500 bg-slate-100 dark:bg-slate-800 rounded border border-slate-200 dark:border-slate-700">
+            <div
+              class="absolute inset-y-0 right-0 pr-3 flex items-center gap-1.5 pointer-events-none"
+            >
+              <kbd
+                class="hidden sm:inline-block px-2 py-0.5 text-[11px] font-mono text-slate-400 dark:text-slate-500 bg-slate-100 dark:bg-slate-800 rounded border border-slate-200 dark:border-slate-700"
+              >
                 /
               </kbd>
             </div>
@@ -163,22 +170,30 @@ const categoriesList = [
       {/* =============================================================== */}
       {/* 2. CATEGORY FILTER PILLS & LIVE COUNTER                         */}
       {/* =============================================================== */}
-      <div class="mb-10 flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-200 dark:border-slate-800 pb-6">
-        <div class="flex items-center gap-2 overflow-x-auto pb-2 md:pb-0 scrollbar-none" role="tablist" aria-label="Documentation categories">
-          {categoriesList.map((cat, idx) => (
-            <button
-              type="button"
-              data-category-filter={cat}
-              class:list={[
-                'category-filter-btn shrink-0 px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all duration-150 cursor-pointer',
-                idx === 0
-                  ? 'bg-blue-600 text-white shadow-xs'
-                  : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700',
-              ]}
-            >
-              {cat}
-            </button>
-          ))}
+      <div
+        class="mb-10 flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-200 dark:border-slate-800 pb-6"
+      >
+        <div
+          class="flex items-center gap-2 overflow-x-auto pb-2 md:pb-0 scrollbar-none"
+          role="tablist"
+          aria-label="Documentation categories"
+        >
+          {
+            categoriesList.map((cat, idx) => (
+              <button
+                type="button"
+                data-category-filter={cat}
+                class:list={[
+                  'category-filter-btn shrink-0 px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all duration-150 cursor-pointer',
+                  idx === 0
+                    ? 'bg-blue-600 text-white shadow-xs'
+                    : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700',
+                ]}
+              >
+                {cat}
+              </button>
+            ))
+          }
         </div>
 
         <div class="text-xs font-medium text-slate-500 dark:text-slate-400 shrink-0">
@@ -190,7 +205,10 @@ const categoriesList = [
       {/* 3. RESPONSIVE GRID (2 to 3 to 4 Scaling with Floating Cards)   */}
       {/* =============================================================== */}
       <section class="mb-20">
-        <div id="docs-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 lg:gap-8">
+        <div
+          id="docs-grid"
+          class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 lg:gap-8"
+        >
           {
             sortedDocs.map((doc) => {
               const category = doc.data.category || doc.data.section || 'General';
@@ -233,7 +251,13 @@ const categoriesList = [
 
                     {/* Category & Difficulty Badges */}
                     <div class="flex items-center gap-2 mb-3">
-                      <span class:list={['inline-block px-2.5 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider', accent.pillBg, accent.pillText]}>
+                      <span
+                        class:list={[
+                          'inline-block px-2.5 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider',
+                          accent.pillBg,
+                          accent.pillText,
+                        ]}
+                      >
                         {category}
                       </span>
                       <span class="inline-block px-2 py-0.5 rounded-md text-[10px] font-medium bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400">
@@ -269,13 +293,24 @@ const categoriesList = [
         </div>
 
         {/* Empty State when Search/Filter yields zero matches */}
-        <div id="docs-empty-state" class="hidden text-center py-16 px-4 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm">
-          <div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-blue-50 dark:bg-blue-950/70 border border-blue-200 dark:border-blue-800 flex items-center justify-center text-blue-600 dark:text-blue-400">
+        <div
+          id="docs-empty-state"
+          class="hidden text-center py-16 px-4 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm"
+        >
+          <div
+            class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-blue-50 dark:bg-blue-950/70 border border-blue-200 dark:border-blue-800 flex items-center justify-center text-blue-600 dark:text-blue-400"
+          >
             <Icon name="lucide:search-x" class="w-8 h-8" />
           </div>
-          <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-1">No Documentation Guides Found</h3>
+          <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-1">
+            No Documentation Guides Found
+          </h3>
           <p class="text-sm text-slate-500 dark:text-slate-400 max-w-md mx-auto mb-6">
-            We couldn't find any guides matching your query. Try searching for terms like <span class="font-semibold text-slate-700 dark:text-slate-300">"mpesa"</span>, <span class="font-semibold text-slate-700 dark:text-slate-300">"whatsapp"</span>, <span class="font-semibold text-slate-700 dark:text-slate-300">"api"</span>, or <span class="font-semibold text-slate-700 dark:text-slate-300">"webhook"</span>.
+            We couldn't find any guides matching your query. Try searching for terms like <span
+              class="font-semibold text-slate-700 dark:text-slate-300">"mpesa"</span
+            >, <span class="font-semibold text-slate-700 dark:text-slate-300">"whatsapp"</span>, <span
+              class="font-semibold text-slate-700 dark:text-slate-300">"api"</span
+            >, or <span class="font-semibold text-slate-700 dark:text-slate-300">"webhook"</span>.
           </p>
           <button
             type="button"
@@ -299,7 +334,8 @@ const categoriesList = [
             Developer In-Chat Syntax & Webhook Protocols
           </h2>
           <p class="mt-2 text-sm text-slate-600 dark:text-slate-400">
-            Frontline agents and external microservices trigger these standardized commands to collect payments and synchronize ticket lifecycles.
+            Frontline agents and external microservices trigger these standardized commands to
+            collect payments and synchronize ticket lifecycles.
           </p>
         </div>
 
@@ -350,7 +386,8 @@ const categoriesList = [
             Need Custom Integration Architecture in Nairobi?
           </h2>
           <p class="text-blue-100 text-sm sm:text-base leading-relaxed">
-            Our local technical solutions team assists with Safaricom Daraja production go-live audits, Africa’s Talking Alphanumeric registration, and Meta Business verification.
+            Our local technical solutions team assists with Safaricom Daraja production go-live
+            audits, Africa’s Talking Alphanumeric registration, and Meta Business verification.
           </p>
         </div>
 
@@ -400,7 +437,12 @@ const categoriesList = [
         const tags = card.getAttribute('data-tags') || '';
 
         const matchesCategory = activeCategory === 'All Guides' || category === activeCategory;
-        const matchesSearch = !q || title.includes(q) || description.includes(q) || category.toLowerCase().includes(q) || tags.includes(q);
+        const matchesSearch =
+          !q ||
+          title.includes(q) ||
+          description.includes(q) ||
+          category.toLowerCase().includes(q) ||
+          tags.includes(q);
 
         if (matchesCategory && matchesSearch) {
           card.classList.remove('hidden');
@@ -437,7 +479,12 @@ const categoriesList = [
         });
 
         btn.classList.add('bg-blue-600', 'text-white', 'shadow-xs');
-        btn.classList.remove('bg-white', 'dark:bg-slate-900', 'text-slate-600', 'dark:text-slate-400');
+        btn.classList.remove(
+          'bg-white',
+          'dark:bg-slate-900',
+          'text-slate-600',
+          'dark:text-slate-400'
+        );
 
         applyFilters();
       });
@@ -467,7 +514,12 @@ const categoriesList = [
         const cat = b.getAttribute('data-category-filter');
         if (cat === 'All Guides') {
           b.classList.add('bg-blue-600', 'text-white', 'shadow-xs');
-          b.classList.remove('bg-white', 'dark:bg-slate-900', 'text-slate-600', 'dark:text-slate-400');
+          b.classList.remove(
+            'bg-white',
+            'dark:bg-slate-900',
+            'text-slate-600',
+            'dark:text-slate-400'
+          );
         } else {
           b.classList.remove('bg-blue-600', 'text-white', 'shadow-xs');
           b.classList.add('bg-white', 'dark:bg-slate-900', 'text-slate-600', 'dark:text-slate-400');

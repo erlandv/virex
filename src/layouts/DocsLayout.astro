@@ -7,6 +7,8 @@
  * - Tailwind typography (prose prose-lg dark:prose-invert prose-blue)
  * - Automatic responsive scaling for all images, videos, iframes, and code blocks
  * - Flawless dark mode inversion (dark:bg-[#0B1120])
+ * - Sequential category sorting in sidebar navigation
+ * - Metadata row: Difficulty badge, reading time, last updated
  */
 import { getCollection, type CollectionEntry } from 'astro:content';
 import MarketingLayout from './MarketingLayout.astro';
@@ -20,17 +22,48 @@ interface Props {
   category?: string;
   section?: string;
   icon?: string;
+  difficulty?: 'Beginner' | 'Intermediate' | 'Advanced';
+  lastUpdated?: string;
+  body?: string;
 }
 
-const { title, description, category, section, icon = 'lucide:book-open' } = Astro.props;
+const {
+  title,
+  description,
+  category,
+  section,
+  icon = 'lucide:book-open',
+  difficulty = 'Beginner',
+  lastUpdated,
+  body = '',
+} = Astro.props;
 
-// Get all non-draft docs and organize by category/section
+// Calculate estimated reading time
+function getReadingTime(text: string): string {
+  const words = text.trim().split(/\s+/).filter(Boolean).length;
+  const minutes = Math.max(1, Math.ceil(words / 200));
+  return `${minutes} min read`;
+}
+
+const readTime = getReadingTime(body);
+
+// Get all non-draft docs
 const allDocs = await getCollection('docs', ({ data }: { data: DocsEntry['data'] }) => !data.draft);
 
 // Sort docs by order
 const sortedDocs = [...allDocs].sort((a: DocsEntry, b: DocsEntry) => a.data.order - b.data.order);
 
-// Group docs by category (or section)
+// Category ordering definition
+const CATEGORY_ORDER = [
+  'Getting Started',
+  'Channels',
+  'Fintech & M-Pesa',
+  'Team Operations',
+  'AI Automation',
+  'Developer APIs',
+  'Troubleshooting',
+];
+
 interface DocNavItem {
   title: string;
   slug: string;
@@ -55,13 +88,23 @@ for (const doc of sortedDocs) {
   });
 }
 
-const docCategories = Array.from(categoryMap.entries()).map(([catName, items]) => ({
-  name: catName,
-  items,
-}));
+// Sort categories according to CATEGORY_ORDER
+const docCategories = Array.from(categoryMap.entries())
+  .sort(([a], [b]) => {
+    const idxA = CATEGORY_ORDER.indexOf(a);
+    const idxB = CATEGORY_ORDER.indexOf(b);
+    if (idxA !== -1 && idxB !== -1) return idxA - idxB;
+    if (idxA !== -1) return -1;
+    if (idxB !== -1) return 1;
+    return a.localeCompare(b);
+  })
+  .map(([catName, items]) => ({
+    name: catName,
+    items,
+  }));
 
 // Current page slug for active sidebar state
-const currentSlug = Astro.url.pathname.replace('/docs/', '').replace(/\/$/, '');
+const currentSlug = Astro.url.pathname.replace(/^\/docs\/?/, '').replace(/\/$/, '');
 
 // Find current index to provide next/previous pagination
 const currentIndex = sortedDocs.findIndex((d) => d.id === currentSlug);
@@ -78,21 +121,33 @@ const displayCategory = category || section || 'Documentation';
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       {/* Top Breadcrumb Header */}
       <nav
+        aria-label="Breadcrumb"
         class="mb-8 flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-4"
       >
-        <div class="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
-          <a
-            href="/docs"
-            class="hover:text-blue-600 dark:hover:text-blue-400 font-medium transition-colors"
-          >
-            Docs
-          </a>
-          <span>/</span>
-          <span class="text-slate-700 dark:text-slate-300 font-semibold">{displayCategory}</span>
-        </div>
+        <ol class="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
+          <li>
+            <a
+              href="/docs"
+              class="hover:text-blue-600 dark:hover:text-blue-400 font-medium transition-colors"
+            >
+              Docs
+            </a>
+          </li>
+          <li aria-hidden="true">/</li>
+          <li>
+            <span class="text-slate-600 dark:text-slate-400 font-medium">{displayCategory}</span>
+          </li>
+          <li aria-hidden="true">/</li>
+          <li>
+            <span
+              class="text-slate-900 dark:text-white font-semibold truncate max-w-xs sm:max-w-md inline-block align-bottom"
+              >{title}</span
+            >
+          </li>
+        </ol>
         <a
           href="/docs"
-          class="inline-flex items-center gap-1.5 text-xs sm:text-sm font-semibold text-blue-600 dark:text-blue-400 hover:underline"
+          class="inline-flex items-center gap-1.5 text-xs sm:text-sm font-semibold text-blue-600 dark:text-blue-400 hover:underline shrink-0"
         >
           <span>&larr; All Guides</span>
         </a>
@@ -103,7 +158,7 @@ const displayCategory = category || section || 'Documentation';
         {/* SIDEBAR NAVIGATION (Sticky Desktop, Drawer Mobile)            */}
         {/* ============================================================= */}
         <aside class="lg:w-72 shrink-0">
-          <nav class="sticky top-24 space-y-6">
+          <nav class="sticky top-24 space-y-6" aria-label="Documentation Sidebar">
             {/* Mobile Accordion Toggle */}
             <button
               id="docs-sidebar-toggle"
@@ -112,13 +167,16 @@ const displayCategory = category || section || 'Documentation';
             >
               <span class="flex items-center gap-2">
                 <Icon name="lucide:menu" class="w-4 h-4 text-blue-600 dark:text-blue-400" />
-                <span>Documentation Menu</span>
+                <span>Documentation Menu ({sortedDocs.length} Guides)</span>
               </span>
               <Icon name="lucide:chevron-down" class="w-4 h-4 text-slate-400" />
             </button>
 
             {/* Sidebar Content */}
-            <div id="docs-sidebar" class="hidden lg:block space-y-6">
+            <div
+              id="docs-sidebar"
+              class="hidden lg:block space-y-6 max-h-[calc(100vh-8rem)] overflow-y-auto pr-2 scrollbar-thin"
+            >
               {
                 docCategories.map((catGroup) => (
                   <div>
@@ -166,12 +224,32 @@ const displayCategory = category || section || 'Documentation';
           <article>
             {/* Document Header */}
             <header class="mb-10 pb-8 border-b border-slate-200 dark:border-slate-800">
-              <div
-                class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-blue-50 dark:bg-blue-950/70 text-blue-700 dark:text-blue-300 border border-blue-200/80 dark:border-blue-800/80 mb-4"
-              >
-                <Icon name={icon} class="w-3.5 h-3.5" />
-                <span>{displayCategory}</span>
+              <div class="flex flex-wrap items-center gap-2 mb-4">
+                <div
+                  class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-blue-50 dark:bg-blue-950/70 text-blue-700 dark:text-blue-300 border border-blue-200/80 dark:border-blue-800/80"
+                >
+                  <Icon name={icon} class="w-3.5 h-3.5" />
+                  <span>{displayCategory}</span>
+                </div>
+                <span
+                  class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700"
+                >
+                  {difficulty}
+                </span>
+                <span
+                  class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium text-slate-400 dark:text-slate-500"
+                >
+                  {readTime}
+                </span>
+                {
+                  lastUpdated && (
+                    <span class="text-xs text-slate-400 dark:text-slate-500">
+                      • Updated {lastUpdated}
+                    </span>
+                  )
+                }
               </div>
+
               <h1
                 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-tight"
               >
@@ -239,12 +317,17 @@ const displayCategory = category || section || 'Documentation';
 </MarketingLayout>
 
 <script>
-  const toggle = document.getElementById('docs-sidebar-toggle');
-  const sidebar = document.getElementById('docs-sidebar');
+  function setupSidebar() {
+    const toggle = document.getElementById('docs-sidebar-toggle');
+    const sidebar = document.getElementById('docs-sidebar');
 
-  toggle?.addEventListener('click', () => {
-    sidebar?.classList.toggle('hidden');
-  });
+    toggle?.addEventListener('click', () => {
+      sidebar?.classList.toggle('hidden');
+    });
+  }
+
+  setupSidebar();
+  document.addEventListener('astro:page-load', setupSidebar);
 </script>
 
 <style is:global>

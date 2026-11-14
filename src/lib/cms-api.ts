@@ -84,17 +84,29 @@ export interface BlogPost {
 
 export interface Career {
   id: string;
+  slug: string;
   title: string;
   department: string;
   location: string;
-  type: 'Full-time' | 'Part-time' | 'Contract';
+  workArrangement: 'Remote' | 'Hybrid' | 'On-site';
+  type: 'Full-time' | 'Part-time' | 'Contract' | 'Internship';
   experience: string;
+  experienceLevel?: 'Junior' | 'Mid-Level' | 'Senior' | 'Lead';
   salaryRange?: string;
+  shortDescription?: string;
   description: string;
   responsibilities: string[];
   requirements: string[];
+  preferredQualifications?: string[];
+  benefits?: string[];
+  applicationDeadline?: string;
+  applicationMethod?: 'internal_form' | 'email' | 'url';
+  featured?: boolean;
+  seoTitle?: string;
+  seoDescription?: string;
   status: CmsLifecycleStatus;
   postedDate: string;
+  updatedAt?: string;
 }
 
 export interface CareerApplication {
@@ -104,11 +116,44 @@ export interface CareerApplication {
   fullName: string;
   email: string;
   phone: string;
+  location?: string;
   linkedinUrl?: string;
   portfolioUrl?: string;
+  resumeUrl?: string;
   coverLetter?: string;
+  consentAgreed?: boolean;
   submittedAt: string;
   status: 'new' | 'reviewed' | 'contacted' | 'rejected';
+}
+
+export interface CareersBenefit {
+  icon: string;
+  title: string;
+  description: string;
+}
+
+export interface CareersValue {
+  title: string;
+  description: string;
+  tag: string;
+}
+
+export interface CareersPageContent {
+  heroHeadline: string;
+  heroSubtitle: string;
+  heroCtaText: string;
+  heroCtaHref: string;
+  whyWorkTitle: string;
+  whyWorkSubtitle: string;
+  benefits: CareersBenefit[];
+  valuesTitle: string;
+  valuesSubtitle: string;
+  values: CareersValue[];
+  openPositionsTitle: string;
+  openPositionsSubtitle: string;
+  generalAppTitle: string;
+  generalAppSubtitle: string;
+  generalAppEmail: string;
 }
 
 export interface FaqItem {
@@ -134,7 +179,7 @@ import {
   DEFAULT_LEGAL_POLICIES,
   type LegalPolicy,
   type LegalPolicyAuditItem,
-} from '@/data/legal-policies';
+} from '../data/legal-policies.ts';
 
 export type { LegalPolicy, LegalPolicyAuditItem };
 
@@ -402,12 +447,17 @@ Markcopilot operates in two modes:
 const DEFAULT_CAREERS: Career[] = [
   {
     id: 'job-1',
+    slug: 'senior-full-stack-engineer-fintech',
     title: 'Senior Full-Stack Engineer (Fintech & WhatsApp Cloud API)',
     department: 'Engineering',
-    location: 'Nairobi, Kenya (Hybrid)',
+    location: 'Nairobi, Kenya',
+    workArrangement: 'Hybrid',
     type: 'Full-time',
     experience: '4+ years',
+    experienceLevel: 'Senior',
     salaryRange: 'KES 250,000 - 380,000 / mo',
+    shortDescription:
+      'Lead high-throughput Safaricom Daraja STK processing, Meta Cloud API webhooks, and team collaboration engines.',
     description:
       'Lead the core architecture powering MarkChat’s omnichannel inbox and high-throughput Safaricom Daraja STK payment processing pipelines.',
     responsibilities: [
@@ -422,17 +472,38 @@ const DEFAULT_CAREERS: Career[] = [
       'Deep knowledge of webhooks, distributed queues, and resilient retry mechanisms',
       'Based in Nairobi or willing to work hybrid from our Westlands office',
     ],
+    preferredQualifications: [
+      'Experience with Ruby on Rails or Chatwoot Community Edition internals',
+      'Familiarity with Kafka or RabbitMQ event-driven messaging',
+      'Contributions to open-source developer tooling in Africa',
+    ],
+    benefits: [
+      'Comprehensive family medical cover (inpatient, outpatient, dental, optical)',
+      'Flexible hybrid schedule with modern MacBook Pro / Linux hardware',
+      'Annual technical learning stipend for cloud certs and conferences',
+    ],
+    applicationDeadline: '2026-12-31',
+    applicationMethod: 'internal_form',
+    featured: true,
+    seoTitle: 'Senior Full-Stack Engineer (Fintech & WhatsApp Cloud) — MarkChat Careers',
+    seoDescription:
+      'Join MarkChat in Nairobi as Senior Full-Stack Engineer. Build real-time Safaricom Daraja M-Pesa and Meta WhatsApp Cloud pipelines.',
     status: 'published',
     postedDate: '2026-11-01',
   },
   {
     id: 'job-2',
+    slug: 'customer-success-mpesa-onboarding-lead',
     title: 'Kenya Customer Success & M-Pesa Onboarding Lead',
     department: 'Customer Operations',
-    location: 'Nairobi, Kenya (On-site)',
+    location: 'Nairobi, Kenya',
+    workArrangement: 'On-site',
     type: 'Full-time',
     experience: '2+ years',
+    experienceLevel: 'Mid-Level',
     salaryRange: 'KES 120,000 - 180,000 / mo',
+    shortDescription:
+      'Guide Kenyan retailers, pharmacies, and enterprises through setting up WhatsApp Cloud, Daraja Paybills, and Pochi sync.',
     description:
       'Guide Kenyan retailers, clinics, and enterprises through setting up their WhatsApp Cloud numbers, Daraja Paybills, and Pochi sync.',
     responsibilities: [
@@ -447,17 +518,37 @@ const DEFAULT_CAREERS: Career[] = [
       'Patient problem solver with basic understanding of API credentials and webhooks',
       'Passion for enabling local African SMEs to thrive with digital tools',
     ],
+    preferredQualifications: [
+      'Prior experience with Safaricom Daraja developer portal or business portals',
+      'Familiarity with e-commerce platforms like Shopify or WooCommerce',
+    ],
+    benefits: [
+      'Inpatient and outpatient medical coverage',
+      'Monthly airtime and mobile data allowance',
+      'Quarterly team performance bonuses',
+    ],
+    applicationDeadline: '2026-12-15',
+    applicationMethod: 'internal_form',
+    featured: false,
+    seoTitle: 'Customer Success & M-Pesa Onboarding Lead — MarkChat Careers',
+    seoDescription:
+      'Help Kenyan businesses onboard to MarkChat, configure Safaricom Daraja M-Pesa, and streamline WhatsApp commerce.',
     status: 'published',
     postedDate: '2026-11-04',
   },
   {
     id: 'job-3',
+    slug: 'developer-advocate-technical-writer',
     title: 'Developer Advocate & Technical Writer (East Africa)',
     department: 'Developer Relations',
-    location: 'Remote (Kenya)',
+    location: 'Nairobi / Remote Kenya',
+    workArrangement: 'Remote',
     type: 'Full-time',
     experience: '2+ years',
+    experienceLevel: 'Mid-Level',
     salaryRange: 'KES 150,000 - 220,000 / mo',
+    shortDescription:
+      'Create exceptional guides, video walkthroughs, and SDK tutorials helping East African developers integrate MarkChat APIs.',
     description:
       'Create exceptional guides, video walkthroughs, and SDK tutorials helping East African developers integrate MarkChat APIs into their commerce stacks.',
     responsibilities: [
@@ -472,17 +563,37 @@ const DEFAULT_CAREERS: Career[] = [
       'Active participant in the local Kenyan tech community',
       'Excellent written and spoken English and Swahili',
     ],
+    preferredQualifications: [
+      'Active GitHub portfolio with open-source repositories',
+      'Experience creating screencasts or technical architectural diagrams',
+    ],
+    benefits: [
+      '100% remote flexibility across Kenya with home office stipend',
+      'Annual conference attendance and community sponsorship budget',
+      'Comprehensive medical insurance',
+    ],
+    applicationDeadline: '2026-12-20',
+    applicationMethod: 'internal_form',
+    featured: false,
+    seoTitle: 'Developer Advocate & Technical Writer — MarkChat Careers',
+    seoDescription:
+      'Create developer tutorials, SDKs, and REST API guides for East African developers integrating MarkChat.',
     status: 'published',
     postedDate: '2026-11-06',
   },
   {
     id: 'job-4',
+    slug: 'sdr-commercial-partnerships-manager',
     title: 'SDR & Commercial Partnerships Manager (SMEs & Retail)',
     department: 'Growth & Sales',
     location: 'Nairobi, Kenya (Westlands)',
+    workArrangement: 'Hybrid',
     type: 'Full-time',
     experience: '3+ years',
+    experienceLevel: 'Senior',
     salaryRange: 'KES 140,000 - 230,000 / mo + Commission',
+    shortDescription:
+      'Drive strategic partnerships with retail franchises, healthcare clinics, and business associations across Kenya.',
     description:
       'Drive strategic partnerships with retail franchises, healthcare clinics, and business associations across Kenya.',
     responsibilities: [
@@ -497,10 +608,98 @@ const DEFAULT_CAREERS: Career[] = [
       'Goal-driven communicator with strong consultative selling skills',
       'Familiarity with CRM tools and sales automation workflows',
     ],
+    preferredQualifications: [
+      'Experience selling SaaS or fintech solutions in East Africa',
+      'Existing relationships with SACCOs, retail associations, or franchise groups',
+    ],
+    benefits: [
+      'High-uncapped commission structure paid monthly in KES',
+      'Full healthcare insurance for employee and immediate dependents',
+      'Transport and client entertainment allowance',
+    ],
+    applicationDeadline: '2026-12-31',
+    applicationMethod: 'internal_form',
+    featured: true,
+    seoTitle: 'SDR & Commercial Partnerships Manager — MarkChat Careers',
+    seoDescription:
+      'Join MarkChat as Partnerships Manager in Nairobi. Expand merchant acquisition and mobile money commerce adoption.',
     status: 'published',
     postedDate: '2026-11-09',
   },
 ];
+
+export const DEFAULT_CAREERS_CONTENT: CareersPageContent = {
+  heroHeadline: 'Build the Future of Business Conversations',
+  heroSubtitle:
+    "We're building modern tools that help African businesses connect with customers, streamline team workflows, and collect Safaricom M-Pesa payments across the messaging channels they already use.",
+  heroCtaText: 'View Open Roles',
+  heroCtaHref: '#open-positions',
+  whyWorkTitle: 'Why Build at MarkChat',
+  whyWorkSubtitle:
+    'Work with high-agency builders solving real commerce challenges for merchants across Kenya.',
+  benefits: [
+    {
+      icon: 'lucide:map-pin',
+      title: 'Nairobi Hub & Flexible Hybrid Work',
+      description:
+        'Collaborate from our Westlands office or work hybrid across Kenya with modern workstations and flexible scheduling.',
+    },
+    {
+      icon: 'lucide:credit-card',
+      title: 'Competitive Compensation & Rewards',
+      description:
+        'Transparent Kenyan market-rate salaries, performance bonuses, and long-term ownership incentives for full-time roles.',
+    },
+    {
+      icon: 'lucide:heart-pulse',
+      title: 'Comprehensive Health & Wellness Cover',
+      description:
+        'Full inpatient and outpatient medical coverage including dental and optical provisions for full-time staff and dependents.',
+    },
+    {
+      icon: 'lucide:sparkles',
+      title: 'Continuous Learning & Growth Stipend',
+      description:
+        'Dedicated annual budget for cloud certifications (AWS, GCP), developer conferences, technical literature, and courses.',
+    },
+  ],
+  valuesTitle: 'Our Operating Principles',
+  valuesSubtitle:
+    'How we think, build, and hold each other accountable as we scale customer engagement infrastructure.',
+  values: [
+    {
+      title: 'Customer-First Impact',
+      description:
+        'Every line of code and customer workflow directly impacts real shop owners, clinic administrators, and enterprise support teams in Kenya.',
+      tag: 'Impact',
+    },
+    {
+      title: 'Build with Purpose & Craft',
+      description:
+        'We favor thoughtful engineering, clean APIs, resilient webhooks, and intuitive UI over superficial bloat and hype.',
+      tag: 'Craft',
+    },
+    {
+      title: 'Ownership & Extreme Autonomy',
+      description:
+        'We give engineers and operators full ownership of their outcomes. You identify friction, design solutions, and deploy with confidence.',
+      tag: 'Ownership',
+    },
+    {
+      title: 'Transparency & High Trust',
+      description:
+        'Honest communication, blameless post-mortems, clear metrics, and high respect for customer data privacy under the Kenya Data Protection Act.',
+      tag: 'Trust',
+    },
+  ],
+  openPositionsTitle: 'Open Positions in Nairobi & Remote Kenya',
+  openPositionsSubtitle:
+    'Join our engineering, operations, and commercial teams in building reliable conversational software.',
+  generalAppTitle: "Don't see an exact opening for your skills?",
+  generalAppSubtitle:
+    'We are always looking to meet talented software engineers, technical writers, customer success specialists, and partnership leads. Submit a speculative application to our talent pool.',
+  generalAppEmail: 'careers@markchat.co.ke',
+};
 
 const DEFAULT_FAQS: FaqItem[] = [
   {
@@ -1118,6 +1317,7 @@ const STORAGE_KEYS = {
   pricing: 'markchat_cms_pricing_matrix',
   blogs: 'markchat_cms_blogs',
   careers: 'markchat_cms_careers',
+  careers_content: 'markchat_cms_careers_content',
   applications: 'markchat_cms_applications',
   faqs: 'markchat_cms_faqs',
   leads: 'markchat_cms_leads',
@@ -1125,9 +1325,11 @@ const STORAGE_KEYS = {
   legal: 'markchat_cms_legal',
 };
 
+const serverMemoryStore = new Map<string, unknown>();
+
 function getLocalItem<T>(key: string, defaultValue: T): T {
   if (typeof window === 'undefined') {
-    return defaultValue;
+    return serverMemoryStore.has(key) ? (serverMemoryStore.get(key) as T) : defaultValue;
   }
   try {
     const item = window.localStorage.getItem(key);
@@ -1138,12 +1340,14 @@ function getLocalItem<T>(key: string, defaultValue: T): T {
 }
 
 function setLocalItem<T>(key: string, value: T): void {
-  if (typeof window !== 'undefined') {
-    try {
-      window.localStorage.setItem(key, JSON.stringify(value));
-    } catch (e) {
-      console.warn(`[MarkChat CMS] Error saving ${key} to localStorage:`, e);
-    }
+  if (typeof window === 'undefined') {
+    serverMemoryStore.set(key, value);
+    return;
+  }
+  try {
+    window.localStorage.setItem(key, JSON.stringify(value));
+  } catch (e) {
+    console.warn(`[MarkChat CMS] Error saving ${key} to localStorage:`, e);
   }
 }
 
@@ -1272,8 +1476,114 @@ export async function fetchCareerById(id: string): Promise<Career | null> {
     // Fallback
   }
   const allCareers = getLocalItem<Career[]>(STORAGE_KEYS.careers, DEFAULT_CAREERS);
-  return allCareers.find((c) => c.id === id && c.status === 'published') || null;
+  return allCareers.find((c) => (c.id === id || c.slug === id) && c.status === 'published') || null;
 }
+
+/**
+ * Fetch single published career role by URL slug
+ */
+export async function fetchCareerBySlug(slug: string): Promise<Career | null> {
+  try {
+    const res = await apiFetch(
+      `${BRIDGE_API_URL}/api/public/careers/slug/${encodeURIComponent(slug)}`,
+      {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' },
+      }
+    );
+    if (res.ok) {
+      const career: Career = await res.json();
+      if (career && career.status === 'published') {
+        return career;
+      }
+    }
+  } catch {
+    // Fallback
+  }
+  const allCareers = getLocalItem<Career[]>(STORAGE_KEYS.careers, DEFAULT_CAREERS);
+  return (
+    allCareers.find((c) => (c.slug === slug || c.id === slug) && c.status === 'published') || null
+  );
+}
+
+/**
+ * Fetch Careers Page Content (Hero, Benefits, Values, General Application)
+ */
+export async function fetchCareersContent(): Promise<CareersPageContent> {
+  try {
+    const res = await apiFetch(`${BRIDGE_API_URL}/api/public/careers-content`, {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' },
+    });
+    if (res.ok) {
+      return await res.json();
+    }
+  } catch {
+    // Fallback
+  }
+  return getLocalItem<CareersPageContent>(STORAGE_KEYS.careers_content, DEFAULT_CAREERS_CONTENT);
+}
+
+/**
+ * Update Careers Page Content
+ */
+export async function updateCareersContent(
+  content: Partial<CareersPageContent>
+): Promise<CareersPageContent> {
+  const current = getLocalItem<CareersPageContent>(
+    STORAGE_KEYS.careers_content,
+    DEFAULT_CAREERS_CONTENT
+  );
+  const updated: CareersPageContent = { ...current, ...content };
+  setLocalItem(STORAGE_KEYS.careers_content, updated);
+
+  try {
+    await apiFetch(`${BRIDGE_API_URL}/api/admin/cms/careers-content`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${getAdminToken()}`,
+      },
+      body: JSON.stringify(updated),
+    });
+  } catch {
+    // Offline local state persisted
+  }
+  return updated;
+}
+
+const DEFAULT_CAREER_APPLICATIONS: CareerApplication[] = [
+  {
+    id: 'app-1',
+    careerId: 'job-1',
+    careerTitle: 'Senior Full-Stack Engineer (Fintech & WhatsApp Cloud API)',
+    fullName: 'Peter Mwangi',
+    email: 'pmwangi@gmail.com',
+    phone: '+254 712 334 455',
+    location: 'Nairobi, Kenya',
+    linkedinUrl: 'https://linkedin.com/in/petermwangi',
+    submittedAt: '2026-11-10T14:20:00Z',
+    status: 'new',
+    consentAgreed: true,
+    coverLetter:
+      '4 years experience integrating Safaricom Daraja API and Meta Cloud API at a regional payments gateway in Nairobi.',
+  },
+  {
+    id: 'app-2',
+    careerId: 'job-2',
+    careerTitle: 'Kenya Customer Success & M-Pesa Onboarding Lead',
+    fullName: 'Naomi Chepkemoi',
+    email: 'naomi.chep@outlook.com',
+    phone: '+254 722 889 900',
+    location: 'Nairobi, Kenya',
+    linkedinUrl: 'https://linkedin.com/in/naomichep',
+    submittedAt: '2026-11-11T10:15:00Z',
+    status: 'reviewed',
+    consentAgreed: true,
+    coverLetter:
+      'Experienced onboarding 150+ Kenyan retail shops onto electronic POS and mobile till solutions.',
+  },
+];
 
 /**
  * Submit candidate job application
@@ -1282,11 +1592,11 @@ export async function submitCareerApplication(
   careerId: string,
   data: Omit<CareerApplication, 'id' | 'careerId' | 'careerTitle' | 'submittedAt' | 'status'>
 ): Promise<{ success: boolean; id: string; message: string }> {
-  const career = await fetchCareerById(careerId);
+  const career = await fetchCareerBySlug(careerId);
   const application: CareerApplication = {
     id: `app-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
-    careerId,
-    careerTitle: career ? career.title : 'General Application',
+    careerId: career ? career.id : careerId,
+    careerTitle: career ? career.title : 'General Application (Talent Pool)',
     submittedAt: new Date().toISOString(),
     status: 'new',
     ...data,
@@ -1308,10 +1618,67 @@ export async function submitCareerApplication(
     // Local fallback
   }
 
-  const existingApps = getLocalItem<CareerApplication[]>(STORAGE_KEYS.applications, []);
+  const existingApps = [
+    ...getLocalItem<CareerApplication[]>(STORAGE_KEYS.applications, DEFAULT_CAREER_APPLICATIONS),
+  ];
   existingApps.unshift(application);
   setLocalItem(STORAGE_KEYS.applications, existingApps);
   return { success: true, id: application.id, message: 'Application received and saved!' };
+}
+
+/**
+ * Fetch candidate applications for dashboard review
+ */
+export async function fetchCareerApplications(): Promise<CareerApplication[]> {
+  try {
+    const res = await apiFetch(`${BRIDGE_API_URL}/api/admin/cms/applications`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${getAdminToken()}`,
+      },
+    });
+    if (res.ok) {
+      return await res.json();
+    }
+  } catch {
+    // Fallback
+  }
+  return getLocalItem<CareerApplication[]>(STORAGE_KEYS.applications, DEFAULT_CAREER_APPLICATIONS);
+}
+
+/**
+ * Update candidate application review status
+ */
+export async function updateCareerApplicationStatus(
+  appId: string,
+  status: CareerApplication['status']
+): Promise<boolean> {
+  const apps = [
+    ...getLocalItem<CareerApplication[]>(STORAGE_KEYS.applications, DEFAULT_CAREER_APPLICATIONS),
+  ];
+  const idx = apps.findIndex((a) => a.id === appId);
+  if (idx !== -1) {
+    apps[idx] = { ...apps[idx], status };
+    setLocalItem(STORAGE_KEYS.applications, apps);
+  }
+
+  try {
+    await apiFetch(
+      `${BRIDGE_API_URL}/api/admin/cms/applications/${encodeURIComponent(appId)}/status`,
+      {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${getAdminToken()}`,
+        },
+        body: JSON.stringify({ status }),
+      }
+    );
+    return true;
+  } catch {
+    return true;
+  }
 }
 
 /**
@@ -1610,6 +1977,15 @@ export async function upsertBlogPost(
   return saved;
 }
 
+function generateCareerSlug(title: string): string {
+  return title
+    .toLowerCase()
+    .trim()
+    .replace(/[^\w\s-]/g, '')
+    .replace(/[\s_-]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
+
 /**
  * Upsert career role (Add or Edit)
  */
@@ -1618,43 +1994,74 @@ export async function upsertCareer(
 ): Promise<Career> {
   const careers = getLocalItem<Career[]>(STORAGE_KEYS.careers, DEFAULT_CAREERS);
   let saved: Career;
+  const now = new Date().toISOString().split('T')[0];
+  const slug = career.slug || generateCareerSlug(career.title);
 
   if (career.id) {
     const idx = careers.findIndex((c) => c.id === career.id);
     if (idx !== -1) {
-      saved = { ...careers[idx], ...career } as Career;
+      saved = {
+        ...careers[idx],
+        ...career,
+        slug: career.slug || careers[idx].slug || slug,
+        updatedAt: now,
+      } as Career;
       careers[idx] = saved;
     } else {
       saved = {
         id: career.id,
+        slug,
         title: career.title,
         department: career.department,
         location: career.location,
+        workArrangement: career.workArrangement || 'Hybrid',
         type: career.type || 'Full-time',
         experience: career.experience || '2+ years',
+        experienceLevel: career.experienceLevel || 'Mid-Level',
         salaryRange: career.salaryRange,
+        shortDescription: career.shortDescription || career.description?.slice(0, 160) || '',
         description: career.description || '',
         responsibilities: career.responsibilities || [],
         requirements: career.requirements || [],
+        preferredQualifications: career.preferredQualifications || [],
+        benefits: career.benefits || [],
+        applicationDeadline: career.applicationDeadline,
+        applicationMethod: career.applicationMethod || 'internal_form',
+        featured: career.featured || false,
+        seoTitle: career.seoTitle,
+        seoDescription: career.seoDescription,
         status: career.status || 'draft',
-        postedDate: career.postedDate || new Date().toISOString().split('T')[0],
+        postedDate: career.postedDate || now,
+        updatedAt: now,
       };
       careers.unshift(saved);
     }
   } else {
     saved = {
       id: `job-${Date.now()}`,
+      slug,
       title: career.title,
       department: career.department,
       location: career.location,
+      workArrangement: career.workArrangement || 'Hybrid',
       type: career.type || 'Full-time',
       experience: career.experience || '2+ years',
+      experienceLevel: career.experienceLevel || 'Mid-Level',
       salaryRange: career.salaryRange || 'Competitive',
+      shortDescription: career.shortDescription || career.description?.slice(0, 160) || '',
       description: career.description || '',
       responsibilities: career.responsibilities || [],
       requirements: career.requirements || [],
+      preferredQualifications: career.preferredQualifications || [],
+      benefits: career.benefits || [],
+      applicationDeadline: career.applicationDeadline,
+      applicationMethod: career.applicationMethod || 'internal_form',
+      featured: career.featured || false,
+      seoTitle: career.seoTitle,
+      seoDescription: career.seoDescription,
       status: career.status || 'draft',
-      postedDate: new Date().toISOString().split('T')[0],
+      postedDate: now,
+      updatedAt: now,
     };
     careers.unshift(saved);
   }
