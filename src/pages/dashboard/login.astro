@@ -1,6 +1,9 @@
 ---
 /**
- * MarkChat CMS Admin Login Gate
+ * MarkChat CMS Admin Login Gate — Modern Enterprise Authentication
+ *
+ * Implements a premium glassmorphic authentication screen reflecting
+ * the MarkChat brand, full dark mode parity, and central API token verification.
  */
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import { Icon } from 'astro-icon/components';
@@ -13,278 +16,152 @@ const bridgeApiUrl =
 <BaseLayout
   title="MarkChat CMS Admin Login"
   description="Single-Admin Website Content Management System for MarkChat Kenya"
+  noindex={true}
 >
-  <div class="cms-login-page">
-    <div class="cms-login-container">
-      <div class="cms-login-card">
-        <div class="cms-login-header">
-          <div class="cms-logo-badge">
-            <svg
-              class="w-8 h-8 text-primary"
-              viewBox="0 0 40 40"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <rect width="40" height="40" rx="10" fill="currentColor" fill-opacity="0.12"></rect>
+  <div
+    class="min-h-screen w-full flex items-center justify-center bg-slate-50 dark:bg-[#0B1120] relative overflow-hidden px-4 py-12 transition-colors duration-200"
+  >
+    <!-- Subtle Ambient Glowing Orbs -->
+    <div
+      class="pointer-events-none absolute -top-40 left-1/2 -translate-x-1/2 w-[760px] h-[380px] bg-gradient-to-b from-blue-600/15 via-indigo-600/10 to-transparent dark:from-blue-600/25 dark:via-primary/10 dark:to-transparent rounded-full blur-3xl"
+      aria-hidden="true"
+    >
+    </div>
+    <div
+      class="pointer-events-none absolute -bottom-40 -left-20 w-[500px] h-[320px] bg-indigo-500/10 dark:bg-indigo-600/15 rounded-full blur-3xl"
+      aria-hidden="true"
+    >
+    </div>
+    <div
+      class="pointer-events-none absolute top-1/3 -right-20 w-[450px] h-[300px] bg-blue-500/10 dark:bg-blue-600/15 rounded-full blur-3xl"
+      aria-hidden="true"
+    >
+    </div>
+
+    <!-- The Glassmorphic Security Panel -->
+    <div
+      class="w-full max-w-md bg-white/80 dark:bg-slate-900/80 backdrop-blur-2xl border border-slate-200/50 dark:border-slate-700/50 shadow-2xl rounded-3xl p-8 sm:p-10 z-10 relative"
+    >
+      <!-- Brand Header -->
+      <div class="text-center mb-8">
+        <!-- MarkChat Illuminated Emblem -->
+        <div class="flex justify-center mb-4">
+          <div
+            class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white shadow-xl shadow-blue-500/25 ring-4 ring-blue-500/10 dark:ring-blue-500/20 hover:scale-105 transition-transform duration-200 select-none"
+          >
+            <svg class="w-10 h-10" viewBox="0 0 54 54" fill="none">
               <path
-                d="M12 14C12 12.8954 12.8954 12 14 12H26C27.1046 12 28 12.8954 28 14V22C28 23.1046 27.1046 24 26 24H18L13 28V14Z"
-                stroke="currentColor"
-                stroke-width="2.2"
+                d="M12 16C12 13.7909 13.7909 12 16 12H38C40.2091 12 42 13.7909 42 16V32C42 34.2091 40.2091 36 38 36H30L22 43V36H16C13.7909 36 12 34.2091 12 32V16Z"
+                fill="white"
+                fill-opacity="0.18"></path>
+              <path
+                d="M18 32V18L24.5 26L31 18V32"
+                stroke="white"
+                stroke-width="2.8"
                 stroke-linecap="round"
                 stroke-linejoin="round"></path>
-              <path d="M18 18H22" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"
-              ></path>
+              <circle cx="37" cy="25" r="2.5" fill="#4ADE80"></circle>
             </svg>
           </div>
-          <h1 class="cms-login-title">MarkChat CMS</h1>
-          <p class="cms-login-subtitle">Single-Admin Portal &amp; Plan Matrix Engine</p>
         </div>
 
-        <div id="logout-alert" class="alert-box alert-success" style="display: none;">
-          <Icon name="lucide:check-circle" class="w-4 h-4" />
-          <span>You have been safely signed out.</span>
-        </div>
+        <h1 class="text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">
+          MarkChat CMS
+        </h1>
+        <p class="text-sm text-slate-500 dark:text-slate-400 mt-2">
+          Single-Admin Portal &amp; Plan Matrix Engine
+        </p>
+      </div>
 
-        <div id="error-alert" class="alert-box alert-error" style="display: none;">
-          <Icon name="lucide:alert-triangle" class="w-4 h-4 shrink-0" />
-          <span id="error-text">Authentication failed. Please verify your passkey.</span>
-        </div>
+      <!-- Sign-out Confirmation Alert -->
+      <div
+        id="logout-alert"
+        class="mb-6 p-4 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/80 text-emerald-800 dark:text-emerald-300 text-xs flex items-center gap-2.5 shadow-2xs"
+        style="display: none;"
+      >
+        <Icon
+          name="lucide:check-circle"
+          class="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0"
+        />
+        <span>You have been safely signed out.</span>
+      </div>
 
-        <form id="cms-login-form" class="cms-login-form">
-          <div class="form-group">
-            <label for="admin-passkey" class="form-label">
-              Admin Passkey
-              <span class="text-error">*</span>
-            </label>
-            <div class="input-wrapper">
-              <input
-                type="password"
-                id="admin-passkey"
-                name="passkey"
-                class="form-input"
-                placeholder="Enter your administrative passkey"
-                required
-                autocomplete="current-password"
-              />
-              <button
-                type="button"
-                id="toggle-visibility"
-                class="visibility-toggle"
-                aria-label="Toggle password visibility"
-              >
-                <Icon name="lucide:eye" class="w-4 h-4" />
-              </button>
-            </div>
-            <p class="form-hint">Single-admin authentication verified by central CMS API.</p>
+      <!-- Authentication Error Alert -->
+      <div
+        id="error-alert"
+        class="mb-6 p-4 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800/80 text-rose-800 dark:text-rose-300 text-xs flex items-start gap-2.5 shadow-2xs"
+        style="display: none;"
+      >
+        <Icon
+          name="lucide:alert-triangle"
+          class="w-4 h-4 text-rose-600 dark:text-rose-400 shrink-0 mt-0.5"
+        />
+        <span id="error-text">Authentication failed. Please verify your passkey.</span>
+      </div>
+
+      <!-- Interactive Passkey Form -->
+      <form id="cms-login-form" class="space-y-4">
+        <div>
+          <label
+            for="admin-passkey"
+            class="block text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-2"
+          >
+            Admin Passkey <span class="text-rose-500">*</span>
+          </label>
+          <div class="relative">
+            <input
+              type="password"
+              id="admin-passkey"
+              name="passkey"
+              class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl px-4 py-3.5 pr-12 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all text-slate-900 dark:text-white text-sm placeholder:text-slate-400 dark:placeholder:text-slate-600 shadow-2xs"
+              placeholder="Enter your administrative passkey"
+              required
+              autocomplete="current-password"
+            />
+            <button
+              type="button"
+              id="toggle-visibility"
+              class="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1 rounded-lg transition-colors cursor-pointer"
+              aria-label="Toggle password visibility"
+            >
+              <Icon name="lucide:eye" class="w-4 h-4" />
+            </button>
           </div>
-
-          <button type="submit" id="submit-btn" class="btn btn-primary w-full">
-            <Icon name="lucide:lock" class="w-4 h-4" />
-            <span id="submit-btn-text">Access CMS Dashboard</span>
-          </button>
-        </form>
-
-        <div class="cms-login-footer">
-          <a href="/" class="return-link">
-            <Icon name="lucide:arrow-left" class="w-3.5 h-3.5" />
-            <span>Return to public website</span>
-          </a>
+          <p class="text-xs text-slate-500 dark:text-slate-400 mt-2 flex items-center gap-1.5">
+            <Icon
+              name="lucide:shield-check"
+              class="w-3.5 h-3.5 text-blue-600 dark:text-blue-400 shrink-0"
+            />
+            <span>Single-admin authentication verified by central CMS API.</span>
+          </p>
         </div>
+
+        <button
+          type="submit"
+          id="submit-btn"
+          class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3.5 px-6 rounded-xl shadow-lg shadow-blue-500/30 hover:shadow-blue-500/40 transition-all hover:-translate-y-0.5 active:translate-y-0 mt-6 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+        >
+          <Icon name="lucide:lock" class="w-4 h-4" />
+          <span id="submit-btn-text">Access CMS Dashboard</span>
+        </button>
+      </form>
+
+      <!-- Return to Public Site -->
+      <div class="mt-8 pt-6 border-t border-slate-200/60 dark:border-slate-800 text-center">
+        <a
+          href="/"
+          class="inline-flex items-center gap-2 text-xs font-medium text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white transition-colors group"
+        >
+          <Icon
+            name="lucide:arrow-left"
+            class="w-3.5 h-3.5 group-hover:-translate-x-0.5 transition-transform"
+          />
+          <span>Return to public website</span>
+        </a>
       </div>
     </div>
   </div>
 </BaseLayout>
-
-<style>
-  .cms-login-page {
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 1.5rem;
-    background-color: var(--color-background, #0a0a0c);
-  }
-
-  .cms-login-container {
-    width: 100%;
-    max-width: 26rem;
-  }
-
-  .cms-login-card {
-    background: var(--color-surface, #141418);
-    border: 1px solid var(--color-border, #27272a);
-    border-radius: var(--radius-xl, 1rem);
-    padding: 2.25rem 2rem;
-    box-shadow:
-      0 20px 25px -5px rgba(0, 0, 0, 0.4),
-      0 8px 10px -6px rgba(0, 0, 0, 0.3);
-  }
-
-  .cms-login-header {
-    text-align: center;
-    margin-bottom: 2rem;
-  }
-
-  .cms-logo-badge {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 1rem;
-    color: var(--color-primary, #6366f1);
-  }
-
-  .cms-login-title {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: var(--color-text, #fafafa);
-    margin: 0 0 0.35rem 0;
-  }
-
-  .cms-login-subtitle {
-    font-size: 0.875rem;
-    color: var(--color-text-muted, #a1a1aa);
-    margin: 0;
-  }
-
-  .alert-box {
-    display: flex;
-    align-items: center;
-    gap: 0.625rem;
-    padding: 0.75rem 1rem;
-    border-radius: var(--radius-md, 0.5rem);
-    font-size: 0.8125rem;
-    margin-bottom: 1.25rem;
-  }
-
-  .alert-success {
-    background: rgba(34, 197, 94, 0.12);
-    border: 1px solid rgba(34, 197, 94, 0.3);
-    color: #4ade80;
-  }
-
-  .alert-error {
-    background: rgba(239, 68, 68, 0.12);
-    border: 1px solid rgba(239, 68, 68, 0.3);
-    color: #f87171;
-  }
-
-  .cms-login-form {
-    display: flex;
-    flex-direction: column;
-    gap: 1.25rem;
-  }
-
-  .form-group {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-  }
-
-  .form-label {
-    font-size: 0.8125rem;
-    font-weight: 600;
-    color: var(--color-text, #fafafa);
-  }
-
-  .input-wrapper {
-    position: relative;
-    display: flex;
-    align-items: center;
-  }
-
-  .form-input {
-    width: 100%;
-    padding: 0.65rem 2.5rem 0.65rem 0.875rem;
-    font-size: 0.875rem;
-    font-family: inherit;
-    background: var(--color-surface-hover, #1f1f23);
-    border: 1px solid var(--color-border, #3f3f46);
-    border-radius: var(--radius-md, 0.5rem);
-    color: var(--color-text, #fafafa);
-    transition: all 150ms ease;
-  }
-
-  .form-input:focus {
-    outline: none;
-    border-color: var(--color-primary, #6366f1);
-    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
-  }
-
-  .visibility-toggle {
-    position: absolute;
-    right: 0.75rem;
-    background: none;
-    border: none;
-    color: var(--color-text-muted, #a1a1aa);
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    padding: 0;
-  }
-
-  .visibility-toggle:hover {
-    color: var(--color-text, #fafafa);
-  }
-
-  .form-hint {
-    font-size: 0.75rem;
-    color: var(--color-text-muted, #71717a);
-    margin: 0;
-  }
-
-  .form-hint code {
-    font-family: monospace;
-    background: rgba(255, 255, 255, 0.08);
-    padding: 0.1rem 0.3rem;
-    border-radius: 0.25rem;
-  }
-
-  .btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    padding: 0.65rem 1.25rem;
-    font-size: 0.875rem;
-    font-weight: 600;
-    border-radius: var(--radius-md, 0.5rem);
-    cursor: pointer;
-    transition: all 150ms ease;
-    border: 1px solid transparent;
-  }
-
-  .btn-primary {
-    background: var(--color-primary, #6366f1);
-    color: #ffffff;
-  }
-
-  .btn-primary:hover {
-    opacity: 0.92;
-  }
-
-  .w-full {
-    width: 100%;
-  }
-
-  .cms-login-footer {
-    margin-top: 1.75rem;
-    text-align: center;
-  }
-
-  .return-link {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
-    font-size: 0.8125rem;
-    color: var(--color-text-muted, #a1a1aa);
-    text-decoration: none;
-    transition: color 150ms ease;
-  }
-
-  .return-link:hover {
-    color: var(--color-text, #fafafa);
-  }
-</style>
 
 <script is:inline define:vars={{ bridgeApiUrl }}>
   document.addEventListener('DOMContentLoaded', () => {
