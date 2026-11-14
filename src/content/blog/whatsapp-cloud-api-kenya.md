@@ -1,8 +1,12 @@
 ---
 title: "WhatsApp Business Cloud API in Kenya: Why Physical Phones Are Ruining Your Sales"
 description: "Why high-growth Kenyan businesses are abandoning physical WhatsApp phones in favor of official Meta Cloud API and shared team inboxes."
+excerpt: "Why high-growth Kenyan businesses are abandoning physical WhatsApp phones in favor of official Meta Cloud API and shared team inboxes."
 publishedDate: 2026-11-02
 author: "Kevin Otieno"
+category: "Omnichannel Growth"
+coverImage: "/images/blog/virex-2-launch.webp"
+image: "/images/blog/virex-2-launch.webp"
 tags: ["WhatsApp Cloud", "Omnichannel", "Customer Support", "SMEs"]
 draft: false
 ---

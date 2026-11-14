@@ -2,6 +2,7 @@ import { defineConfig } from 'astro/config';
 import mdx from '@astrojs/mdx';
 import sitemap from '@astrojs/sitemap';
 import icon from 'astro-icon';
+import react from '@astrojs/react';
 import tailwindcss from '@tailwindcss/vite';
 import { siteConfig } from './src/config';
 
@@ -29,12 +30,18 @@ function envCheckIntegration() {
 export default defineConfig({
   site: siteUrl,
   integrations: [
+    react(),
     mdx(),
     icon(),
     envCheckIntegration(),
     sitemap({
       filter: (page) => {
         const { features } = siteConfig;
+
+        // Strictly exclude internal administration, error, and preview routes
+        if (page.includes('/dashboard')) return false;
+        if (page.includes('/403') || page.includes('/404') || page.includes('/500')) return false;
+        if (page.includes('/api/')) return false;
 
         // Filter out pages based on feature flags
         if (!features.blog && page.includes('/blog')) return false;

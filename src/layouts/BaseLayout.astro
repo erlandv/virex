@@ -12,6 +12,9 @@ interface Props {
   modifiedDate?: Date;
   author?: string;
   tags?: string[];
+  canonicalUrl?: string;
+  noindex?: boolean;
+  robots?: string;
 }
 
 const {
@@ -23,11 +26,14 @@ const {
   modifiedDate,
   author,
   tags,
+  canonicalUrl,
+  noindex,
+  robots,
 } = Astro.props;
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="en-KE">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -41,6 +47,9 @@ const {
       modifiedDate={modifiedDate}
       author={author}
       tags={tags}
+      canonicalUrl={canonicalUrl}
+      noindex={noindex}
+      robots={robots}
     />
     <!-- Theme and announcement initialization - runs before page render to prevent flash -->
     <script is:inline>

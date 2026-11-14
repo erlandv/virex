@@ -1,112 +1,327 @@
 ---
 /**
  * MarkChat Kenya — About Us
+ *
+ * "Empowering African Commerce Through Instant Conversational Sales"
+ * Built with a modern, data-driven pseudo-CMS architecture and Framer Motion micro-interactions.
  */
 import MarketingLayout from '@/layouts/MarketingLayout.astro';
-import PageHeader from '@sections/content/PageHeader.astro';
-import StatsSection from '@sections/social-proof/StatsSection.astro';
-import ValuesSection from '@sections/team/ValuesSection.astro';
-import TeamSection from '@sections/team/TeamSection.astro';
+import { Icon } from 'astro-icon/components';
+import AboutMetricsBento, { type MetricItem } from '@sections/about/AboutMetricsBento.tsx';
+import AboutTeamGrid, { type TeamMemberItem } from '@sections/about/AboutTeamGrid.tsx';
 import CTA from '@sections/marketing/CTA.astro';
 import { siteConfig } from '@/config';
 
-const team = [
+// ============================================================================
+// 1. DATA-DRIVEN PSEUDO-CMS COLLECTIONS
+// ============================================================================
+
+/**
+ * High-Impact Operational Metrics (Bento Box Grid)
+ */
+const metrics: MetricItem[] = [
   {
-    name: 'Kevin Otieno',
-    role: 'CEO & Co-founder',
-    bio: 'Former fintech infrastructure engineer in Nairobi. Kevin founded MarkChat to solve the epidemic of fake M-Pesa screenshot fraud in chat commerce.',
-    avatar: '/images/team/kevin-otieno.webp',
+    id: 'channels',
+    value: '6 Channels',
+    label: 'Unified Omnichannel Inbox',
+    description:
+      'WhatsApp Business Cloud, Africa’s Talking Bulk SMS, Instagram DMs, Messenger, Shopify, and Live Chat in one dashboard.',
+    tag: 'Full Coverage',
+    accent: 'blue',
   },
   {
-    name: 'Faith Mwangi',
-    role: 'CTO & Co-founder',
-    bio: 'Pioneered high-throughput webhook pipelines for Safaricom Daraja and Meta Cloud API across East Africa.',
-    avatar: '/images/team/faith-mwangi.webp',
+    id: 'daraja',
+    value: 'Direct C2B',
+    label: 'Instant Daraja Verification',
+    description:
+      'Cryptographic Safaricom Daraja C2B webhooks validate every TransID server-side, permanently ending fake SMS screenshot fraud.',
+    tag: 'Fraud Defense',
+    accent: 'emerald',
   },
   {
-    name: 'Brian Kiprop',
-    role: 'Head of Telecommunications',
-    bio: 'Telecommunications routing specialist with 8+ years optimizing Africa’s Talking and local carrier SMS delivery.',
-    avatar: '/images/team/brian-kiprop.webp',
+    id: 'byoc',
+    value: 'BYOC Gateway',
+    label: 'Africa’s Talking Telco Routes',
+    description:
+      'Connect your own approved Alphanumeric Sender ID and direct carrier rates for high-deliverability promotional and transactional messaging.',
+    tag: 'Carrier Freedom',
+    accent: 'amber',
   },
   {
-    name: 'Amina Hassan',
-    role: 'Head of AI & NLP',
-    bio: 'Natural language processing researcher leading the development of Markcopilot’s Swahili, Sheng, and English retail models.',
-    avatar: '/images/team/amina-hassan.webp',
+    id: 'speed',
+    value: '< 10s',
+    label: 'Direct /stk Prompt Settlement',
+    description:
+      'Trigger instant Safaricom SIM Toolkit PIN prompts in customer chat threads, eliminating manual account typing errors.',
+    tag: 'Velocity',
+    accent: 'purple',
   },
 ];
 
-const values = [
+/**
+ * Core Engineering & Product Principles
+ */
+const corePrinciples = [
   {
+    id: 'kenya-first',
     title: 'Built for Kenya First',
     description:
-      'We design exclusively for local commerce reality: Safaricom Paybill, Buy Goods Tills, Pochi la Biashara, and WhatsApp-driven sales.',
+      'We design exclusively for local commerce reality: Safaricom Paybill, Buy Goods Tills, Pochi la Biashara, and WhatsApp-driven sales across Nairobi, Mombasa, and regional retail hubs.',
+    icon: 'lucide:map-pin',
+    badge: 'Local Context',
   },
   {
+    id: 'zero-fraud',
     title: 'Zero Payment Fraud',
     description:
-      'We protect hardworking merchants from counterfeit M-Pesa SMS screenshots by cryptographically validating every TransID server-side.',
+      'We protect hardworking merchants from counterfeit M-Pesa SMS screenshots by cryptographically validating every TransID server-side before goods are packaged or dispatched.',
+    icon: 'lucide:shield-check',
+    badge: 'Fraud Shield',
   },
   {
+    id: 'conversational-speed',
     title: 'Conversational Speed',
     description:
-      'Every second a customer waits for a Till number is an abandoned sale. We prompt instant STK PIN popups in under 10 seconds.',
+      'Every second a customer waits for an account number is an abandoned sale. We prompt instant STK PIN popups in under 10 seconds to close sales while buyer intent is highest.',
+    icon: 'lucide:zap',
+    badge: 'Checkout Velocity',
   },
   {
+    id: 'radical-simplicity',
     title: 'Radical Simplicity',
     description:
-      'No complex enterprise installations. Onboard your sales team, connect your WhatsApp number, and start selling today.',
+      'No complex enterprise installations. Onboard your sales team in 5 minutes, connect your WhatsApp number, and start selling today with collaborative collision detection.',
+    icon: 'lucide:sparkles',
+    badge: 'Zero Friction',
   },
 ];
 
-const stats = [
-  { value: '6 Channels', label: 'Unified in One Inbox' },
-  { value: 'Direct C2B', label: 'Safaricom Webhook Sync' },
-  { value: 'BYOC', label: 'Africa’s Talking Support' },
-  { value: '< 10s', label: 'Direct /stk Prompt Delivery' },
+/**
+ * Team Members Collection (With Clean Avatar Placeholders)
+ */
+const teamMembers: TeamMemberItem[] = [
+  {
+    id: 'kevin-otieno',
+    name: 'Kevin Otieno',
+    role: 'CEO & Co-founder',
+    location: 'Nairobi, Kenya',
+    initials: 'KO',
+    gradient: 'from-blue-600 via-indigo-600 to-blue-800',
+    bio: 'Former fintech infrastructure engineer in Nairobi. Kevin founded MarkChat to solve the epidemic of fake M-Pesa screenshot fraud in chat commerce.',
+    expertise: ['Fintech Architecture', 'Daraja C2B', 'Commerce Strategy'],
+  },
+  {
+    id: 'faith-mwangi',
+    name: 'Faith Mwangi',
+    role: 'CTO & Co-founder',
+    location: 'Nairobi, Kenya',
+    initials: 'FM',
+    gradient: 'from-emerald-600 via-teal-600 to-emerald-800',
+    bio: 'Pioneered high-throughput webhook pipelines for Safaricom Daraja and Meta Cloud API across East Africa, handling millions of transactional events.',
+    expertise: ['Distributed Systems', 'Cloud API', 'Telco Webhooks'],
+  },
+  {
+    id: 'brian-kiprop',
+    name: 'Brian Kiprop',
+    role: 'Head of Telecommunications',
+    location: 'Nairobi, Kenya',
+    initials: 'BK',
+    gradient: 'from-amber-500 via-orange-600 to-amber-700',
+    bio: 'Telecommunications routing specialist with 8+ years optimizing Africa’s Talking and local carrier SMS delivery across East African mobile networks.',
+    expertise: ['Bulk SMS Routing', 'Carrier Handshakes', 'Alphanumeric IDs'],
+  },
+  {
+    id: 'amina-hassan',
+    name: 'Amina Hassan',
+    role: 'Head of AI & NLP',
+    location: 'Nairobi, Kenya',
+    initials: 'AH',
+    gradient: 'from-pink-600 via-rose-600 to-purple-800',
+    bio: 'Natural language processing researcher leading the development of Markcopilot’s Swahili, Sheng, and English retail conversational models.',
+    expertise: ['Sheng NLP', 'Swahili Embeddings', 'Autonomous Agents'],
+  },
 ];
 
 const APP_URL = import.meta.env.PUBLIC_APP_URL || 'http://localhost:3000';
 ---
 
 <MarketingLayout
-  title={`About Us - ${siteConfig.name}`}
+  title={`About Us — ${siteConfig.name}`}
   description="Learn about MarkChat Kenya: our Nairobi engineering team, mission to stop fake M-Pesa screenshots, and omnichannel commerce platform."
 >
-  <PageHeader
-    title="Empowering African Commerce Through Instant Conversational Sales"
-    align="left"
-    maxWidth="lg"
+  <!-- ===================================================================== -->
+  <!-- 1. HERO SECTION (VISION & MISSION)                                    -->
+  <!-- ===================================================================== -->
+  <section
+    class="relative pt-24 pb-20 sm:pt-32 sm:pb-28 overflow-hidden bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-blue-50/50 via-white to-white dark:from-slate-900 dark:to-[#0B1120] border-b border-slate-200 dark:border-slate-800/80 transition-colors duration-200"
   >
-    <p class="mt-6 text-lg text-text-muted leading-relaxed">
-      MarkChat was born in Westlands, Nairobi, out of a simple observation: Kenyan merchants were
-      closing over 70% of their sales on WhatsApp, Instagram, and SMS, but payment collection
-      remained manual, error-prone, and vulnerable to counterfeit M-Pesa confirmation screenshots.
-    </p>
-    <p class="mt-4 text-lg text-text-muted leading-relaxed">
-      We united official Meta WhatsApp Cloud API, Africa’s Talking Bulk SMS, and Safaricom Daraja
-      STK push into one seamless platform. Today, thousands of retail stores, pharmacies, salons,
-      and logistics businesses use MarkChat to turn conversations into confirmed mobile money
-      revenue.
-    </p>
-  </PageHeader>
+    {/* Ambient Glow Orbs */}
+    <div
+      class="pointer-events-none absolute -top-40 left-1/2 -translate-x-1/2 w-[900px] h-[450px] bg-gradient-to-b from-blue-600/10 via-primary/5 to-transparent dark:from-blue-600/15 dark:via-primary/10 dark:to-transparent rounded-full blur-3xl"
+      aria-hidden="true"
+    >
+    </div>
 
-  <StatsSection stats={stats} background="muted" />
+    <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center max-w-4xl mx-auto">
+        <!-- Story Badge -->
+        <div
+          class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800/80 mb-6 shadow-xs"
+        >
+          <span class="relative flex h-2 w-2">
+            <span
+              class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"
+            ></span>
+            <span class="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
+          </span>
+          <span>Nairobi Roots • African Scale</span>
+        </div>
 
-  <ValuesSection title="Our Core Principles" items={values} variant="card" background="default" />
+        <!-- H1 Headline -->
+        <h1
+          class="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-slate-900 dark:text-white leading-[1.12]"
+        >
+          Empowering African Commerce Through Instant Conversational Sales
+        </h1>
 
-  <TeamSection
-    title="The Nairobi Team Behind MarkChat"
-    subtitle="Engineers, fintech operators, and telecommunications specialists dedicated to African merchant success."
-    members={team}
-    columns={4}
-    background="muted"
-  />
+        <!-- Reading-Constrained Narrative Paragraphs (max-w-3xl) -->
+        <div class="mt-8 max-w-3xl mx-auto space-y-4 text-left sm:text-center">
+          <p class="text-lg sm:text-xl text-slate-600 dark:text-slate-300 leading-relaxed">
+            MarkChat was born in Westlands, Nairobi, out of a simple observation: Kenyan merchants
+            were closing over 70% of their sales on WhatsApp, Instagram, and SMS, but payment
+            collection remained manual, error-prone, and vulnerable to counterfeit M-Pesa
+            confirmation screenshots.
+          </p>
+          <p class="text-base sm:text-lg text-slate-500 dark:text-slate-400 leading-relaxed">
+            We united official Meta WhatsApp Cloud API, Africa’s Talking Bulk SMS, and Safaricom
+            Daraja STK push into one seamless platform. Today, thousands of retail stores,
+            pharmacies, salons, and logistics businesses use MarkChat to turn everyday chats into
+            confirmed, reconciled mobile money revenue.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
 
+  <!-- ===================================================================== -->
+  <!-- 2. WHY US / WHY KENYA — BENTO BOX METRICS ROW                         -->
+  <!-- ===================================================================== -->
+  <section
+    class="py-20 sm:py-24 bg-white dark:bg-[#0B1120] border-b border-slate-200 dark:border-slate-800/80 relative overflow-hidden"
+  >
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <div class="max-w-3xl mx-auto text-center mb-16">
+        <div
+          class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-primary/10 text-primary border border-primary/20 mb-4"
+        >
+          <Icon name="lucide:bar-chart-3" class="w-3.5 h-3.5" />
+          <span>Proven Architecture</span>
+        </div>
+        <h2
+          class="text-3xl sm:text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white"
+        >
+          Engineered Around Kenyan Commerce Realities
+        </h2>
+        <p class="mt-4 text-base sm:text-lg text-slate-600 dark:text-slate-400">
+          We built the infrastructure local businesses need to scale without friction, fraud, or
+          carrier lock-in.
+        </p>
+      </div>
+
+      <!-- Bento Grid (Framer Motion Hydrated) -->
+      <AboutMetricsBento metrics={metrics} client:visible />
+    </div>
+  </section>
+
+  <!-- ===================================================================== -->
+  <!-- 3. CORE PRINCIPLES GRID                                               -->
+  <!-- ===================================================================== -->
+  <section
+    class="py-20 sm:py-28 bg-slate-50/70 dark:bg-slate-900/40 border-b border-slate-200 dark:border-slate-800/80 relative overflow-hidden"
+  >
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <div class="max-w-3xl mx-auto text-center mb-16">
+        <div
+          class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800/80 mb-4"
+        >
+          <Icon name="lucide:compass" class="w-3.5 h-3.5" />
+          <span>Guiding Philosophy</span>
+        </div>
+        <h2
+          class="text-3xl sm:text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white"
+        >
+          Our Core Principles
+        </h2>
+        <p class="mt-4 text-base sm:text-lg text-slate-600 dark:text-slate-400">
+          The non-negotiable engineering standards that govern every feature we deploy.
+        </p>
+      </div>
+
+      {/* 4-Column Modernized Principles Grid with Top Border Highlight */}
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {
+          corePrinciples.map((principle) => (
+            <div class="bg-white dark:bg-slate-900/70 border border-slate-200 dark:border-slate-800 rounded-2xl p-7 sm:p-8 shadow-xs hover:shadow-lg dark:hover:shadow-black/50 transition-all duration-300 border-t-4 border-t-blue-600 flex flex-col justify-between group">
+              <div>
+                <div class="w-12 h-12 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800/80 flex items-center justify-center mb-6 group-hover:scale-105 transition-transform duration-200 shadow-2xs">
+                  <Icon name={principle.icon} class="w-6 h-6" />
+                </div>
+                <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-2 leading-snug">
+                  {principle.title}
+                </h3>
+                <p class="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+                  {principle.description}
+                </p>
+              </div>
+
+              <div class="mt-6 pt-4 border-t border-slate-100 dark:border-slate-800/80">
+                <span class="inline-block px-2.5 py-1 rounded-full text-[11px] font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200/80 dark:border-slate-700/80">
+                  {principle.badge}
+                </span>
+              </div>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================================================================== -->
+  <!-- 4. THE TEAM SECTION (FIXED, CLEAN CSS GRID & SLEEK PLACEHOLDERS)       -->
+  <!-- ===================================================================== -->
+  <section
+    class="py-20 sm:py-28 bg-white dark:bg-[#0B1120] border-b border-slate-200 dark:border-slate-800/80 relative overflow-hidden"
+  >
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <div class="max-w-3xl mx-auto text-center mb-16">
+        <div
+          class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-primary/10 text-primary border border-primary/20 mb-4"
+        >
+          <Icon name="lucide:users" class="w-3.5 h-3.5" />
+          <span>Leadership & Engineering</span>
+        </div>
+        <h2
+          class="text-3xl sm:text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white"
+        >
+          The Nairobi Team Behind MarkChat
+        </h2>
+        <p class="mt-4 text-base sm:text-lg text-slate-600 dark:text-slate-400">
+          Engineers, fintech operators, and telecommunications specialists dedicated to African
+          merchant success.
+        </p>
+      </div>
+
+      <!-- Clean 4-Column Responsive Grid (Framer Motion Hydrated) -->
+      <AboutTeamGrid members={teamMembers} client:visible />
+    </div>
+  </section>
+
+  <!-- ===================================================================== -->
+  <!-- 5. CALL TO ACTION SECTION                                            -->
+  <!-- ===================================================================== -->
   <CTA
     title="Ready to accelerate your conversational sales?"
-    description="Sign up in 30 seconds. 50 free Bulk SMS credits included on all accounts."
+    description="Sign up in 30 seconds. 50 free Bulk SMS credits included on all accounts. No credit card or developer setup required."
     action={{ label: 'Get Started Free', href: `${APP_URL}/app/auth/signup` }}
     secondaryAction={{ label: 'Explore Open Careers', href: '/careers' }}
     background="default"

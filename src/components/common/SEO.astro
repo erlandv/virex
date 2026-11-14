@@ -1,37 +1,15 @@
 ---
 /**
- * SEO - Comprehensive meta tags and structured data for search engines
+ * SEO - Production Technical Meta Tags, Open Graph, Twitter & Schema.org JSON-LD
  *
- * @description
- * Handles all SEO-related meta tags including Open Graph, Twitter Cards,
- * and JSON-LD structured data. Automatically generates canonical URLs,
- * breadcrumbs, and organization schema from site config.
- *
- * @example
- * ```astro
- * <SEO
- *   title="Features"
- *   description="Explore all the powerful features of our platform."
- * />
- * ```
- *
- * @example Blog article with full metadata
- * ```astro
- * <SEO
- *   title={post.title}
- *   description={post.excerpt}
- *   image={post.coverImage}
- *   type="article"
- *   publishedDate={post.publishedAt}
- *   author={post.author}
- *   tags={post.tags}
- * />
- * ```
+ * Implements strict canonical URL resolution, smart brand title deduplication,
+ * customizable indexing directives (index/noindex), and valid Schema.org
+ * WebSite, Organization, SoftwareApplication, Article, and BreadcrumbList schemas.
  */
 import { siteConfig } from '@/config';
 
 interface Props {
-  /** Page title (will be appended with site name) */
+  /** Page title (deduplicated automatically against siteConfig.name) */
   title: string;
   /** Page description for meta tags */
   description: string;
@@ -47,6 +25,12 @@ interface Props {
   author?: string;
   /** Article tags/keywords */
   tags?: string[];
+  /** Optional explicit canonical URL override */
+  canonicalUrl?: string;
+  /** Mark page as noindex, nofollow (e.g. for admin, preview, error pages) */
+  noindex?: boolean;
+  /** Custom robots directive override */
+  robots?: string;
 }
 
 const {
@@ -58,12 +42,24 @@ const {
   modifiedDate,
   author,
   tags = [],
+  canonicalUrl,
+  noindex = false,
+  robots,
 } = Astro.props;
 
-const canonicalURL = new URL(Astro.url.pathname, siteConfig.url);
-const fullTitle = `${title} | ${siteConfig.name}`;
+// Smart title formatting: prevent duplicate brand suffix (e.g., "Privacy Policy - MarkChat | MarkChat")
+const fullTitle = title.includes(siteConfig.name) ? title : `${title} | ${siteConfig.name}`;
+
+// Canonical URL resolution (exclude query strings & hashes)
+const canonicalHref = canonicalUrl || new URL(Astro.url.pathname, siteConfig.url).href;
+
 const imageUrl = image || siteConfig.ogImage;
 const ogImage = imageUrl ? new URL(imageUrl, siteConfig.url).href : undefined;
+
+// Robots directive
+const robotsContent = noindex
+  ? 'noindex, nofollow'
+  : robots || 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1';
 
 // JSON-LD Structured Data
 const websiteSchema = {
@@ -72,11 +68,7 @@ const websiteSchema = {
   name: siteConfig.name,
   description: siteConfig.description,
   url: siteConfig.url,
-  potentialAction: {
-    '@type': 'SearchAction',
-    target: `${siteConfig.url}/search?q={search_term_string}`,
-    'query-input': 'required name=search_term_string',
-  },
+  inLanguage: 'en-KE',
 };
 
 const organizationSchema = {
@@ -85,9 +77,44 @@ const organizationSchema = {
   name: siteConfig.name,
   url: siteConfig.url,
   logo: new URL(siteConfig.logo, siteConfig.url).href,
+  description: siteConfig.description,
+  contactPoint: [
+    {
+      '@type': 'ContactPoint',
+      telephone: '+254700000000',
+      contactType: 'customer support',
+      areaServed: 'KE',
+      availableLanguage: ['en', 'sw'],
+      email: siteConfig.contact.email,
+    },
+    {
+      '@type': 'ContactPoint',
+      contactType: 'sales',
+      areaServed: 'KE',
+      availableLanguage: ['en', 'sw'],
+      email: siteConfig.contact.salesEmail || siteConfig.contact.email,
+    },
+  ],
   sameAs: [siteConfig.social.twitter, siteConfig.social.github, siteConfig.social.discord].filter(
     Boolean
   ),
+};
+
+const softwareApplicationSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  name: siteConfig.name,
+  applicationCategory: 'BusinessApplication',
+  operatingSystem: 'Cloud, Web, Android',
+  description: siteConfig.description,
+  url: siteConfig.url,
+  softwareVersion: '1.4.1',
+  offers: {
+    '@type': 'AggregateOffer',
+    priceCurrency: 'KES',
+    lowPrice: '0',
+    offerCount: '3',
+  },
 };
 
 const articleSchema =
@@ -114,7 +141,7 @@ const articleSchema =
         },
         mainEntityOfPage: {
           '@type': 'WebPage',
-          '@id': canonicalURL.href,
+          '@id': canonicalHref,
         },
         keywords: tags.join(', '),
       }
@@ -135,8 +162,8 @@ const breadcrumbSchema = {
           {
             '@type': 'ListItem',
             position: 2,
-            name: title,
-            item: canonicalURL.href,
+            name: title.replace(` | ${siteConfig.name}`, '').replace(` - ${siteConfig.name}`, ''),
+            item: canonicalHref,
           },
         ]
       : []),
@@ -149,17 +176,19 @@ const breadcrumbSchema = {
 <meta name="title" content={fullTitle} />
 <meta name="description" content={description} />
 <meta name="author" content={siteConfig.author} />
+<meta name="robots" content={robotsContent} />
 {tags.length > 0 && <meta name="keywords" content={tags.join(', ')} />}
 
 <!-- Canonical URL -->
-<link rel="canonical" href={canonicalURL} />
+<link rel="canonical" href={canonicalHref} />
 
 <!-- Open Graph / Facebook -->
 <meta property="og:type" content={type} />
-<meta property="og:url" content={canonicalURL} />
+<meta property="og:url" content={canonicalHref} />
 <meta property="og:title" content={fullTitle} />
 <meta property="og:description" content={description} />
 <meta property="og:site_name" content={siteConfig.name} />
+<meta property="og:locale" content="en_KE" />
 {ogImage && <meta property="og:image" content={ogImage} />}
 {
   type === 'article' && publishedDate && (
@@ -170,7 +199,7 @@ const breadcrumbSchema = {
 
 <!-- Twitter -->
 <meta property="twitter:card" content={ogImage ? 'summary_large_image' : 'summary'} />
-<meta property="twitter:url" content={canonicalURL} />
+<meta property="twitter:url" content={canonicalHref} />
 <meta property="twitter:title" content={fullTitle} />
 <meta property="twitter:description" content={description} />
 {ogImage && <meta property="twitter:image" content={ogImage} />}
@@ -178,6 +207,7 @@ const breadcrumbSchema = {
 <!-- JSON-LD Structured Data -->
 <script is:inline type="application/ld+json" set:html={JSON.stringify(websiteSchema)} />
 <script is:inline type="application/ld+json" set:html={JSON.stringify(organizationSchema)} />
+<script is:inline type="application/ld+json" set:html={JSON.stringify(softwareApplicationSchema)} />
 <script is:inline type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} />
 {
   articleSchema && (

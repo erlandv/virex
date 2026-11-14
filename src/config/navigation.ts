@@ -53,6 +53,10 @@ export const navigation: Navigation = {
     legal: [
       { label: 'Privacy Policy', href: '/privacy' },
       { label: 'Terms of Service', href: '/terms' },
+      { label: 'Cookie Policy', href: '/cookies' },
+      { label: 'Acceptable Use', href: '/acceptable-use' },
+      { label: 'DPA', href: '/dpa' },
+      { label: 'Security Policy', href: '/security-policy' },
     ],
   },
 };

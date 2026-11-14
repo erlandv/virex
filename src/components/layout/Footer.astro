@@ -206,8 +206,8 @@ const legalLinks = filterByFeature(footer.legal);
           &copy; {currentYear}
           {siteConfig.name}. All rights reserved.
         </p>
-        <!-- Legal Links -->
-        <div class="flex items-center gap-6">
+        <!-- Legal Links & Cookie Preference Trigger -->
+        <div class="flex flex-wrap items-center gap-4 sm:gap-6 justify-center md:justify-end">
           {
             legalLinks.map((link) => (
               <a href={link.href} class="text-sm text-text-muted hover:text-text transition-colors">
@@ -215,6 +215,15 @@ const legalLinks = filterByFeature(footer.legal);
               </a>
             ))
           }
+          <button
+            type="button"
+            id="footer-cookie-settings-btn"
+            class="text-sm text-text-muted hover:text-text transition-colors cursor-pointer inline-flex items-center gap-1.5 underline decoration-dotted underline-offset-4"
+            onclick="window.dispatchEvent(new CustomEvent('markchat:open-cookie-settings'))"
+          >
+            <Icon name="lucide:cookie" class="w-4 h-4" />
+            Cookie Settings
+          </button>
         </div>
       </div>
     </div>

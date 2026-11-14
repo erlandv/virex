@@ -130,6 +130,14 @@ export interface LeadPayload {
   message?: string;
 }
 
+import {
+  DEFAULT_LEGAL_POLICIES,
+  type LegalPolicy,
+  type LegalPolicyAuditItem,
+} from '@/data/legal-policies';
+
+export type { LegalPolicy, LegalPolicyAuditItem };
+
 export interface LeadItem extends LeadPayload {
   id: string;
   createdAt: string;
@@ -1114,6 +1122,7 @@ const STORAGE_KEYS = {
   faqs: 'markchat_cms_faqs',
   leads: 'markchat_cms_leads',
   integrations: 'markchat_cms_integrations',
+  legal: 'markchat_cms_legal',
 };
 
 function getLocalItem<T>(key: string, defaultValue: T): T {
@@ -1416,6 +1425,62 @@ export async function submitLead(
   return { success: true, id: newLead.id, message: 'Thank you! We have received your request.' };
 }
 
+/**
+ * Fetch all published legal policies
+ */
+export async function fetchLegalPolicies(
+  status: CmsLifecycleStatus = 'published'
+): Promise<LegalPolicy[]> {
+  try {
+    const res = await apiFetch(`${BRIDGE_API_URL}/api/public/legal`, {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' },
+    });
+    if (res.ok) {
+      const items: LegalPolicy[] = await res.json();
+      if (Array.isArray(items) && items.length > 0) {
+        return items.filter((item) => (status ? item.status === status : true));
+      }
+    }
+  } catch {
+    // Fallback
+  }
+  const allPolicies = getLocalItem<LegalPolicy[]>(STORAGE_KEYS.legal, DEFAULT_LEGAL_POLICIES);
+  return allPolicies.filter((item) => (status ? item.status === status : true));
+}
+
+/**
+ * Fetch single legal policy by slug
+ */
+export async function fetchLegalPolicyBySlug(slug: string): Promise<LegalPolicy | null> {
+  try {
+    const res = await apiFetch(`${BRIDGE_API_URL}/api/public/legal/${encodeURIComponent(slug)}`, {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' },
+    });
+    if (res.ok) {
+      const item: LegalPolicy = await res.json();
+      if (item) return item;
+    }
+  } catch {
+    // Fallback
+  }
+  const allPolicies = getLocalItem<LegalPolicy[]>(STORAGE_KEYS.legal, DEFAULT_LEGAL_POLICIES);
+  // Match by slug or common alias (e.g., 'privacy' -> 'privacy-policy')
+  return (
+    allPolicies.find(
+      (p) =>
+        p.slug === slug ||
+        (slug === 'privacy' && p.slug === 'privacy-policy') ||
+        (slug === 'terms' && p.slug === 'terms-of-service') ||
+        (slug === 'cookies' && p.slug === 'cookie-policy') ||
+        (slug === 'acceptable-use' && p.slug === 'acceptable-use-policy') ||
+        (slug === 'dpa' && p.slug === 'data-processing-agreement') ||
+        (slug === 'security' && p.slug === 'security-data-protection')
+    ) || null
+  );
+}
+
 // ---------------------------------------------------------------------------
 // Single-Admin CMS Mutation & Query Functions (With Offline / Local Fallback)
 // ---------------------------------------------------------------------------
@@ -1439,8 +1504,9 @@ export async function adminFetchAllCmsData() {
     STORAGE_KEYS.integrations,
     DEFAULT_INTEGRATIONS
   );
+  const legal = getLocalItem<LegalPolicy[]>(STORAGE_KEYS.legal, DEFAULT_LEGAL_POLICIES);
 
-  return { pricing, blogs, careers, faqs, leads, applications, integrations };
+  return { pricing, blogs, careers, faqs, leads, applications, integrations, legal };
 }
 
 /**
@@ -1758,10 +1824,150 @@ export async function upsertIntegration(
 }
 
 /**
+ * Upsert Legal Policy (Add or Edit)
+ */
+export async function upsertLegalPolicy(
+  policy: Partial<LegalPolicy> & {
+    title: string;
+    slug: string;
+    content: string;
+  }
+): Promise<LegalPolicy> {
+  const policies = getLocalItem<LegalPolicy[]>(STORAGE_KEYS.legal, DEFAULT_LEGAL_POLICIES);
+  let saved: LegalPolicy;
+
+  const now = new Date().toISOString();
+  const cleanSlug = policy.slug
+    .toLowerCase()
+    .replace(/[^a-z0-9-]+/g, '-')
+    .replace(/(^-|-$)/g, '');
+
+  if (policy.id) {
+    const idx = policies.findIndex((p) => p.id === policy.id);
+    if (idx !== -1) {
+      const existing = policies[idx];
+      const auditTrail = existing.auditTrail || [];
+      auditTrail.unshift({
+        action: 'updated',
+        timestamp: now,
+        user: 'Admin User',
+        notes: `Policy revision to version ${policy.version || existing.version}`,
+      });
+
+      saved = {
+        ...existing,
+        ...policy,
+        slug: cleanSlug,
+        lastUpdated: now,
+        auditTrail,
+      } as LegalPolicy;
+      policies[idx] = saved;
+    } else {
+      saved = {
+        id: policy.id,
+        slug: cleanSlug,
+        title: policy.title,
+        description: policy.description || '',
+        category: policy.category || 'Compliance',
+        version: policy.version || '1.0',
+        status: policy.status || 'draft',
+        publishedDate: policy.publishedDate || now,
+        lastUpdated: now,
+        seoTitle: policy.seoTitle,
+        seoDescription: policy.seoDescription,
+        canonicalUrl: policy.canonicalUrl,
+        ogTitle: policy.ogTitle,
+        ogDescription: policy.ogDescription,
+        ogImage: policy.ogImage,
+        indexable: policy.indexable ?? true,
+        content: policy.content,
+        auditTrail: [
+          {
+            action: 'created',
+            timestamp: now,
+            user: 'Admin User',
+            notes: 'Initial policy document created',
+          },
+        ],
+      };
+      policies.push(saved);
+    }
+  } else {
+    saved = {
+      id: `legal-${Date.now()}`,
+      slug: cleanSlug,
+      title: policy.title,
+      description: policy.description || '',
+      category: policy.category || 'Compliance',
+      version: policy.version || '1.0',
+      status: policy.status || 'draft',
+      publishedDate: now,
+      lastUpdated: now,
+      seoTitle: policy.seoTitle,
+      seoDescription: policy.seoDescription,
+      canonicalUrl: policy.canonicalUrl,
+      ogTitle: policy.ogTitle,
+      ogDescription: policy.ogDescription,
+      ogImage: policy.ogImage,
+      indexable: policy.indexable ?? true,
+      content: policy.content,
+      auditTrail: [
+        {
+          action: 'created',
+          timestamp: now,
+          user: 'Admin User',
+          notes: 'Initial policy document created',
+        },
+      ],
+    };
+    policies.push(saved);
+  }
+
+  setLocalItem(STORAGE_KEYS.legal, policies);
+
+  try {
+    await apiFetch(`${BRIDGE_API_URL}/api/admin/cms/legal`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${getAdminToken()}`,
+      },
+      body: JSON.stringify(saved),
+    });
+  } catch {
+    // Offline local state persisted
+  }
+
+  return saved;
+}
+
+/**
+ * Delete legal policy by ID
+ */
+export async function deleteLegalPolicy(id: string): Promise<boolean> {
+  const policies = getLocalItem<LegalPolicy[]>(STORAGE_KEYS.legal, DEFAULT_LEGAL_POLICIES);
+  const filtered = policies.filter((p) => p.id !== id);
+  setLocalItem(STORAGE_KEYS.legal, filtered);
+
+  try {
+    await apiFetch(`${BRIDGE_API_URL}/api/admin/cms/legal/${encodeURIComponent(id)}`, {
+      method: 'DELETE',
+      headers: {
+        Authorization: `Bearer ${getAdminToken()}`,
+      },
+    });
+  } catch {
+    // Handled locally
+  }
+
+  return true;
+}
+
+/**
  * Update lifecycle status of any CMS item
  */
 export async function updateItemStatus(
-  collection: 'blogs' | 'careers' | 'faqs' | 'leads' | 'integrations',
+  collection: 'blogs' | 'careers' | 'faqs' | 'leads' | 'integrations' | 'legal',
   id: string,
   status: CmsLifecycleStatus | 'new' | 'contacted' | 'qualified' | 'closed'
 ): Promise<boolean> {
@@ -1803,6 +2009,13 @@ export async function updateItemStatus(
       item.status = status as CmsLifecycleStatus;
       setLocalItem(STORAGE_KEYS.integrations, list);
     }
+  } else if (collection === 'legal') {
+    const list = getLocalItem<LegalPolicy[]>(STORAGE_KEYS.legal, DEFAULT_LEGAL_POLICIES);
+    const item = list.find((i) => i.id === id);
+    if (item) {
+      item.status = status as CmsLifecycleStatus;
+      setLocalItem(STORAGE_KEYS.legal, list);
+    }
   }
 
   try {
@@ -1825,7 +2038,7 @@ export async function updateItemStatus(
  * Delete any CMS item by ID
  */
 export async function deleteCmsItem(
-  collection: 'blogs' | 'careers' | 'faqs' | 'leads' | 'integrations',
+  collection: 'blogs' | 'careers' | 'faqs' | 'leads' | 'integrations' | 'legal',
   id: string
 ): Promise<boolean> {
   if (collection === 'blogs') {
@@ -1851,6 +2064,10 @@ export async function deleteCmsItem(
     );
     const filtered = list.filter((i) => i.id !== id);
     setLocalItem(STORAGE_KEYS.integrations, filtered);
+  } else if (collection === 'legal') {
+    const list = getLocalItem<LegalPolicy[]>(STORAGE_KEYS.legal, DEFAULT_LEGAL_POLICIES);
+    const filtered = list.filter((i) => i.id !== id);
+    setLocalItem(STORAGE_KEYS.legal, filtered);
   }
 
   try {

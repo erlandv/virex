@@ -1,10 +1,15 @@
 ---
 title: "How Kenyan Retailers Stop Fake M-Pesa SMS Screenshots with In-Chat STK Checkout"
 description: "Learn how automated Safaricom Daraja C2B receipting and in-chat /stk triggers eliminate counterfeit M-Pesa screenshots forever."
+excerpt: "Learn how automated Safaricom Daraja C2B receipting and in-chat /stk triggers eliminate counterfeit M-Pesa screenshots forever."
 publishedDate: 2026-10-15
 author: "Kevin Otieno"
+category: "Fintech & Security"
+coverImage: "/images/blog/security-practices.webp"
+image: "/images/blog/security-practices.webp"
 tags: ["M-Pesa", "Fraud Prevention", "Daraja API", "Retail"]
 draft: false
+featured: true
 ---
 
 Fake M-Pesa SMS confirmation messages cost Kenyan retailers and Instagram merchants millions of shillings each year. Fraudsters use SMS spoofing apps to generate realistic confirmation messages that look identical to Safaricom notifications, tricking busy shop assistants into dispatching goods before payment hits the Till.

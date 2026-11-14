@@ -61,6 +61,11 @@ export const dashboardNavigation: DashboardNavSection[] = [
         href: '/dashboard/leads',
         icon: 'inbox',
       },
+      {
+        label: 'Legal & Policies',
+        href: '/dashboard/legal',
+        icon: 'scale',
+      },
     ],
   },
 ];

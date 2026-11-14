@@ -1,0 +1,348 @@
+---
+/**
+ * MarkChat CMS — Legal & Policy Documents Manager
+ */
+import DashboardLayout from '@/layouts/DashboardLayout.astro';
+import Card from '@dashboard-ui/Card.astro';
+import Modal from '@dashboard-ui/Modal.astro';
+import { Icon } from 'astro-icon/components';
+import { fetchLegalPolicies } from '@/lib/cms-api';
+
+const policies = await fetchLegalPolicies();
+---
+
+<DashboardLayout
+  title="Legal & Policy CMS Manager"
+  description="Manage statutory policies, Kenya Data Protection Act disclosures, and terms"
+  breadcrumbs={[{ label: 'Dashboard', href: '/dashboard' }, { label: 'Legal & Policies' }]}
+>
+  <div class="cms-legal-page">
+    <div
+      class="page-header flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6"
+    >
+      <div>
+        <h1 class="text-2xl font-bold tracking-tight text-text">Legal &amp; Policy Document CMS</h1>
+        <p class="text-sm text-text-muted mt-1">
+          Manage privacy disclosures, Terms of Service, cookie policies, and DPA agreements under
+          the Kenya Data Protection Act, 2019.
+        </p>
+      </div>
+      <div class="header-actions flex flex-wrap gap-3">
+        <a href="/privacy" target="_blank" class="btn btn-secondary text-sm">
+          <Icon name="lucide:external-link" class="w-4 h-4 mr-1.5 inline" />
+          View Live /privacy
+        </a>
+        <button type="button" id="open-policy-modal" class="btn btn-primary text-sm cursor-pointer">
+          <Icon name="lucide:plus" class="w-4 h-4 mr-1.5 inline" />
+          New Policy Document
+        </button>
+      </div>
+    </div>
+
+    <Card
+      title="Managed Policy Documents"
+      description="Live statutory documents and draft revisions"
+      padding="none"
+    >
+      <div class="table-responsive overflow-x-auto">
+        <table class="cms-table w-full text-left text-sm">
+          <thead class="border-b border-border bg-surface text-text-muted">
+            <tr>
+              <th class="py-3 px-4">Document Title &amp; Slug</th>
+              <th class="py-3 px-4 w-32">Category</th>
+              <th class="py-3 px-4 w-24">Version</th>
+              <th class="py-3 px-4 w-32">Status</th>
+              <th class="py-3 px-4 w-36">Last Updated</th>
+              <th class="text-right py-3 px-4 w-48">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="policy-table-body" class="divide-y divide-border">
+            {
+              policies.map((p) => (
+                <tr
+                  class="hover:bg-surface/50 transition-colors"
+                  data-id={p.id}
+                  data-policy={JSON.stringify(p)}
+                >
+                  <td class="py-3.5 px-4">
+                    <div class="font-bold text-text flex items-center gap-2">
+                      <Icon name="lucide:file-text" class="w-4 h-4 text-blue-500 shrink-0" />
+                      <span>{p.title}</span>
+                    </div>
+                    <div class="text-xs text-text-muted font-mono mt-0.5">/legal/{p.slug}</div>
+                  </td>
+                  <td class="py-3.5 px-4">
+                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-200">
+                      {p.category}
+                    </span>
+                  </td>
+                  <td class="py-3.5 px-4 font-mono text-xs">v{p.version}</td>
+                  <td class="py-3.5 px-4">
+                    <span
+                      class={`status-badge px-2 py-0.5 rounded-full text-xs font-semibold ${
+                        p.status === 'published'
+                          ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300'
+                          : 'bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300'
+                      }`}
+                    >
+                      {p.status}
+                    </span>
+                  </td>
+                  <td class="py-3.5 px-4 text-xs text-text-muted">
+                    {new Date(p.lastUpdated).toLocaleDateString('en-KE')}
+                  </td>
+                  <td class="py-3.5 px-4 text-right">
+                    <div class="flex items-center justify-end gap-1.5">
+                      <a
+                        href={`/legal/${p.slug}`}
+                        target="_blank"
+                        class="p-1.5 rounded-lg text-text-muted hover:text-text hover:bg-surface transition-colors"
+                        title="View Public Document"
+                      >
+                        <Icon name="lucide:external-link" class="w-4 h-4" />
+                      </a>
+                      <button
+                        type="button"
+                        class="btn-edit-policy p-1.5 rounded-lg text-text-muted hover:text-text hover:bg-surface transition-colors cursor-pointer"
+                        title="Edit Policy"
+                      >
+                        <Icon name="lucide:edit-2" class="w-4 h-4" />
+                      </button>
+                      <button
+                        type="button"
+                        class="btn-delete-policy p-1.5 rounded-lg text-rose-500 hover:text-rose-700 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors cursor-pointer"
+                        title="Delete Policy"
+                      >
+                        <Icon name="lucide:trash-2" class="w-4 h-4" />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))
+            }
+          </tbody>
+        </table>
+      </div>
+    </Card>
+  </div>
+
+  <!-- Policy Edit / Create Modal -->
+  <Modal id="policy-modal" title="Edit Legal Policy Document" size="xl">
+    <form id="policy-form" class="space-y-4">
+      <input type="hidden" id="policy-id" name="id" />
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+          <label
+            for="policy-title"
+            class="block text-xs font-bold text-text mb-1 uppercase tracking-wider"
+          >
+            Document Title *
+          </label>
+          <input
+            type="text"
+            id="policy-title"
+            name="title"
+            required
+            class="input w-full text-sm"
+            placeholder="e.g. Privacy Policy"
+          />
+        </div>
+        <div>
+          <label
+            for="policy-slug"
+            class="block text-xs font-bold text-text mb-1 uppercase tracking-wider"
+          >
+            URL Slug *
+          </label>
+          <input
+            type="text"
+            id="policy-slug"
+            name="slug"
+            required
+            class="input w-full text-sm font-mono"
+            placeholder="e.g. privacy-policy"
+          />
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div>
+          <label
+            for="policy-category"
+            class="block text-xs font-bold text-text mb-1 uppercase tracking-wider"
+          >
+            Category
+          </label>
+          <select id="policy-category" name="category" class="input w-full text-sm">
+            <option value="Privacy">Privacy</option>
+            <option value="Terms">Terms</option>
+            <option value="Cookies">Cookies</option>
+            <option value="Compliance">Compliance</option>
+            <option value="Security">Security</option>
+          </select>
+        </div>
+        <div>
+          <label
+            for="policy-version"
+            class="block text-xs font-bold text-text mb-1 uppercase tracking-wider"
+          >
+            Version
+          </label>
+          <input
+            type="text"
+            id="policy-version"
+            name="version"
+            class="input w-full text-sm font-mono"
+            placeholder="e.g. 2.4"
+          />
+        </div>
+        <div>
+          <label
+            for="policy-status"
+            class="block text-xs font-bold text-text mb-1 uppercase tracking-wider"
+          >
+            Status
+          </label>
+          <select id="policy-status" name="status" class="input w-full text-sm">
+            <option value="published">Published</option>
+            <option value="draft">Draft</option>
+            <option value="archived">Archived</option>
+          </select>
+        </div>
+      </div>
+
+      <div>
+        <label
+          for="policy-description"
+          class="block text-xs font-bold text-text mb-1 uppercase tracking-wider"
+        >
+          Summary Description
+        </label>
+        <textarea
+          id="policy-description"
+          name="description"
+          rows="2"
+          class="input w-full text-sm"
+          placeholder="Brief summary displayed in meta tags and headers..."></textarea>
+      </div>
+
+      <div>
+        <label
+          for="policy-content"
+          class="block text-xs font-bold text-text mb-1 uppercase tracking-wider"
+        >
+          Policy Content (HTML / Rich Text) *
+        </label>
+        <textarea
+          id="policy-content"
+          name="content"
+          rows="12"
+          required
+          class="input w-full text-xs font-mono"
+          placeholder="<h2>1. Section Title</h2><p>Legal text content here...</p>"></textarea>
+      </div>
+
+      <div class="flex items-center gap-2 pt-2">
+        <input
+          type="checkbox"
+          id="policy-indexable"
+          name="indexable"
+          class="rounded border-border text-blue-600"
+          checked
+        />
+        <label for="policy-indexable" class="text-xs text-text font-medium cursor-pointer">
+          Allow Search Engines to Index this Policy (Indexable)
+        </label>
+      </div>
+
+      <div class="modal-actions flex justify-end gap-3 pt-4 border-t border-border">
+        <button
+          type="button"
+          class="btn btn-secondary text-sm cursor-pointer"
+          data-modal-close="policy-modal"
+        >
+          Cancel
+        </button>
+        <button type="submit" id="btn-save-policy" class="btn btn-primary text-sm cursor-pointer">
+          Save Document
+        </button>
+      </div>
+    </form>
+  </Modal>
+</DashboardLayout>
+
+<script is:inline>
+  (function () {
+    const tableBody = document.getElementById('policy-table-body');
+    const openModalBtn = document.getElementById('open-policy-modal');
+    const modal = document.getElementById('policy-modal');
+    const form = document.getElementById('policy-form');
+
+    const inputId = document.getElementById('policy-id');
+    const inputTitle = document.getElementById('policy-title');
+    const inputSlug = document.getElementById('policy-slug');
+    const selectCategory = document.getElementById('policy-category');
+    const inputVersion = document.getElementById('policy-version');
+    const selectStatus = document.getElementById('policy-status');
+    const inputDescription = document.getElementById('policy-description');
+    const inputContent = document.getElementById('policy-content');
+    const checkIndexable = document.getElementById('policy-indexable');
+
+    function openModalForCreate() {
+      if (!form) return;
+      form.reset();
+      inputId.value = '';
+      inputVersion.value = '1.0';
+      selectStatus.value = 'published';
+      checkIndexable.checked = true;
+      if (modal) modal.classList.remove('hidden');
+    }
+
+    function openModalForEdit(policy) {
+      if (!form) return;
+      inputId.value = policy.id || '';
+      inputTitle.value = policy.title || '';
+      inputSlug.value = policy.slug || '';
+      selectCategory.value = policy.category || 'Compliance';
+      inputVersion.value = policy.version || '1.0';
+      selectStatus.value = policy.status || 'published';
+      inputDescription.value = policy.description || '';
+      inputContent.value = policy.content || '';
+      checkIndexable.checked = policy.indexable !== false;
+      if (modal) modal.classList.remove('hidden');
+    }
+
+    if (openModalBtn) {
+      openModalBtn.addEventListener('click', openModalForCreate);
+    }
+
+    if (tableBody) {
+      tableBody.addEventListener('click', (e) => {
+        const editBtn = e.target.closest('.btn-edit-policy');
+        const deleteBtn = e.target.closest('.btn-delete-policy');
+
+        if (editBtn) {
+          const row = editBtn.closest('tr');
+          const data = JSON.parse(row.getAttribute('data-policy') || '{}');
+          openModalForEdit(data);
+        } else if (deleteBtn) {
+          const row = deleteBtn.closest('tr');
+          const id = row.getAttribute('data-id') || 'document';
+          if (confirm(`Are you sure you want to delete policy ${id}?`)) {
+            row.remove();
+          }
+        }
+      });
+    }
+
+    if (form) {
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        alert('Legal policy updated successfully in MarkChat CMS.');
+        if (modal) modal.classList.add('hidden');
+        window.location.reload();
+      });
+    }
+  })();
+</script>

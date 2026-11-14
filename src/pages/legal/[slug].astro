@@ -1,0 +1,20 @@
+---
+import LegalPolicyReader from '@/components/legal/LegalPolicyReader.astro';
+import { fetchLegalPolicies, type LegalPolicy } from '@/lib/cms-api';
+
+export async function getStaticPaths() {
+  const policies = await fetchLegalPolicies('published');
+  return policies.map((policy) => ({
+    params: { slug: policy.slug },
+    props: { policy },
+  }));
+}
+
+interface Props {
+  policy: LegalPolicy;
+}
+
+const { policy } = Astro.props;
+---
+
+<LegalPolicyReader policy={policy} />

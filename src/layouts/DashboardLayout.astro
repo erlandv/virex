@@ -41,7 +41,7 @@ interface Props {
 const { title, description, breadcrumbs } = Astro.props;
 ---
 
-<BaseLayout title={title} description={description}>
+<BaseLayout title={title} description={description} noindex={true}>
   <DashboardShell breadcrumbs={breadcrumbs}>
     <slot />
   </DashboardShell>

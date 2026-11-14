@@ -1,8 +1,12 @@
 ---
 title: "High-ROI Bulk SMS Marketing in Kenya: Carrier Routing vs Bring Your Own Carrier (BYOC)"
 description: "How to maximize Kenyan SMS open rates using Africa’s Talking gateways, prepaid bundles, and zero-markup BYOC sender IDs."
+excerpt: "How to maximize Kenyan SMS open rates using Africa’s Talking gateways, prepaid bundles, and zero-markup BYOC sender IDs."
 publishedDate: 2026-11-08
 author: "Brian Kiprop"
+category: "Telco & SMS"
+coverImage: "/images/blog/deployment-workflow.webp"
+image: "/images/blog/deployment-workflow.webp"
 tags: ["Bulk SMS", "Africa’s Talking", "BYOC", "Retention"]
 draft: false
 ---

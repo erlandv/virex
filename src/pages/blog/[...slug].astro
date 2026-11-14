@@ -51,41 +51,52 @@ const relatedPosts: BlogPost[] = allPosts
 <BlogLayout
   title={`${post.data.title} - ${siteConfig.name}`}
   description={post.data.description}
+  excerpt={post.data.excerpt || post.data.description}
   publishedDate={post.data.publishedDate}
   author={post.data.author}
   image={post.data.image}
+  coverImage={post.data.coverImage || post.data.image}
+  category={post.data.category || post.data.tags[0]}
   tags={post.data.tags}
   content={post.body || ''}
 >
   <Content slot="content" />
 
-  <!-- Related Posts -->
+  {/* Related Posts */}
   {
     relatedPosts.length > 0 && (
-      <aside class="mt-16 pt-12 border-t border-border">
-        <h2 class="text-2xl font-bold text-text mb-8">Related Posts</h2>
+      <aside slot="related" class="mt-16 pt-12 border-t border-slate-200 dark:border-slate-800">
+        <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-8">Related Articles</h2>
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {relatedPosts.map((relatedPost) => (
-            <a href={`/blog/${relatedPost.id}`} class="group block">
-              <article class="h-full p-4 rounded-lg border border-border hover:border-primary transition-colors">
-                <div class="text-sm text-text-muted mb-2">
-                  {relatedPost.data.publishedDate.toLocaleDateString('en-US', {
-                    month: 'short',
-                    day: 'numeric',
-                    year: 'numeric',
-                  })}
-                  <span class="mx-1">·</span>
-                  {calculateReadingTime(relatedPost.body || '')} min read
-                </div>
-                <h3 class="font-semibold text-text group-hover:text-primary transition-colors line-clamp-2">
-                  {relatedPost.data.title}
-                </h3>
-                <p class="mt-2 text-sm text-text-muted line-clamp-2">
-                  {relatedPost.data.description}
-                </p>
-              </article>
-            </a>
-          ))}
+          {relatedPosts.map((relatedPost) => {
+            const relCategory = relatedPost.data.category || relatedPost.data.tags[0] || 'Article';
+            return (
+              <a href={`/blog/${relatedPost.id}`} class="group block h-full">
+                <article class="h-full p-5 rounded-2xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 hover:border-blue-500/50 dark:hover:border-blue-500/50 hover:shadow-lg transition-all duration-200 flex flex-col justify-between">
+                  <div>
+                    <div class="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 mb-2.5">
+                      <span class="font-semibold text-blue-600 dark:text-blue-400 uppercase tracking-wider text-[10px]">
+                        {relCategory}
+                      </span>
+                      <span>{calculateReadingTime(relatedPost.body || '')} min read</span>
+                    </div>
+                    <h3 class="font-bold text-base text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-2 leading-snug">
+                      {relatedPost.data.title}
+                    </h3>
+                    <p class="mt-2 text-xs text-slate-600 dark:text-slate-400 line-clamp-2 leading-relaxed">
+                      {relatedPost.data.excerpt || relatedPost.data.description}
+                    </p>
+                  </div>
+                  <div class="mt-4 pt-3 border-t border-slate-200/60 dark:border-slate-800/60 flex items-center justify-between text-xs font-semibold text-blue-600 dark:text-blue-400">
+                    <span>Read guide</span>
+                    <span class="transition-transform duration-200 group-hover:translate-x-1">
+                      &rarr;
+                    </span>
+                  </div>
+                </article>
+              </a>
+            );
+          })}
         </div>
       </aside>
     )

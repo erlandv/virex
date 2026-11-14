@@ -6,7 +6,7 @@
  * Grounded in verified product capabilities and authentic Kenyan commerce workflows.
  */
 import MarketingLayout from '@/layouts/MarketingLayout.astro';
-import Hero from '@sections/marketing/Hero.astro';
+import SupportHero3D from '@sections/marketing/SupportHero3D.tsx';
 import HowItWorks from '@sections/marketing/HowItWorks.astro';
 import OmnichannelFlowHub from '@sections/marketing/OmnichannelFlowHub.astro';
 import MarkcopilotExplainer from '@sections/marketing/MarkcopilotExplainer.astro';
@@ -192,10 +192,12 @@ const homepageFaqs = [
   title={`${siteConfig.name} - Turn Every Customer Chat into an Instant M-Pesa Sale`}
   description={siteConfig.description}
 >
-  <!-- 1. Hero Section -->
-  <Hero
+  <!-- 1. Hero Section (3D Floating Ecosystem Composition) -->
+  <SupportHero3D
+    client:load
     title="Turn Every Customer Chat into an Instant M-Pesa Sale"
     subtitle="Unify WhatsApp Business Cloud, Africa’s Talking Bulk SMS, Instagram DMs, and Facebook Messenger into one shared inbox. Trigger in-chat /stk PIN prompts and auto-verify Safaricom payments in seconds."
+    badge="Kenya’s #1 Omnichannel & In-Chat M-Pesa Engine"
     primaryCTA={{
       label: 'Start Free — 50 Trial SMS Included',
       href: `${APP_URL}/app/auth/signup`,
@@ -204,8 +206,6 @@ const homepageFaqs = [
       label: 'Book Live Demo',
       href: '/demo',
     }}
-    backgroundType="gradient"
-    gradient="from-primary/15 via-background to-background"
   />
 
   <!-- 2. Omnichannel Vector Pulse Flow Hub -->

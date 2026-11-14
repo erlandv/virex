@@ -1,8 +1,12 @@
 ---
 title: "The Comprehensive Guide to M-Pesa Paybill & Till Automation in Kenya"
 description: "Everything you need to know about integrating Safaricom Daraja C2B, Buy Goods Tills, Shared Bank Paybills, and Pochi la Biashara."
+excerpt: "Everything you need to know about integrating Safaricom Daraja C2B, Buy Goods Tills, Shared Bank Paybills, and Pochi la Biashara."
 publishedDate: 2026-10-25
 author: "Faith Mwangi"
+category: "M-Pesa Engineering"
+coverImage: "/images/blog/scaling-million.webp"
+image: "/images/blog/scaling-million.webp"
 tags: ["Fintech", "Daraja API", "Paybill", "Pochi la Biashara"]
 draft: false
 ---
