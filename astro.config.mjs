@@ -39,7 +39,7 @@ export default defineConfig({
         const { features } = siteConfig;
 
         // Strictly exclude internal administration, error, and preview routes
-        if (page.includes('/dashboard')) return false;
+        if (page.includes('/dashboard') || page.includes('/dashboardMain')) return false;
         if (page.includes('/403') || page.includes('/404') || page.includes('/500')) return false;
         if (page.includes('/api/')) return false;
 

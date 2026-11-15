@@ -1,0 +1,779 @@
+---
+/**
+ * MarkChat CMS — Markcopilot AI Intelligence Manager
+ */
+import DashboardLayout from '@/layouts/DashboardLayout.astro';
+import Card from '@dashboard-ui/Card.astro';
+import Modal from '@dashboard-ui/Modal.astro';
+import StatCard from '@dashboard-ui/StatCard.astro';
+import { Icon } from 'astro-icon/components';
+import { adminFetchMarkcopilotCapabilities, adminFetchMarkcopilotSettings } from '@/lib/cms-api';
+
+const capabilities = await adminFetchMarkcopilotCapabilities();
+const settings = await adminFetchMarkcopilotSettings();
+
+const totalCapabilities = capabilities.length;
+const publishedCount = capabilities.filter((c) => c.status === 'published').length;
+const draftCount = capabilities.filter((c) => c.status === 'draft' || c.status === 'paused').length;
+const isVideoActive = Boolean(settings.video?.enabled && settings.video?.videoUrl);
+---
+
+<DashboardLayout
+  title="Markcopilot AI Manager"
+  description="Manage 24/7 autonomous bot parameters, agent copilot capabilities, video presentation, and page settings"
+  breadcrumbs={[{ label: 'Dashboard', href: '/dashboard' }, { label: 'Markcopilot AI' }]}
+>
+  <div class="cms-markcopilot-page space-y-8">
+    <!-- Header -->
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div>
+        <h1 class="text-2xl font-bold tracking-tight text-text">Markcopilot AI Manager</h1>
+        <p class="text-sm text-text-muted mt-1">
+          Manage dual-mode intelligence capabilities, video walkthrough, Knowledge Vault specs, and
+          localized tone.
+        </p>
+      </div>
+      <div class="flex flex-wrap items-center gap-3">
+        <a href="/markcopilot" target="_blank" class="btn btn-secondary text-sm">
+          <Icon name="lucide:external-link" class="w-4 h-4 mr-1.5 inline" />
+          Preview Live /markcopilot
+        </a>
+        <button type="button" id="open-video-modal" class="btn btn-secondary text-sm">
+          <Icon name="lucide:video" class="w-4 h-4 mr-1.5 inline" />
+          Video Settings
+        </button>
+        <button type="button" id="open-settings-modal" class="btn btn-secondary text-sm">
+          <Icon name="lucide:settings" class="w-4 h-4 mr-1.5 inline" />
+          Page Settings
+        </button>
+        <button type="button" id="open-capability-modal" class="btn btn-primary text-sm">
+          <Icon name="lucide:plus" class="w-4 h-4 mr-1.5 inline" />
+          Add Capability
+        </button>
+      </div>
+    </div>
+
+    <!-- Quick Stats -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <StatCard
+        title="Total Capabilities"
+        value={totalCapabilities}
+        icon="sparkles"
+        description="Registered AI capabilities"
+      />
+      <StatCard
+        title="Live on Page"
+        value={publishedCount}
+        icon="check-circle"
+        description="Published on /markcopilot"
+      />
+      <StatCard
+        title="Draft / Review"
+        value={draftCount}
+        icon="clock"
+        description="Pending review or paused"
+      />
+      <StatCard
+        title="Video Area Mode"
+        value={isVideoActive ? 'Active Stream' : 'Tour Fallback'}
+        icon="play"
+        description={isVideoActive ? 'CMS Video Enabled' : 'Interactive Architecture active'}
+      />
+    </div>
+
+    <!-- Video Presentation Overview Card -->
+    <Card
+      title="Video Presentation & Tour Configuration"
+      description="Control whether /markcopilot streams an external/hosted video or renders the interactive architecture tour"
+    >
+      <div
+        class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-xl bg-surface border border-border"
+      >
+        <div class="space-y-1">
+          <div class="flex items-center gap-2">
+            <span
+              class={`w-2.5 h-2.5 rounded-full ${isVideoActive ? 'bg-emerald-500' : 'bg-primary'}`}
+            ></span>
+            <span class="font-bold text-sm text-text">
+              Current Display: {
+                isVideoActive
+                  ? `Streaming Video (${settings.video.provider})`
+                  : 'Interactive Architecture & Tour (Fallback)'
+              }
+            </span>
+          </div>
+          <p class="text-xs text-text-muted">
+            {
+              isVideoActive
+                ? `Video URL: ${settings.video.videoUrl}`
+                : 'No external video URL configured. The high-fidelity 3-stage interactive tour is safely rendered.'
+            }
+          </p>
+        </div>
+        <button
+          type="button"
+          id="quick-edit-video-btn"
+          class="btn btn-secondary text-xs self-start sm:self-center shrink-0"
+        >
+          <Icon name="lucide:settings-2" class="w-3.5 h-3.5 mr-1 inline" />
+          Configure Video / Fallback
+        </button>
+      </div>
+    </Card>
+
+    <!-- Capabilities Table -->
+    <Card
+      title="Registered Markcopilot Capabilities"
+      description="Dual-mode capabilities showcased on the public /markcopilot page"
+      padding="none"
+    >
+      <div class="table-responsive">
+        <table class="cms-table w-full">
+          <thead>
+            <tr>
+              <th class="text-left py-3 px-4 w-16">Order</th>
+              <th class="text-left py-3 px-4">Capability Title &amp; Eyebrow</th>
+              <th class="text-left py-3 px-4 w-36">Mode</th>
+              <th class="text-left py-3 px-4 w-32">Badge</th>
+              <th class="text-left py-3 px-4 w-28">Status</th>
+              <th class="text-right py-3 px-4 w-36">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="capabilities-table-body">
+            {
+              capabilities.map((cap) => (
+                <tr data-id={cap.id} data-capability={JSON.stringify(cap)}>
+                  <td class="py-3 px-4 font-mono text-xs text-text-muted">
+                    #{cap.displayOrder || 1}
+                  </td>
+                  <td class="py-3 px-4">
+                    <div class="font-medium text-text flex items-center gap-2">
+                      <Icon
+                        name={cap.icon || 'lucide:sparkles'}
+                        class="w-4 h-4 text-primary shrink-0"
+                      />
+                      <span>{cap.title}</span>
+                    </div>
+                    {cap.eyebrow && (
+                      <div class="text-xs text-text-muted mt-0.5 tracking-wide uppercase font-semibold">
+                        {cap.eyebrow}
+                      </div>
+                    )}
+                  </td>
+                  <td class="py-3 px-4 text-xs">
+                    <span class="inline-block bg-surface-hover px-2 py-0.5 rounded border border-border capitalize font-mono text-[11px]">
+                      {cap.mode}
+                    </span>
+                  </td>
+                  <td class="py-3 px-4 text-xs">
+                    {cap.badge ? (
+                      <span class="inline-block bg-primary/10 text-primary px-2 py-0.5 rounded border border-primary/20 font-medium">
+                        {cap.badge}
+                      </span>
+                    ) : (
+                      <span class="text-text-muted text-xs">—</span>
+                    )}
+                  </td>
+                  <td class="py-3 px-4 text-xs">
+                    <span class={`status-pill status-${cap.status}`}>
+                      {cap.status.toUpperCase()}
+                    </span>
+                  </td>
+                  <td class="py-3 px-4 text-right">
+                    <div class="flex items-center justify-end gap-2">
+                      <button
+                        type="button"
+                        class="action-btn edit-cap-btn"
+                        data-id={cap.id}
+                        title="Edit Capability"
+                      >
+                        <Icon name="lucide:edit-3" class="w-4 h-4" />
+                      </button>
+                      <select class="status-select text-xs" data-id={cap.id}>
+                        <option value="published" selected={cap.status === 'published'}>
+                          Published
+                        </option>
+                        <option value="draft" selected={cap.status === 'draft'}>
+                          Draft
+                        </option>
+                        <option value="paused" selected={cap.status === 'paused'}>
+                          Paused
+                        </option>
+                        <option value="archived" selected={cap.status === 'archived'}>
+                          Archived
+                        </option>
+                      </select>
+                      <button
+                        type="button"
+                        class="action-btn text-red-400 hover:text-red-300 delete-cap-btn"
+                        data-id={cap.id}
+                        title="Delete Capability"
+                      >
+                        <Icon name="lucide:trash-2" class="w-4 h-4" />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))
+            }
+          </tbody>
+        </table>
+      </div>
+    </Card>
+  </div>
+
+  <!-- Add / Edit Capability Modal -->
+  <Modal id="capability-modal" title="Add / Edit Markcopilot Capability" size="lg">
+    <form id="capability-form" class="space-y-4">
+      <input type="hidden" id="capability-id" value="" />
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div class="form-group">
+          <label class="form-label" for="cap-title">Capability Title *</label>
+          <input
+            type="text"
+            id="cap-title"
+            required
+            class="form-input"
+            placeholder="e.g. 24/7 First-Line Deflection"
+          />
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="cap-eyebrow">Eyebrow Tagline</label>
+          <input
+            type="text"
+            id="cap-eyebrow"
+            class="form-input"
+            placeholder="e.g. Autonomous Mode"
+          />
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div class="form-group">
+          <label class="form-label" for="cap-mode">Operational Mode *</label>
+          <select id="cap-mode" required class="form-input">
+            <option value="autonomous">Autonomous (Customer 24/7)</option>
+            <option value="copilot">Copilot (Agent-Assist)</option>
+            <option value="shared">Shared / Foundation NLP</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="cap-badge">Badge Label *</label>
+          <input
+            type="text"
+            id="cap-badge"
+            required
+            class="form-input"
+            placeholder="e.g. Customer 24/7"
+          />
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="cap-icon">Icon Identifier</label>
+          <input
+            type="text"
+            id="cap-icon"
+            class="form-input font-mono"
+            placeholder="e.g. lucide:bot"
+            value="lucide:sparkles"
+          />
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div class="form-group">
+          <label class="form-label" for="cap-order">Display Order *</label>
+          <input type="number" id="cap-order" required min="1" class="form-input" value="1" />
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="cap-status">Status *</label>
+          <select id="cap-status" required class="form-input">
+            <option value="published">Published</option>
+            <option value="draft">Draft</option>
+            <option value="paused">Paused</option>
+            <option value="archived">Archived</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="cap-description">Description *</label>
+        <textarea
+          id="cap-description"
+          rows="3"
+          required
+          class="form-input"
+          placeholder="Detailed explanation of how this capability works for Kenyan businesses..."
+        ></textarea>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="cap-highlights"> Key Highlights (One per line) </label>
+        <textarea
+          id="cap-highlights"
+          rows="3"
+          class="form-input font-mono text-xs"
+          placeholder="Grounded in uploaded Knowledge Vault PDFs
+Instant answers with zero latency
+Automatic agent escalation"
+        ></textarea>
+      </div>
+
+      <div class="flex justify-end gap-3 pt-4 border-t border-border">
+        <button type="button" class="btn btn-secondary close-modal-btn">Cancel</button>
+        <button type="submit" class="btn btn-primary">Save Capability</button>
+      </div>
+    </form>
+  </Modal>
+
+  <!-- Video Presentation Settings Modal -->
+  <Modal id="video-modal" title="Markcopilot Video & Tour Presentation Settings" size="lg">
+    <form id="video-form" class="space-y-4">
+      <div class="p-4 rounded-xl bg-surface border border-border space-y-2">
+        <label class="flex items-center gap-2 cursor-pointer text-sm font-semibold text-text">
+          <input
+            type="checkbox"
+            id="video-enabled"
+            class="rounded border-border text-primary focus:ring-primary w-4 h-4"
+            checked={settings.video?.enabled !== false}
+          />
+          <span>Enable Video / Tour Presentation Section</span>
+        </label>
+        <p class="text-xs text-text-muted">
+          When enabled, displays the video player (if URL is set) or the high-fidelity interactive
+          tour fallback.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div class="form-group">
+          <label class="form-label" for="video-title">Section Title</label>
+          <input
+            type="text"
+            id="video-title"
+            class="form-input"
+            value={settings.video?.title || ''}
+            placeholder="e.g. Markcopilot Interactive Architecture & Tour"
+          />
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="video-provider">Video Provider</label>
+          <select id="video-provider" class="form-input">
+            <option value="none" selected={settings.video?.provider === 'none'}
+              >None (Use Interactive Tour Fallback)</option
+            >
+            <option value="youtube" selected={settings.video?.provider === 'youtube'}
+              >YouTube</option
+            >
+            <option value="vimeo" selected={settings.video?.provider === 'vimeo'}>Vimeo</option>
+            <option value="self-hosted" selected={settings.video?.provider === 'self-hosted'}
+              >Self-Hosted MP4</option
+            >
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="video-description">Section Subtitle / Description</label>
+        <textarea id="video-description" rows="2" class="form-input"
+          >{settings.video?.description || ''}</textarea
+        >
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="video-url">Video Embed or MP4 URL (Optional)</label>
+        <input
+          type="url"
+          id="video-url"
+          class="form-input font-mono text-xs"
+          value={settings.video?.videoUrl || ''}
+          placeholder="Leave empty to display the interactive architecture tour fallback"
+        />
+        <p class="text-[11px] text-text-muted mt-1">
+          Leaving this empty activates the intentional, interactive product tour fallback.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div class="form-group">
+          <label class="form-label" for="video-fallback-heading">Tour Fallback Heading</label>
+          <input
+            type="text"
+            id="video-fallback-heading"
+            class="form-input"
+            value={settings.video?.fallbackHeading || ''}
+            placeholder="e.g. Interactive Architecture: How Markcopilot Operates"
+          />
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="video-poster">Poster / Thumbnail Image URL</label>
+          <input
+            type="text"
+            id="video-poster"
+            class="form-input font-mono text-xs"
+            value={settings.video?.posterUrl || ''}
+            placeholder="/images/markcopilot-tour.jpg"
+          />
+        </div>
+      </div>
+
+      <div class="flex justify-end gap-3 pt-4 border-t border-border">
+        <button type="button" class="btn btn-secondary close-modal-btn">Cancel</button>
+        <button type="submit" class="btn btn-primary">Save Video Settings</button>
+      </div>
+    </form>
+  </Modal>
+
+  <!-- Page Settings Modal -->
+  <Modal id="settings-modal" title="Markcopilot Page Global Settings" size="lg">
+    <form id="settings-form" class="space-y-4">
+      <div class="border-b border-border pb-3 mb-2 font-bold text-sm text-text">
+        Hero Section Configuration
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div class="form-group">
+          <label class="form-label" for="settings-hero-badge">Hero Eyebrow Badge</label>
+          <input
+            type="text"
+            id="settings-hero-badge"
+            class="form-input"
+            value={settings.hero?.badge || ''}
+          />
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="settings-hero-title">Hero Title *</label>
+          <input
+            type="text"
+            id="settings-hero-title"
+            required
+            class="form-input"
+            value={settings.hero?.title || ''}
+          />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="settings-hero-subtitle">Hero Subtitle</label>
+        <textarea id="settings-hero-subtitle" rows="3" class="form-input"
+          >{settings.hero?.subtitle || ''}</textarea
+        >
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div class="form-group">
+          <label class="form-label" for="settings-cta-primary-label">Primary CTA Label</label>
+          <input
+            type="text"
+            id="settings-cta-primary-label"
+            class="form-input"
+            value={settings.hero?.primaryCtaLabel || ''}
+          />
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="settings-cta-primary-href">Primary CTA Href</label>
+          <input
+            type="text"
+            id="settings-cta-primary-href"
+            class="form-input font-mono text-xs"
+            value={settings.hero?.primaryCtaHref || ''}
+          />
+        </div>
+      </div>
+
+      <div class="border-b border-border pb-3 mb-2 font-bold text-sm text-text pt-4">
+        Closing Action Banner (Bottom CTA)
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="settings-closing-title">Closing Heading</label>
+        <input
+          type="text"
+          id="settings-closing-title"
+          class="form-input"
+          value={settings.closingCta?.heading || ''}
+        />
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="settings-closing-desc">Closing Narrative</label>
+        <textarea id="settings-closing-desc" rows="2" class="form-input"
+          >{settings.closingCta?.description || ''}</textarea
+        >
+      </div>
+
+      <div class="flex justify-end gap-3 pt-4 border-t border-border">
+        <button type="button" class="btn btn-secondary close-modal-btn">Cancel</button>
+        <button type="submit" class="btn btn-primary">Save Page Settings</button>
+      </div>
+    </form>
+  </Modal>
+</DashboardLayout>
+
+<script>
+  import {
+    createMarkcopilotCapability,
+    updateMarkcopilotCapability,
+    deleteMarkcopilotCapability,
+    updateMarkcopilotSettings,
+    updateItemStatus,
+    type MarkcopilotCapability,
+    type CmsLifecycleStatus,
+    type MarkcopilotVideoSettings,
+  } from '@/lib/cms-api';
+
+  function initMarkcopilotCms() {
+    // Modals
+    const capModal = document.getElementById('capability-modal');
+    const videoModal = document.getElementById('video-modal');
+    const settingsModal = document.getElementById('settings-modal');
+
+    // Triggers
+    const openCapBtn = document.getElementById('open-capability-modal');
+    const openVideoBtn = document.getElementById('open-video-modal');
+    const quickEditVideoBtn = document.getElementById('quick-edit-video-btn');
+    const openSettingsBtn = document.getElementById('open-settings-modal');
+
+    // Forms
+    const capForm = document.getElementById('capability-form') as HTMLFormElement | null;
+    const videoForm = document.getElementById('video-form') as HTMLFormElement | null;
+    const settingsForm = document.getElementById('settings-form') as HTMLFormElement | null;
+
+    // Open Capability Modal
+    openCapBtn?.addEventListener('click', () => {
+      if (!capModal) return;
+      capForm?.reset();
+      (document.getElementById('capability-id') as HTMLInputElement).value = '';
+      capModal.classList.remove('hidden');
+    });
+
+    // Open Video Modal
+    openVideoBtn?.addEventListener('click', () => {
+      videoModal?.classList.remove('hidden');
+    });
+    quickEditVideoBtn?.addEventListener('click', () => {
+      videoModal?.classList.remove('hidden');
+    });
+
+    // Open Settings Modal
+    openSettingsBtn?.addEventListener('click', () => {
+      settingsModal?.classList.remove('hidden');
+    });
+
+    // Close Modals
+    document.querySelectorAll('.close-modal-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        capModal?.classList.add('hidden');
+        videoModal?.classList.add('hidden');
+        settingsModal?.classList.add('hidden');
+      });
+    });
+
+    // Edit Capability Click
+    document.querySelectorAll('.edit-cap-btn').forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        const tr = (e.target as HTMLElement).closest('tr');
+        if (!tr || !capModal) return;
+        const raw = tr.getAttribute('data-capability');
+        if (!raw) return;
+        const cap = JSON.parse(raw) as MarkcopilotCapability;
+
+        (document.getElementById('capability-id') as HTMLInputElement).value = cap.id;
+        (document.getElementById('cap-title') as HTMLInputElement).value = cap.title;
+        (document.getElementById('cap-eyebrow') as HTMLInputElement).value = cap.eyebrow || '';
+        (document.getElementById('cap-mode') as HTMLSelectElement).value = cap.mode || 'autonomous';
+        (document.getElementById('cap-badge') as HTMLInputElement).value = cap.badge;
+        (document.getElementById('cap-icon') as HTMLInputElement).value =
+          cap.icon || 'lucide:sparkles';
+        (document.getElementById('cap-order') as HTMLInputElement).value = String(
+          cap.displayOrder || 1
+        );
+        (document.getElementById('cap-status') as HTMLSelectElement).value = cap.status;
+        (document.getElementById('cap-description') as HTMLTextAreaElement).value = cap.description;
+        (document.getElementById('cap-highlights') as HTMLTextAreaElement).value = (
+          cap.highlights || []
+        ).join('\n');
+
+        capModal.classList.remove('hidden');
+      });
+    });
+
+    // Save Capability Form
+    capForm?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const id = (document.getElementById('capability-id') as HTMLInputElement).value;
+      const title = (document.getElementById('cap-title') as HTMLInputElement).value;
+      const eyebrow = (document.getElementById('cap-eyebrow') as HTMLInputElement).value;
+      const mode = (document.getElementById('cap-mode') as HTMLSelectElement).value as
+        | 'autonomous'
+        | 'copilot'
+        | 'shared';
+      const badge = (document.getElementById('cap-badge') as HTMLInputElement).value;
+      const icon = (document.getElementById('cap-icon') as HTMLInputElement).value;
+      const displayOrder =
+        parseInt((document.getElementById('cap-order') as HTMLInputElement).value, 10) || 1;
+      const status = (document.getElementById('cap-status') as HTMLSelectElement)
+        .value as CmsLifecycleStatus;
+      const description = (document.getElementById('cap-description') as HTMLTextAreaElement).value;
+      const rawHighlights = (document.getElementById('cap-highlights') as HTMLTextAreaElement)
+        .value;
+      const highlights = rawHighlights
+        .split('\n')
+        .map((s) => s.trim())
+        .filter(Boolean);
+
+      try {
+        if (id) {
+          await updateMarkcopilotCapability(id, {
+            title,
+            eyebrow,
+            mode,
+            badge,
+            icon,
+            displayOrder,
+            status,
+            description,
+            highlights,
+          });
+        } else {
+          await createMarkcopilotCapability({
+            title,
+            eyebrow,
+            mode,
+            badge,
+            icon,
+            displayOrder,
+            status,
+            description,
+            highlights,
+          });
+        }
+        window.location.reload();
+      } catch (err) {
+        alert('Failed to save capability: ' + (err as Error).message);
+      }
+    });
+
+    // Save Video Settings Form
+    videoForm?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const enabled = (document.getElementById('video-enabled') as HTMLInputElement).checked;
+      const title = (document.getElementById('video-title') as HTMLInputElement).value;
+      const provider = (document.getElementById('video-provider') as HTMLSelectElement)
+        .value as MarkcopilotVideoSettings['provider'];
+      const description = (document.getElementById('video-description') as HTMLTextAreaElement)
+        .value;
+      const videoUrl = (document.getElementById('video-url') as HTMLInputElement).value;
+      const fallbackHeading = (
+        document.getElementById('video-fallback-heading') as HTMLInputElement
+      ).value;
+      const posterUrl = (document.getElementById('video-poster') as HTMLInputElement).value;
+
+      try {
+        await updateMarkcopilotSettings({
+          video: {
+            enabled,
+            title,
+            provider,
+            description,
+            videoUrl,
+            fallbackHeading,
+            fallbackDescription:
+              'Step through the 3 operational stages: Knowledge Vault Ingestion, 24/7 Autonomous Customer Care, and Real-Time Agent Copilot.',
+            posterUrl,
+          },
+        });
+        window.location.reload();
+      } catch (err) {
+        alert('Failed to save video settings: ' + (err as Error).message);
+      }
+    });
+
+    // Save Page Settings Form
+    settingsForm?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const heroBadge = (document.getElementById('settings-hero-badge') as HTMLInputElement).value;
+      const heroTitle = (document.getElementById('settings-hero-title') as HTMLInputElement).value;
+      const heroSubtitle = (
+        document.getElementById('settings-hero-subtitle') as HTMLTextAreaElement
+      ).value;
+      const primaryCtaLabel = (
+        document.getElementById('settings-cta-primary-label') as HTMLInputElement
+      ).value;
+      const primaryCtaHref = (
+        document.getElementById('settings-cta-primary-href') as HTMLInputElement
+      ).value;
+      const closingHeading = (document.getElementById('settings-closing-title') as HTMLInputElement)
+        .value;
+      const closingDesc = (document.getElementById('settings-closing-desc') as HTMLTextAreaElement)
+        .value;
+
+      try {
+        await updateMarkcopilotSettings({
+          hero: {
+            badge: heroBadge,
+            title: heroTitle,
+            subtitle: heroSubtitle,
+            primaryCtaLabel,
+            primaryCtaHref,
+            secondaryCtaLabel: 'Explore Capabilities',
+            secondaryCtaHref: '#capabilities',
+            trustBadges: [
+              { text: 'Grounded in Knowledge Vault', icon: 'lucide:book-open' },
+              { text: 'English, Swahili & Sheng', icon: 'lucide:languages' },
+              { text: 'Human Escalation Safeguards', icon: 'lucide:shield-check' },
+              { text: 'KDPA 2019 Compliant', icon: 'lucide:lock' },
+            ],
+          },
+          closingCta: {
+            heading: closingHeading,
+            description: closingDesc,
+            primaryCtaLabel: 'Book Live Demo',
+            primaryCtaHref: '/demo',
+            secondaryCtaLabel: 'Explore All Features',
+            secondaryCtaHref: '/features',
+          },
+        });
+        window.location.reload();
+      } catch (err) {
+        alert('Failed to save settings: ' + (err as Error).message);
+      }
+    });
+
+    // Status Dropdown Change
+    document.querySelectorAll('.status-select').forEach((select) => {
+      select.addEventListener('change', async (e) => {
+        const target = e.target as HTMLSelectElement;
+        const id = target.getAttribute('data-id');
+        const status = target.value as CmsLifecycleStatus;
+        if (!id) return;
+
+        try {
+          await updateItemStatus('markcopilot', id, status);
+          window.location.reload();
+        } catch (err) {
+          alert('Failed to update status: ' + (err as Error).message);
+        }
+      });
+    });
+
+    // Delete Capability
+    document.querySelectorAll('.delete-cap-btn').forEach((btn) => {
+      btn.addEventListener('click', async (e) => {
+        const id = (e.currentTarget as HTMLElement).getAttribute('data-id');
+        if (!id) return;
+        if (!confirm('Are you sure you want to delete this Markcopilot capability?')) return;
+
+        try {
+          await deleteMarkcopilotCapability(id);
+          window.location.reload();
+        } catch (err) {
+          alert('Failed to delete capability: ' + (err as Error).message);
+        }
+      });
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', initMarkcopilotCms);
+  document.addEventListener('astro:page-load', initMarkcopilotCms);
+</script>

@@ -1,228 +1,419 @@
 ---
 /**
- * Hero - Landing page hero section with flexible background options
+ * Hero.astro - Premium MarkChat SaaS Marketing Hero
  *
- * @description
- * A full-width hero section designed for landing pages. Includes a main headline,
- * supporting subtitle text, and up to two call-to-action buttons. Supports multiple
- * background types: solid color, gradient, image, or video.
+ * Grounded in verified product capabilities and authentic Kenyan commerce workflows.
  *
- * @example Default (solid background)
- * ```astro
- * <Hero
- *   title="Ship faster. Scale effortlessly."
- *   subtitle="The modern deployment platform for teams."
- *   primaryCTA={{ label: "Get Started", href: "/signup" }}
- * />
- * ```
- *
- * @example With gradient background
- * ```astro
- * <Hero
- *   title="Ship faster"
- *   subtitle="The modern platform for teams."
- *   primaryCTA={{ label: "Get Started", href: "/signup" }}
- *   backgroundType="gradient"
- *   gradient="from-primary/20 via-background to-background"
- * />
- * ```
- *
- * @example With image background
- * ```astro
- * <Hero
- *   title="Ship faster"
- *   subtitle="The modern platform for teams."
- *   primaryCTA={{ label: "Get Started", href: "/signup" }}
- *   backgroundType="image"
- *   backgroundImage="/images/hero-bg.jpg"
- *   overlay={true}
- *   overlayOpacity={60}
- * />
- * ```
- *
- * @example With video background
- * ```astro
- * <Hero
- *   title="Ship faster"
- *   subtitle="The modern platform for teams."
- *   primaryCTA={{ label: "Get Started", href: "/signup" }}
- *   backgroundType="video"
- *   backgroundVideo="/videos/hero-bg.mp4"
- *   backgroundVideoPoster="/images/hero-poster.jpg"
- *   overlay={true}
- * />
- * ```
+ * Strict Refinement Guidelines:
+ * 1. Left Column: Constrained by max-w-2xl for optimal left-alignment and readability,
+ *    top badge with uppercase blue styling, and enhanced CTA hover physics.
+ * 2. Right Column: Deliberate geometric arrangement of floating channel icons (WhatsApp,
+ *    Messenger, Instagram, M-Pesa) around the central "MarkChat Unified Core" hub.
+ * 3. Glassmorphic effects using strict dark: classes (dark:bg-slate-900/60 dark:border-slate-700 backdrop-blur-xl).
  */
 
 interface Props {
-  /** Main headline text displayed prominently */
-  title: string;
-  /** Supporting text that appears below the headline */
-  subtitle: string;
-  /** Primary call-to-action button with label and link */
-  primaryCTA: { label: string; href: string };
-  /** Optional secondary call-to-action button */
+  title?: string;
+  subtitle?: string;
+  badge?: string;
+  primaryCTA?: { label: string; href: string };
   secondaryCTA?: { label: string; href: string };
-  /** Background type */
-  backgroundType?: 'solid' | 'gradient' | 'image' | 'video';
-  /** Solid background style (when backgroundType is 'solid') */
-  background?: 'default' | 'muted' | 'accent';
-  /** Gradient classes (when backgroundType is 'gradient') */
-  gradient?: string;
-  /** Background image URL (when backgroundType is 'image') */
-  backgroundImage?: string;
-  /** Background video URL (when backgroundType is 'video') */
-  backgroundVideo?: string;
-  /** Video poster image for loading state */
-  backgroundVideoPoster?: string;
-  /** Show dark overlay on image/video backgrounds */
-  overlay?: boolean;
-  /** Overlay opacity percentage (0-100) */
-  overlayOpacity?: number;
-  /** Text color scheme for image/video backgrounds */
-  textColor?: 'auto' | 'light' | 'dark';
-  /** Minimum height for the hero section */
-  minHeight?: 'default' | 'screen' | 'large';
-  /** Content alignment */
-  align?: 'center' | 'left';
+  stats?: Array<{ value: string; label: string; highlight?: boolean }>;
 }
 
 const {
-  title,
-  subtitle,
-  primaryCTA,
-  secondaryCTA,
-  backgroundType = 'solid',
-  background = 'default',
-  gradient = 'from-primary/10 via-background to-background',
-  backgroundImage,
-  backgroundVideo,
-  backgroundVideoPoster,
-  overlay = false,
-  overlayOpacity = 50,
-  textColor = 'auto',
-  minHeight = 'default',
-  align = 'center',
+  title = 'Bring Customer Conversations, Engagement & Sales Together',
+  subtitle = 'Unify WhatsApp Business Cloud, Africa’s Talking Bulk SMS, Instagram DMs, Messenger, and website live chat into one collaborative team inbox. Power customer support with Markcopilot AI and accelerate revenue with in-chat M-Pesa.',
+  badge = 'Unified Customer Communications & Engagement Platform',
+  primaryCTA = {
+    label: 'Book Live Demo',
+    href: '/demo',
+  },
+  secondaryCTA = {
+    label: 'Explore Plans & Pricing',
+    href: '/pricing',
+  },
+  stats = [
+    { value: '6 Channels', label: 'Single Shared Hub' },
+    { value: '< 10s', label: 'In-Chat /stk Delivery' },
+    { value: 'Bilingual AI', label: 'English, Swahili & Sheng', highlight: true },
+  ],
 } = Astro.props;
-
-// Solid background classes
-const solidBgClass = {
-  default: 'bg-background',
-  muted: 'bg-surface',
-  accent: 'bg-primary/5',
-}[background];
-
-// Determine if we need light text (for dark backgrounds)
-const needsLightText =
-  textColor === 'light' ||
-  (textColor === 'auto' && (backgroundType === 'image' || backgroundType === 'video') && overlay);
-
-// Text color classes
-const textClasses = needsLightText
-  ? {
-      heading: 'text-white',
-      body: 'text-white/80',
-      button: 'border-white/30 text-white hover:bg-white/10',
-    }
-  : {
-      heading: 'text-text',
-      body: 'text-text-muted',
-      button: 'border-border text-text hover:bg-surface',
-    };
-
-// Min height classes
-const minHeightClass = {
-  default: 'py-section',
-  large: 'py-24 md:py-32',
-  screen: 'min-h-[80vh] flex items-center',
-}[minHeight];
-
-// Alignment classes
-const alignClass = align === 'left' ? 'text-left' : 'text-center mx-auto';
-const buttonAlignClass = align === 'left' ? 'justify-start' : 'justify-center';
 ---
 
 <section
-  class:list={[
-    'relative overflow-hidden',
-    minHeightClass,
-    backgroundType === 'solid' && solidBgClass,
-    backgroundType === 'gradient' && `bg-linear-to-br ${gradient}`,
-  ]}
+  class="relative overflow-hidden pt-24 pb-16 md:pt-32 md:pb-24 lg:pt-36 lg:pb-28 bg-white dark:bg-[#0B1120] text-slate-900 dark:text-white border-b border-slate-200 dark:border-slate-800/80 transition-colors duration-300"
 >
-  {/* Image Background */}
-  {
-    backgroundType === 'image' && backgroundImage && (
-      <div class="absolute inset-0 z-0">
-        <img src={backgroundImage} alt="" class="w-full h-full object-cover" loading="eager" />
-      </div>
-    )
-  }
-
-  {/* Video Background */}
-  {
-    backgroundType === 'video' && backgroundVideo && (
-      <div class="absolute inset-0 z-0">
-        <video
-          autoplay
-          muted
-          loop
-          playsinline
-          poster={backgroundVideoPoster}
-          class="w-full h-full object-cover"
-        >
-          <source src={backgroundVideo} type="video/mp4" />
-        </video>
-      </div>
-    )
-  }
-
-  {/* Overlay */}
-  {
-    overlay && (backgroundType === 'image' || backgroundType === 'video') && (
-      <div class="absolute inset-0 z-1 bg-black" style={`opacity: ${overlayOpacity / 100}`} />
-    )
-  }
-
-  {/* Content */}
+  {/* Ambient Atmospheric Lighting */}
   <div
-    class:list={[
-      'relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8',
-      minHeight === 'screen' && 'w-full',
-    ]}
+    class="pointer-events-none absolute -top-40 left-1/2 -translate-x-1/2 w-[1000px] h-[500px] bg-gradient-to-b from-blue-600/10 via-indigo-600/5 to-transparent dark:from-blue-600/20 dark:via-indigo-600/10 dark:to-transparent blur-3xl rounded-full"
+    aria-hidden="true"
   >
-    <div class:list={['max-w-3xl', alignClass]}>
-      <h1
-        class:list={[
-          'text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight tracking-tight',
-          textClasses.heading,
-        ]}
-      >
-        {title}
-      </h1>
-      <p class:list={['mt-6 text-lg sm:text-xl leading-relaxed', textClasses.body]}>
-        {subtitle}
-      </p>
-      <div class:list={['mt-10 flex flex-col sm:flex-row items-center gap-4', buttonAlignClass]}>
-        <a
-          href={primaryCTA.href}
-          class="inline-flex items-center justify-center px-6 py-3 rounded-md bg-primary text-white font-medium hover:bg-primary-dark transition-colors w-full sm:w-auto"
-        >
-          {primaryCTA.label}
-        </a>
-        {
-          secondaryCTA && (
+  </div>
+  <div
+    class="pointer-events-none absolute top-1/3 -right-20 w-[450px] h-[450px] bg-emerald-500/10 dark:bg-emerald-500/15 blur-3xl rounded-full"
+    aria-hidden="true"
+  >
+  </div>
+  <div
+    class="pointer-events-none absolute bottom-10 left-10 w-[350px] h-[350px] bg-amber-500/10 dark:bg-amber-500/10 blur-3xl rounded-full"
+    aria-hidden="true"
+  >
+  </div>
+
+  <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
+      {/* 1. Left Column: Text & CTAs (Constrained by max-w-2xl) */}
+      <div class="lg:col-span-6 flex flex-col justify-center text-left z-10">
+        <div class="max-w-2xl">
+          {/* Top Pill Badge */}
+          <div
+            class="inline-flex items-center text-xs font-semibold tracking-wide uppercase bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-800/50 rounded-full px-4 py-1.5 mb-6 shadow-xs backdrop-blur-md"
+          >
+            <span class="flex h-2 w-2 relative mr-2.5">
+              <span
+                class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"
+              ></span>
+              <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+            </span>
+            <span>{badge}</span>
+          </div>
+
+          {/* Main Headline */}
+          <h1
+            class="text-4xl sm:text-5xl xl:text-6xl font-extrabold tracking-tight leading-[1.12] text-slate-900 dark:text-white"
+          >
+            {
+              title.includes('Conversations, Engagement & Sales') ? (
+                <>
+                  Bring Customer{' '}
+                  <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-600 to-emerald-600 dark:from-blue-400 dark:via-indigo-300 dark:to-emerald-400">
+                    Conversations, Engagement &amp; Sales
+                  </span>{' '}
+                  Together
+                </>
+              ) : title.includes('Instant M-Pesa Sale') ? (
+                <>
+                  {title.replace('Instant M-Pesa Sale', '')}
+                  <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-600 to-emerald-600 dark:from-blue-400 dark:via-indigo-300 dark:to-emerald-400">
+                    Instant M-Pesa Sale
+                  </span>
+                </>
+              ) : (
+                title
+              )
+            }
+          </h1>
+
+          {/* Supporting Subheadline */}
+          <p
+            class="mt-6 text-lg sm:text-xl text-slate-600 dark:text-slate-300 leading-relaxed font-normal"
+          >
+            {subtitle}
+          </p>
+
+          {/* CTA Buttons with Smooth Hover Physics */}
+          <div class="mt-8 sm:mt-10 flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
             <a
-              href={secondaryCTA.href}
-              class:list={[
-                'inline-flex items-center justify-center px-6 py-3 rounded-md border font-medium transition-colors w-full sm:w-auto',
-                textClasses.button,
-              ]}
+              href={primaryCTA.href}
+              class="inline-flex items-center justify-center gap-2.5 px-7 py-3.5 rounded-xl bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-semibold text-base shadow-md shadow-blue-500/20 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-blue-500/25 group"
             >
-              {secondaryCTA.label}
+              <span>{primaryCTA.label}</span>
+              <svg
+                class="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                stroke-width="2.5"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"></path>
+              </svg>
             </a>
-          )
-        }
+
+            {
+              secondaryCTA && (
+                <a
+                  href={secondaryCTA.href}
+                  class="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-900/80 text-slate-700 dark:text-slate-200 font-semibold text-base hover:bg-slate-50 dark:hover:bg-slate-800 shadow-xs backdrop-blur-xs transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md"
+                >
+                  {secondaryCTA.href.includes('demo') ? (
+                    <svg
+                      class="w-4 h-4 text-slate-400"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"
+                      />
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
+                    </svg>
+                  ) : (
+                    <svg
+                      class="w-4 h-4 text-slate-400"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+                      />
+                    </svg>
+                  )}
+                  <span>{secondaryCTA.label}</span>
+                </a>
+              )
+            }
+          </div>
+
+          {/* Micro-Metrics / Trust Counters */}
+          <div
+            class="mt-10 pt-6 border-t border-slate-200/80 dark:border-slate-800/80 grid grid-cols-3 gap-4"
+          >
+            {
+              stats.map((stat) => (
+                <div>
+                  <p
+                    class:list={[
+                      'text-xl sm:text-2xl font-bold',
+                      stat.highlight
+                        ? 'text-emerald-600 dark:text-emerald-400'
+                        : 'text-slate-900 dark:text-white',
+                    ]}
+                  >
+                    {stat.value}
+                  </p>
+                  <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-0.5">
+                    {stat.label}
+                  </p>
+                </div>
+              ))
+            }
+          </div>
+        </div>
+      </div>
+
+      {/* 2. Right Column: The Floating App Ecosystem */}
+      <div
+        class="lg:col-span-6 relative flex items-center justify-center min-h-[480px] sm:min-h-[540px] select-none"
+      >
+        {/* Subtle Ambient Backing Glow */}
+        <div
+          class="absolute w-[360px] h-[360px] sm:w-[420px] sm:h-[420px] rounded-full bg-gradient-to-tr from-blue-500/20 via-indigo-500/15 to-emerald-500/15 dark:from-blue-600/25 dark:via-indigo-500/20 dark:to-emerald-400/20 blur-3xl pointer-events-none"
+        >
+        </div>
+
+        {/* Outer & Inner Deliberate Orbital Guide Lines */}
+        <svg
+          class="absolute inset-0 w-full h-full pointer-events-none opacity-30 dark:opacity-20"
+          viewBox="0 0 500 500"
+          fill="none"
+        >
+          <circle
+            cx="250"
+            cy="250"
+            r="145"
+            stroke="currentColor"
+            stroke-width="1.5"
+            stroke-dasharray="6 8"
+            class="text-blue-500/50 dark:text-blue-400/40"></circle>
+          <circle
+            cx="250"
+            cy="250"
+            r="210"
+            stroke="currentColor"
+            stroke-width="1"
+            stroke-dasharray="4 6"
+            class="text-slate-400 dark:text-slate-700"></circle>
+        </svg>
+
+        {/* Central Component: MarkChat Unified Core */}
+        <div class="relative z-20 flex flex-col items-center justify-center group cursor-pointer">
+          <div
+            class="relative w-28 h-28 sm:w-32 sm:h-32 rounded-3xl bg-gradient-to-br from-blue-600 via-indigo-600 to-blue-800 p-1 shadow-2xl shadow-blue-500/30 border border-white/40 dark:border-white/20 transition-transform duration-300 group-hover:scale-105"
+          >
+            <div
+              class="absolute inset-x-2 top-1 h-1/2 rounded-t-2xl bg-gradient-to-b from-white/30 to-transparent pointer-events-none"
+            >
+            </div>
+            <div
+              class="w-full h-full rounded-2xl flex flex-col items-center justify-center text-white relative"
+            >
+              <div
+                class="w-12 h-12 rounded-xl bg-white/20 backdrop-blur-md flex items-center justify-center shadow-inner mb-1 border border-white/30"
+              >
+                <svg class="w-7 h-7 text-white" viewBox="0 0 24 24" fill="currentColor">
+                  <path
+                    d="M12 2C6.477 2 2 6.477 2 12c0 1.821.487 3.53 1.338 5L2.1 21.9a1 1 0 001.2 1.2l4.9-1.238A9.957 9.957 0 0012 22c5.523 0 10-4.477 10-10S17.523 2 12 2zm1 14h-2v-2h2v2zm0-4h-2V7h2v5z"
+                  ></path>
+                </svg>
+              </div>
+              <span class="text-xs font-bold tracking-wider uppercase text-blue-100">MarkChat</span>
+              <span class="text-[10px] text-blue-200/80 font-medium">Unified Core</span>
+            </div>
+          </div>
+          {/* Active Presence Badge */}
+          <div
+            class="absolute -bottom-3 left-1/2 -translate-x-1/2 px-3 py-0.5 rounded-full bg-white dark:bg-slate-900 text-slate-800 dark:text-white text-[10px] font-semibold border border-slate-200 dark:border-white/20 whitespace-nowrap shadow-md backdrop-blur-md flex items-center gap-1.5"
+          >
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+            <span>Hub Active</span>
+          </div>
+        </div>
+
+        {/* Quadrant 1: Top-Left — WhatsApp Cloud */}
+        <div class="absolute top-2 sm:top-6 left-2 sm:left-6 z-30 group">
+          <div
+            class="bg-white/80 dark:bg-slate-900/60 border border-slate-200/90 dark:border-slate-700 backdrop-blur-xl shadow-lg dark:shadow-2xl rounded-2xl p-3 sm:p-3.5 flex items-center gap-3 transition-all duration-300 hover:scale-105 hover:-translate-y-1 hover:border-emerald-500/50 cursor-pointer"
+          >
+            <div
+              class="w-10 h-10 rounded-xl bg-emerald-500/10 dark:bg-emerald-500/20 text-[#25D366] flex items-center justify-center border border-emerald-500/20 shrink-0"
+            >
+              <svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor">
+                <path
+                  d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"
+                ></path>
+              </svg>
+            </div>
+            <div>
+              <div class="flex items-center gap-1.5">
+                <span class="text-xs sm:text-sm font-bold text-slate-800 dark:text-white"
+                  >WhatsApp</span
+                >
+                <span
+                  class="px-1.5 py-0.5 rounded text-[9px] font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20"
+                  >Cloud API</span
+                >
+              </div>
+              <p class="text-[10px] text-slate-500 dark:text-slate-400 font-medium">
+                Meta Verified
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Quadrant 2: Top-Right — Safaricom M-Pesa */}
+        <div class="absolute top-2 sm:top-6 right-2 sm:right-6 z-30 group">
+          <div
+            class="bg-white/80 dark:bg-slate-900/60 border border-slate-200/90 dark:border-slate-700 backdrop-blur-xl shadow-lg dark:shadow-2xl rounded-2xl p-3 sm:p-3.5 flex items-center gap-3 transition-all duration-300 hover:scale-105 hover:-translate-y-1 hover:border-emerald-500/50 cursor-pointer"
+          >
+            <div
+              class="w-10 h-10 rounded-xl bg-[#00A859]/10 dark:bg-[#00A859]/20 text-[#00A859] flex items-center justify-center border border-[#00A859]/20 shrink-0"
+            >
+              <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2.2"
+                  d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"
+                ></path>
+              </svg>
+            </div>
+            <div>
+              <div class="flex items-center gap-1.5">
+                <span class="text-xs sm:text-sm font-bold text-slate-800 dark:text-white"
+                  >M-Pesa</span
+                >
+                <span
+                  class="px-1.5 py-0.5 rounded text-[9px] font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20"
+                  >/stk Push</span
+                >
+              </div>
+              <p class="text-[10px] text-slate-500 dark:text-slate-400 font-medium">
+                Daraja C2B Auto
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Quadrant 3: Bottom-Left — Facebook Messenger */}
+        <div class="absolute bottom-4 sm:bottom-8 left-2 sm:left-6 z-30 group">
+          <div
+            class="bg-white/80 dark:bg-slate-900/60 border border-slate-200/90 dark:border-slate-700 backdrop-blur-xl shadow-lg dark:shadow-2xl rounded-2xl p-3 sm:p-3.5 flex items-center gap-3 transition-all duration-300 hover:scale-105 hover:-translate-y-1 hover:border-blue-500/50 cursor-pointer"
+          >
+            <div
+              class="w-10 h-10 rounded-xl bg-blue-500/10 dark:bg-blue-500/20 text-[#0084FF] flex items-center justify-center border border-blue-500/20 shrink-0"
+            >
+              <svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor">
+                <path
+                  d="M12 2C6.477 2 2 6.145 2 11.258c0 2.91 1.455 5.514 3.736 7.21V22l3.373-1.851c.917.254 1.888.39 2.891.39 5.523 0 10-4.145 10-9.258C22 6.145 17.523 2 12 2zm1.066 12.443l-2.556-2.727-4.992 2.727 5.489-5.83 2.62 2.727 4.928-2.727-5.489 5.83z"
+                ></path>
+              </svg>
+            </div>
+            <div>
+              <div class="flex items-center gap-1.5">
+                <span class="text-xs sm:text-sm font-bold text-slate-800 dark:text-white"
+                  >Messenger</span
+                >
+                <span
+                  class="px-1.5 py-0.5 rounded text-[9px] font-semibold bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20"
+                  >Meta</span
+                >
+              </div>
+              <p class="text-[10px] text-slate-500 dark:text-slate-400 font-medium">
+                Synced Inboxes
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Quadrant 4: Bottom-Right — Instagram Direct */}
+        <div class="absolute bottom-4 sm:bottom-8 right-2 sm:right-6 z-30 group">
+          <div
+            class="bg-white/80 dark:bg-slate-900/60 border border-slate-200/90 dark:border-slate-700 backdrop-blur-xl shadow-lg dark:shadow-2xl rounded-2xl p-3 sm:p-3.5 flex items-center gap-3 transition-all duration-300 hover:scale-105 hover:-translate-y-1 hover:border-pink-500/50 cursor-pointer"
+          >
+            <div
+              class="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#f09433] via-[#dc2743] to-[#bc1888] text-white flex items-center justify-center shadow-xs shrink-0"
+            >
+              <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                <path
+                  d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"
+                ></path>
+              </svg>
+            </div>
+            <div>
+              <div class="flex items-center gap-1.5">
+                <span class="text-xs sm:text-sm font-bold text-slate-800 dark:text-white"
+                  >Instagram</span
+                >
+                <span
+                  class="px-1.5 py-0.5 rounded text-[9px] font-semibold bg-pink-500/10 text-pink-600 dark:text-pink-400 border border-pink-500/20"
+                  >DMs</span
+                >
+              </div>
+              <p class="text-[10px] text-slate-500 dark:text-slate-400 font-medium">Direct Sales</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Floating Operational Verification Tokens */}
+        <div
+          class="hidden sm:flex absolute -left-2 top-1/2 -translate-y-1/2 z-25 px-3 py-1.5 rounded-xl bg-white/90 dark:bg-slate-900/80 border border-emerald-500/30 text-emerald-800 dark:text-emerald-300 text-[11px] font-mono shadow-md backdrop-blur-md items-center gap-2 transition-transform duration-300 hover:scale-105 pointer-events-none"
+        >
+          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+          <span>Daraja: KES 4,050 Verified</span>
+        </div>
+
+        <div
+          class="hidden sm:flex absolute -right-2 top-1/2 -translate-y-1/2 z-25 px-3 py-1.5 rounded-xl bg-white/90 dark:bg-slate-900/80 border border-blue-500/30 text-blue-800 dark:text-blue-300 text-[11px] font-mono shadow-md backdrop-blur-md items-center gap-2 transition-transform duration-300 hover:scale-105 pointer-events-none"
+        >
+          <span>/stk PIN Prompt Pushed</span>
+          <span class="text-xs">⚡</span>
+        </div>
       </div>
     </div>
   </div>

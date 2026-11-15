@@ -62,6 +62,8 @@ export interface ContactInfo {
   email: string;
   supportEmail?: string;
   salesEmail?: string;
+  partnersEmail?: string;
+  hours?: string;
   address: Address;
 }
 

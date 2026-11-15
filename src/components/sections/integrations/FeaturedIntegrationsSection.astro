@@ -1,0 +1,250 @@
+---
+/**
+ * FeaturedIntegrationsSection - Dedicated Deep-Dive Showcases for Core Connectors
+ *
+ * Provides prominent, tailored showcases for:
+ * 1. WhatsApp Business Cloud API
+ * 2. Africa's Talking Bulk SMS (BYOC)
+ * 3. Safaricom M-Pesa Daraja
+ * 4. Website Live Chat & Help Center
+ * 5. Developer REST APIs & Webhooks
+ */
+import { Icon } from 'astro-icon/components';
+import IntegrationIcon from '@/components/ui/IntegrationIcon.astro';
+
+const featuredList = [
+  {
+    slug: 'whatsapp-cloud-api',
+    name: 'WhatsApp Business Cloud API',
+    iconKey: 'whatsapp',
+    badge: 'Official Meta Gateway',
+    eyebrow: 'Omnichannel Customer Support',
+    description:
+      'Connect directly to Meta’s official WhatsApp Business Cloud API. Empower your entire support and sales team to collaborate on a single Kenyan business phone number (+254) with verified trust and zero unofficial scraping risks.',
+    highlights: [
+      'Multi-agent team inbox collaboration with real-time agent collision warnings',
+      'Pre-approved Meta broadcast templates for promotional drops, reminders, and alerts',
+      'Trigger in-chat /stk M-Pesa checkouts directly inside active WhatsApp threads',
+      'Seamless 24/7 handoff between Markcopilot AI and human sales reps',
+    ],
+    requirements:
+      'Meta Business Manager account, Facebook Business Page, and a clean phone number not registered on personal WhatsApp.',
+    ctaText: 'Explore WhatsApp Setup Guide',
+    ctaHref: '/integrations/whatsapp-cloud-api',
+    accentColor: 'emerald',
+  },
+  {
+    slug: 'africas-talking-bulk-sms',
+    name: 'Bulk SMS & Two-Way Messaging (Africa’s Talking)',
+    iconKey: 'africas-talking',
+    badge: 'BYOC Direct Carrier Model',
+    eyebrow: 'Telecommunications & Carrier Routing',
+    description:
+      'Bring Your Own Carrier (BYOC) with Africa’s Talking. Connect your existing API credentials to send high-priority transactional notifications, dispatch updates, and run two-way SMS conversations with zero platform markup.',
+    highlights: [
+      'Bring Your Own Carrier (BYOC): pay carrier rates directly to Africa’s Talking with 0% MarkChat markup',
+      'Custom registered Alphanumeric Sender IDs (e.g. YOURBIZ) for verified recipient trust',
+      'Two-way SMS messaging: inbound customer replies route directly into your central team inbox',
+      'Automated dispatch alerts, order receipts, and abandoned checkout nudges at scale',
+    ],
+    requirements:
+      'Africa’s Talking account with active API username and API key (or use built-in prepaid SMS bundles).',
+    ctaText: 'View SMS Gateway Guide',
+    ctaHref: '/integrations/africas-talking-bulk-sms',
+    accentColor: 'amber',
+  },
+  {
+    slug: 'safaricom-mpesa-daraja',
+    name: 'Safaricom M-Pesa (Daraja C2B & /stk Checkout)',
+    iconKey: 'mpesa',
+    badge: 'Cryptographic TransID Verification',
+    eyebrow: 'In-Chat Conversational Commerce',
+    description:
+      'Turn chat conversations directly into confirmed transactions. Agents type /stk <amount> <phone> to trigger an official PIN prompt on the customer’s phone. Safaricom verifies the TransID cryptographically and sends automated digital receipts.',
+    highlights: [
+      'Sub-10 second in-chat checkout: buyers enter their PIN without switching apps or copying Till numbers',
+      'Cryptographic TransID Verification: prevents counterfeit screenshot and duplicate transaction replay fraud',
+      'Automated branded digital receipts dispatched via WhatsApp and SMS immediately upon payment',
+      'Supports Dedicated Paybills, Buy Goods Tills, Shared Bank Paybills, and Pochi la Biashara',
+    ],
+    requirements:
+      'Safaricom Daraja Developer Consumer Key, Consumer Secret, and Business Shortcode (Paybill or Buy Goods Till).',
+    ctaText: 'View Daraja Integration Guide',
+    ctaHref: '/integrations/safaricom-mpesa-daraja',
+    accentColor: 'emerald',
+  },
+  {
+    slug: 'website-live-chat',
+    name: 'Website Live Chat & Self-Service Help Center',
+    iconKey: 'live-chat',
+    badge: 'High-Performance Web Widget',
+    eyebrow: 'Website Lead Conversion',
+    description:
+      'Capture and convert website visitors the second they land on your online store. The ultra-lightweight 15KB widget is optimized for Kenyan 3G and 4G mobile connections with instant 1-tap WhatsApp continuation.',
+    highlights: [
+      'Ultra-lightweight 15KB script preserves 100% Google Core Web Vitals speed scores',
+      '1-Tap WhatsApp handoff: allows shoppers to continue the live conversation on their phone',
+      'Integrated self-service FAQ Help Center deflects repetitive pre-sale inquiries automatically',
+      'Live visitor path tracking alerts agents which product or page the buyer is currently viewing',
+    ],
+    requirements:
+      '1-line lightweight script tag placed in your website header, Shopify store, or WordPress theme.',
+    ctaText: 'View Live Chat Setup',
+    ctaHref: '/integrations/website-live-chat',
+    accentColor: 'teal',
+  },
+  {
+    slug: 'developer-api-webhooks',
+    name: 'Developer REST APIs & Cryptographic Webhooks',
+    iconKey: 'api',
+    badge: 'HMAC-SHA256 Signed',
+    eyebrow: 'Custom ERP & Systems Architecture',
+    description:
+      'Connect internal ERPs, CRM databases, or custom ecommerce frontends to MarkChat. Access documented REST endpoints for conversations and payments, and receive real-time webhook event notifications verified with HMAC-SHA256 signatures.',
+    highlights: [
+      'Clean REST endpoints for conversations, contacts, and programmatic M-Pesa STK prompts',
+      'Cryptographically verified webhooks: X-MarkChat-Signature ensures requests originate from MarkChat',
+      'Sync customer order history and payment receipts with SAP, QuickBooks, Odoo, or proprietary databases',
+      'OpenAPI schemas, sandbox keys, and code samples for rapid developer onboarding',
+    ],
+    requirements:
+      'MarkChat API Key and Webhook Signing Secret generated in workspace developer settings.',
+    ctaText: 'Explore Developer Documentation',
+    ctaHref: '/integrations/developer-api-webhooks',
+    accentColor: 'blue',
+  },
+];
+---
+
+<section
+  class="py-16 sm:py-24 bg-slate-50/70 dark:bg-slate-950/40 border-b border-slate-200 dark:border-slate-800"
+>
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- Section Title -->
+    <div class="text-center max-w-3xl mx-auto mb-16">
+      <div
+        class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold tracking-wide uppercase mb-3"
+      >
+        <Icon name="lucide:star" class="w-3.5 h-3.5" />
+        <span>Core Ecosystem Showcases</span>
+      </div>
+      <h2
+        class="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white"
+      >
+        Featured Integration Capabilities
+      </h2>
+      <p class="mt-4 text-sm sm:text-base text-slate-600 dark:text-slate-300">
+        In-depth architecture, configuration requirements, and business benefits for MarkChat's most
+        vital connectors.
+      </p>
+    </div>
+
+    <!-- Featured Showcases Stack -->
+    <div class="space-y-12">
+      {
+        featuredList.map((item, index) => {
+          const isReversed = index % 2 === 1;
+
+          return (
+            <div
+              id={`featured-${item.slug}`}
+              class="rounded-3xl border border-slate-200/90 dark:border-slate-800 bg-white/90 dark:bg-slate-900/90 p-6 sm:p-8 lg:p-10 shadow-xl transition-all hover:border-primary/40 scroll-mt-24"
+            >
+              <div
+                class={`grid grid-cols-1 lg:grid-cols-12 gap-8 items-center ${isReversed ? 'lg:flex-row-reverse' : ''}`}
+              >
+                {/* Left Details (7 cols) */}
+                <div class={`lg:col-span-7 space-y-4 ${isReversed ? 'lg:order-2' : 'lg:order-1'}`}>
+                  {/* Header Badges */}
+                  <div class="flex flex-wrap items-center gap-3">
+                    <IntegrationIcon iconKey={item.iconKey} name={item.name} size="md" />
+                    <div>
+                      <span class="text-xs font-bold uppercase tracking-wider text-primary block">
+                        {item.eyebrow}
+                      </span>
+                      <span class="inline-flex items-center text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20 mt-0.5">
+                        {item.badge}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Headline */}
+                  <h3 class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">
+                    {item.name}
+                  </h3>
+
+                  {/* Description */}
+                  <p class="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+                    {item.description}
+                  </p>
+
+                  {/* Highlights Checklist */}
+                  <ul class="space-y-2 pt-1 text-xs sm:text-sm text-slate-700 dark:text-slate-300">
+                    {item.highlights.map((point) => (
+                      <li class="flex items-start gap-2.5">
+                        <span class="w-4 h-4 rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0 mt-0.5">
+                          <Icon name="lucide:check" class="w-3 h-3" />
+                        </span>
+                        <span class="font-medium">{point}</span>
+                      </li>
+                    ))}
+                  </ul>
+
+                  {/* Next Steps Button */}
+                  <div class="pt-2 flex items-center gap-4">
+                    <a
+                      href={item.ctaHref}
+                      class="inline-flex items-center gap-1.5 text-xs sm:text-sm font-bold text-primary hover:text-primary-hover group transition-colors"
+                    >
+                      <span>{item.ctaText}</span>
+                      <Icon
+                        name="lucide:arrow-right"
+                        class="w-4 h-4 transition-transform group-hover:translate-x-1"
+                      />
+                    </a>
+                  </div>
+                </div>
+
+                {/* Right Requirements & Architecture Frame (5 cols) */}
+                <div class={`lg:col-span-5 ${isReversed ? 'lg:order-1' : 'lg:order-2'}`}>
+                  <div class="rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-950/60 p-5 space-y-4 text-xs">
+                    <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
+                      <span class="font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
+                        <Icon name="lucide:info" class="w-4 h-4 text-primary" />
+                        Connection Requirements
+                      </span>
+                      <span class="font-mono text-[10px] bg-slate-200/70 dark:bg-slate-800 px-2 py-0.5 rounded text-slate-600 dark:text-slate-400">
+                        Pre-requisites
+                      </span>
+                    </div>
+
+                    <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed font-sans">
+                      {item.requirements}
+                    </p>
+
+                    <div class="pt-3 border-t border-slate-200 dark:border-slate-800 space-y-2">
+                      <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">
+                        Verified Architecture
+                      </span>
+                      <div class="flex flex-wrap gap-1.5 text-[11px] font-mono">
+                        <span class="px-2 py-0.5 rounded bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300">
+                          Production Ready
+                        </span>
+                        <span class="px-2 py-0.5 rounded bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300">
+                          KDPA 2019 Compliant
+                        </span>
+                        <span class="px-2 py-0.5 rounded bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300">
+                          Nairobi Timezone
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          );
+        })
+      }
+    </div>
+  </div>
+</section>

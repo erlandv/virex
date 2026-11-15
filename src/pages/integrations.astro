@@ -1,27 +1,45 @@
 ---
 /**
- * MarkChat Kenya — Integrations Directory
+ * MarkChat Kenya — Integrations Directory & Ecosystem Showcase
+ *
+ * Professional, CMS-driven showcase featuring:
+ * 1. Connected Business Ecosystem Hero with IntegrationsHeroShowcase
+ * 2. In-depth Featured Integrations Showcases (WhatsApp, Africa's Talking BYOC, M-Pesa Daraja, Live Chat, Developer APIs)
+ * 3. Searchable, Filterable Integration Discovery Directory with authentic brand icons and requirements
+ * 4. Technical Consultation CTA
  */
 import MarketingLayout from '@/layouts/MarketingLayout.astro';
-import PageHeader from '@sections/content/PageHeader.astro';
+import { Icon } from 'astro-icon/components';
 import IntegrationIcon from '@/components/ui/IntegrationIcon.astro';
+import IntegrationsHeroShowcase from '@/components/sections/integrations/IntegrationsHeroShowcase.astro';
+import FeaturedIntegrationsSection from '@/components/sections/integrations/FeaturedIntegrationsSection.astro';
 import CTA from '@sections/marketing/CTA.astro';
 import { siteConfig } from '@/config';
 import { fetchIntegrations } from '@/lib/cms-api';
 
 const integrations = await fetchIntegrations();
-const featured = integrations.filter((i) => i.isFeatured);
 
-const categories = [
-  'All',
-  'Payments',
-  'Messaging',
-  'SMS Gateway',
-  'Social Commerce',
-  'E-Commerce',
-  'AI Automation',
-  'Productivity',
-  'Authentication',
+// Grouping helper for category filter tabs
+function getIntegrationGroup(category: string, slug: string): string {
+  const cat = (category || '').toLowerCase();
+  const s = (slug || '').toLowerCase();
+  if (s === 'developer-api-webhooks' || s === 'shopify' || s === 'google-microsoft-sso') {
+    return 'Developer & Business Systems';
+  }
+  if (cat.includes('payment')) return 'Payments & Mobile Money';
+  if (cat.includes('message') || cat.includes('sms') || cat.includes('social')) {
+    return 'Messaging & Communication';
+  }
+  if (cat.includes('ai') || cat.includes('productivity')) return 'AI & Productivity';
+  return 'Developer & Business Systems';
+}
+
+const filterCategories = [
+  'All Integrations',
+  'Messaging & Communication',
+  'Payments & Mobile Money',
+  'AI & Productivity',
+  'Developer & Business Systems',
 ];
 ---
 
@@ -29,163 +47,393 @@ const categories = [
   title={`Integrations - ${siteConfig.name}`}
   description="Connect Safaricom M-Pesa Daraja, Africa’s Talking Bulk SMS, Meta WhatsApp Cloud API, and Markcopilot AI into MarkChat."
 >
-  <PageHeader
-    title="Kenyan Commerce & Telecommunications Integrations"
-    subtitle="Unify Safaricom Daraja API, Africa’s Talking Bulk SMS, WhatsApp Cloud, and Pochi la Biashara in one high-performance stack."
-  />
+  <!-- ======================================================== -->
+  <!-- 1. HERO SECTION: CONNECTED BUSINESS ECOSYSTEM            -->
+  <!-- ======================================================== -->
+  <section
+    class="relative pt-24 pb-16 md:pt-32 md:pb-24 overflow-hidden bg-slate-50 dark:bg-[#0B1120]"
+  >
+    <!-- Ambient Background Glows -->
+    <div
+      class="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[350px] bg-primary/10 dark:bg-primary/20 blur-[130px] rounded-full pointer-events-none -z-10"
+    >
+    </div>
+    <div
+      class="absolute top-1/3 right-1/4 w-[400px] h-[300px] bg-emerald-500/10 blur-[120px] rounded-full pointer-events-none -z-10"
+    >
+    </div>
 
-  <!-- Section 1 — Featured Integrations (3-Column Rich Cards) -->
-  <section class="py-12 sm:py-16 bg-surface/50 border-b border-border">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <!-- Eyebrow Pill -->
+      <div
+        class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 dark:bg-primary/20 border border-primary/20 text-primary text-xs font-bold tracking-wide uppercase mb-6 animate-fade-in"
+      >
+        <Icon name="lucide:network" class="w-3.5 h-3.5" />
+        <span>CONNECTED BUSINESS ECOSYSTEM</span>
+      </div>
+
+      <!-- Headline -->
+      <h1
+        class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-slate-900 dark:text-white max-w-4xl mx-auto leading-tight sm:leading-tight"
+      >
+        Connect the Tools Your Business Already Uses.
+      </h1>
+
+      <!-- Supporting Copy -->
+      <p
+        class="mt-6 text-base sm:text-lg md:text-xl text-slate-600 dark:text-slate-300 max-w-3xl mx-auto leading-relaxed"
+      >
+        Bring your customer communication channels, mobile money services and business workflows
+        together with MarkChat. Connect the platforms your customers use and manage more of your
+        customer engagement from one workspace.
+      </p>
+
+      <!-- Action Buttons -->
+      <div class="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
+        <a
+          href="#directory"
+          class="w-full sm:w-auto inline-flex items-center justify-center px-6 py-3.5 rounded-xl font-bold text-sm text-white bg-primary hover:brightness-110 shadow-lg shadow-primary/25 transition-all"
+        >
+          <Icon name="lucide:grid" class="w-4 h-4 mr-2" />
+          Explore Integrations
+        </a>
+        <a
+          href="/demo"
+          class="w-full sm:w-auto inline-flex items-center justify-center px-6 py-3.5 rounded-xl font-bold text-sm text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-800/80 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm transition-all"
+        >
+          <Icon name="lucide:calendar" class="w-4 h-4 mr-2" />
+          Book a Live Demo
+        </a>
+      </div>
+
+      <!-- Interactive Ecosystem Network Showcase -->
+      <div class="mt-14 sm:mt-16">
+        <IntegrationsHeroShowcase />
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================================================== -->
+  <!-- 2. CORE FEATURED INTEGRATIONS SHOWCASES                  -->
+  <!-- ======================================================== -->
+  <FeaturedIntegrationsSection />
+
+  <!-- ======================================================== -->
+  <!-- 3. ALL INTEGRATIONS DIRECTORY & DISCOVERY EXPERIENCE     -->
+  <!-- ======================================================== -->
+  <section id="directory" class="py-16 sm:py-24 bg-white dark:bg-[#0B1120] scroll-mt-20">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="mb-8">
-        <span class="text-xs font-mono font-semibold text-primary uppercase">Core Ecosystem</span>
-        <h2 class="text-2xl sm:text-3xl font-extrabold text-text mt-1">Featured Integrations</h2>
-        <p class="text-sm text-text-muted mt-2">
-          The essential mobile money and telecommunication channels powering modern Kenyan trade.
+      <!-- Section Header -->
+      <div class="text-center max-w-3xl mx-auto mb-10">
+        <div
+          class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold tracking-wide uppercase mb-3"
+        >
+          <Icon name="lucide:compass" class="w-3.5 h-3.5" />
+          <span>Integration Directory</span>
+        </div>
+        <h2
+          class="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white"
+        >
+          All Supported Integrations
+        </h2>
+        <p class="mt-3 text-sm sm:text-base text-slate-600 dark:text-slate-300">
+          Search by name or filter by category to inspect connection requirements, technical
+          architecture, and setup guides.
         </p>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <!-- Search & Filters Control Bar -->
+      <div class="max-w-4xl mx-auto mb-10 space-y-6">
+        <!-- Search Input -->
+        <div class="relative">
+          <div
+            class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400"
+          >
+            <Icon name="lucide:search" class="w-5 h-5" />
+          </div>
+          <input
+            type="text"
+            id="integration-search"
+            placeholder="Search integrations by name, channel, or keyword (e.g. WhatsApp, M-Pesa, SMS, Shopify...)"
+            class="w-full pl-11 pr-10 py-3.5 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 shadow-sm transition-all"
+          />
+          <button
+            type="button"
+            id="clear-search-btn"
+            class="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hidden"
+            aria-label="Clear search"
+          >
+            <Icon name="lucide:x" class="w-4 h-4" />
+          </button>
+        </div>
+
+        <!-- Category Filter Tabs -->
+        <div class="flex flex-wrap items-center justify-center gap-2" data-filter-tabs>
+          {
+            filterCategories.map((cat, index) => (
+              <button
+                type="button"
+                class:list={[
+                  'filter-tab-btn px-4 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer border',
+                  index === 0
+                    ? 'active bg-primary border-primary text-white shadow-xs'
+                    : 'bg-slate-50 dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:border-slate-300 dark:hover:border-slate-700',
+                ]}
+                data-category={cat}
+              >
+                {cat}
+              </button>
+            ))
+          }
+        </div>
+
+        <!-- Active Filter Indicator & Results Count -->
+        <div
+          class="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 px-1"
+        >
+          <span id="results-count" class="font-mono font-medium">
+            Showing {integrations.length} integrations
+          </span>
+          <span class="text-[11px] font-sans">Click any card to read setup documentation</span>
+        </div>
+      </div>
+
+      <!-- Integrations Cards Grid -->
+      <div
+        id="integrations-grid"
+        class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+        data-integrations-grid
+      >
         {
-          featured.map((item) => (
-            <a
-              href={`/integrations/${item.slug}`}
-              class="group flex flex-col justify-between p-6 rounded-2xl border border-border bg-background hover:border-primary/50 hover:shadow-lg transition-all"
-            >
-              <div>
-                <div class="flex items-center justify-between mb-4">
-                  <IntegrationIcon
-                    iconKey={item.iconKey}
-                    logoUrl={item.logoUrl}
-                    name={item.name}
-                    size="md"
-                  />
-                  {item.isPopular && (
-                    <span class="px-2.5 py-0.5 text-xs font-semibold rounded-full bg-primary/10 text-primary border border-primary/20">
-                      Popular
-                    </span>
+          integrations.map((item) => {
+            const groupName = getIntegrationGroup(item.category, item.slug);
+
+            return (
+              <a
+                href={`/integrations/${item.slug}`}
+                class="integration-card group flex flex-col justify-between p-6 rounded-3xl border border-slate-200/90 dark:border-slate-800/90 bg-white dark:bg-slate-900 hover:border-primary/50 hover:shadow-xl transition-all"
+                data-name={item.name.toLowerCase()}
+                data-slug={item.slug.toLowerCase()}
+                data-category={item.category.toLowerCase()}
+                data-group={groupName.toLowerCase()}
+                data-desc={item.shortDescription.toLowerCase()}
+              >
+                <div>
+                  {/* Header: Icon + Category + Popular Badge */}
+                  <div class="flex items-start justify-between mb-4">
+                    <IntegrationIcon
+                      iconKey={item.iconKey}
+                      logoUrl={item.logoUrl}
+                      name={item.name}
+                      size="md"
+                    />
+                    <div class="flex items-center gap-1.5">
+                      <span class="text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
+                        {item.category}
+                      </span>
+                      {item.isPopular && (
+                        <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20">
+                          Popular
+                        </span>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Integration Title */}
+                  <h3 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white group-hover:text-primary transition-colors">
+                    {item.name}
+                  </h3>
+
+                  {/* Short Description */}
+                  <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 mt-2 line-clamp-2 leading-relaxed">
+                    {item.shortDescription}
+                  </p>
+
+                  {/* Highlight Benefit */}
+                  {item.businessBenefits && item.businessBenefits.length > 0 && (
+                    <div class="mt-3.5 p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800 text-[11px] text-slate-600 dark:text-slate-300 flex items-start gap-2">
+                      <span class="w-3.5 h-3.5 rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0 mt-0.5">
+                        <Icon name="lucide:check" class="w-2.5 h-2.5" />
+                      </span>
+                      <span class="line-clamp-2 font-medium">{item.businessBenefits[0]}</span>
+                    </div>
                   )}
                 </div>
-                <h3 class="text-lg font-bold text-text group-hover:text-primary transition-colors">
-                  {item.name}
-                </h3>
-                <p class="text-xs font-mono text-text-muted mt-1 uppercase tracking-wider">
-                  {item.category}
-                </p>
-                <p class="text-sm text-text-muted mt-3 line-clamp-2 leading-relaxed">
-                  {item.shortDescription}
-                </p>
-              </div>
 
-              <div class="mt-5 pt-4 border-t border-border/50 flex items-center justify-between text-xs font-semibold text-primary">
-                <span>View workflow guide</span>
-                <span class="group-hover:translate-x-1 transition-transform">→</span>
-              </div>
-            </a>
-          ))
+                {/* Footer: Requirements & Guide Link */}
+                <div class="mt-5 pt-4 border-t border-slate-100 dark:border-slate-800/80 space-y-2">
+                  {item.setupRequirements && (
+                    <p class="text-[10px] text-slate-400 dark:text-slate-500 line-clamp-1 italic">
+                      Req: {item.setupRequirements}
+                    </p>
+                  )}
+                  <div class="flex items-center justify-between text-xs font-bold text-primary group-hover:text-primary-hover transition-colors">
+                    <span>View setup guide</span>
+                    <Icon
+                      name="lucide:arrow-right"
+                      class="w-4 h-4 transition-transform group-hover:translate-x-1"
+                    />
+                  </div>
+                </div>
+              </a>
+            );
+          })
         }
       </div>
-    </div>
-  </section>
 
-  <!-- Section 2 — All Integrations (Filter Pills + 4-Column Centered Icon Grid) -->
-  <section class="py-16 bg-background">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="text-center max-w-3xl mx-auto mb-10">
-        <h2 class="text-2xl sm:text-3xl font-extrabold text-text">All Supported Integrations</h2>
-        <p class="text-sm text-text-muted mt-2">
-          Filter by channel type or click any card to inspect architecture, step-by-step setup
-          guides, and merchant benefits.
+      <!-- Empty State Container -->
+      <div
+        id="empty-state"
+        class="hidden py-16 text-center max-w-md mx-auto space-y-4 rounded-3xl border border-dashed border-slate-300 dark:border-slate-800 p-8"
+      >
+        <div
+          class="w-12 h-12 rounded-2xl bg-primary/10 text-primary mx-auto flex items-center justify-center"
+        >
+          <Icon name="lucide:search-x" class="w-6 h-6" />
+        </div>
+        <h4 class="text-base font-bold text-slate-900 dark:text-white">No integrations found</h4>
+        <p class="text-xs text-slate-500 dark:text-slate-400">
+          We couldn't find any integrations matching your current search or category filter.
         </p>
-      </div>
-
-      <!-- Category Filter Pills -->
-      <div class="flex flex-wrap justify-center gap-2 mb-12" data-filter-tabs>
-        {
-          categories.map((category, index) => (
-            <button
-              type="button"
-              class:list={[
-                'px-4 py-2 rounded-full text-xs font-semibold transition-all cursor-pointer',
-                index === 0
-                  ? 'bg-primary text-white shadow-sm'
-                  : 'bg-surface border border-border text-text-muted hover:text-text hover:bg-surface-hover',
-              ]}
-              data-category={category}
-            >
-              {category}
-            </button>
-          ))
-        }
-      </div>
-
-      <!-- 4-Column Centered Icon Card Grid -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6" data-integrations-grid>
-        {
-          integrations.map((item) => (
-            <a
-              href={`/integrations/${item.slug}`}
-              class="group flex flex-col items-center text-center p-6 rounded-2xl border border-border bg-surface hover:border-primary hover:shadow-lg transition-all"
-              data-category={item.category}
-            >
-              <IntegrationIcon
-                iconKey={item.iconKey}
-                logoUrl={item.logoUrl}
-                name={item.name}
-                size="xl"
-                class="mb-4"
-              />
-              <h3 class="text-base font-bold text-text group-hover:text-primary transition-colors">
-                {item.name}
-              </h3>
-              <p class="text-xs text-text-muted mt-1">{item.category}</p>
-
-              {item.isPopular && (
-                <span class="mt-3 px-2.5 py-0.5 text-xs font-semibold rounded-full bg-primary/10 text-primary border border-primary/20">
-                  Popular
-                </span>
-              )}
-            </a>
-          ))
-        }
+        <button
+          type="button"
+          id="reset-filters-btn"
+          class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold bg-primary text-white hover:brightness-110 cursor-pointer"
+        >
+          <Icon name="lucide:refresh-cw" class="w-3.5 h-3.5" />
+          Reset All Filters
+        </button>
       </div>
     </div>
   </section>
 
+  <!-- ======================================================== -->
+  <!-- 4. ENTERPRISE CONSULTATION CLOSING CTA                   -->
+  <!-- ======================================================== -->
   <CTA
     title="Have a custom ERP, Till, or Bank Paybill?"
-    description="MarkChat Enterprise supports dedicated shortcodes, core banking callbacks, and custom webhooks."
+    description="MarkChat supports dedicated shortcodes, core banking callbacks, and custom webhooks for Kenyan enterprises."
     action={{ label: 'Book Technical Consultation', href: '/demo' }}
     background="muted"
   />
 </MarketingLayout>
 
 <script>
-  document.addEventListener('DOMContentLoaded', () => {
+  function initIntegrationsDirectory() {
+    const searchInput = document.getElementById('integration-search') as HTMLInputElement | null;
+    const clearBtn = document.getElementById('clear-search-btn');
+    const resetBtn = document.getElementById('reset-filters-btn');
     const tabs = document.querySelectorAll<HTMLButtonElement>('[data-filter-tabs] button');
-    const items = document.querySelectorAll<HTMLElement>('[data-integrations-grid] > a');
+    const cards = document.querySelectorAll<HTMLElement>('.integration-card');
+    const countEl = document.getElementById('results-count');
+    const emptyState = document.getElementById('empty-state');
 
+    let activeCategory = 'All Integrations';
+
+    function filterIntegrations() {
+      const query = (searchInput?.value || '').trim().toLowerCase();
+      let visibleCount = 0;
+
+      cards.forEach((card) => {
+        const name = card.getAttribute('data-name') || '';
+        const group = card.getAttribute('data-group') || '';
+        const cat = card.getAttribute('data-category') || '';
+        const desc = card.getAttribute('data-desc') || '';
+
+        const matchesCategory =
+          activeCategory === 'All Integrations' ||
+          group.includes(activeCategory.toLowerCase()) ||
+          cat.includes(activeCategory.toLowerCase());
+
+        const matchesQuery =
+          !query ||
+          name.includes(query) ||
+          desc.includes(query) ||
+          cat.includes(query) ||
+          group.includes(query);
+
+        if (matchesCategory && matchesQuery) {
+          card.style.display = '';
+          visibleCount++;
+        } else {
+          card.style.display = 'none';
+        }
+      });
+
+      // Update count & empty state
+      if (countEl) {
+        countEl.textContent = `Showing ${visibleCount} integration${visibleCount === 1 ? '' : 's'}`;
+      }
+
+      if (emptyState) {
+        if (visibleCount === 0) {
+          emptyState.classList.remove('hidden');
+        } else {
+          emptyState.classList.add('hidden');
+        }
+      }
+
+      // Toggle clear button
+      if (clearBtn) {
+        if (query) {
+          clearBtn.classList.remove('hidden');
+        } else {
+          clearBtn.classList.add('hidden');
+        }
+      }
+    }
+
+    // Category Tab Click
     tabs.forEach((tab) => {
       tab.addEventListener('click', () => {
-        const category = tab.getAttribute('data-category');
+        activeCategory = tab.getAttribute('data-category') || 'All Integrations';
 
         tabs.forEach((t) => {
-          t.classList.remove('bg-primary', 'text-white', 'shadow-sm');
-          t.classList.add('bg-surface', 'border', 'border-border', 'text-text-muted');
+          t.classList.remove('active', 'bg-primary', 'border-primary', 'text-white', 'shadow-xs');
+          t.classList.add(
+            'bg-slate-50',
+            'dark:bg-slate-900',
+            'border-slate-200',
+            'dark:border-slate-800',
+            'text-slate-600',
+            'dark:text-slate-400'
+          );
         });
-        tab.classList.remove('bg-surface', 'border', 'border-border', 'text-text-muted');
-        tab.classList.add('bg-primary', 'text-white', 'shadow-sm');
 
-        items.forEach((item) => {
-          const itemCategory = item.getAttribute('data-category');
-          if (category === 'All' || itemCategory === category) {
-            item.style.display = '';
-          } else {
-            item.style.display = 'none';
-          }
-        });
+        tab.classList.remove(
+          'bg-slate-50',
+          'dark:bg-slate-900',
+          'border-slate-200',
+          'dark:border-slate-800',
+          'text-slate-600',
+          'dark:text-slate-400'
+        );
+        tab.classList.add('active', 'bg-primary', 'border-primary', 'text-white', 'shadow-xs');
+
+        filterIntegrations();
       });
     });
-  });
+
+    // Real-time search input
+    searchInput?.addEventListener('input', filterIntegrations);
+
+    // Clear search button
+    clearBtn?.addEventListener('click', () => {
+      if (searchInput) {
+        searchInput.value = '';
+        searchInput.focus();
+      }
+      filterIntegrations();
+    });
+
+    // Reset all filters button in empty state
+    resetBtn?.addEventListener('click', () => {
+      if (searchInput) searchInput.value = '';
+      const firstTab = tabs[0];
+      if (firstTab) firstTab.click();
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', initIntegrationsDirectory);
+  document.addEventListener('astro:page-load', initIntegrationsDirectory);
 </script>
-``

@@ -1,394 +1,597 @@
 ---
 /**
- * ContactForm - Contact form with validation and multiple backend support
+ * ContactForm — Modernized, Accessible, and KDPA-Compliant Contact Form
  *
  * @description
- * A fully-featured contact form with client-side validation, loading states,
- * and success/error feedback. Supports Netlify Forms, Formspree, and custom endpoints.
- * Runs in demo mode (simulates success) when no action URL is provided.
- *
- * @example Demo mode (no backend)
- * ```astro
- * <ContactForm />
- * ```
- *
- * @example Netlify Forms
- * ```astro
- * <ContactForm netlify formName="contact" />
- * ```
- *
- * @example Custom endpoint
- * ```astro
- * <ContactForm action="https://api.example.com/contact" method="POST" />
- * ```
+ * Captures verified customer and business inquiries with real-time validation,
+ * spam honeypot, anti-bot timing checks, KDPA 2019 consent, and seamless
+ * integration into MarkChat's Single-Admin CMS lead pipeline.
  */
+import { Icon } from 'astro-icon/components';
 
 interface Props {
-  /** Form action URL - leave empty for client-side only demo */
+  /** Optional external action URL; defaults to CMS lead pipeline */
   action?: string;
-  /** HTTP method for form submission */
+  /** HTTP submission method */
   method?: 'POST' | 'GET';
-  /** Enable Netlify Forms integration */
+  /** Optional Netlify Forms integration */
   netlify?: boolean;
-  /** Form name for Netlify Forms */
+  /** Netlify form name */
   formName?: string;
 }
 
 const { action = '', method = 'POST', netlify = false, formName = 'contact' } = Astro.props;
 ---
 
-<form
-  id="contact-form"
-  action={action}
-  method={method}
-  class="space-y-6"
-  data-netlify={netlify ? 'true' : undefined}
-  name={netlify ? formName : undefined}
-  novalidate
->
-  <!-- Honeypot field for spam protection -->
-  <div class="hidden" aria-hidden="true">
-    <label>
-      Don't fill this out if you're human:
-      <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" />
-    </label>
-  </div>
-
-  <!-- Netlify hidden field -->
-  {netlify && <input type="hidden" name="form-name" value={formName} />}
-
-  <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-    <div>
-      <label for="firstName" class="block text-sm font-medium text-text mb-2">
-        First name <span class="text-red-500">*</span>
+<div class="contact-form-wrapper">
+  <!-- Interactive Form -->
+  <form
+    id="contact-form"
+    action={action}
+    method={method}
+    class="space-y-5"
+    data-netlify={netlify ? 'true' : undefined}
+    name={netlify ? formName : undefined}
+    novalidate
+  >
+    <!-- 1. Spam & Bot Protection (Honeypot + Timing Token) -->
+    <div class="hidden" aria-hidden="true">
+      <label>
+        Do not fill this field:
+        <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" />
       </label>
-      <input
-        type="text"
-        id="firstName"
-        name="firstName"
-        required
-        minlength="2"
-        class="w-full px-4 py-3 rounded-md border border-border bg-background text-text placeholder-text-muted focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-colors"
-        placeholder="Jane"
-      />
-      <p class="mt-1 text-sm text-red-500 hidden" data-error="firstName"></p>
+      <input type="hidden" name="_formRenderTime" id="form-render-time" value="" />
     </div>
+
+    {netlify && <input type="hidden" name="form-name" value={formName} />}
+
+    <!-- 2. Full Name -->
     <div>
-      <label for="lastName" class="block text-sm font-medium text-text mb-2">
-        Last name <span class="text-red-500">*</span>
+      <label
+        for="contact-fullName"
+        class="block text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-2"
+      >
+        Full Name <span class="text-rose-500">*</span>
       </label>
-      <input
-        type="text"
-        id="lastName"
-        name="lastName"
-        required
-        minlength="2"
-        class="w-full px-4 py-3 rounded-md border border-border bg-background text-text placeholder-text-muted focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-colors"
-        placeholder="Doe"
-      />
-      <p class="mt-1 text-sm text-red-500 hidden" data-error="lastName"></p>
+      <div class="relative">
+        <input
+          type="text"
+          id="contact-fullName"
+          name="fullName"
+          required
+          minlength="2"
+          maxlength="100"
+          autocomplete="name"
+          placeholder="e.g. Grace Wambui"
+          class="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/60 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 dark:focus:border-blue-400 transition-all shadow-2xs"
+          aria-describedby="error-fullName"
+        />
+      </div>
+      <p
+        id="error-fullName"
+        class="text-xs text-rose-500 dark:text-rose-400 mt-1.5 hidden"
+        data-error="contact-fullName"
+      >
+      </p>
     </div>
-  </div>
 
-  <div>
-    <label for="email" class="block text-sm font-medium text-text mb-2">
-      Email <span class="text-red-500">*</span>
-    </label>
-    <input
-      type="email"
-      id="email"
-      name="email"
-      required
-      class="w-full px-4 py-3 rounded-md border border-border bg-background text-text placeholder-text-muted focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-colors"
-      placeholder="jane@example.com"
-    />
-    <p class="mt-1 text-sm text-red-500 hidden" data-error="email"></p>
-  </div>
+    <!-- 3. Work Email & Kenyan Phone Number (2 Columns) -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div>
+        <label
+          for="contact-email"
+          class="block text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-2"
+        >
+          Work Email <span class="text-rose-500">*</span>
+        </label>
+        <input
+          type="email"
+          id="contact-email"
+          name="email"
+          required
+          maxlength="100"
+          autocomplete="email"
+          placeholder="name@company.co.ke"
+          class="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/60 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 dark:focus:border-blue-400 transition-all shadow-2xs"
+          aria-describedby="error-email"
+        />
+        <p
+          id="error-email"
+          class="text-xs text-rose-500 dark:text-rose-400 mt-1.5 hidden"
+          data-error="contact-email"
+        >
+        </p>
+      </div>
 
-  <div>
-    <label for="subject" class="block text-sm font-medium text-text mb-2">
-      Subject <span class="text-red-500">*</span>
-    </label>
-    <div class="relative">
-      <select
-        id="subject"
-        name="subject"
-        required
-        class="w-full px-4 py-3 pr-10 rounded-md border border-border bg-background text-text focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-colors appearance-none cursor-pointer"
-      >
-        <option value="">Select a topic</option>
-        <option value="general">General inquiry</option>
-        <option value="sales">Sales & pricing</option>
-        <option value="support">Technical support</option>
-        <option value="enterprise">Enterprise solutions</option>
-        <option value="partnership">Partnership opportunities</option>
-      </select>
-      <div
-        class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-text-muted"
-      >
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"
-          ></path>
-        </svg>
+      <div>
+        <label
+          for="contact-phone"
+          class="block text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-2"
+        >
+          Phone Number <span class="text-slate-400 font-normal lowercase">(optional)</span>
+        </label>
+        <input
+          type="tel"
+          id="contact-phone"
+          name="phone"
+          maxlength="20"
+          autocomplete="tel"
+          placeholder="+254 7XX XXX XXX"
+          class="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/60 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 dark:focus:border-blue-400 transition-all shadow-2xs"
+          aria-describedby="error-phone"
+        />
+        <p
+          id="error-phone"
+          class="text-xs text-rose-500 dark:text-rose-400 mt-1.5 hidden"
+          data-error="contact-phone"
+        >
+        </p>
       </div>
     </div>
-    <p class="mt-1 text-sm text-red-500 hidden" data-error="subject"></p>
-  </div>
 
-  <div>
-    <label for="message" class="block text-sm font-medium text-text mb-2">
-      Message <span class="text-red-500">*</span>
-    </label>
-    <textarea
-      id="message"
-      name="message"
-      rows="5"
-      required
-      minlength="10"
-      class="w-full px-4 py-3 rounded-md border border-border bg-background text-text placeholder-text-muted focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent resize-none transition-colors"
-      placeholder="Tell us how we can help..."></textarea>
-    <p class="mt-1 text-sm text-red-500 hidden" data-error="message"></p>
-  </div>
-
-  <!-- Form status messages -->
-  <div id="form-status" class="hidden">
-    <div
-      id="form-success"
-      class="hidden p-4 rounded-md bg-green-100 dark:bg-green-950 border border-green-300 dark:border-green-800"
-    >
-      <p class="text-green-900 dark:text-green-100 font-medium">Message sent successfully!</p>
-      <p class="text-green-800 dark:text-green-300 text-sm mt-1">
-        We'll get back to you within 24 hours.
-      </p>
+    <!-- 4. Business / Organization Name -->
+    <div>
+      <label
+        for="contact-company"
+        class="block text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-2"
+      >
+        Organization / Business <span class="text-slate-400 font-normal lowercase">(optional)</span>
+      </label>
+      <input
+        type="text"
+        id="contact-company"
+        name="company"
+        maxlength="120"
+        placeholder="e.g. Mama Mboga Mart or Coastal Clinic"
+        class="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/60 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 dark:focus:border-blue-400 transition-all shadow-2xs"
+      />
     </div>
-    <div
-      id="form-error"
-      class="hidden p-4 rounded-md bg-red-100 dark:bg-red-950 border border-red-300 dark:border-red-800"
-    >
-      <p class="text-red-900 dark:text-red-100 font-medium">Something went wrong</p>
-      <p class="text-red-800 dark:text-red-300 text-sm mt-1">
-        Please try again or contact us directly via email.
-      </p>
-    </div>
-  </div>
 
-  <div class="flex flex-col sm:flex-row sm:items-center gap-4">
-    <button
-      type="submit"
-      id="submit-button"
-      class="w-full sm:w-auto px-6 py-3 rounded-md bg-primary text-white font-medium hover:bg-primary-dark transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
-    >
-      <span id="button-text">Send Message</span>
-      <span id="button-loading" class="hidden">
-        <svg
-          class="animate-spin inline-block w-5 h-5 mr-2"
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
+    <!-- 5. Inquiry Type (Tailored to MarkChat Platform) -->
+    <div>
+      <label
+        for="contact-enquiryType"
+        class="block text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-2"
+      >
+        Reason for Inquiry <span class="text-rose-500">*</span>
+      </label>
+      <div class="relative">
+        <select
+          id="contact-enquiryType"
+          name="enquiryType"
+          required
+          class="w-full px-4 py-3 pr-10 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/60 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 dark:focus:border-blue-400 transition-all appearance-none cursor-pointer shadow-2xs"
+          aria-describedby="error-enquiryType"
         >
-          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"
-          ></circle>
-          <path
-            class="opacity-75"
-            fill="currentColor"
-            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-          ></path>
-        </svg>
-        Sending...
-      </span>
-    </button>
-    <p class="text-sm text-text-muted">
-      <span class="text-red-500">*</span> Required fields
+          <option value="" disabled selected>Select the nature of your inquiry</option>
+          <option value="sales">Sales &amp; Commercial Pricing</option>
+          <option value="demo">Schedule a Tailored Platform Walkthrough</option>
+          <option value="daraja">Safaricom Daraja API (Paybill / Till) Setup</option>
+          <option value="sms">Bulk SMS &amp; Africa’s Talking BYOC Configuration</option>
+          <option value="support">Technical Support for Active Workspace</option>
+          <option value="partnership">Technology &amp; Integration Partnership</option>
+          <option value="general">General Business Inquiry</option>
+        </select>
+        <div
+          class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3.5 text-slate-400"
+        >
+          <Icon name="lucide:chevron-down" class="w-4 h-4" />
+        </div>
+      </div>
+      <p
+        id="error-enquiryType"
+        class="text-xs text-rose-500 dark:text-rose-400 mt-1.5 hidden"
+        data-error="contact-enquiryType"
+      >
+      </p>
+    </div>
+
+    <!-- 6. Message Body -->
+    <div>
+      <label
+        for="contact-message"
+        class="block text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-2"
+      >
+        Your Message <span class="text-rose-500">*</span>
+      </label>
+      <textarea
+        id="contact-message"
+        name="message"
+        rows="4"
+        required
+        minlength="10"
+        maxlength="2000"
+        placeholder="Tell us about your team size, expected message volumes, or specific payment and communication needs..."
+        class="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/60 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 dark:focus:border-blue-400 resize-none transition-all shadow-2xs"
+        aria-describedby="error-message"></textarea>
+      <p
+        id="error-message"
+        class="text-xs text-rose-500 dark:text-rose-400 mt-1.5 hidden"
+        data-error="contact-message"
+      >
+      </p>
+    </div>
+
+    <!-- 7. KDPA 2019 Privacy Notice & Mandatory Consent Checkbox -->
+    <div class="pt-1">
+      <label class="flex items-start gap-3 cursor-pointer select-none group">
+        <input
+          type="checkbox"
+          id="contact-kdpaConsent"
+          name="kdpaConsent"
+          required
+          class="mt-1 w-4 h-4 rounded text-blue-600 border-slate-300 dark:border-slate-700 focus:ring-blue-500 cursor-pointer"
+          aria-describedby="error-kdpaConsent"
+        />
+        <span
+          class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed group-hover:text-slate-800 dark:group-hover:text-slate-200 transition-colors"
+        >
+          I consent to MarkChat collecting and processing my details to respond to this inquiry in
+          compliance with the <strong class="text-slate-800 dark:text-slate-200 font-semibold"
+            >Kenya Data Protection Act, 2019</strong
+          >. View our <a
+            href="/legal/privacy-policy"
+            target="_blank"
+            class="text-blue-600 dark:text-blue-400 underline underline-offset-2 hover:text-blue-700"
+            >Privacy Policy</a
+          >.
+        </span>
+      </label>
+      <p
+        id="error-kdpaConsent"
+        class="text-xs text-rose-500 dark:text-rose-400 mt-1.5 hidden"
+        data-error="contact-kdpaConsent"
+      >
+      </p>
+    </div>
+
+    <!-- 8. Submit Button & Status State -->
+    <div class="pt-2">
+      <button
+        type="submit"
+        id="contact-submit-btn"
+        class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold text-sm shadow-md shadow-blue-500/20 hover:shadow-lg hover:shadow-blue-500/30 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+      >
+        <span id="btn-text" class="flex items-center gap-2">
+          <span>Send Message</span>
+          <Icon name="lucide:arrow-right" class="w-4 h-4" />
+        </span>
+        <span id="btn-loading" class="hidden items-center gap-2">
+          <svg
+            class="animate-spin w-4 h-4"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"
+            ></circle>
+            <path
+              class="opacity-75"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+            ></path>
+          </svg>
+          <span>Submitting Inquiry...</span>
+        </span>
+      </button>
+    </div>
+  </form>
+
+  <!-- Success Confirmation Screen -->
+  <div
+    id="form-success-card"
+    class="hidden p-7 rounded-2xl bg-emerald-50/80 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/80 text-center animate-fade-in"
+    role="status"
+    aria-live="polite"
+  >
+    <div
+      class="w-12 h-12 mx-auto rounded-full bg-emerald-100 dark:bg-emerald-900/60 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-700/80 flex items-center justify-center mb-4 shadow-xs"
+    >
+      <Icon name="lucide:check-circle-2" class="w-6 h-6" />
+    </div>
+    <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-2">
+      Message Sent Successfully!
+    </h3>
+    <p class="text-sm text-slate-600 dark:text-slate-300 max-w-md mx-auto leading-relaxed">
+      Thank you for contacting MarkChat. Your inquiry has been routed to our Nairobi operations
+      desk. A specialist will review your details and respond promptly.
     </p>
+    <div
+      id="success-ref"
+      class="mt-4 inline-block px-3 py-1.5 rounded-lg bg-emerald-100/60 dark:bg-emerald-900/40 text-[11px] font-mono text-emerald-800 dark:text-emerald-300 border border-emerald-200/80 dark:border-emerald-800"
+    >
+      Ref ID: <span id="success-ref-id">LEAD-CONFIRMED</span>
+    </div>
+    <div class="mt-6">
+      <button
+        type="button"
+        id="btn-reset-form"
+        class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-semibold text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/80 transition-colors shadow-2xs"
+      >
+        <Icon name="lucide:refresh-cw" class="w-3.5 h-3.5" />
+        <span>Submit Another Inquiry</span>
+      </button>
+    </div>
   </div>
-</form>
+
+  <!-- Failure Alert -->
+  <div
+    id="form-failure-alert"
+    class="hidden mt-4 p-4 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800/80 text-rose-900 dark:text-rose-200 text-sm flex items-start gap-3"
+    role="alert"
+  >
+    <Icon
+      name="lucide:alert-circle"
+      class="w-5 h-5 text-rose-600 dark:text-rose-400 shrink-0 mt-0.5"
+    />
+    <div class="flex-1">
+      <p class="font-semibold text-rose-900 dark:text-rose-100">Unable to submit your inquiry</p>
+      <p id="failure-msg" class="text-xs text-rose-800 dark:text-rose-300 mt-0.5">
+        Please check your network connection or reach our Nairobi desk directly at
+        <a
+          href="mailto:hello@markchat.co.ke"
+          class="underline font-medium hover:text-rose-950 dark:hover:text-white"
+          >hello@markchat.co.ke</a
+        >.
+      </p>
+    </div>
+  </div>
+</div>
 
 <script>
-  const form = document.getElementById('contact-form') as HTMLFormElement;
-  const submitButton = document.getElementById('submit-button') as HTMLButtonElement;
-  const buttonText = document.getElementById('button-text');
-  const buttonLoading = document.getElementById('button-loading');
-  const formStatus = document.getElementById('form-status');
-  const formSuccess = document.getElementById('form-success');
-  const formError = document.getElementById('form-error');
+  // Self-contained client controller
+  document.addEventListener('DOMContentLoaded', () => {
+    const form = document.getElementById('contact-form') as HTMLFormElement | null;
+    if (!form) return;
 
-  // Validation rules
-  const validationRules: Record<string, (value: string) => string | null> = {
-    firstName: (value) => {
-      if (!value.trim()) return 'First name is required';
-      if (value.trim().length < 2) return 'First name must be at least 2 characters';
-      return null;
-    },
-    lastName: (value) => {
-      if (!value.trim()) return 'Last name is required';
-      if (value.trim().length < 2) return 'Last name must be at least 2 characters';
-      return null;
-    },
-    email: (value) => {
-      if (!value.trim()) return 'Email is required';
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(value)) return 'Please enter a valid email address';
-      return null;
-    },
-    subject: (value) => {
-      if (!value) return 'Please select a subject';
-      return null;
-    },
-    message: (value) => {
-      if (!value.trim()) return 'Message is required';
-      if (value.trim().length < 10) return 'Message must be at least 10 characters';
-      return null;
-    },
-  };
+    const renderTimeInput = document.getElementById('form-render-time') as HTMLInputElement | null;
+    if (renderTimeInput) {
+      renderTimeInput.value = Date.now().toString();
+    }
 
-  // Show/hide error message
-  function showError(fieldName: string, message: string | null) {
-    const errorEl = document.querySelector(`[data-error="${fieldName}"]`);
-    const inputEl = document.getElementById(fieldName);
+    const submitBtn = document.getElementById('contact-submit-btn') as HTMLButtonElement | null;
+    const btnText = document.getElementById('btn-text');
+    const btnLoading = document.getElementById('btn-loading');
+    const successCard = document.getElementById('form-success-card');
+    const successRefId = document.getElementById('success-ref-id');
+    const failureAlert = document.getElementById('form-failure-alert');
+    const failureMsg = document.getElementById('failure-msg');
+    const resetBtn = document.getElementById('btn-reset-form');
 
-    if (errorEl && inputEl) {
-      if (message) {
-        errorEl.textContent = message;
-        errorEl.classList.remove('hidden');
-        inputEl.classList.add('border-red-500');
-        inputEl.classList.remove('border-border');
+    let lastSubmissionTime = 0;
+
+    // Field-level validator definitions
+    const validators: Record<string, (val: string, el: HTMLElement) => string | null> = {
+      'contact-fullName': (val) => {
+        const trimmed = val.trim();
+        if (!trimmed) return 'Please enter your full name.';
+        if (trimmed.length < 2) return 'Full name must be at least 2 characters.';
+        return null;
+      },
+      'contact-email': (val) => {
+        const trimmed = val.trim();
+        if (!trimmed) return 'Please enter your work email.';
+        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailPattern.test(trimmed))
+          return 'Please provide a valid email address (e.g. name@company.co.ke).';
+        return null;
+      },
+      'contact-phone': (val) => {
+        const trimmed = val.trim();
+        if (!trimmed) return null; // Optional
+        // Must contain digits and valid phone characters
+        const cleaned = trimmed.replace(/[\s\-()]/g, '');
+        if (cleaned.length < 9 || !/^\+?[0-9]{9,15}$/.test(cleaned)) {
+          return 'Please provide a valid phone number (e.g. +254 712 345 678).';
+        }
+        return null;
+      },
+      'contact-enquiryType': (val) => {
+        if (!val) return 'Please select the reason for your inquiry.';
+        return null;
+      },
+      'contact-message': (val) => {
+        const trimmed = val.trim();
+        if (!trimmed) return 'Please enter your message.';
+        if (trimmed.length < 10)
+          return 'Message must be at least 10 characters so we can understand your needs.';
+        return null;
+      },
+      'contact-kdpaConsent': (_val, el) => {
+        const checkbox = el as HTMLInputElement;
+        if (!checkbox.checked) return 'KDPA consent is required to process your contact inquiry.';
+        return null;
+      },
+    };
+
+    function validateSingleField(fieldId: string): boolean {
+      const fieldEl = document.getElementById(fieldId) as
+        | HTMLInputElement
+        | HTMLSelectElement
+        | HTMLTextAreaElement
+        | null;
+      const errorEl = document.querySelector(`[data-error="${fieldId}"]`) as HTMLElement | null;
+      if (!fieldEl || !validators[fieldId]) return true;
+
+      const error = validators[fieldId](fieldEl.value, fieldEl);
+
+      if (error) {
+        if (errorEl) {
+          errorEl.textContent = error;
+          errorEl.classList.remove('hidden');
+        }
+        fieldEl.classList.add('border-rose-500', 'dark:border-rose-500');
+        fieldEl.classList.remove('border-slate-200', 'dark:border-slate-800');
+        return false;
       } else {
-        errorEl.classList.add('hidden');
-        inputEl.classList.remove('border-red-500');
-        inputEl.classList.add('border-border');
+        if (errorEl) {
+          errorEl.classList.add('hidden');
+          errorEl.textContent = '';
+        }
+        fieldEl.classList.remove('border-rose-500', 'dark:border-rose-500');
+        fieldEl.classList.add('border-slate-200', 'dark:border-slate-800');
+        return true;
       }
     }
-  }
 
-  // Validate single field
-  function validateField(fieldName: string): boolean {
-    const input = form.elements.namedItem(fieldName) as
-      | HTMLInputElement
-      | HTMLSelectElement
-      | HTMLTextAreaElement;
-    if (!input || !validationRules[fieldName]) return true;
-
-    const error = validationRules[fieldName](input.value);
-    showError(fieldName, error);
-    return !error;
-  }
-
-  // Validate all fields
-  function validateForm(): boolean {
-    let isValid = true;
-    for (const fieldName of Object.keys(validationRules)) {
-      if (!validateField(fieldName)) {
-        isValid = false;
+    // Attach real-time validation listeners
+    Object.keys(validators).forEach((fieldId) => {
+      const fieldEl = document.getElementById(fieldId);
+      if (fieldEl) {
+        fieldEl.addEventListener('blur', () => validateSingleField(fieldId));
+        fieldEl.addEventListener('input', () => {
+          const errorEl = document.querySelector(`[data-error="${fieldId}"]`);
+          if (errorEl && !errorEl.classList.contains('hidden')) {
+            validateSingleField(fieldId);
+          }
+        });
+        fieldEl.addEventListener('change', () => validateSingleField(fieldId));
       }
-    }
-    return isValid;
-  }
+    });
 
-  // Real-time validation on blur
-  for (const fieldName of Object.keys(validationRules)) {
-    const input = form.elements.namedItem(fieldName) as
-      | HTMLInputElement
-      | HTMLSelectElement
-      | HTMLTextAreaElement
-      | null;
-    if (input && 'addEventListener' in input) {
-      input.addEventListener('blur', () => validateField(fieldName));
-      input.addEventListener('input', () => {
-        // Clear error on input if field was previously invalid
-        const errorEl = document.querySelector(`[data-error="${fieldName}"]`);
-        if (errorEl && !errorEl.classList.contains('hidden')) {
-          validateField(fieldName);
-        }
-      });
-    }
-  }
+    // Form submission handler
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
 
-  // Form submission
-  form.addEventListener('submit', async (e) => {
-    e.preventDefault();
+      // Clear previous alerts
+      failureAlert?.classList.add('hidden');
 
-    // Hide previous status messages
-    formStatus?.classList.add('hidden');
-    formSuccess?.classList.add('hidden');
-    formError?.classList.add('hidden');
-
-    // Validate form
-    if (!validateForm()) {
-      // Focus first invalid field
-      const firstError = form.querySelector('.border-red-500') as HTMLElement;
-      firstError?.focus();
-      return;
-    }
-
-    // Show loading state
-    submitButton.disabled = true;
-    buttonText?.classList.add('hidden');
-    buttonLoading?.classList.remove('hidden');
-
-    const formData = new FormData(form);
-    const action = form.action;
-
-    try {
-      // If no action URL, submit through cms-api lead pipeline
-      if (!action) {
-        try {
-          const { submitLead } = await import('@/lib/cms-api');
-          const firstName = (formData.get('firstName') as string) || '';
-          const lastName = (formData.get('lastName') as string) || '';
-          const email = (formData.get('email') as string) || '';
-          const subject = (formData.get('subject') as string) || '';
-          const message = (formData.get('message') as string) || '';
-          await submitLead({
-            fullName: `${firstName} ${lastName}`.trim(),
-            email,
-            phone: '+254 700 000 000',
-            company: 'General Inquiry',
-            monthlyVolume: 'Direct Contact Form',
-            source: `Contact Page (/contact): ${subject}`,
-            message,
-          });
-        } catch (err) {
-          console.warn('Contact form lead submission error:', err);
-        }
-        showSuccess();
+      // 1. Anti-bot timing check: reject submission faster than 1.5 seconds
+      const renderTimestamp = parseInt(renderTimeInput?.value || '0', 10);
+      const elapsed = Date.now() - renderTimestamp;
+      if (renderTimestamp > 0 && elapsed < 1500) {
+        console.warn('Bot submission blocked: sub-threshold render time.');
         return;
       }
 
-      // Submit to actual endpoint
-      const response = await fetch(action, {
-        method: form.method || 'POST',
-        body: formData,
-        headers: {
-          Accept: 'application/json',
-        },
-      });
-
-      if (response.ok) {
-        showSuccess();
-      } else {
-        showErrorState();
+      // 2. Honeypot check
+      const gotchaInput = form.querySelector('input[name="_gotcha"]') as HTMLInputElement | null;
+      if (gotchaInput && gotchaInput.value) {
+        console.warn('Bot submission blocked: honeypot populated.');
+        return;
       }
-    } catch {
-      showErrorState();
-    }
+
+      // 3. Rate limiting / Cooldown: 15s between submissions
+      const now = Date.now();
+      if (now - lastSubmissionTime < 15000) {
+        if (failureAlert && failureMsg) {
+          failureMsg.textContent = 'Please wait a few seconds before submitting another inquiry.';
+          failureAlert.classList.remove('hidden');
+        }
+        return;
+      }
+
+      // 4. Validate all fields
+      let formIsValid = true;
+      let firstErrorField: HTMLElement | null = null;
+
+      for (const fieldId of Object.keys(validators)) {
+        const isFieldValid = validateSingleField(fieldId);
+        if (!isFieldValid) {
+          formIsValid = false;
+          if (!firstErrorField) {
+            firstErrorField = document.getElementById(fieldId);
+          }
+        }
+      }
+
+      if (!formIsValid) {
+        if (firstErrorField) {
+          firstErrorField.focus();
+        }
+        return;
+      }
+
+      // 5. Enter Loading State
+      if (submitBtn) submitBtn.disabled = true;
+      btnText?.classList.add('hidden');
+      btnLoading?.classList.remove('hidden');
+      btnLoading?.classList.add('flex');
+
+      const formData = new FormData(form);
+      const action = form.action;
+
+      const fullName = ((formData.get('fullName') as string) || '').trim();
+      const email = ((formData.get('email') as string) || '').trim();
+      const phone = ((formData.get('phone') as string) || '').trim();
+      const company = ((formData.get('company') as string) || '').trim();
+      const enquiryType = ((formData.get('enquiryType') as string) || '').trim();
+      const message = ((formData.get('message') as string) || '').trim();
+
+      const enquiryLabels: Record<string, string> = {
+        sales: 'Sales & Pricing',
+        demo: 'Platform Demo',
+        daraja: 'Safaricom Daraja Setup',
+        sms: 'Bulk SMS & BYOC',
+        support: 'Technical Support',
+        partnership: 'Partnership',
+        general: 'General Business',
+      };
+      const typeLabel = enquiryLabels[enquiryType] || enquiryType;
+
+      try {
+        // If an explicit remote action URL is specified, submit via fetch POST
+        if (action && action !== window.location.href) {
+          const res = await fetch(action, {
+            method: form.method || 'POST',
+            body: formData,
+            headers: { Accept: 'application/json' },
+          });
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        } else {
+          // Connect to MarkChat CMS Lead Pipeline
+          const { submitLead } = await import('@/lib/cms-api');
+          const result = await submitLead({
+            fullName,
+            email,
+            phone: phone || '+254 700 000 000',
+            company: company || 'Not Specified',
+            monthlyVolume: `Inquiry Category: ${typeLabel}`,
+            source: `Contact Form (/contact): ${typeLabel}`,
+            message,
+          });
+
+          if (successRefId && result?.id) {
+            successRefId.textContent = result.id.toUpperCase();
+          }
+        }
+
+        // On Success: Display Confirmation Card
+        lastSubmissionTime = Date.now();
+        form.classList.add('hidden');
+        successCard?.classList.remove('hidden');
+        successCard?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      } catch (err) {
+        console.error('Contact form submission error:', err);
+        if (failureAlert) {
+          failureAlert.classList.remove('hidden');
+        }
+      } finally {
+        if (submitBtn) submitBtn.disabled = false;
+        btnText?.classList.remove('hidden');
+        btnLoading?.classList.add('hidden');
+        btnLoading?.classList.remove('flex');
+      }
+    });
+
+    // Reset button to allow submitting another inquiry
+    resetBtn?.addEventListener('click', () => {
+      form.reset();
+      if (renderTimeInput) renderTimeInput.value = Date.now().toString();
+      successCard?.classList.add('hidden');
+      failureAlert?.classList.add('hidden');
+      form.classList.remove('hidden');
+
+      // Clear all error states
+      Object.keys(validators).forEach((fieldId) => {
+        const errorEl = document.querySelector(`[data-error="${fieldId}"]`);
+        const fieldEl = document.getElementById(fieldId);
+        if (errorEl) errorEl.classList.add('hidden');
+        if (fieldEl) {
+          fieldEl.classList.remove('border-rose-500', 'dark:border-rose-500');
+          fieldEl.classList.add('border-slate-200', 'dark:border-slate-800');
+        }
+      });
+    });
   });
-
-  function showSuccess() {
-    formStatus?.classList.remove('hidden');
-    formSuccess?.classList.remove('hidden');
-    form.reset();
-    resetButtonState();
-  }
-
-  function showErrorState() {
-    formStatus?.classList.remove('hidden');
-    formError?.classList.remove('hidden');
-    resetButtonState();
-  }
-
-  function resetButtonState() {
-    submitButton.disabled = false;
-    buttonText?.classList.remove('hidden');
-    buttonLoading?.classList.add('hidden');
-  }
 </script>

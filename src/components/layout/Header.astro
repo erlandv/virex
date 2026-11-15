@@ -1,10 +1,11 @@
 ---
 /**
- * Header - Site header with responsive navigation and Chatwoot-style mega-menus
+ * Header.astro - MarkChat Site Header & Responsive Mega-Menus
  *
- * Implements expansive hover mega-menus for Product, Solutions, and Resources,
- * direct navigation links, and full mobile accordion support while preserving
- * Virex typography and minimalist borders.
+ * Implements refined 3-column mega-menus for Product, Solutions, and Resources
+ * with verified destinations, high-contrast dual-theme styling (light mode and
+ * authentic dark navy), viewport-constrained internal scrolling, and resilient
+ * keyboard & mouse interaction.
  */
 import { siteConfig } from '@/config';
 import { Icon } from 'astro-icon/components';
@@ -38,67 +39,72 @@ const primaryCTA = headerCtas.find((cta) => cta.variant === 'primary');
         }
       </a>
 
-      <!-- Desktop Navigation with Chatwoot-Style Mega-Menus -->
+      <!-- Desktop Navigation with 3-Column Mega-Menus -->
       <div class="hidden lg:flex items-center gap-1 xl:gap-2">
         <!-- 1. Product Mega-Menu Trigger & Container -->
-        <div class="h-16 flex items-center group/product">
+        <div
+          class="h-16 flex items-center relative mega-menu-container group"
+          data-menu="product"
+          data-state="closed"
+        >
           <button
             type="button"
-            class="flex items-center gap-1.5 text-text-muted hover:text-text group-hover/product:text-text transition-colors text-sm font-medium rounded-md px-3 py-2 focus-visible:ring-2 focus-visible:ring-primary focus:outline-none cursor-pointer"
+            class="mega-menu-trigger flex items-center gap-1.5 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-colors text-sm font-medium rounded-lg px-3 py-2 focus-visible:ring-2 focus-visible:ring-primary focus:outline-none cursor-pointer"
             aria-expanded="false"
+            aria-haspopup="true"
+            aria-controls="mega-panel-product"
           >
             <span>{productMegaMenu.label}</span>
             <Icon
               name="lucide:chevron-down"
-              class="w-3.5 h-3.5 transition-transform duration-200 group-hover/product:rotate-180 text-text-muted group-hover/product:text-text"
+              class="w-3.5 h-3.5 transition-transform duration-200 text-slate-400 dark:text-slate-500 chevron-icon"
             />
           </button>
 
           <!-- Dropdown bridge & container -->
           <div
-            class="invisible opacity-0 translate-y-2 group-hover/product:visible group-hover/product:opacity-100 group-hover/product:translate-y-0 group-focus-within/product:visible group-focus-within/product:opacity-100 group-focus-within/product:translate-y-0 transition-all duration-200 pointer-events-none group-hover/product:pointer-events-auto group-focus-within/product:pointer-events-auto absolute left-1/2 -translate-x-1/2 top-full pt-2 z-50 w-[900px] max-w-[calc(100vw-2rem)]"
-            style="width: 900px; max-width: calc(100vw - 2rem);"
+            id="mega-panel-product"
+            class="mega-menu-panel invisible opacity-0 translate-y-1 transition-all duration-200 pointer-events-none absolute left-1/2 -translate-x-1/2 top-full pt-1.5 z-50 w-[880px] xl:w-[920px] max-w-[calc(100vw-2rem)]"
+            role="region"
+            aria-label="Product navigation menu"
           >
             <div
-              class="w-full bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 shadow-xl rounded-2xl overflow-hidden"
+              class="w-full bg-white dark:bg-[#0B1120] border border-slate-200/90 dark:border-slate-800 shadow-2xl shadow-slate-900/10 dark:shadow-black/60 rounded-2xl overflow-hidden flex flex-col max-h-[calc(100vh-5.5rem)]"
             >
-              <div class="p-8 grid grid-cols-3">
+              <div
+                class="p-6 grid grid-cols-3 divide-x divide-slate-100 dark:divide-slate-800/80 overflow-y-auto"
+              >
                 <!-- Col 1: Products & Pricing -->
-                <div class="pr-8 border-r border-gray-100 dark:border-gray-800">
+                <div class="pr-6 space-y-6">
                   {
-                    productMegaMenu.columns[0]?.sections.map((section, sIdx) => (
+                    productMegaMenu.columns[0]?.sections.map((section) => (
                       <div>
                         {section.title && (
-                          <div
-                            class:list={[
-                              'text-xs font-semibold text-gray-400 tracking-wider uppercase',
-                              sIdx === 0 ? 'mb-4' : 'mt-8 mb-4',
-                            ]}
-                          >
+                          <div class="text-[11px] font-bold text-slate-400 dark:text-slate-400 tracking-wider uppercase mb-3">
                             {section.title}
                           </div>
                         )}
-                        <div class="space-y-6">
+                        <div class="space-y-3.5">
                           {section.items.map((item) => (
                             <a
                               href={item.href}
-                              class="group/item flex items-start gap-3 p-1.5 -mx-1.5 rounded-xl hover:bg-surface transition-colors"
+                              class="group/item flex items-start gap-3 p-2 -mx-2 rounded-xl transition-all duration-150 hover:bg-slate-50 dark:hover:bg-slate-800/60 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                             >
-                              <div class="shrink-0 w-8 h-8 rounded-lg bg-surface border border-border/60 flex items-center justify-center text-text-muted group-hover/item:text-primary group-hover/item:border-primary/30 group-hover/item:bg-primary/5 transition-colors mt-0.5">
+                              <div class="shrink-0 w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-800/80 border border-slate-200/80 dark:border-slate-700/80 flex items-center justify-center text-slate-600 dark:text-slate-300 group-hover/item:text-blue-600 dark:group-hover/item:text-blue-400 group-hover/item:border-blue-500/30 group-hover/item:bg-blue-50/60 dark:group-hover/item:bg-blue-950/40 transition-colors mt-0.5 shadow-2xs">
                                 <Icon name={item.icon} class="w-4 h-4" />
                               </div>
                               <div class="flex-1 min-w-0">
                                 <div class="flex items-center gap-1.5">
-                                  <span class="text-sm font-semibold text-text group-hover/item:text-primary transition-colors">
+                                  <span class="text-sm font-semibold text-slate-900 dark:text-white group-hover/item:text-blue-600 dark:group-hover/item:text-blue-400 transition-colors">
                                     {item.label}
                                   </span>
                                   {item.badge && (
-                                    <span class="text-[10px] font-semibold px-1.5 py-0.2 rounded-full bg-primary/10 text-primary border border-primary/20">
+                                    <span class="text-[10px] font-bold px-1.5 py-0.2 rounded-full bg-blue-50 dark:bg-blue-950/80 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800/60">
                                       {item.badge}
                                     </span>
                                   )}
                                 </div>
-                                <p class="text-sm text-slate-500 dark:text-slate-400 whitespace-normal leading-relaxed mt-1">
+                                <p class="text-xs text-slate-500 dark:text-slate-400 group-hover/item:text-slate-700 dark:group-hover/item:text-slate-300 whitespace-normal leading-relaxed mt-0.5 transition-colors line-clamp-2">
                                   {item.description}
                                 </p>
                               </div>
@@ -111,32 +117,34 @@ const primaryCTA = headerCtas.find((cta) => cta.variant === 'primary');
                 </div>
 
                 <!-- Col 2: Features -->
-                <div class="px-8 border-r border-gray-100 dark:border-gray-800">
-                  <div class="text-xs font-semibold text-gray-400 tracking-wider uppercase mb-4">
+                <div class="px-6">
+                  <div
+                    class="text-[11px] font-bold text-slate-400 dark:text-slate-400 tracking-wider uppercase mb-3"
+                  >
                     Features
                   </div>
-                  <div class="space-y-6">
+                  <div class="space-y-3.5">
                     {
                       productMegaMenu.columns[1]?.sections[0]?.items.map((item) => (
                         <a
                           href={item.href}
-                          class="group/item flex items-start gap-3 p-1.5 -mx-1.5 rounded-xl hover:bg-surface transition-colors"
+                          class="group/item flex items-start gap-3 p-2 -mx-2 rounded-xl transition-all duration-150 hover:bg-slate-50 dark:hover:bg-slate-800/60 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                         >
-                          <div class="shrink-0 w-8 h-8 rounded-lg bg-surface border border-border/60 flex items-center justify-center text-text-muted group-hover/item:text-primary group-hover/item:border-primary/30 group-hover/item:bg-primary/5 transition-colors mt-0.5">
+                          <div class="shrink-0 w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-800/80 border border-slate-200/80 dark:border-slate-700/80 flex items-center justify-center text-slate-600 dark:text-slate-300 group-hover/item:text-blue-600 dark:group-hover/item:text-blue-400 group-hover/item:border-blue-500/30 group-hover/item:bg-blue-50/60 dark:group-hover/item:bg-blue-950/40 transition-colors mt-0.5 shadow-2xs">
                             <Icon name={item.icon} class="w-4 h-4" />
                           </div>
                           <div class="flex-1 min-w-0">
                             <div class="flex items-center gap-1.5">
-                              <span class="text-sm font-semibold text-text group-hover/item:text-primary transition-colors">
+                              <span class="text-sm font-semibold text-slate-900 dark:text-white group-hover/item:text-blue-600 dark:group-hover/item:text-blue-400 transition-colors">
                                 {item.label}
                               </span>
                               {item.badge && (
-                                <span class="text-[10px] font-semibold px-1.5 py-0.2 rounded-full bg-primary/10 text-primary border border-primary/20">
+                                <span class="text-[10px] font-bold px-1.5 py-0.2 rounded-full bg-blue-50 dark:bg-blue-950/80 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800/60">
                                   {item.badge}
                                 </span>
                               )}
                             </div>
-                            <p class="text-sm text-slate-500 dark:text-slate-400 whitespace-normal leading-relaxed mt-1">
+                            <p class="text-xs text-slate-500 dark:text-slate-400 group-hover/item:text-slate-700 dark:group-hover/item:text-slate-300 whitespace-normal leading-relaxed mt-0.5 transition-colors line-clamp-2">
                               {item.description}
                             </p>
                           </div>
@@ -147,32 +155,34 @@ const primaryCTA = headerCtas.find((cta) => cta.variant === 'primary');
                 </div>
 
                 <!-- Col 3: Use Cases -->
-                <div class="pl-8">
-                  <div class="text-xs font-semibold text-gray-400 tracking-wider uppercase mb-4">
+                <div class="pl-6">
+                  <div
+                    class="text-[11px] font-bold text-slate-400 dark:text-slate-400 tracking-wider uppercase mb-3"
+                  >
                     Use Cases
                   </div>
-                  <div class="space-y-6">
+                  <div class="space-y-3.5">
                     {
                       productMegaMenu.columns[2]?.sections[0]?.items.map((item) => (
                         <a
                           href={item.href}
-                          class="group/item flex items-start gap-3 p-1.5 -mx-1.5 rounded-xl hover:bg-surface transition-colors"
+                          class="group/item flex items-start gap-3 p-2 -mx-2 rounded-xl transition-all duration-150 hover:bg-slate-50 dark:hover:bg-slate-800/60 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                         >
-                          <div class="shrink-0 w-8 h-8 rounded-lg bg-surface border border-border/60 flex items-center justify-center text-text-muted group-hover/item:text-primary group-hover/item:border-primary/30 group-hover/item:bg-primary/5 transition-colors mt-0.5">
+                          <div class="shrink-0 w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-800/80 border border-slate-200/80 dark:border-slate-700/80 flex items-center justify-center text-slate-600 dark:text-slate-300 group-hover/item:text-blue-600 dark:group-hover/item:text-blue-400 group-hover/item:border-blue-500/30 group-hover/item:bg-blue-50/60 dark:group-hover/item:bg-blue-950/40 transition-colors mt-0.5 shadow-2xs">
                             <Icon name={item.icon} class="w-4 h-4" />
                           </div>
                           <div class="flex-1 min-w-0">
                             <div class="flex items-center gap-1.5">
-                              <span class="text-sm font-semibold text-text group-hover/item:text-primary transition-colors">
+                              <span class="text-sm font-semibold text-slate-900 dark:text-white group-hover/item:text-blue-600 dark:group-hover/item:text-blue-400 transition-colors">
                                 {item.label}
                               </span>
                               {item.badge && (
-                                <span class="text-[10px] font-semibold px-1.5 py-0.2 rounded-full bg-primary/10 text-primary border border-primary/20">
+                                <span class="text-[10px] font-bold px-1.5 py-0.2 rounded-full bg-blue-50 dark:bg-blue-950/80 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800/60">
                                   {item.badge}
                                 </span>
                               )}
                             </div>
-                            <p class="text-sm text-slate-500 dark:text-slate-400 whitespace-normal leading-relaxed mt-1">
+                            <p class="text-xs text-slate-500 dark:text-slate-400 group-hover/item:text-slate-700 dark:group-hover/item:text-slate-300 whitespace-normal leading-relaxed mt-0.5 transition-colors line-clamp-2">
                               {item.description}
                             </p>
                           </div>
@@ -185,86 +195,98 @@ const primaryCTA = headerCtas.find((cta) => cta.variant === 'primary');
 
               <!-- Bottom Action Footer -->
               <div
-                class="bg-gray-50 dark:bg-gray-800/40 border-t border-gray-100 dark:border-gray-800 px-8 py-4 flex gap-6"
+                class="bg-slate-50/90 dark:bg-slate-900/70 border-t border-slate-100 dark:border-slate-800/80 px-6 py-3.5 flex items-center justify-between"
               >
-                <a
-                  href="/features"
-                  class="text-sm font-medium text-slate-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors inline-flex items-center gap-1.5"
+                <div class="flex items-center gap-6">
+                  <a
+                    href="/features"
+                    class="text-xs font-semibold text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors inline-flex items-center gap-1.5"
+                  >
+                    <span>View all features</span>
+                    <Icon name="lucide:arrow-right" class="w-3.5 h-3.5" />
+                  </a>
+                  <a
+                    href="/solutions"
+                    class="text-xs font-semibold text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors inline-flex items-center gap-1.5"
+                  >
+                    <span>View all use cases</span>
+                    <Icon name="lucide:arrow-right" class="w-3.5 h-3.5" />
+                  </a>
+                </div>
+                <span
+                  class="text-[11px] text-slate-400 dark:text-slate-500 font-mono hidden sm:inline"
                 >
-                  <span>View all features</span>
-                  <span>&rarr;</span>
-                </a>
-                <a
-                  href="/solutions"
-                  class="text-sm font-medium text-slate-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors inline-flex items-center gap-1.5"
-                >
-                  <span>View all use cases</span>
-                  <span>&rarr;</span>
-                </a>
+                  Safaricom Daraja & Meta Cloud API Ready
+                </span>
               </div>
             </div>
           </div>
         </div>
 
         <!-- 2. Solutions Mega-Menu Trigger & Container -->
-        <div class="h-16 flex items-center group/solutions">
+        <div
+          class="h-16 flex items-center relative mega-menu-container group"
+          data-menu="solutions"
+          data-state="closed"
+        >
           <button
             type="button"
-            class="flex items-center gap-1.5 text-text-muted hover:text-text group-hover/solutions:text-text transition-colors text-sm font-medium rounded-md px-3 py-2 focus-visible:ring-2 focus-visible:ring-primary focus:outline-none cursor-pointer"
+            class="mega-menu-trigger flex items-center gap-1.5 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-colors text-sm font-medium rounded-lg px-3 py-2 focus-visible:ring-2 focus-visible:ring-primary focus:outline-none cursor-pointer"
             aria-expanded="false"
+            aria-haspopup="true"
+            aria-controls="mega-panel-solutions"
           >
             <span>{solutionsMegaMenu.label}</span>
             <Icon
               name="lucide:chevron-down"
-              class="w-3.5 h-3.5 transition-transform duration-200 group-hover/solutions:rotate-180 text-text-muted group-hover/solutions:text-text"
+              class="w-3.5 h-3.5 transition-transform duration-200 text-slate-400 dark:text-slate-500 chevron-icon"
             />
           </button>
 
           <!-- Dropdown bridge & container -->
           <div
-            class="invisible opacity-0 translate-y-2 group-hover/solutions:visible group-hover/solutions:opacity-100 group-hover/solutions:translate-y-0 group-focus-within/solutions:visible group-focus-within/solutions:opacity-100 group-focus-within/solutions:translate-y-0 transition-all duration-200 pointer-events-none group-hover/solutions:pointer-events-auto group-focus-within/solutions:pointer-events-auto absolute left-1/2 -translate-x-1/2 top-full pt-2 z-50 w-[900px] max-w-[calc(100vw-2rem)]"
-            style="width: 900px; max-width: calc(100vw - 2rem);"
+            id="mega-panel-solutions"
+            class="mega-menu-panel invisible opacity-0 translate-y-1 transition-all duration-200 pointer-events-none absolute left-1/2 -translate-x-1/2 top-full pt-1.5 z-50 w-[880px] xl:w-[920px] max-w-[calc(100vw-2rem)]"
+            role="region"
+            aria-label="Solutions navigation menu"
           >
             <div
-              class="w-full bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 shadow-xl rounded-2xl overflow-hidden"
+              class="w-full bg-white dark:bg-[#0B1120] border border-slate-200/90 dark:border-slate-800 shadow-2xl shadow-slate-900/10 dark:shadow-black/60 rounded-2xl overflow-hidden flex flex-col max-h-[calc(100vh-5.5rem)]"
             >
-              <div class="p-8 grid grid-cols-3">
+              <div
+                class="p-6 grid grid-cols-3 divide-x divide-slate-100 dark:divide-slate-800/80 overflow-y-auto"
+              >
                 <!-- Col 1: Teams & Size -->
-                <div class="pr-8 border-r border-gray-100 dark:border-gray-800">
+                <div class="pr-6 space-y-6">
                   {
-                    solutionsMegaMenu.columns[0]?.sections.map((section, sIdx) => (
+                    solutionsMegaMenu.columns[0]?.sections.map((section) => (
                       <div>
                         {section.title && (
-                          <div
-                            class:list={[
-                              'text-xs font-semibold text-gray-400 tracking-wider uppercase',
-                              sIdx === 0 ? 'mb-4' : 'mt-8 mb-4',
-                            ]}
-                          >
+                          <div class="text-[11px] font-bold text-slate-400 dark:text-slate-400 tracking-wider uppercase mb-3">
                             {section.title}
                           </div>
                         )}
-                        <div class="space-y-6">
+                        <div class="space-y-3.5">
                           {section.items.map((item) => (
                             <a
                               href={item.href}
-                              class="group/item flex items-start gap-3 p-1.5 -mx-1.5 rounded-xl hover:bg-surface transition-colors"
+                              class="group/item flex items-start gap-3 p-2 -mx-2 rounded-xl transition-all duration-150 hover:bg-slate-50 dark:hover:bg-slate-800/60 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                             >
-                              <div class="shrink-0 w-8 h-8 rounded-lg bg-surface border border-border/60 flex items-center justify-center text-text-muted group-hover/item:text-primary group-hover/item:border-primary/30 group-hover/item:bg-primary/5 transition-colors mt-0.5">
+                              <div class="shrink-0 w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-800/80 border border-slate-200/80 dark:border-slate-700/80 flex items-center justify-center text-slate-600 dark:text-slate-300 group-hover/item:text-blue-600 dark:group-hover/item:text-blue-400 group-hover/item:border-blue-500/30 group-hover/item:bg-blue-50/60 dark:group-hover/item:bg-blue-950/40 transition-colors mt-0.5 shadow-2xs">
                                 <Icon name={item.icon} class="w-4 h-4" />
                               </div>
                               <div class="flex-1 min-w-0">
                                 <div class="flex items-center gap-1.5">
-                                  <span class="text-sm font-semibold text-text group-hover/item:text-primary transition-colors">
+                                  <span class="text-sm font-semibold text-slate-900 dark:text-white group-hover/item:text-blue-600 dark:group-hover/item:text-blue-400 transition-colors">
                                     {item.label}
                                   </span>
                                   {item.badge && (
-                                    <span class="text-[10px] font-semibold px-1.5 py-0.2 rounded-full bg-primary/10 text-primary border border-primary/20">
+                                    <span class="text-[10px] font-bold px-1.5 py-0.2 rounded-full bg-blue-50 dark:bg-blue-950/80 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800/60">
                                       {item.badge}
                                     </span>
                                   )}
                                 </div>
-                                <p class="text-sm text-slate-500 dark:text-slate-400 whitespace-normal leading-relaxed mt-1">
+                                <p class="text-xs text-slate-500 dark:text-slate-400 group-hover/item:text-slate-700 dark:group-hover/item:text-slate-300 whitespace-normal leading-relaxed mt-0.5 transition-colors line-clamp-2">
                                   {item.description}
                                 </p>
                               </div>
@@ -277,32 +299,34 @@ const primaryCTA = headerCtas.find((cta) => cta.variant === 'primary');
                 </div>
 
                 <!-- Col 2: Industries A -->
-                <div class="px-8 border-r border-gray-100 dark:border-gray-800">
-                  <div class="text-xs font-semibold text-gray-400 tracking-wider uppercase mb-4">
-                    Industries
+                <div class="px-6">
+                  <div
+                    class="text-[11px] font-bold text-slate-400 dark:text-slate-400 tracking-wider uppercase mb-3"
+                  >
+                    Key Industries
                   </div>
-                  <div class="space-y-6">
+                  <div class="space-y-3.5">
                     {
                       solutionsMegaMenu.columns[1]?.sections[0]?.items.map((item) => (
                         <a
                           href={item.href}
-                          class="group/item flex items-start gap-3 p-1.5 -mx-1.5 rounded-xl hover:bg-surface transition-colors"
+                          class="group/item flex items-start gap-3 p-2 -mx-2 rounded-xl transition-all duration-150 hover:bg-slate-50 dark:hover:bg-slate-800/60 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                         >
-                          <div class="shrink-0 w-8 h-8 rounded-lg bg-surface border border-border/60 flex items-center justify-center text-text-muted group-hover/item:text-primary group-hover/item:border-primary/30 group-hover/item:bg-primary/5 transition-colors mt-0.5">
+                          <div class="shrink-0 w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-800/80 border border-slate-200/80 dark:border-slate-700/80 flex items-center justify-center text-slate-600 dark:text-slate-300 group-hover/item:text-blue-600 dark:group-hover/item:text-blue-400 group-hover/item:border-blue-500/30 group-hover/item:bg-blue-50/60 dark:group-hover/item:bg-blue-950/40 transition-colors mt-0.5 shadow-2xs">
                             <Icon name={item.icon} class="w-4 h-4" />
                           </div>
                           <div class="flex-1 min-w-0">
                             <div class="flex items-center gap-1.5">
-                              <span class="text-sm font-semibold text-text group-hover/item:text-primary transition-colors">
+                              <span class="text-sm font-semibold text-slate-900 dark:text-white group-hover/item:text-blue-600 dark:group-hover/item:text-blue-400 transition-colors">
                                 {item.label}
                               </span>
                               {item.badge && (
-                                <span class="text-[10px] font-semibold px-1.5 py-0.2 rounded-full bg-primary/10 text-primary border border-primary/20">
+                                <span class="text-[10px] font-bold px-1.5 py-0.2 rounded-full bg-blue-50 dark:bg-blue-950/80 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800/60">
                                   {item.badge}
                                 </span>
                               )}
                             </div>
-                            <p class="text-sm text-slate-500 dark:text-slate-400 whitespace-normal leading-relaxed mt-1">
+                            <p class="text-xs text-slate-500 dark:text-slate-400 group-hover/item:text-slate-700 dark:group-hover/item:text-slate-300 whitespace-normal leading-relaxed mt-0.5 transition-colors line-clamp-2">
                               {item.description}
                             </p>
                           </div>
@@ -313,32 +337,34 @@ const primaryCTA = headerCtas.find((cta) => cta.variant === 'primary');
                 </div>
 
                 <!-- Col 3: Industries B -->
-                <div class="pl-8">
-                  <div class="text-xs font-semibold text-gray-400 tracking-wider uppercase mb-4">
-                    More Industries
+                <div class="pl-6">
+                  <div
+                    class="text-[11px] font-bold text-slate-400 dark:text-slate-400 tracking-wider uppercase mb-3"
+                  >
+                    Commercial Sectors
                   </div>
-                  <div class="space-y-6">
+                  <div class="space-y-3.5">
                     {
                       solutionsMegaMenu.columns[2]?.sections[0]?.items.map((item) => (
                         <a
                           href={item.href}
-                          class="group/item flex items-start gap-3 p-1.5 -mx-1.5 rounded-xl hover:bg-surface transition-colors"
+                          class="group/item flex items-start gap-3 p-2 -mx-2 rounded-xl transition-all duration-150 hover:bg-slate-50 dark:hover:bg-slate-800/60 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                         >
-                          <div class="shrink-0 w-8 h-8 rounded-lg bg-surface border border-border/60 flex items-center justify-center text-text-muted group-hover/item:text-primary group-hover/item:border-primary/30 group-hover/item:bg-primary/5 transition-colors mt-0.5">
+                          <div class="shrink-0 w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-800/80 border border-slate-200/80 dark:border-slate-700/80 flex items-center justify-center text-slate-600 dark:text-slate-300 group-hover/item:text-blue-600 dark:group-hover/item:text-blue-400 group-hover/item:border-blue-500/30 group-hover/item:bg-blue-50/60 dark:group-hover/item:bg-blue-950/40 transition-colors mt-0.5 shadow-2xs">
                             <Icon name={item.icon} class="w-4 h-4" />
                           </div>
                           <div class="flex-1 min-w-0">
                             <div class="flex items-center gap-1.5">
-                              <span class="text-sm font-semibold text-text group-hover/item:text-primary transition-colors">
+                              <span class="text-sm font-semibold text-slate-900 dark:text-white group-hover/item:text-blue-600 dark:group-hover/item:text-blue-400 transition-colors">
                                 {item.label}
                               </span>
                               {item.badge && (
-                                <span class="text-[10px] font-semibold px-1.5 py-0.2 rounded-full bg-primary/10 text-primary border border-primary/20">
+                                <span class="text-[10px] font-bold px-1.5 py-0.2 rounded-full bg-blue-50 dark:bg-blue-950/80 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800/60">
                                   {item.badge}
                                 </span>
                               )}
                             </div>
-                            <p class="text-sm text-slate-500 dark:text-slate-400 whitespace-normal leading-relaxed mt-1">
+                            <p class="text-xs text-slate-500 dark:text-slate-400 group-hover/item:text-slate-700 dark:group-hover/item:text-slate-300 whitespace-normal leading-relaxed mt-0.5 transition-colors line-clamp-2">
                               {item.description}
                             </p>
                           </div>
@@ -351,72 +377,91 @@ const primaryCTA = headerCtas.find((cta) => cta.variant === 'primary');
 
               <!-- Bottom Action Footer -->
               <div
-                class="bg-gray-50 dark:bg-gray-800/40 border-t border-gray-100 dark:border-gray-800 px-8 py-4 flex gap-6"
+                class="bg-slate-50/90 dark:bg-slate-900/70 border-t border-slate-100 dark:border-slate-800/80 px-6 py-3.5 flex items-center justify-between"
               >
-                <a
-                  href="/features"
-                  class="text-sm font-medium text-slate-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors inline-flex items-center gap-1.5"
+                <div class="flex items-center gap-6">
+                  <a
+                    href="/solutions"
+                    class="text-xs font-semibold text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors inline-flex items-center gap-1.5"
+                  >
+                    <span>Explore all industry solutions</span>
+                    <Icon name="lucide:arrow-right" class="w-3.5 h-3.5" />
+                  </a>
+                  <a
+                    href="/demo"
+                    class="text-xs font-semibold text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors inline-flex items-center gap-1.5"
+                  >
+                    <span>Book tailored merchant demo</span>
+                    <Icon name="lucide:arrow-right" class="w-3.5 h-3.5" />
+                  </a>
+                </div>
+                <span
+                  class="text-[11px] text-slate-400 dark:text-slate-500 font-mono hidden sm:inline"
                 >
-                  <span>View all features</span>
-                  <span>&rarr;</span>
-                </a>
-                <a
-                  href="/solutions"
-                  class="text-sm font-medium text-slate-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors inline-flex items-center gap-1.5"
-                >
-                  <span>View all use cases</span>
-                  <span>&rarr;</span>
-                </a>
+                  Customized for Nairobi, Mombasa & Regional Hubs
+                </span>
               </div>
             </div>
           </div>
         </div>
 
         <!-- 3. Resources Mega-Menu Trigger & Container -->
-        <div class="h-16 flex items-center group/resources">
+        <div
+          class="h-16 flex items-center relative mega-menu-container group"
+          data-menu="resources"
+          data-state="closed"
+        >
           <button
             type="button"
-            class="flex items-center gap-1.5 text-text-muted hover:text-text group-hover/resources:text-text transition-colors text-sm font-medium rounded-md px-3 py-2 focus-visible:ring-2 focus-visible:ring-primary focus:outline-none cursor-pointer"
+            class="mega-menu-trigger flex items-center gap-1.5 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-colors text-sm font-medium rounded-lg px-3 py-2 focus-visible:ring-2 focus-visible:ring-primary focus:outline-none cursor-pointer"
             aria-expanded="false"
+            aria-haspopup="true"
+            aria-controls="mega-panel-resources"
           >
             <span>{resourcesMegaMenu.label}</span>
             <Icon
               name="lucide:chevron-down"
-              class="w-3.5 h-3.5 transition-transform duration-200 group-hover/resources:rotate-180 text-text-muted group-hover/resources:text-text"
+              class="w-3.5 h-3.5 transition-transform duration-200 text-slate-400 dark:text-slate-500 chevron-icon"
             />
           </button>
 
           <!-- Dropdown bridge & container -->
           <div
-            class="invisible opacity-0 translate-y-2 group-hover/resources:visible group-hover/resources:opacity-100 group-hover/resources:translate-y-0 group-focus-within/resources:visible group-focus-within/resources:opacity-100 group-focus-within/resources:translate-y-0 transition-all duration-200 pointer-events-none group-hover/resources:pointer-events-auto group-focus-within/resources:pointer-events-auto absolute left-1/2 -translate-x-1/2 top-full pt-2 z-50 w-[900px] max-w-[calc(100vw-2rem)]"
-            style="width: 900px; max-width: calc(100vw - 2rem);"
+            id="mega-panel-resources"
+            class="mega-menu-panel invisible opacity-0 translate-y-1 transition-all duration-200 pointer-events-none absolute left-1/2 -translate-x-1/2 top-full pt-1.5 z-50 w-[880px] xl:w-[920px] max-w-[calc(100vw-2rem)]"
+            role="region"
+            aria-label="Resources navigation menu"
           >
             <div
-              class="w-full bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 shadow-xl rounded-2xl overflow-hidden"
+              class="w-full bg-white dark:bg-[#0B1120] border border-slate-200/90 dark:border-slate-800 shadow-2xl shadow-slate-900/10 dark:shadow-black/60 rounded-2xl overflow-hidden flex flex-col max-h-[calc(100vh-5.5rem)]"
             >
-              <div class="p-8 grid grid-cols-3">
+              <div
+                class="p-6 grid grid-cols-3 divide-x divide-slate-100 dark:divide-slate-800/80 overflow-y-auto"
+              >
                 <!-- Col 1: Spotlight -->
-                <div class="pr-8 border-r border-gray-100 dark:border-gray-800">
-                  <div class="text-xs font-semibold text-gray-400 tracking-wider uppercase mb-4">
+                <div class="pr-6">
+                  <div
+                    class="text-[11px] font-bold text-slate-400 dark:text-slate-400 tracking-wider uppercase mb-3"
+                  >
                     Spotlight
                   </div>
-                  <div class="space-y-6">
+                  <div class="space-y-3.5">
                     {
                       resourcesMegaMenu.columns[0]?.sections[0]?.items.map((item) => (
                         <a
                           href={item.href}
-                          class="group/item flex items-start gap-3 p-1.5 -mx-1.5 rounded-xl hover:bg-surface transition-colors"
+                          class="group/item flex items-start gap-3 p-2 -mx-2 rounded-xl transition-all duration-150 hover:bg-slate-50 dark:hover:bg-slate-800/60 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                         >
-                          <div class="shrink-0 w-8 h-8 rounded-lg bg-surface border border-border/60 flex items-center justify-center text-text-muted group-hover/item:text-primary group-hover/item:border-primary/30 group-hover/item:bg-primary/5 transition-colors mt-0.5">
+                          <div class="shrink-0 w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-800/80 border border-slate-200/80 dark:border-slate-700/80 flex items-center justify-center text-slate-600 dark:text-slate-300 group-hover/item:text-blue-600 dark:group-hover/item:text-blue-400 group-hover/item:border-blue-500/30 group-hover/item:bg-blue-50/60 dark:group-hover/item:bg-blue-950/40 transition-colors mt-0.5 shadow-2xs">
                             <Icon name={item.icon} class="w-4 h-4" />
                           </div>
                           <div class="flex-1 min-w-0">
                             <div class="flex items-center gap-1.5">
-                              <span class="text-sm font-semibold text-text group-hover/item:text-primary transition-colors">
+                              <span class="text-sm font-semibold text-slate-900 dark:text-white group-hover/item:text-blue-600 dark:group-hover/item:text-blue-400 transition-colors">
                                 {item.label}
                               </span>
                             </div>
-                            <p class="text-sm text-slate-500 dark:text-slate-400 whitespace-normal leading-relaxed mt-1">
+                            <p class="text-xs text-slate-500 dark:text-slate-400 group-hover/item:text-slate-700 dark:group-hover/item:text-slate-300 whitespace-normal leading-relaxed mt-0.5 transition-colors line-clamp-2">
                               {item.description}
                             </p>
                           </div>
@@ -426,28 +471,30 @@ const primaryCTA = headerCtas.find((cta) => cta.variant === 'primary');
                   </div>
                 </div>
 
-                <!-- Col 2: Docs & Community -->
-                <div class="px-8 border-r border-gray-100 dark:border-gray-800">
-                  <div class="text-xs font-semibold text-gray-400 tracking-wider uppercase mb-4">
-                    Docs & Community
+                <!-- Col 2: Docs & Tools -->
+                <div class="px-6">
+                  <div
+                    class="text-[11px] font-bold text-slate-400 dark:text-slate-400 tracking-wider uppercase mb-3"
+                  >
+                    Documentation & Tools
                   </div>
-                  <div class="space-y-6">
+                  <div class="space-y-3.5">
                     {
                       resourcesMegaMenu.columns[1]?.sections[0]?.items.map((item) => (
                         <a
                           href={item.href}
-                          class="group/item flex items-start gap-3 p-1.5 -mx-1.5 rounded-xl hover:bg-surface transition-colors"
+                          class="group/item flex items-start gap-3 p-2 -mx-2 rounded-xl transition-all duration-150 hover:bg-slate-50 dark:hover:bg-slate-800/60 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                         >
-                          <div class="shrink-0 w-8 h-8 rounded-lg bg-surface border border-border/60 flex items-center justify-center text-text-muted group-hover/item:text-primary group-hover/item:border-primary/30 group-hover/item:bg-primary/5 transition-colors mt-0.5">
+                          <div class="shrink-0 w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-800/80 border border-slate-200/80 dark:border-slate-700/80 flex items-center justify-center text-slate-600 dark:text-slate-300 group-hover/item:text-blue-600 dark:group-hover/item:text-blue-400 group-hover/item:border-blue-500/30 group-hover/item:bg-blue-50/60 dark:group-hover/item:bg-blue-950/40 transition-colors mt-0.5 shadow-2xs">
                             <Icon name={item.icon} class="w-4 h-4" />
                           </div>
                           <div class="flex-1 min-w-0">
                             <div class="flex items-center gap-1.5">
-                              <span class="text-sm font-semibold text-text group-hover/item:text-primary transition-colors">
+                              <span class="text-sm font-semibold text-slate-900 dark:text-white group-hover/item:text-blue-600 dark:group-hover/item:text-blue-400 transition-colors">
                                 {item.label}
                               </span>
                             </div>
-                            <p class="text-sm text-slate-500 dark:text-slate-400 whitespace-normal leading-relaxed mt-1">
+                            <p class="text-xs text-slate-500 dark:text-slate-400 group-hover/item:text-slate-700 dark:group-hover/item:text-slate-300 whitespace-normal leading-relaxed mt-0.5 transition-colors line-clamp-2">
                               {item.description}
                             </p>
                           </div>
@@ -458,32 +505,34 @@ const primaryCTA = headerCtas.find((cta) => cta.variant === 'primary');
                 </div>
 
                 <!-- Col 3: Ecosystem -->
-                <div class="pl-8">
-                  <div class="text-xs font-semibold text-gray-400 tracking-wider uppercase mb-4">
-                    Ecosystem
+                <div class="pl-6">
+                  <div
+                    class="text-[11px] font-bold text-slate-400 dark:text-slate-400 tracking-wider uppercase mb-3"
+                  >
+                    Ecosystem & Support
                   </div>
-                  <div class="space-y-6">
+                  <div class="space-y-3.5">
                     {
                       resourcesMegaMenu.columns[2]?.sections[0]?.items.map((item) => (
                         <a
                           href={item.href}
                           target={item.external ? '_blank' : undefined}
                           rel={item.external ? 'noopener noreferrer' : undefined}
-                          class="group/item flex items-start gap-3 p-1.5 -mx-1.5 rounded-xl hover:bg-surface transition-colors"
+                          class="group/item flex items-start gap-3 p-2 -mx-2 rounded-xl transition-all duration-150 hover:bg-slate-50 dark:hover:bg-slate-800/60 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                         >
-                          <div class="shrink-0 w-8 h-8 rounded-lg bg-surface border border-border/60 flex items-center justify-center text-text-muted group-hover/item:text-primary group-hover/item:border-primary/30 group-hover/item:bg-primary/5 transition-colors mt-0.5">
+                          <div class="shrink-0 w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-800/80 border border-slate-200/80 dark:border-slate-700/80 flex items-center justify-center text-slate-600 dark:text-slate-300 group-hover/item:text-blue-600 dark:group-hover/item:text-blue-400 group-hover/item:border-blue-500/30 group-hover/item:bg-blue-50/60 dark:group-hover/item:bg-blue-950/40 transition-colors mt-0.5 shadow-2xs">
                             <Icon name={item.icon} class="w-4 h-4" />
                           </div>
                           <div class="flex-1 min-w-0">
                             <div class="flex items-center gap-1.5">
-                              <span class="text-sm font-semibold text-text group-hover/item:text-primary transition-colors">
+                              <span class="text-sm font-semibold text-slate-900 dark:text-white group-hover/item:text-blue-600 dark:group-hover/item:text-blue-400 transition-colors">
                                 {item.label}
                               </span>
                               {item.external && (
                                 <Icon name="lucide:external-link" class="w-3 h-3 text-text-muted" />
                               )}
                             </div>
-                            <p class="text-sm text-slate-500 dark:text-slate-400 whitespace-normal leading-relaxed mt-1">
+                            <p class="text-xs text-slate-500 dark:text-slate-400 group-hover/item:text-slate-700 dark:group-hover/item:text-slate-300 whitespace-normal leading-relaxed mt-0.5 transition-colors line-clamp-2">
                               {item.description}
                             </p>
                           </div>
@@ -492,6 +541,33 @@ const primaryCTA = headerCtas.find((cta) => cta.variant === 'primary');
                     }
                   </div>
                 </div>
+              </div>
+
+              <!-- Bottom Action Footer -->
+              <div
+                class="bg-slate-50/90 dark:bg-slate-900/70 border-t border-slate-100 dark:border-slate-800/80 px-6 py-3.5 flex items-center justify-between"
+              >
+                <div class="flex items-center gap-6">
+                  <a
+                    href="/docs"
+                    class="text-xs font-semibold text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors inline-flex items-center gap-1.5"
+                  >
+                    <span>Official Developer Documentation</span>
+                    <Icon name="lucide:arrow-right" class="w-3.5 h-3.5" />
+                  </a>
+                  <a
+                    href="/resources/status"
+                    class="text-xs font-semibold text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors inline-flex items-center gap-1.5"
+                  >
+                    <span>System Status & Uptime</span>
+                    <Icon name="lucide:arrow-right" class="w-3.5 h-3.5" />
+                  </a>
+                </div>
+                <span
+                  class="text-[11px] text-slate-400 dark:text-slate-500 font-mono hidden sm:inline"
+                >
+                  Strict KDPA 2019 Privacy & Audit Trails
+                </span>
               </div>
             </div>
           </div>
@@ -502,11 +578,11 @@ const primaryCTA = headerCtas.find((cta) => cta.variant === 'primary');
           directNavLinks.map((link) => (
             <a
               href={link.href}
-              class="inline-flex items-center gap-1.5 text-text-muted hover:text-text transition-colors text-sm font-medium rounded-md px-3 py-2 focus-visible:ring-2 focus-visible:ring-primary focus:outline-none"
+              class="inline-flex items-center gap-1.5 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-colors text-sm font-medium rounded-lg px-3 py-2 focus-visible:ring-2 focus-visible:ring-primary focus:outline-none"
             >
               <span>{link.label}</span>
               {link.badge && (
-                <span class="text-[10px] font-semibold px-1.5 py-0.2 rounded-full bg-primary/10 text-primary border border-primary/20">
+                <span class="text-[10px] font-bold px-1.5 py-0.2 rounded-full bg-blue-50 dark:bg-blue-950/80 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800/60">
                   {link.badge}
                 </span>
               )}
@@ -522,7 +598,7 @@ const primaryCTA = headerCtas.find((cta) => cta.variant === 'primary');
           ghostCTAs.map((cta) => (
             <a
               href={cta.href}
-              class="text-text-muted hover:text-text transition-colors text-sm font-medium rounded-md px-3 py-2 focus-visible:ring-2 focus-visible:ring-primary focus:outline-none"
+              class="text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-colors text-sm font-medium rounded-lg px-3 py-2 focus-visible:ring-2 focus-visible:ring-primary focus:outline-none"
             >
               {cta.label}
             </a>
@@ -532,7 +608,7 @@ const primaryCTA = headerCtas.find((cta) => cta.variant === 'primary');
           primaryCTA && (
             <a
               href={primaryCTA.href}
-              class="px-4 py-2 rounded-xl bg-primary text-white text-sm font-semibold hover:bg-primary-dark transition-colors shadow-xs focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+              class="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold transition-all duration-200 hover:-translate-y-0.5 shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
             >
               {primaryCTA.label}
             </a>
@@ -549,10 +625,10 @@ const primaryCTA = headerCtas.find((cta) => cta.variant === 'primary');
           aria-label="Toggle mobile menu"
           aria-expanded="false"
           aria-controls="mobile-menu"
-          class="p-2 rounded-md hover:bg-surface transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+          class="p-2 rounded-lg text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
         >
-          <Icon name="lucide:menu" id="menu-icon-open" class="w-6 h-6 text-text" />
-          <Icon name="lucide:x" id="menu-icon-close" class="hidden w-6 h-6 text-text" />
+          <Icon name="lucide:menu" id="menu-icon-open" class="w-6 h-6" />
+          <Icon name="lucide:x" id="menu-icon-close" class="hidden w-6 h-6" />
         </button>
       </div>
     </div>
@@ -567,136 +643,201 @@ const primaryCTA = headerCtas.find((cta) => cta.variant === 'primary');
   aria-modal="true"
   aria-label="Mobile navigation menu"
 >
-  <div id="mobile-menu-backdrop" class="absolute inset-0 bg-background/80 backdrop-blur-sm"></div>
+  <div id="mobile-menu-backdrop" class="absolute inset-0 bg-black/60 backdrop-blur-xs"></div>
   <nav
     id="mobile-menu-panel"
-    class="absolute left-0 right-0 bg-background border-b border-border shadow-2xl max-h-[calc(100vh-4.5rem)] overflow-y-auto"
+    class="absolute left-0 right-0 bg-white dark:bg-[#0B1120] border-b border-slate-200 dark:border-slate-800 shadow-2xl max-h-[calc(100vh-4.5rem)] overflow-y-auto"
     aria-label="Mobile navigation"
   >
     <div class="px-4 py-6 space-y-4">
       <!-- Section: Product -->
-      <div class="border-b border-border pb-4">
-        <div class="font-bold text-sm text-text mb-2 flex items-center justify-between">
+      <div class="border-b border-slate-150 dark:border-slate-800 pb-4">
+        <div
+          class="font-bold text-sm text-slate-900 dark:text-white mb-2.5 flex items-center justify-between"
+        >
           <span>Product</span>
-          <a href="/product" class="text-xs text-primary font-medium">View all →</a>
+          <a href="/features" class="text-xs text-blue-600 dark:text-blue-400 font-semibold"
+            >View all →</a
+          >
         </div>
         <div class="grid grid-cols-2 gap-2 text-xs">
           <a
-            href="/product/markcopilot"
-            class="p-2 rounded-lg bg-surface/60 hover:bg-surface text-text">Markcopilot</a
+            href="/markcopilot"
+            class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/70 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-100 font-medium"
           >
+            Markcopilot AI
+          </a>
           <a
             href="/product/shared-inbox"
-            class="p-2 rounded-lg bg-surface/60 hover:bg-surface text-text">Shared Inbox</a
+            class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/70 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-100 font-medium"
           >
-          <a
-            href="/product/help-center"
-            class="p-2 rounded-lg bg-surface/60 hover:bg-surface text-text">Help Center</a
-          >
-          <a
-            href="/product/crm-workspace"
-            class="p-2 rounded-lg bg-surface/60 hover:bg-surface text-text">CRM Workspace</a
-          >
+            Shared Inbox
+          </a>
           <a
             href="/features/whatsapp-campaigns"
-            class="p-2 rounded-lg bg-surface/60 hover:bg-surface text-text">WhatsApp</a
+            class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/70 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-100 font-medium"
           >
+            WhatsApp Campaigns
+          </a>
           <a
-            href="/product/self-hosted"
-            class="p-2 rounded-lg bg-surface/60 hover:bg-surface text-text">Self-Hosted</a
+            href="/features/android-sms-bridge"
+            class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/70 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-100 font-medium"
           >
+            Android SMS Bridge
+          </a>
+          <a
+            href="/features/website-live-chat"
+            class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/70 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-100 font-medium"
+          >
+            Website Live Chat
+          </a>
+          <a
+            href="/integrations/safaricom-mpesa-daraja"
+            class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/70 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-100 font-medium"
+          >
+            Daraja STK & C2B
+          </a>
         </div>
       </div>
 
       <!-- Section: Solutions -->
-      <div class="border-b border-border pb-4">
-        <div class="font-bold text-sm text-text mb-2 flex items-center justify-between">
+      <div class="border-b border-slate-150 dark:border-slate-800 pb-4">
+        <div
+          class="font-bold text-sm text-slate-900 dark:text-white mb-2.5 flex items-center justify-between"
+        >
           <span>Solutions</span>
-          <a href="/solutions" class="text-xs text-primary font-medium">View all →</a>
+          <a href="/solutions" class="text-xs text-blue-600 dark:text-blue-400 font-semibold"
+            >View all →</a
+          >
         </div>
         <div class="grid grid-cols-2 gap-2 text-xs">
           <a
             href="/solutions/support"
-            class="p-2 rounded-lg bg-surface/60 hover:bg-surface text-text">For Support</a
+            class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/70 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-100 font-medium"
           >
-          <a href="/solutions/sales" class="p-2 rounded-lg bg-surface/60 hover:bg-surface text-text"
-            >For Sales</a
-          >
+            Customer Support
+          </a>
           <a
-            href="/solutions/startups"
-            class="p-2 rounded-lg bg-surface/60 hover:bg-surface text-text">For Startups</a
+            href="/solutions/sales"
+            class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/70 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-100 font-medium"
           >
+            In-Chat Sales
+          </a>
           <a
             href="/solutions/ecommerce"
-            class="p-2 rounded-lg bg-surface/60 hover:bg-surface text-text">E-Commerce</a
+            class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/70 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-100 font-medium"
           >
+            E-Commerce & Retail
+          </a>
           <a
             href="/solutions/healthcare"
-            class="p-2 rounded-lg bg-surface/60 hover:bg-surface text-text">Healthcare</a
+            class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/70 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-100 font-medium"
           >
+            Clinics & Health
+          </a>
           <a
-            href="/solutions/local-businesses"
-            class="p-2 rounded-lg bg-surface/60 hover:bg-surface text-text">Local Retail</a
+            href="/solutions/startups"
+            class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/70 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-100 font-medium"
           >
+            Startups (KES 0)
+          </a>
+          <a
+            href="/solutions/fintech"
+            class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/70 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-100 font-medium"
+          >
+            Financial Services
+          </a>
         </div>
       </div>
 
       <!-- Section: Resources -->
-      <div class="border-b border-border pb-4">
-        <div class="font-bold text-sm text-text mb-2 flex items-center justify-between">
+      <div class="border-b border-slate-150 dark:border-slate-800 pb-4">
+        <div
+          class="font-bold text-sm text-slate-900 dark:text-white mb-2.5 flex items-center justify-between"
+        >
           <span>Resources</span>
-          <a href="/resources" class="text-xs text-primary font-medium">View all →</a>
+          <a href="/resources" class="text-xs text-blue-600 dark:text-blue-400 font-semibold"
+            >View all →</a
+          >
         </div>
         <div class="grid grid-cols-2 gap-2 text-xs">
-          <a href="/docs" class="p-2 rounded-lg bg-surface/60 hover:bg-surface text-text"
-            >Documentation</a
+          <a
+            href="/docs"
+            class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/70 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-100 font-medium"
           >
-          <a href="/blog" class="p-2 rounded-lg bg-surface/60 hover:bg-surface text-text"
-            >Blog & Insights</a
+            Documentation
+          </a>
+          <a
+            href="/blog"
+            class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/70 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-100 font-medium"
           >
-          <a href="/faq" class="p-2 rounded-lg bg-surface/60 hover:bg-surface text-text"
-            >Help Center</a
+            Blog & Insights
+          </a>
+          <a
+            href="/faq"
+            class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/70 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-100 font-medium"
           >
-          <a href="/resources/api" class="p-2 rounded-lg bg-surface/60 hover:bg-surface text-text"
-            >API Reference</a
+            Help Center & FAQs
+          </a>
+          <a
+            href="/resources/api"
+            class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/70 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-100 font-medium"
           >
-          <a href="/resources/tools" class="p-2 rounded-lg bg-surface/60 hover:bg-surface text-text"
-            >Free Tools</a
+            API Reference
+          </a>
+          <a
+            href="/resources/tools"
+            class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/70 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-100 font-medium"
           >
+            Tariff Calculator
+          </a>
           <a
             href="/resources/status"
-            class="p-2 rounded-lg bg-surface/60 hover:bg-surface text-text">System Status</a
+            class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/70 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-100 font-medium"
           >
+            System Status
+          </a>
         </div>
       </div>
 
-      <!-- Direct Links -->
+      <!-- Direct Links Row -->
       <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center text-sm font-semibold">
         <a
           href="/markcopilot"
-          class="py-2.5 rounded-xl border border-primary/20 bg-primary/5 text-primary flex items-center justify-center gap-1.5"
+          class="py-2.5 rounded-xl border border-blue-200 dark:border-blue-800/60 bg-blue-50/70 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 flex items-center justify-center gap-1.5"
         >
           <span>Markcopilot</span>
-          <span class="text-[9px] font-bold px-1.5 py-0.2 rounded-full bg-primary text-white"
+          <span class="text-[9px] font-bold px-1.5 py-0.2 rounded-full bg-blue-600 text-white"
             >AI</span
           >
         </a>
-        <a href="/pricing" class="py-2.5 rounded-xl border border-border bg-surface text-text"
-          >Pricing</a
+        <a
+          href="/pricing"
+          class="py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/60 text-slate-800 dark:text-slate-200"
         >
-        <a href="/integrations" class="py-2.5 rounded-xl border border-border bg-surface text-text"
-          >Integrations</a
+          Pricing
+        </a>
+        <a
+          href="/integrations"
+          class="py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/60 text-slate-800 dark:text-slate-200"
         >
-        <a href="/demo" class="py-2.5 rounded-xl border border-border bg-surface text-text">Demo</a>
+          Integrations
+        </a>
+        <a
+          href="/demo"
+          class="py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/60 text-slate-800 dark:text-slate-200"
+        >
+          Demo
+        </a>
       </div>
 
       <!-- CTA Buttons -->
-      <div class="pt-2 space-y-2">
+      <div class="pt-2 space-y-2.5">
         {
           ghostCTAs.map((cta) => (
             <a
               href={cta.href}
-              class="block w-full py-2.5 text-center text-sm font-semibold rounded-xl border border-border text-text hover:bg-surface transition-colors"
+              class="block w-full py-2.5 text-center text-sm font-semibold rounded-xl border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
             >
               {cta.label}
             </a>
@@ -706,7 +847,7 @@ const primaryCTA = headerCtas.find((cta) => cta.variant === 'primary');
           primaryCTA && (
             <a
               href={primaryCTA.href}
-              class="block w-full py-2.5 text-center text-sm font-semibold rounded-xl bg-primary text-white hover:bg-primary-dark transition-colors shadow-xs"
+              class="block w-full py-2.5 text-center text-sm font-semibold rounded-xl bg-blue-600 hover:bg-blue-700 text-white transition-colors shadow-xs"
             >
               {primaryCTA.label}
             </a>
@@ -717,59 +858,284 @@ const primaryCTA = headerCtas.find((cta) => cta.variant === 'primary');
   </nav>
 </div>
 
+<style>
+  .mega-menu-panel {
+    visibility: hidden;
+    opacity: 0;
+    transform: translateY(4px);
+    transition:
+      opacity 180ms cubic-bezier(0.16, 1, 0.3, 1),
+      transform 180ms cubic-bezier(0.16, 1, 0.3, 1),
+      visibility 180ms;
+    pointer-events: none;
+  }
+
+  .mega-menu-container[data-state='open'] .mega-menu-panel {
+    visibility: visible !important;
+    opacity: 1 !important;
+    transform: translateY(0) !important;
+    pointer-events: auto !important;
+  }
+
+  .mega-menu-container[data-state='open'] :global(.chevron-icon) {
+    transform: rotate(180deg) !important;
+  }
+
+  .mega-menu-container[data-state='open'] .mega-menu-trigger {
+    color: #0f172a;
+  }
+  :global(.dark) .mega-menu-container[data-state='open'] .mega-menu-trigger {
+    color: #ffffff;
+  }
+</style>
+
 <script>
-  const header = document.getElementById('site-header');
-  const mobileMenuButton = document.getElementById('mobile-menu-button');
-  const mobileMenu = document.getElementById('mobile-menu');
-  const mobileMenuPanel = document.getElementById('mobile-menu-panel');
-  const mobileMenuBackdrop = document.getElementById('mobile-menu-backdrop');
-  const menuIconOpen = document.getElementById('menu-icon-open');
-  const menuIconClose = document.getElementById('menu-icon-close');
+  // ---------------------------------------------------------------------------
+  // 1. Desktop Mega-Menu Hover & Click Controller (Resilient State Machine)
+  // ---------------------------------------------------------------------------
+  function initHeaderControllers() {
+    const containers = document.querySelectorAll<HTMLElement>('.mega-menu-container');
+    if (!containers.length) return;
 
-  function updateMenuPosition() {
-    if (header && mobileMenuPanel) {
-      const headerRect = header.getBoundingClientRect();
-      mobileMenuPanel.style.top = `${headerRect.bottom}px`;
+    let activeMenuId: string | null = null;
+    let openedBy: 'hover' | 'click' | null = null;
+    let closeTimeout: ReturnType<typeof setTimeout> | null = null;
+    let openTimeout: ReturnType<typeof setTimeout> | null = null;
+
+    // Detect touchscreens / coarse pointers to avoid synthetic hover collisions
+    const isTouch = () =>
+      typeof window !== 'undefined' && window.matchMedia('(pointer: coarse)').matches;
+
+    function openMenu(menuId: string, triggerType: 'hover' | 'click') {
+      if (closeTimeout) {
+        clearTimeout(closeTimeout);
+        closeTimeout = null;
+      }
+      if (openTimeout) {
+        clearTimeout(openTimeout);
+        openTimeout = null;
+      }
+
+      containers.forEach((container) => {
+        const id = container.getAttribute('data-menu');
+        const trigger = container.querySelector<HTMLButtonElement>('.mega-menu-trigger');
+        const panel = container.querySelector<HTMLElement>('.mega-menu-panel');
+        const chevron = container.querySelector<HTMLElement>('.chevron-icon');
+
+        if (id === menuId) {
+          container.setAttribute('data-state', 'open');
+          trigger?.setAttribute('aria-expanded', 'true');
+          panel?.classList.remove('invisible', 'opacity-0', 'pointer-events-none', 'translate-y-1');
+          panel?.classList.add('visible', 'opacity-100', 'pointer-events-auto', 'translate-y-0');
+          chevron?.classList.add('rotate-180');
+        } else {
+          container.setAttribute('data-state', 'closed');
+          trigger?.setAttribute('aria-expanded', 'false');
+          panel?.classList.add('invisible', 'opacity-0', 'pointer-events-none', 'translate-y-1');
+          panel?.classList.remove('visible', 'opacity-100', 'pointer-events-auto', 'translate-y-0');
+          chevron?.classList.remove('rotate-180');
+        }
+      });
+
+      activeMenuId = menuId;
+      openedBy = triggerType;
     }
-  }
 
-  function openMobileMenu() {
-    updateMenuPosition();
-    mobileMenu?.classList.remove('hidden');
-    mobileMenuButton?.setAttribute('aria-expanded', 'true');
-    menuIconOpen?.classList.add('hidden');
-    menuIconClose?.classList.remove('hidden');
-    document.body.style.overflow = 'hidden';
-  }
+    function closeAllMenus() {
+      if (closeTimeout) {
+        clearTimeout(closeTimeout);
+        closeTimeout = null;
+      }
+      if (openTimeout) {
+        clearTimeout(openTimeout);
+        openTimeout = null;
+      }
 
-  function closeMobileMenu() {
-    mobileMenu?.classList.add('hidden');
-    mobileMenuButton?.setAttribute('aria-expanded', 'false');
-    menuIconOpen?.classList.remove('hidden');
-    menuIconClose?.classList.add('hidden');
-    document.body.style.overflow = '';
-  }
+      containers.forEach((container) => {
+        const trigger = container.querySelector<HTMLButtonElement>('.mega-menu-trigger');
+        const panel = container.querySelector<HTMLElement>('.mega-menu-panel');
+        const chevron = container.querySelector<HTMLElement>('.chevron-icon');
 
-  function toggleMobileMenu() {
-    const isExpanded = mobileMenuButton?.getAttribute('aria-expanded') === 'true';
-    if (isExpanded) {
-      closeMobileMenu();
-    } else {
-      openMobileMenu();
+        container.setAttribute('data-state', 'closed');
+        trigger?.setAttribute('aria-expanded', 'false');
+        panel?.classList.add('invisible', 'opacity-0', 'pointer-events-none', 'translate-y-1');
+        panel?.classList.remove('visible', 'opacity-100', 'pointer-events-auto', 'translate-y-0');
+        chevron?.classList.remove('rotate-180');
+      });
+
+      activeMenuId = null;
+      openedBy = null;
     }
+
+    function scheduleClose(delay = 180) {
+      if (closeTimeout) clearTimeout(closeTimeout);
+      closeTimeout = setTimeout(() => {
+        closeAllMenus();
+      }, delay);
+    }
+
+    containers.forEach((container) => {
+      const menuId = container.getAttribute('data-menu');
+      if (!menuId) return;
+
+      const trigger = container.querySelector<HTMLButtonElement>('.mega-menu-trigger');
+      const panel = container.querySelector<HTMLElement>('.mega-menu-panel');
+
+      // Hover Handling (Mouse / fine pointers only)
+      container.addEventListener('mouseenter', () => {
+        if (isTouch()) return;
+
+        if (closeTimeout) {
+          clearTimeout(closeTimeout);
+          closeTimeout = null;
+        }
+
+        if (activeMenuId === menuId) {
+          // Already on this menu, keep open
+          return;
+        }
+
+        if (activeMenuId !== null) {
+          // Rapidly switching between open menus
+          openMenu(menuId, 'hover');
+        } else {
+          // Opening from cold hover: short debounce buffer
+          if (openTimeout) clearTimeout(openTimeout);
+          openTimeout = setTimeout(() => {
+            openMenu(menuId, 'hover');
+          }, 100);
+        }
+      });
+
+      container.addEventListener('mouseleave', () => {
+        if (isTouch()) return;
+
+        if (openTimeout) {
+          clearTimeout(openTimeout);
+          openTimeout = null;
+        }
+
+        scheduleClose(200);
+      });
+
+      // Click Handling (Universal: Mouse, Touch, & Keyboard activation)
+      trigger?.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        if (openTimeout) {
+          clearTimeout(openTimeout);
+          openTimeout = null;
+        }
+        if (closeTimeout) {
+          clearTimeout(closeTimeout);
+          closeTimeout = null;
+        }
+
+        if (activeMenuId !== menuId) {
+          // Menu was closed or a different menu was open -> OPEN and lock with 'click'
+          openMenu(menuId, 'click');
+        } else {
+          // Menu was currently open for this id
+          if (openedBy === 'hover') {
+            // User hovered and now clicked to lock open
+            openedBy = 'click';
+          } else {
+            // Already opened by click -> TOGGLE CLOSED
+            closeAllMenus();
+          }
+        }
+      });
+
+      // Keyboard navigation: Escape closes and focuses trigger
+      container.addEventListener('keydown', (e: KeyboardEvent) => {
+        if (e.key === 'Escape') {
+          e.stopPropagation();
+          closeAllMenus();
+          trigger?.focus();
+        }
+      });
+
+      // Close menu when navigating through any child link
+      panel?.querySelectorAll('a').forEach((link) => {
+        link.addEventListener('click', () => {
+          closeAllMenus();
+        });
+      });
+    });
+
+    // Global click outside closes any open mega-menu
+    document.addEventListener('click', (e) => {
+      const target = e.target as HTMLElement | null;
+      if (target && !target.closest('.mega-menu-container')) {
+        closeAllMenus();
+      }
+    });
+
+    // ---------------------------------------------------------------------------
+    // 2. Mobile Drawer Controller
+    // ---------------------------------------------------------------------------
+    const header = document.getElementById('site-header');
+    const mobileMenuButton = document.getElementById('mobile-menu-button');
+    const mobileMenu = document.getElementById('mobile-menu');
+    const mobileMenuPanel = document.getElementById('mobile-menu-panel');
+    const mobileMenuBackdrop = document.getElementById('mobile-menu-backdrop');
+    const menuIconOpen = document.getElementById('menu-icon-open');
+    const menuIconClose = document.getElementById('menu-icon-close');
+
+    function updateMenuPosition() {
+      if (header && mobileMenuPanel) {
+        const headerRect = header.getBoundingClientRect();
+        mobileMenuPanel.style.top = `${headerRect.bottom}px`;
+      }
+    }
+
+    function openMobileMenu() {
+      updateMenuPosition();
+      mobileMenu?.classList.remove('hidden');
+      mobileMenuButton?.setAttribute('aria-expanded', 'true');
+      menuIconOpen?.classList.add('hidden');
+      menuIconClose?.classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeMobileMenu() {
+      mobileMenu?.classList.add('hidden');
+      mobileMenuButton?.setAttribute('aria-expanded', 'false');
+      menuIconOpen?.classList.remove('hidden');
+      menuIconClose?.classList.add('hidden');
+      document.body.style.overflow = '';
+    }
+
+    function toggleMobileMenu() {
+      const isExpanded = mobileMenuButton?.getAttribute('aria-expanded') === 'true';
+      if (isExpanded) {
+        closeMobileMenu();
+      } else {
+        openMobileMenu();
+      }
+    }
+
+    mobileMenuButton?.addEventListener('click', toggleMobileMenu);
+    mobileMenuBackdrop?.addEventListener('click', closeMobileMenu);
+
+    document.addEventListener('keydown', (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && mobileMenuButton?.getAttribute('aria-expanded') === 'true') {
+        closeMobileMenu();
+        mobileMenuButton?.focus();
+      }
+    });
+
+    mobileMenu?.querySelectorAll('a').forEach((link) => {
+      link.addEventListener('click', closeMobileMenu);
+    });
   }
 
-  mobileMenuButton?.addEventListener('click', toggleMobileMenu);
-  mobileMenuBackdrop?.addEventListener('click', closeMobileMenu);
-
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && mobileMenuButton?.getAttribute('aria-expanded') === 'true') {
-      closeMobileMenu();
-      mobileMenuButton?.focus();
-    }
-  });
-
-  mobileMenu?.querySelectorAll('a').forEach((link) => {
-    link.addEventListener('click', closeMobileMenu);
-  });
+  // Initialize on initial page load and on Astro page-load / View Transitions
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initHeaderControllers);
+  } else {
+    initHeaderControllers();
+  }
+  document.addEventListener('astro:page-load', initHeaderControllers);
 </script>

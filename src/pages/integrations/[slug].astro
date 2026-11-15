@@ -77,7 +77,7 @@ const APP_URL = import.meta.env.PUBLIC_APP_URL || 'http://localhost:3000';
             href={`${APP_URL}/app/auth/signup`}
             class="inline-flex items-center justify-center px-6 py-3 rounded-xl bg-primary text-white font-semibold text-sm hover:opacity-90 transition-opacity shadow-lg"
           >
-            <span>Connect {integration.name} Free</span>
+            <span>Connect {integration.name}</span>
             <Icon name="lucide:arrow-right" class="w-4 h-4 ml-2" />
           </a>
           <a
@@ -213,8 +213,8 @@ const APP_URL = import.meta.env.PUBLIC_APP_URL || 'http://localhost:3000';
 
   <CTA
     title={`Ready to connect ${integration.name}?`}
-    description="Provision your MarkChat workspace in under 30 seconds. 50 free Bulk SMS credits included."
-    action={{ label: 'Start Free Forever', href: `${APP_URL}/app/auth/signup` }}
+    description="Launch your MarkChat workspace to unify customer conversations, mobile money payments, and support channels."
+    action={{ label: 'Get Started with MarkChat', href: `${APP_URL}/app/auth/signup` }}
     background="muted"
   />
 </MarketingLayout>

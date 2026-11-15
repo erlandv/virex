@@ -369,6 +369,27 @@ const normalizedKey = iconKey.toLowerCase().replace(/[^a-z0-9]/g, '-');
         <rect x="27" y="24" width="4" height="4" fill="#00A4EF" />
         <rect x="32" y="24" width="4" height="4" fill="#FFB900" />
       </svg>
+    ) : normalizedKey.includes('api') ||
+      normalizedKey.includes('developer') ||
+      normalizedKey.includes('webhook') ? (
+      <svg class={iconSizes} viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="48" height="48" rx="10" fill="#0F172A" />
+        <path
+          d="M16 18L10 24L16 30"
+          stroke="#38BDF8"
+          stroke-width="3"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+        <path
+          d="M32 18L38 24L32 30"
+          stroke="#38BDF8"
+          stroke-width="3"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+        <path d="M26 14L22 34" stroke="#818CF8" stroke-width="3" stroke-linecap="round" />
+      </svg>
     ) : (
       <svg class={iconSizes} viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
         <rect width="48" height="48" rx="10" fill="#6366F1" />

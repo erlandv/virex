@@ -1,0 +1,160 @@
+---
+/**
+ * SolutionsPreview.astro - Homepage Business Use Cases & Solutions Preview
+ *
+ * Concise, high-impact bento showcase demonstrating how MarkChat powers
+ * distinct Kenyan business operations without duplicating the deep /solutions directory.
+ */
+import { Icon } from 'astro-icon/components';
+
+const industryUseCases = [
+  {
+    title: 'Retail, E-Commerce & Dukas',
+    slug: 'ecommerce',
+    category: 'Conversational Sales',
+    badge: 'Popular',
+    icon: 'lucide:shopping-bag',
+    description:
+      'Turn active Instagram DMs and WhatsApp chats into completed orders with in-chat M-Pesa /stk checkout and automated dispatch alerts.',
+    metrics: '< 10s Checkout',
+    href: '/solutions/ecommerce',
+  },
+  {
+    title: 'Financial & Payment Operations',
+    slug: 'fintech',
+    category: 'Transaction Security',
+    badge: 'Fraud Shield',
+    icon: 'lucide:shield-check',
+    description:
+      'Cryptographically match every Daraja C2B callback against genuine Safaricom TransIDs. Eliminate counterfeit screenshot fraud with automated SMS receipts.',
+    metrics: 'Server-Side TransID',
+    href: '/solutions/fintech',
+  },
+  {
+    title: 'Hospitality & Safari Travel',
+    slug: 'travel',
+    category: 'High-Touch Guests',
+    badge: 'Global Guests',
+    icon: 'lucide:compass',
+    description:
+      'Capture international booking inquiries across time zones with 24/7 Markcopilot triage in English and Swahili, routing confirmed leads to sales agents.',
+    metrics: '24/7 Lead Intake',
+    href: '/solutions/travel',
+  },
+  {
+    title: 'Education & Academies',
+    slug: 'education',
+    category: 'Admissions Triage',
+    badge: 'Intake Scale',
+    icon: 'lucide:graduation-cap',
+    description:
+      'Organize seasonal admissions surges, automate fee schedule delivery with keyword triage, and broadcast urgent school circulars via registered Alphanumeric SMS.',
+    metrics: 'Keyword Triage',
+    href: '/solutions/education',
+  },
+  {
+    title: 'Clinics & Professional Services',
+    slug: 'healthcare',
+    category: 'Client Care',
+    badge: 'KDPA Compliant',
+    icon: 'lucide:heart-pulse',
+    description:
+      'Manage patient appointment scheduling via website live chat with 1-tap WhatsApp continuation, private doctor handoff notes, and KDPA 2019 data protection.',
+    metrics: 'Confidential Queues',
+    href: '/solutions/healthcare',
+  },
+  {
+    title: 'Customer Support & Sales Teams',
+    slug: 'support',
+    category: 'Team Operations',
+    badge: 'High Efficiency',
+    icon: 'lucide:headphones',
+    description:
+      'Prevent duplicate replies with real-time agent collision detection, track response SLAs, and coordinate seamless shift handovers across all connected channels.',
+    metrics: 'Collision Warning',
+    href: '/solutions/support',
+  },
+];
+---
+
+<section class="py-16 sm:py-24 bg-surface/30 border-y border-border">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    {/* Section Header */}
+    <div class="max-w-3xl mx-auto text-center mb-16">
+      <div
+        class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-primary/10 text-primary border border-primary/20 mb-4"
+      >
+        <Icon name="lucide:briefcase" class="w-3.5 h-3.5" />
+        <span>Tailored Industry Solutions</span>
+      </div>
+      <h2 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-text">
+        Engineered for How Your Sector Communicates &amp; Sells
+      </h2>
+      <p class="mt-4 text-base sm:text-lg text-text-muted">
+        From high-volume retail shops to medical clinics and regional tour operators, MarkChat
+        adapts directly to your daily customer communication realities.
+      </p>
+    </div>
+
+    {/* Solutions Bento Grid */}
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {
+        industryUseCases.map((item) => (
+          <a
+            href={item.href}
+            class="group bg-surface border border-border rounded-2xl p-6 sm:p-7 shadow-xs hover:border-primary/50 hover:shadow-xl transition-all duration-300 flex flex-col justify-between"
+          >
+            <div>
+              {/* Top Row: Icon + Category Badge */}
+              <div class="flex items-start justify-between mb-5">
+                <div class="w-12 h-12 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary group-hover:scale-105 group-hover:bg-primary group-hover:text-white transition-all duration-300">
+                  <Icon name={item.icon} class="w-6 h-6" />
+                </div>
+                <div class="flex items-center gap-2">
+                  <span class="text-[10px] font-semibold uppercase tracking-wider text-primary font-mono bg-primary/10 px-2 py-0.5 rounded-full border border-primary/20">
+                    {item.badge}
+                  </span>
+                </div>
+              </div>
+
+              {/* Title & Category */}
+              <span class="text-xs font-semibold text-text-muted uppercase tracking-wider block mb-1">
+                {item.category}
+              </span>
+              <h3 class="text-lg font-bold text-text group-hover:text-primary transition-colors">
+                {item.title}
+              </h3>
+
+              {/* Description */}
+              <p class="text-xs sm:text-sm text-text-muted mt-2.5 leading-relaxed">
+                {item.description}
+              </p>
+            </div>
+
+            {/* Bottom Row: Metric Highlight + Link */}
+            <div class="mt-6 pt-4 border-t border-border/80 flex items-center justify-between text-xs">
+              <span class="font-mono font-semibold text-text-muted text-[11px] bg-surface-hover px-2.5 py-1 rounded-md border border-border">
+                {item.metrics}
+              </span>
+              <span class="font-bold text-primary inline-flex items-center gap-1 group-hover:translate-x-1 transition-transform">
+                <span>View workflow</span>
+                <Icon name="lucide:arrow-right" class="w-3.5 h-3.5" />
+              </span>
+            </div>
+          </a>
+        ))
+      }
+    </div>
+
+    {/* Section Footer / Directory Link */}
+    <div class="mt-12 text-center">
+      <a
+        href="/solutions"
+        class="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-border bg-surface hover:bg-surface-hover text-sm font-semibold text-text hover:text-primary transition-colors shadow-xs"
+      >
+        <span>Explore all 19 industry workflows &amp; team solutions</span>
+        <Icon name="lucide:arrow-right" class="w-4 h-4 text-primary" />
+      </a>
+    </div>
+  </div>
+</section>

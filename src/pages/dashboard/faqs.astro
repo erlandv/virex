@@ -1,14 +1,36 @@
 ---
 /**
  * MarkChat CMS — FAQs Manager
+ *
+ * Single-admin management interface for FAQ questions and categories.
+ * Features live search/filtering, quick stats, modal creation/editing,
+ * and lifecycle status toggling.
  */
 import DashboardLayout from '@/layouts/DashboardLayout.astro';
 import Card from '@dashboard-ui/Card.astro';
 import Modal from '@dashboard-ui/Modal.astro';
+import StatCard from '@dashboard-ui/StatCard.astro';
 import { Icon } from 'astro-icon/components';
-import { fetchFaqs } from '@/lib/cms-api';
+import {
+  adminFetchFaqs,
+  adminFetchFaqCategories,
+  type FaqItem,
+  type FaqCategoryItem,
+} from '@/lib/cms-api';
 
-const faqs = await fetchFaqs();
+const faqs: FaqItem[] = await adminFetchFaqs();
+const categories: FaqCategoryItem[] = await adminFetchFaqCategories();
+
+const totalQuestions = faqs.length;
+const publishedCount = faqs.filter((f) => f.status === 'published').length;
+const draftCount = faqs.filter((f) => f.status === 'draft' || f.status === 'paused').length;
+const activeCategoriesCount = categories.filter((c) => c.status === 'published').length;
+
+// Category lookup map
+const categoryMap = new Map<string, FaqCategoryItem>();
+for (const cat of categories) {
+  categoryMap.set(cat.id, cat);
+}
 ---
 
 <DashboardLayout
@@ -16,108 +38,218 @@ const faqs = await fetchFaqs();
   description="Manage interactive accordion Q&As displayed on MarkChat's public /faq page"
   breadcrumbs={[{ label: 'Dashboard', href: '/dashboard' }, { label: 'FAQs Manager' }]}
 >
-  <div class="cms-faqs-page">
-    <div class="page-header flex justify-between items-center mb-6">
+  <div class="cms-faqs-page max-w-7xl mx-auto space-y-6">
+    <!-- Page Header -->
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
       <div>
         <h1 class="text-2xl font-bold tracking-tight text-text">
           Frequently Asked Questions Manager
         </h1>
         <p class="text-sm text-text-muted mt-1">
-          Update answers on M-Pesa STK push, Pochi la Biashara sync, Africa’s Talking SMS, and
-          Markcopilot AI.
+          Publish, edit, and organize verified Q&amp;As across M-Pesa STK, SMS gateways, Markcopilot
+          AI, and KDPA compliance.
         </p>
       </div>
-      <div class="header-actions flex gap-3">
+
+      <div class="flex flex-wrap items-center gap-2.5">
         <a href="/faq" target="_blank" class="btn btn-secondary text-sm">
           <Icon name="lucide:external-link" class="w-4 h-4 mr-1.5 inline" />
           View Live /faq
         </a>
-        <button type="button" id="open-faq-modal" class="btn btn-primary text-sm">
+
+        <button type="button" id="open-cat-modal" class="btn btn-secondary text-sm">
+          <Icon name="lucide:layers" class="w-4 h-4 mr-1.5 inline" />
+          Manage Categories ({categories.length})
+        </button>
+
+        <button type="button" id="open-faq-modal" class="btn btn-primary text-sm shadow-sm">
           <Icon name="lucide:plus" class="w-4 h-4 mr-1.5 inline" />
-          Add FAQ Item
+          Add Question
         </button>
       </div>
     </div>
 
+    <!-- Quick Stats Grid -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <StatCard
+        title="Total Questions"
+        value={totalQuestions}
+        icon="help-circle"
+        description="All configured Q&A items"
+      />
+      <StatCard
+        title="Published Live"
+        value={publishedCount}
+        icon="check-circle"
+        description="Visible on public /faq page"
+      />
+      <StatCard
+        title="Draft / Paused"
+        value={draftCount}
+        icon="file-text"
+        description="Staged or unlisted questions"
+      />
+      <StatCard
+        title="Active Categories"
+        value={activeCategoriesCount}
+        icon="layers"
+        description="Filterable topic sections"
+      />
+    </div>
+
+    <!-- Search & Filter Controls -->
+    <Card padding="md">
+      <div class="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-between">
+        <div class="relative flex-1">
+          <Icon
+            name="lucide:search"
+            class="w-4 h-4 text-text-muted absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none"
+          />
+          <input
+            type="search"
+            id="table-search"
+            placeholder="Search questions, answers, or categories..."
+            class="w-full pl-9 pr-4 py-2 text-sm rounded-lg bg-surface border border-border text-text placeholder:text-text-muted/60 focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary"
+          />
+        </div>
+
+        <div class="flex items-center gap-2">
+          <select
+            id="table-category-filter"
+            class="text-xs sm:text-sm px-3 py-2 rounded-lg bg-surface border border-border text-text focus:outline-none focus:ring-1 focus:ring-primary"
+          >
+            <option value="all">All Categories ({categories.length})</option>
+            {categories.map((c) => <option value={c.id}>{c.name}</option>)}
+          </select>
+
+          <select
+            id="table-status-filter"
+            class="text-xs sm:text-sm px-3 py-2 rounded-lg bg-surface border border-border text-text focus:outline-none focus:ring-1 focus:ring-primary"
+          >
+            <option value="all">All Statuses</option>
+            <option value="published">Published</option>
+            <option value="draft">Draft</option>
+            <option value="paused">Paused</option>
+            <option value="archived">Archived</option>
+          </select>
+        </div>
+      </div>
+    </Card>
+
+    <!-- Questions Table Card -->
     <Card
-      title="Live & Draft Questions"
-      description="Sorted by display order on the public website"
+      title="Configured FAQ Questions"
+      description="Manage display order and lifecycle statuses. Changes persist to authoritative CMS."
       padding="none"
     >
       <div class="table-responsive">
         <table class="cms-table w-full">
           <thead>
             <tr>
-              <th class="text-left py-3 px-4 w-16">Order</th>
-              <th class="text-left py-3 px-4">Question &amp; Answer Preview</th>
-              <th class="text-left py-3 px-4 w-36">Category</th>
-              <th class="text-left py-3 px-4 w-32">Status</th>
-              <th class="text-right py-3 px-4 w-40">Actions</th>
+              <th class="text-left py-3.5 px-4 w-16">Order</th>
+              <th class="text-left py-3.5 px-4">Question &amp; Answer Preview</th>
+              <th class="text-left py-3.5 px-4 w-44">Category</th>
+              <th class="text-left py-3.5 px-4 w-36">Status</th>
+              <th class="text-right py-3.5 px-4 w-44">Actions</th>
             </tr>
           </thead>
           <tbody id="faq-table-body">
             {
-              faqs.map((faq) => (
-                <tr data-id={faq.id} data-faq={JSON.stringify(faq)}>
-                  <td class="py-3 px-4 font-mono text-xs text-text-muted">#{faq.order}</td>
-                  <td class="py-3 px-4">
-                    <div class="font-medium text-text">{faq.question}</div>
-                    <div class="text-xs text-text-muted line-clamp-1 mt-0.5">{faq.answer}</div>
-                  </td>
-                  <td class="py-3 px-4 text-xs">
-                    <span class="inline-block bg-surface-hover px-2 py-0.5 rounded border border-border capitalize">
-                      {faq.category}
-                    </span>
-                  </td>
-                  <td class="py-3 px-4 text-xs">
-                    <span class={`status-pill status-${faq.status}`}>
-                      {faq.status.toUpperCase()}
-                    </span>
-                  </td>
-                  <td class="py-3 px-4 text-right">
-                    <div class="flex items-center justify-end gap-2">
-                      <button
-                        type="button"
-                        class="action-btn edit-faq-btn"
-                        data-id={faq.id}
-                        title="Edit FAQ"
-                      >
-                        <Icon name="lucide:edit-3" class="w-4 h-4" />
-                      </button>
-                      <select class="status-select text-xs" data-id={faq.id}>
-                        <option value="published" selected={faq.status === 'published'}>
-                          Published
-                        </option>
-                        <option value="draft" selected={faq.status === 'draft'}>
-                          Draft
-                        </option>
-                        <option value="paused" selected={faq.status === 'paused'}>
-                          Paused
-                        </option>
-                        <option value="archived" selected={faq.status === 'archived'}>
-                          Archived
-                        </option>
-                      </select>
-                      <button
-                        type="button"
-                        class="action-btn text-error delete-faq-btn"
-                        data-id={faq.id}
-                        title="Delete"
-                      >
-                        <Icon name="lucide:trash-2" class="w-4 h-4" />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))
+              faqs.map((faq) => {
+                const cat = categoryMap.get(faq.category);
+                const catName = cat ? cat.name : faq.category;
+                return (
+                  <tr
+                    data-id={faq.id}
+                    data-category={faq.category}
+                    data-status={faq.status}
+                    data-search={`${faq.question.toLowerCase()} ${faq.answer.toLowerCase()} ${catName.toLowerCase()}`}
+                    data-faq={JSON.stringify(faq)}
+                    class="faq-row hover:bg-surface-hover/50 transition-colors"
+                  >
+                    <td class="py-3.5 px-4 font-mono text-xs text-text-muted">#{faq.order}</td>
+                    <td class="py-3.5 px-4">
+                      <div class="font-medium text-text text-sm">{faq.question}</div>
+                      <div class="text-xs text-text-muted line-clamp-2 mt-1 leading-relaxed">
+                        {faq.answer}
+                      </div>
+                    </td>
+                    <td class="py-3.5 px-4 text-xs">
+                      <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-surface-hover border border-border text-text font-medium capitalize">
+                        <Icon
+                          name={cat?.icon || 'lucide:help-circle'}
+                          class="w-3.5 h-3.5 text-text-muted"
+                        />
+                        <span>{catName}</span>
+                      </span>
+                    </td>
+                    <td class="py-3.5 px-4 text-xs">
+                      <span class={`status-pill status-${faq.status}`}>
+                        {faq.status.toUpperCase()}
+                      </span>
+                    </td>
+                    <td class="py-3.5 px-4 text-right">
+                      <div class="flex items-center justify-end gap-1.5">
+                        <button
+                          type="button"
+                          class="action-btn edit-faq-btn"
+                          data-id={faq.id}
+                          title="Edit FAQ Question"
+                        >
+                          <Icon name="lucide:edit-3" class="w-4 h-4" />
+                        </button>
+
+                        <select
+                          class="status-select text-xs"
+                          data-id={faq.id}
+                          aria-label="Change status"
+                        >
+                          <option value="published" selected={faq.status === 'published'}>
+                            Published
+                          </option>
+                          <option value="draft" selected={faq.status === 'draft'}>
+                            Draft
+                          </option>
+                          <option value="paused" selected={faq.status === 'paused'}>
+                            Paused
+                          </option>
+                          <option value="archived" selected={faq.status === 'archived'}>
+                            Archived
+                          </option>
+                        </select>
+
+                        <button
+                          type="button"
+                          class="action-btn text-error hover:bg-error/10 delete-faq-btn"
+                          data-id={faq.id}
+                          title="Delete FAQ Question"
+                        >
+                          <Icon name="lucide:trash-2" class="w-4 h-4" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })
             }
           </tbody>
         </table>
       </div>
+
+      <!-- Table Empty State -->
+      <div
+        id="table-empty-state"
+        class="hidden text-center py-12 px-4 border-t border-border bg-surface/30"
+      >
+        <p class="text-sm font-medium text-text">No FAQ items match your filter criteria.</p>
+        <p class="text-xs text-text-muted mt-1">
+          Try clearing your search query or changing category/status filters.
+        </p>
+      </div>
     </Card>
 
-    <!-- Modal for Create / Edit FAQ -->
-    <Modal id="faq-modal" title="FAQ Item Editor" size="md">
+    <!-- Modal for Create / Edit FAQ Item -->
+    <Modal id="faq-modal" title="FAQ Item Editor" size="lg">
       <form id="faq-form" class="space-y-4">
         <input type="hidden" id="faq-id" name="id" />
 
@@ -129,35 +261,40 @@ const faqs = await fetchFaqs();
             name="question"
             class="form-input"
             required
-            placeholder="e.g. Can I use Pochi la Biashara instead of a Paybill?"
+            placeholder="e.g. How does in-chat /stk checkout work for customers?"
           />
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div class="form-group">
-            <label class="form-label" for="faq-category">Category</label>
-            <select id="faq-category" name="category" class="form-input">
-              <option value="general">General</option>
-              <option value="mpesa">M-Pesa &amp; Daraja</option>
-              <option value="sms">Bulk SMS &amp; BYOC</option>
-              <option value="markcopilot">Markcopilot AI</option>
-              <option value="pricing">Pricing &amp; Plans</option>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div class="form-group sm:col-span-1">
+            <label class="form-label" for="faq-category">Category *</label>
+            <select id="faq-category" name="category" class="form-input" required>
+              {categories.map((c) => <option value={c.id}>{c.name}</option>)}
             </select>
           </div>
-          <div class="form-group">
-            <label class="form-label" for="faq-order">Display Order Number</label>
-            <input type="number" id="faq-order" name="order" class="form-input" value="1" min="1" />
-          </div>
-        </div>
 
-        <div class="form-group">
-          <label class="form-label" for="faq-status">Lifecycle Status</label>
-          <select id="faq-status" name="status" class="form-input">
-            <option value="published">Published</option>
-            <option value="draft">Draft</option>
-            <option value="paused">Paused</option>
-            <option value="archived">Archived</option>
-          </select>
+          <div class="form-group sm:col-span-1">
+            <label class="form-label" for="faq-order">Display Order Number *</label>
+            <input
+              type="number"
+              id="faq-order"
+              name="order"
+              class="form-input"
+              value="1"
+              min="1"
+              required
+            />
+          </div>
+
+          <div class="form-group sm:col-span-1">
+            <label class="form-label" for="faq-status">Lifecycle Status *</label>
+            <select id="faq-status" name="status" class="form-input" required>
+              <option value="published">Published</option>
+              <option value="draft">Draft</option>
+              <option value="paused">Paused</option>
+              <option value="archived">Archived</option>
+            </select>
+          </div>
         </div>
 
         <div class="form-group">
@@ -165,29 +302,100 @@ const faqs = await fetchFaqs();
           <textarea
             id="faq-answer"
             name="answer"
-            rows="4"
+            rows="5"
             class="form-textarea"
             required
-            placeholder="Provide a helpful, precise explanation..."></textarea>
+            placeholder="Provide a clear, verified explanation of how the capability operates..."
+          ></textarea>
+          <p class="text-[11px] text-text-muted mt-1">
+            Ensure no unverified marketing promises, non-existent trials, or fake statistics are
+            included.
+          </p>
         </div>
       </form>
 
       <div slot="footer" class="flex justify-end gap-3">
-        <button type="button" class="btn btn-secondary" onclick="window.closeModal('faq-modal')">
+        <button
+          type="button"
+          class="btn btn-secondary"
+          onclick="window.closeModal && window.closeModal('faq-modal')"
+        >
           Cancel
         </button>
-        <button type="submit" form="faq-form" class="btn btn-primary"> Save FAQ </button>
+        <button type="submit" form="faq-form" class="btn btn-primary"> Save FAQ Item </button>
+      </div>
+    </Modal>
+
+    <!-- Modal for Categories Manager -->
+    <Modal id="cat-modal" title="Manage FAQ Categories" size="md">
+      <div class="space-y-5">
+        <div class="space-y-2 max-h-60 overflow-y-auto pr-1">
+          {
+            categories.map((cat) => (
+              <div class="flex items-center justify-between p-3 rounded-lg bg-surface border border-border">
+                <div class="flex items-center gap-2.5">
+                  <Icon name={cat.icon || 'lucide:help-circle'} class="w-4 h-4 text-primary" />
+                  <div>
+                    <div class="text-sm font-semibold text-text">{cat.name}</div>
+                    <div class="text-[11px] text-text-muted font-mono">
+                      id: {cat.id} | order: #{cat.order}
+                    </div>
+                  </div>
+                </div>
+                <span class={`status-pill status-${cat.status}`}>{cat.status.toUpperCase()}</span>
+              </div>
+            ))
+          }
+        </div>
+
+        <!-- Add Category Form -->
+        <form id="cat-form" class="border-t border-border pt-4 space-y-3">
+          <h4 class="text-xs font-bold uppercase tracking-wider text-text-muted">
+            Add New Category
+          </h4>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div class="form-group">
+              <label class="form-label text-xs" for="cat-name">Category Name *</label>
+              <input
+                type="text"
+                id="cat-name"
+                name="name"
+                class="form-input text-xs"
+                placeholder="e.g. Developer APIs"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label class="form-label text-xs" for="cat-icon">Lucide Icon</label>
+              <input
+                type="text"
+                id="cat-icon"
+                name="icon"
+                class="form-input text-xs"
+                value="lucide:help-circle"
+              />
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary text-xs w-full py-2">
+            Create Category
+          </button>
+        </form>
+      </div>
+
+      <div slot="footer" class="flex justify-end">
+        <button
+          type="button"
+          class="btn btn-secondary"
+          onclick="window.closeModal && window.closeModal('cat-modal')"
+        >
+          Close
+        </button>
       </div>
     </Modal>
   </div>
 </DashboardLayout>
 
 <style>
-  .cms-faqs-page {
-    max-width: 80rem;
-    margin: 0 auto;
-  }
-
   .table-responsive {
     overflow-x: auto;
   }
@@ -249,6 +457,7 @@ const faqs = await fetchFaqs();
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    transition: all 150ms ease;
   }
 
   .action-btn:hover {
@@ -306,36 +515,94 @@ const faqs = await fetchFaqs();
     color: #ffffff;
   }
 
+  .btn-primary:hover {
+    background: var(--color-primary-hover, #4f46e5);
+  }
+
   .btn-secondary {
     background: var(--color-surface, #141418);
     border-color: var(--color-border, #27272a);
     color: var(--color-text, #fafafa);
+  }
+
+  .btn-secondary:hover {
+    background: var(--color-surface-hover, #1f1f23);
   }
 </style>
 
 <script>
   import {
     upsertFaq,
+    upsertFaqCategory,
     updateItemStatus,
     deleteCmsItem,
     type CmsLifecycleStatus,
-    type FaqItem,
   } from '@/lib/cms-api';
 
   function initFaqsAdmin() {
     const createBtn = document.getElementById('open-faq-modal');
-    const form = document.getElementById('faq-form') as HTMLFormElement;
+    const openCatBtn = document.getElementById('open-cat-modal');
+    const form = document.getElementById('faq-form') as HTMLFormElement | null;
+    const catForm = document.getElementById('cat-form') as HTMLFormElement | null;
+    const searchInput = document.getElementById('table-search') as HTMLInputElement | null;
+    const catFilter = document.getElementById('table-category-filter') as HTMLSelectElement | null;
+    const statusFilter = document.getElementById('table-status-filter') as HTMLSelectElement | null;
+    const rows = document.querySelectorAll<HTMLTableRowElement>('.faq-row');
+    const emptyState = document.getElementById('table-empty-state');
 
+    // Filter table rows
+    function applyTableFilters() {
+      const q = (searchInput?.value || '').toLowerCase().trim();
+      const selectedCat = catFilter?.value || 'all';
+      const selectedStatus = statusFilter?.value || 'all';
+
+      let visibleCount = 0;
+
+      rows.forEach((row) => {
+        const rowSearch = row.dataset.search || '';
+        const rowCat = row.dataset.category || '';
+        const rowStatus = row.dataset.status || '';
+
+        const matchesQuery = !q || rowSearch.includes(q);
+        const matchesCat = selectedCat === 'all' || rowCat === selectedCat;
+        const matchesStatus = selectedStatus === 'all' || rowStatus === selectedStatus;
+
+        if (matchesQuery && matchesCat && matchesStatus) {
+          row.classList.remove('hidden');
+          visibleCount++;
+        } else {
+          row.classList.add('hidden');
+        }
+      });
+
+      if (emptyState) {
+        emptyState.classList.toggle('hidden', visibleCount > 0);
+      }
+    }
+
+    searchInput?.addEventListener('input', applyTableFilters);
+    catFilter?.addEventListener('change', applyTableFilters);
+    statusFilter?.addEventListener('change', applyTableFilters);
+
+    // Open add question modal
     if (createBtn) {
       createBtn.addEventListener('click', () => {
         form?.reset();
         (document.getElementById('faq-id') as HTMLInputElement).value = '';
+        (document.getElementById('faq-order') as HTMLInputElement).value = String(rows.length + 1);
         window.openModal?.('faq-modal');
       });
     }
 
+    // Open categories modal
+    if (openCatBtn) {
+      openCatBtn.addEventListener('click', () => {
+        window.openModal?.('cat-modal');
+      });
+    }
+
     // Edit button listeners
-    document.querySelectorAll('.edit-faq-btn').forEach((btn) => {
+    document.querySelectorAll<HTMLButtonElement>('.edit-faq-btn').forEach((btn) => {
       btn.addEventListener('click', () => {
         const row = btn.closest('tr');
         if (!row) return;
@@ -352,14 +619,13 @@ const faqs = await fetchFaqs();
       });
     });
 
-    // Form submission
+    // Form submission for FAQ item
     if (form) {
       form.addEventListener('submit', async (e) => {
         e.preventDefault();
         const id = (document.getElementById('faq-id') as HTMLInputElement).value;
         const question = (document.getElementById('faq-question') as HTMLInputElement).value;
-        const category = (document.getElementById('faq-category') as HTMLSelectElement)
-          .value as FaqItem['category'];
+        const category = (document.getElementById('faq-category') as HTMLSelectElement).value;
         const order = parseInt(
           (document.getElementById('faq-order') as HTMLInputElement).value || '1',
           10
@@ -385,12 +651,37 @@ const faqs = await fetchFaqs();
             duration: 3000,
           });
         }
-        setTimeout(() => window.location.reload(), 600);
+        setTimeout(() => window.location.reload(), 500);
+      });
+    }
+
+    // Form submission for Category
+    if (catForm) {
+      catForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const name = (document.getElementById('cat-name') as HTMLInputElement).value;
+        const icon = (document.getElementById('cat-icon') as HTMLInputElement).value;
+
+        await upsertFaqCategory({
+          name,
+          icon: icon || 'lucide:help-circle',
+          status: 'published',
+        });
+
+        window.closeModal?.('cat-modal');
+        if (window.showToast) {
+          window.showToast({
+            message: 'Category created successfully!',
+            variant: 'success',
+            duration: 3000,
+          });
+        }
+        setTimeout(() => window.location.reload(), 500);
       });
     }
 
     // Status quick change
-    document.querySelectorAll('.status-select').forEach((sel) => {
+    document.querySelectorAll<HTMLSelectElement>('.status-select').forEach((sel) => {
       sel.addEventListener('change', async (e) => {
         const id = sel.getAttribute('data-id');
         const status = (e.target as HTMLSelectElement).value as CmsLifecycleStatus;
@@ -403,19 +694,32 @@ const faqs = await fetchFaqs();
               duration: 2500,
             });
           }
+          const row = sel.closest('tr');
+          if (row) {
+            row.dataset.status = status;
+            const pill = row.querySelector('.status-pill');
+            if (pill) {
+              pill.className = `status-pill status-${status}`;
+              pill.textContent = status.toUpperCase();
+            }
+          }
         }
       });
     });
 
     // Delete FAQ
-    document.querySelectorAll('.delete-faq-btn').forEach((btn) => {
+    document.querySelectorAll<HTMLButtonElement>('.delete-faq-btn').forEach((btn) => {
       btn.addEventListener('click', async () => {
         const id = btn.getAttribute('data-id');
-        if (id && confirm('Are you sure you want to delete this FAQ?')) {
+        if (id && confirm('Are you sure you want to delete this FAQ question?')) {
           await deleteCmsItem('faqs', id);
           btn.closest('tr')?.remove();
           if (window.showToast) {
-            window.showToast({ message: 'FAQ deleted', variant: 'success', duration: 2500 });
+            window.showToast({
+              message: 'FAQ deleted successfully',
+              variant: 'success',
+              duration: 2500,
+            });
           }
         }
       });

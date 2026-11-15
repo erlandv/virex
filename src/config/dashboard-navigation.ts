@@ -32,9 +32,24 @@ export const dashboardNavigation: DashboardNavSection[] = [
         icon: 'layout-dashboard',
       },
       {
+        label: 'Homepage Editor',
+        href: '/dashboard/homepage',
+        icon: 'home',
+      },
+      {
         label: 'Pricing & Plans',
         href: '/dashboard/pricing',
         icon: 'credit-card',
+      },
+      {
+        label: 'Features Showcase',
+        href: '/dashboard/features',
+        icon: 'sparkles',
+      },
+      {
+        label: 'Markcopilot AI',
+        href: '/dashboard/markcopilot',
+        icon: 'bot',
       },
       {
         label: 'Blog & Articles',

@@ -1,56 +1,502 @@
 ---
 /**
- * MarkChat Kenya — Frequently Asked Questions
+ * MarkChat Kenya — Frequently Asked Questions (FAQ) Page
+ *
+ * Polished, CMS-driven, accessible interactive Q&A hub.
+ * Features live instant search, category filtering, accessible accordions,
+ * KDPA compliance details, and verified M-Pesa & SMS operational explanations.
  */
 import MarketingLayout from '@/layouts/MarketingLayout.astro';
-import PageHeader from '@sections/content/PageHeader.astro';
-import FAQSection from '@sections/content/FAQSection.astro';
-import CTA from '@sections/marketing/CTA.astro';
-import { siteConfig } from '@/config';
-import { fetchFaqs } from '@/lib/cms-api';
+import { Icon } from 'astro-icon/components';
+import { fetchFaqs, fetchFaqCategories, type FaqItem, type FaqCategoryItem } from '@/lib/cms-api';
 
-const faqs = await fetchFaqs();
+const faqs: FaqItem[] = await fetchFaqs();
+const categories: FaqCategoryItem[] = await fetchFaqCategories();
 
-const categoryLabels: Record<string, string> = {
-  general: 'General & Onboarding',
-  mpesa: 'M-Pesa STK & Mobile Money',
-  sms: 'Bulk SMS & Africa’s Talking',
-  markcopilot: 'Markcopilot AI Assistant',
-  pricing: 'Pricing, Plans & KES Billing',
-};
+// Category lookup map for category badges
+const categoryMap = new Map<string, FaqCategoryItem>();
+for (const cat of categories) {
+  categoryMap.set(cat.id, cat);
+}
 
-const groupedCategories = ['mpesa', 'sms', 'markcopilot', 'pricing', 'general']
-  .map((catKey) => {
-    const catFaqs = faqs.filter((f) => f.category === catKey);
-    return {
-      name: categoryLabels[catKey] || 'General',
-      faqs: catFaqs.map((f) => ({
-        question: f.question,
-        answer: f.answer,
-      })),
-    };
-  })
-  .filter((group) => group.faqs.length > 0);
+// Compute question count per category
+const categoryCounts = new Map<string, number>();
+for (const faq of faqs) {
+  categoryCounts.set(faq.category, (categoryCounts.get(faq.category) || 0) + 1);
+}
 ---
 
 <MarketingLayout
-  title={`FAQ - ${siteConfig.name}`}
-  description="Frequently asked questions about MarkChat. Learn how in-chat M-Pesa STK checkout, Africa’s Talking SMS, and Markcopilot AI work."
+  title="FAQ - MarkChat | In-Chat M-Pesa, SMS & AI Help Center"
+  description="Clear, verified answers about in-chat M-Pesa STK push, Africa’s Talking Bulk SMS, Markcopilot bilingual AI, Kenyan business setups, and KDPA compliance."
 >
-  <PageHeader
-    title="Frequently Asked Questions"
-    subtitle="Everything you need to know about setting up MarkChat, connecting Safaricom Daraja, Bulk SMS, and Markcopilot AI in Kenya."
+  <!-- Hero Section -->
+  <section
+    class="relative pt-12 pb-10 sm:pt-20 sm:pb-14 overflow-hidden border-b border-border/50 bg-gradient-to-b from-surface/40 via-background to-background"
   >
-    <a href="/contact" class="text-primary hover:underline">Contact our Nairobi team</a>.
-  </PageHeader>
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+      <div
+        class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-primary/10 text-primary border border-primary/20 mb-6"
+      >
+        <Icon name="lucide:help-circle" class="w-4 h-4" />
+        <span>MarkChat Knowledge Base &amp; FAQs</span>
+      </div>
 
-  <FAQSection categories={groupedCategories} variant="accordion" background="default" />
+      <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-text">
+        Frequently Asked Questions
+      </h1>
 
-  <CTA
-    title="Still have questions about your Till or Paybill?"
-    description="Our Nairobi support team can verify your shortcode or help set up Pochi sync in 5 minutes."
-    action={{ label: 'Send an Inquiry', href: '/contact' }}
-    secondaryAction={{ label: 'Book Live Demo', href: '/demo' }}
-    background="muted"
-  />
+      <p class="mt-4 text-base sm:text-lg text-text-muted max-w-2xl mx-auto leading-relaxed">
+        Everything you need to know about setting up MarkChat, in-chat Safaricom Daraja M-Pesa STK
+        push, Africa’s Talking Bulk SMS, and Markcopilot AI in Kenya.
+      </p>
+
+      <!-- Instant Search Bar -->
+      <div class="mt-8 max-w-xl mx-auto relative">
+        <label for="faq-search" class="sr-only">Search frequently asked questions</label>
+        <div class="relative flex items-center">
+          <div class="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none text-text-muted">
+            <Icon name="lucide:search" class="w-5 h-5" />
+          </div>
+
+          <input
+            type="search"
+            id="faq-search"
+            name="q"
+            autocomplete="off"
+            placeholder="Search questions (e.g. M-Pesa, STK, Paybill, SMS, pricing, AI)..."
+            class="w-full pl-12 pr-12 py-3.5 sm:py-4 rounded-2xl bg-surface border border-border text-text placeholder:text-text-muted/60 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary text-sm sm:text-base shadow-sm transition-all"
+          />
+
+          <button
+            type="button"
+            id="faq-search-clear"
+            class="hidden absolute right-3.5 top-1/2 -translate-y-1/2 text-text-muted hover:text-text p-1.5 rounded-full hover:bg-surface-hover transition-colors"
+            aria-label="Clear search query"
+          >
+            <Icon name="lucide:x" class="w-4 h-4" />
+          </button>
+        </div>
+
+        <div
+          id="faq-search-counter"
+          class="text-xs text-text-muted mt-2.5 text-center font-medium"
+          aria-live="polite"
+        >
+          Showing all {faqs.length} questions
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Category Filter Pills Bar -->
+  <section class="py-6 border-b border-border/40 bg-surface/30 sticky top-16 z-20 backdrop-blur-md">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div
+        class="flex items-center gap-2 overflow-x-auto pb-2 sm:pb-0 scrollbar-none justify-start sm:justify-center"
+      >
+        <!-- All Questions Pill -->
+        <button
+          type="button"
+          class="faq-cat-pill active flex-shrink-0 inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all border shadow-sm"
+          data-category="all"
+          aria-pressed="true"
+        >
+          <Icon name="lucide:layers" class="w-4 h-4" />
+          <span>All Questions</span>
+          <span class="pill-count px-1.5 py-0.5 rounded-md text-[10px] font-bold">
+            {faqs.length}
+          </span>
+        </button>
+
+        {
+          categories.map((cat) => {
+            const count = categoryCounts.get(cat.id) || 0;
+            return (
+              <button
+                type="button"
+                class="faq-cat-pill flex-shrink-0 inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all border border-border bg-surface text-text hover:bg-surface-hover hover:border-text-muted/40"
+                data-category={cat.id}
+                aria-pressed="false"
+              >
+                <Icon name={cat.icon || 'lucide:help-circle'} class="w-4 h-4 text-text-muted" />
+                <span>{cat.name}</span>
+                <span class="pill-count px-1.5 py-0.5 rounded-md text-[10px] font-bold bg-surface-hover border border-border text-text-muted">
+                  {count}
+                </span>
+              </button>
+            );
+          })
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ Accordion List Section -->
+  <section class="py-12 sm:py-16">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+      <!-- Empty State Container -->
+      <div
+        id="faq-empty-state"
+        class="hidden text-center py-16 px-6 border border-dashed border-border rounded-3xl bg-surface/40 my-4"
+      >
+        <div
+          class="w-14 h-14 mx-auto rounded-2xl bg-surface-hover border border-border flex items-center justify-center text-text-muted mb-4"
+        >
+          <Icon name="lucide:help-circle" class="w-7 h-7" />
+        </div>
+        <h3 class="text-lg font-bold text-text">No matching questions found</h3>
+        <p class="text-sm text-text-muted mt-2 max-w-sm mx-auto leading-relaxed">
+          We couldn’t find any questions matching your keywords or filter. Try a different search
+          term or reset all filters.
+        </p>
+        <button
+          type="button"
+          id="faq-reset-filters"
+          class="mt-6 inline-flex items-center gap-2 px-4 py-2 text-xs font-semibold rounded-xl bg-primary text-white hover:bg-primary-hover shadow transition-colors"
+        >
+          <Icon name="lucide:rotate-ccw" class="w-3.5 h-3.5" />
+          <span>Reset search &amp; filters</span>
+        </button>
+      </div>
+
+      <!-- FAQ Items List -->
+      <div id="faq-list" class="space-y-3.5">
+        {
+          faqs.map((faq) => {
+            const cat = categoryMap.get(faq.category);
+            const catName = cat ? cat.name : faq.category;
+            return (
+              <details
+                class="faq-item group bg-surface border border-border rounded-2xl shadow-sm hover:border-primary/30 transition-all duration-200 overflow-hidden"
+                data-category={faq.category}
+                data-question={faq.question.toLowerCase()}
+                data-answer={faq.answer.toLowerCase()}
+              >
+                <summary class="flex items-center justify-between cursor-pointer list-none p-4 sm:p-5 text-left font-semibold text-text text-sm sm:text-base select-none group-open:bg-surface-hover/60 transition-colors">
+                  <div class="pr-4 flex-1">
+                    <div class="flex items-center gap-2 mb-1.5">
+                      <span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-surface-hover border border-border text-text-muted capitalize">
+                        {catName}
+                      </span>
+                      <span class="text-[11px] text-text-muted/60 font-mono">#{faq.order}</span>
+                    </div>
+                    <span class="text-text group-hover:text-primary transition-colors leading-snug">
+                      {faq.question}
+                    </span>
+                  </div>
+
+                  <span class="flex-shrink-0 ml-2 w-8 h-8 rounded-xl bg-surface-hover border border-border flex items-center justify-center text-text-muted group-hover:text-text group-open:rotate-180 group-open:bg-primary/10 group-open:text-primary group-open:border-primary/20 transition-all duration-200">
+                    <Icon name="lucide:chevron-down" class="w-4 h-4" />
+                  </span>
+                </summary>
+
+                <div class="px-4 pb-5 pt-2 sm:px-5 sm:pb-6 text-sm sm:text-base text-text-muted leading-relaxed border-t border-border/50">
+                  <p>{faq.answer}</p>
+                </div>
+              </details>
+            );
+          })
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- Direct Assistance & Support Pathways -->
+  <section class="py-12 border-t border-border/50 bg-surface/20">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-8">
+        <h2 class="text-xl sm:text-2xl font-bold text-text">
+          Still Have Questions About MarkChat?
+        </h2>
+        <p class="text-sm text-text-muted mt-2 max-w-xl mx-auto">
+          Our Nairobi engineering and customer success teams are ready to help you configure
+          shortcodes, Paybills, or AI assistants.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- Card 1: Technical Setup Support -->
+        <div
+          class="p-6 rounded-2xl bg-surface border border-border hover:border-primary/40 transition-all shadow-sm flex flex-col justify-between"
+        >
+          <div>
+            <div
+              class="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-4"
+            >
+              <Icon name="lucide:phone-call" class="w-5 h-5" />
+            </div>
+            <h3 class="font-bold text-text text-base">Safaricom &amp; SMS Setup Support</h3>
+            <p class="text-xs sm:text-sm text-text-muted mt-2 leading-relaxed">
+              Have questions about your Paybill shortcode, Daraja credentials, or Africa’s Talking
+              Sender ID? Connect directly with our engineers.
+            </p>
+          </div>
+          <a
+            href="/contact"
+            class="mt-5 inline-flex items-center gap-1.5 text-xs font-semibold text-primary hover:underline"
+          >
+            <span>Contact Technical Team</span>
+            <Icon name="lucide:arrow-right" class="w-3.5 h-3.5" />
+          </a>
+        </div>
+
+        <!-- Card 2: Live Guided Demo -->
+        <div
+          class="p-6 rounded-2xl bg-surface border border-border hover:border-primary/40 transition-all shadow-sm flex flex-col justify-between"
+        >
+          <div>
+            <div
+              class="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mb-4"
+            >
+              <Icon name="lucide:calendar" class="w-5 h-5" />
+            </div>
+            <h3 class="font-bold text-text text-base">Schedule a 15-Minute Demo</h3>
+            <p class="text-xs sm:text-sm text-text-muted mt-2 leading-relaxed">
+              See live in-chat STK checkout, automatic fraud verification, and Markcopilot bilingual
+              AI demonstrated on your exact business workflow.
+            </p>
+          </div>
+          <a
+            href="/demo"
+            class="mt-5 inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-600 dark:text-emerald-400 hover:underline"
+          >
+            <span>Book Live Demo</span>
+            <Icon name="lucide:arrow-right" class="w-3.5 h-3.5" />
+          </a>
+        </div>
+
+        <!-- Card 3: Deep Dive Features -->
+        <div
+          class="p-6 rounded-2xl bg-surface border border-border hover:border-primary/40 transition-all shadow-sm flex flex-col justify-between"
+        >
+          <div>
+            <div
+              class="w-10 h-10 rounded-xl bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center mb-4"
+            >
+              <Icon name="lucide:sparkles" class="w-5 h-5" />
+            </div>
+            <h3 class="font-bold text-text text-base">Explore All Platform Features</h3>
+            <p class="text-xs sm:text-sm text-text-muted mt-2 leading-relaxed">
+              Discover how our unified team inbox, Android SMS forwarder, knowledge base RAG, and
+              multi-channel routing work together.
+            </p>
+          </div>
+          <a
+            href="/features"
+            class="mt-5 inline-flex items-center gap-1.5 text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:underline"
+          >
+            <span>View All Features</span>
+            <Icon name="lucide:arrow-right" class="w-3.5 h-3.5" />
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Closing Call To Action -->
+  <section class="py-14 sm:py-20 border-t border-border/50 bg-surface/40">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-text">
+        Ready to Transform Your Customer Communications?
+      </h2>
+      <p class="mt-3 text-sm sm:text-base text-text-muted max-w-xl mx-auto leading-relaxed">
+        Start managing WhatsApp, Bulk SMS, and in-chat M-Pesa payments from a single unified
+        workspace.
+      </p>
+
+      <div class="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4">
+        <a
+          href="/demo"
+          class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl text-sm font-semibold bg-primary text-white hover:bg-primary-hover shadow-md transition-all"
+        >
+          <span>Book a Free Live Demo</span>
+          <Icon name="lucide:arrow-right" class="w-4 h-4" />
+        </a>
+
+        <a
+          href="/contact"
+          class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl text-sm font-semibold bg-surface border border-border text-text hover:bg-surface-hover transition-all"
+        >
+          <span>Talk to Sales</span>
+        </a>
+      </div>
+    </div>
+  </section>
 </MarketingLayout>
+
+<style>
+  /* Active filter pill styling */
+  .faq-cat-pill.active {
+    background-color: var(--color-primary, #6366f1);
+    color: #ffffff;
+    border-color: var(--color-primary, #6366f1);
+  }
+
+  .faq-cat-pill.active .pill-count {
+    background-color: rgba(255, 255, 255, 0.25);
+    color: #ffffff;
+    border-color: transparent;
+  }
+
+  .faq-cat-pill.active [data-icon] {
+    color: #ffffff;
+  }
+
+  /* Smooth scroll for sticky bar */
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
+  }
+  .scrollbar-none {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+</style>
+
+<script>
+  /**
+   * Client-side interactive instant search and category filtering
+   */
+  function initFaqPage() {
+    const searchInput = document.getElementById('faq-search') as HTMLInputElement | null;
+    const searchClear = document.getElementById('faq-search-clear') as HTMLButtonElement | null;
+    const counter = document.getElementById('faq-search-counter');
+    const emptyState = document.getElementById('faq-empty-state');
+    const resetBtn = document.getElementById('faq-reset-filters');
+    const pills = document.querySelectorAll<HTMLButtonElement>('.faq-cat-pill');
+    const items = document.querySelectorAll<HTMLDetailsElement>('.faq-item');
+
+    if (!items.length) return;
+
+    let activeCategory = 'all';
+    let searchQuery = '';
+
+    // Check URL search parameters on load (e.g. ?cat=mpesa or ?q=stk)
+    const urlParams = new URLSearchParams(window.location.search);
+    const catParam = urlParams.get('cat') || urlParams.get('category');
+    const queryParam = urlParams.get('q') || urlParams.get('search');
+
+    if (catParam) {
+      const matchingPill = Array.from(pills).find((p) => p.dataset.category === catParam);
+      if (matchingPill) {
+        activeCategory = catParam;
+      }
+    }
+
+    if (queryParam && searchInput) {
+      searchQuery = queryParam.trim().toLowerCase();
+      searchInput.value = queryParam;
+      if (searchClear) searchClear.classList.remove('hidden');
+    }
+
+    function updatePillsUI() {
+      pills.forEach((pill) => {
+        const cat = pill.dataset.category;
+        const isActive = cat === activeCategory;
+        pill.classList.toggle('active', isActive);
+        pill.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+        if (isActive) {
+          pill.scrollIntoView({ behavior: 'smooth', inline: 'nearest', block: 'nearest' });
+        }
+      });
+    }
+
+    function filterFaqs() {
+      let visibleCount = 0;
+      const totalCount = items.length;
+
+      items.forEach((item) => {
+        const itemCat = item.dataset.category || '';
+        const itemQ = item.dataset.question || '';
+        const itemA = item.dataset.answer || '';
+
+        const matchesCat = activeCategory === 'all' || itemCat === activeCategory;
+        const matchesQuery =
+          !searchQuery || itemQ.includes(searchQuery) || itemA.includes(searchQuery);
+
+        if (matchesCat && matchesQuery) {
+          item.classList.remove('hidden');
+          visibleCount++;
+        } else {
+          item.classList.add('hidden');
+        }
+      });
+
+      // Update counter
+      if (counter) {
+        if (searchQuery || activeCategory !== 'all') {
+          counter.textContent = `Showing ${visibleCount} of ${totalCount} questions`;
+        } else {
+          counter.textContent = `Showing all ${totalCount} questions`;
+        }
+      }
+
+      // Toggle empty state
+      if (emptyState) {
+        if (visibleCount === 0) {
+          emptyState.classList.remove('hidden');
+        } else {
+          emptyState.classList.add('hidden');
+        }
+      }
+
+      // Sync URL parameter subtly without page reload
+      const newParams = new URLSearchParams();
+      if (activeCategory !== 'all') newParams.set('cat', activeCategory);
+      if (searchQuery) newParams.set('q', searchQuery);
+      const newRelativePathQuery =
+        window.location.pathname + (newParams.toString() ? '?' + newParams.toString() : '');
+      window.history.replaceState(null, '', newRelativePathQuery);
+    }
+
+    // Category pill click handler
+    pills.forEach((pill) => {
+      pill.addEventListener('click', () => {
+        activeCategory = pill.dataset.category || 'all';
+        updatePillsUI();
+        filterFaqs();
+      });
+    });
+
+    // Search input handler
+    if (searchInput) {
+      searchInput.addEventListener('input', () => {
+        searchQuery = searchInput.value.trim().toLowerCase();
+        if (searchClear) {
+          searchClear.classList.toggle('hidden', searchQuery.length === 0);
+        }
+        filterFaqs();
+      });
+    }
+
+    // Search clear button
+    if (searchClear && searchInput) {
+      searchClear.addEventListener('click', () => {
+        searchInput.value = '';
+        searchQuery = '';
+        searchClear.classList.add('hidden');
+        searchInput.focus();
+        filterFaqs();
+      });
+    }
+
+    // Reset button
+    if (resetBtn) {
+      resetBtn.addEventListener('click', () => {
+        if (searchInput) searchInput.value = '';
+        searchQuery = '';
+        if (searchClear) searchClear.classList.add('hidden');
+        activeCategory = 'all';
+        updatePillsUI();
+        filterFaqs();
+      });
+    }
+
+    // Initial render
+    updatePillsUI();
+    filterFaqs();
+  }
+
+  document.addEventListener('DOMContentLoaded', initFaqPage);
+  document.addEventListener('astro:page-load', initFaqPage);
+</script>

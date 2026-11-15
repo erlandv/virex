@@ -32,7 +32,7 @@
   },
   "dependencies": {
     "@astrojs/mdx": "^4.0.0",
-    "@astrojs/react": "^7.1.9",
+    "@astrojs/react": "4.2.1",
     "@astrojs/rss": "^4.0.0",
     "@astrojs/sitemap": "^3.2.0",
     "@iconify-json/lucide": "^1.2.82",

@@ -1,0 +1,473 @@
+---
+/**
+ * FeatureVisualShowcase - High-fidelity tailored conceptual visual frames
+ *
+ * Provides realistic, dark/light theme responsive UI mockups for each feature
+ * category (inbox, payments, channels, crm, automation, infrastructure).
+ * Eliminates empty placeholder boxes and maintains strict product authenticity.
+ */
+import { Icon } from 'astro-icon/components';
+
+interface Props {
+  category: 'inbox' | 'payments' | 'channels' | 'crm' | 'automation' | 'infrastructure' | string;
+  slug?: string;
+}
+
+const { category } = Astro.props;
+---
+
+<div
+  class="feature-visual-card w-full rounded-2xl border border-slate-200/90 dark:border-slate-800 bg-white/90 dark:bg-slate-900/90 p-5 sm:p-6 shadow-xl backdrop-blur-md"
+>
+  {
+    /* INBOX: Collision Detection, Internal Notes, Multi-Agent Assignment */
+    category === 'inbox' && (
+      <div class="space-y-4">
+        {/* Visual Topbar */}
+        <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800 text-xs">
+          <div class="flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
+            <span class="font-bold text-slate-900 dark:text-white">
+              Active Queue: Westlands Hub
+            </span>
+          </div>
+          <span class="font-mono text-[11px] bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded text-slate-600 dark:text-slate-300">
+            SLA: 98.4% on-target
+          </span>
+        </div>
+
+        {/* Real-time Agent Collision Indicator */}
+        <div class="p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-between text-xs">
+          <div class="flex items-center gap-2 text-amber-700 dark:text-amber-400 font-medium">
+            <Icon name="lucide:eye" class="w-4 h-4 text-amber-500 shrink-0" />
+            <span>
+              Agent Collision Alert: <strong>Brian O.</strong> is currently typing a reply.
+            </span>
+          </div>
+          <span class="text-[10px] font-mono text-amber-600 dark:text-amber-400 bg-amber-500/20 px-2 py-0.5 rounded">
+            Locked
+          </span>
+        </div>
+
+        {/* Chat Conversation with Private Note */}
+        <div class="space-y-2.5 text-xs">
+          <div class="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 max-w-[85%] text-slate-800 dark:text-slate-200">
+            <span class="text-[10px] text-slate-400 block mb-0.5">
+              Customer &bull; 0722 000 111
+            </span>
+            "Can I collect my parcel at your Kimathi Street branch?"
+          </div>
+
+          {/* Private Yellow Internal Team Note */}
+          <div class="p-3 rounded-xl bg-amber-100/70 dark:bg-amber-950/40 border border-amber-300/80 dark:border-amber-800/80 text-slate-900 dark:text-slate-100 max-w-[90%] ml-auto shadow-2xs">
+            <div class="flex items-center justify-between mb-1 text-[11px] font-semibold text-amber-800 dark:text-amber-300">
+              <span class="flex items-center gap-1">
+                <Icon name="lucide:lock" class="w-3.5 h-3.5" /> Private Internal Note
+              </span>
+              <span class="font-mono text-[10px]">Visible to team only</span>
+            </div>
+            <p class="text-[11px]">
+              @sarah: Stock moved to Kimathi yesterday. Please confirm package #402 is tagged.
+            </p>
+          </div>
+        </div>
+
+        {/* Team Assignment Bar */}
+        <div class="pt-3 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
+          <span class="flex items-center gap-1.5 font-medium">
+            <Icon name="lucide:user-check" class="w-4 h-4 text-primary" />
+            Assigned: Sarah K. (Nairobi Support)
+          </span>
+          <span class="text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded font-bold">
+            Priority: High
+          </span>
+        </div>
+      </div>
+    )
+  }
+
+  {
+    /* PAYMENTS: In-Chat M-Pesa STK Push Flow & TransID Verification */
+    category === 'payments' && (
+      <div class="space-y-4">
+        {/* Visual Topbar */}
+        <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800 text-xs">
+          <div class="flex items-center gap-2">
+            <Icon name="lucide:smartphone" class="w-4 h-4 text-emerald-500" />
+            <span class="font-bold text-slate-900 dark:text-white">Daraja STK Push Sequence</span>
+          </div>
+          <span class="font-mono text-[11px] text-emerald-600 dark:text-emerald-400 font-bold bg-emerald-500/10 px-2 py-0.5 rounded">
+            C2B Certified
+          </span>
+        </div>
+
+        {/* Flow Steps Cards */}
+        <div class="space-y-2 text-xs">
+          {/* Step 1 */}
+          <div class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="w-5 h-5 rounded-full bg-primary/10 text-primary font-bold flex items-center justify-center text-[10px]">
+                1
+              </span>
+              <span class="font-medium text-slate-800 dark:text-slate-200">
+                In-Chat Agent Command:
+              </span>
+            </div>
+            <span class="font-mono text-[11px] text-slate-900 dark:text-slate-100 font-semibold bg-slate-200/60 dark:bg-slate-700/60 px-2 py-0.5 rounded">
+              /stk 3500 0712345678
+            </span>
+          </div>
+
+          {/* Step 2 */}
+          <div class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="w-5 h-5 rounded-full bg-primary/10 text-primary font-bold flex items-center justify-center text-[10px]">
+                2
+              </span>
+              <span class="font-medium text-slate-800 dark:text-slate-200">
+                Safaricom USSD Prompt:
+              </span>
+            </div>
+            <span class="text-[11px] text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-1">
+              <Icon name="lucide:check" class="w-3.5 h-3.5" /> PIN Entered (0 Handset Switch)
+            </span>
+          </div>
+
+          {/* Step 3: Verified Result */}
+          <div class="p-3.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-800 dark:text-emerald-300 space-y-1.5">
+            <div class="flex items-center justify-between font-bold text-xs">
+              <span class="flex items-center gap-1.5">
+                <Icon name="lucide:shield-check" class="w-4 h-4 text-emerald-500" />
+                Daraja Cryptographic Callback
+              </span>
+              <span class="font-mono">KES 3,500.00</span>
+            </div>
+            <div class="grid grid-cols-2 gap-2 text-[10px] font-mono pt-1 text-slate-600 dark:text-slate-300">
+              <div>
+                <span class="text-slate-400">TransID:</span>{' '}
+                <span class="font-bold text-slate-900 dark:text-white">QKH78219LM</span>
+              </div>
+              <div>
+                <span class="text-slate-400">Database Check:</span>{' '}
+                <span class="font-bold text-emerald-600 dark:text-emerald-400">
+                  Unique (No Replay)
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="text-[11px] text-slate-500 dark:text-slate-400 flex items-center gap-1.5 italic">
+          <Icon name="lucide:info" class="w-3.5 h-3.5 text-primary shrink-0" />
+          <span>
+            Server validates unique TransID against database. Duplicate screenshot fraud is
+            rejected.
+          </span>
+        </div>
+      </div>
+    )
+  }
+
+  {
+    /* CHANNELS: Omnichannel Messaging & BYOC Carrier Direct Billing */
+    category === 'channels' && (
+      <div class="space-y-4">
+        {/* Visual Topbar */}
+        <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800 text-xs">
+          <div class="flex items-center gap-2">
+            <Icon name="lucide:share-2" class="w-4 h-4 text-primary" />
+            <span class="font-bold text-slate-900 dark:text-white">Connected Channel Inboxes</span>
+          </div>
+          <span class="font-mono text-[11px] text-primary font-bold bg-primary/10 px-2 py-0.5 rounded">
+            All In One Queue
+          </span>
+        </div>
+
+        {/* Channels Grid */}
+        <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5 text-xs">
+          <div class="p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/60 text-center space-y-1">
+            <Icon name="simple-icons:whatsapp" class="w-5 h-5 text-emerald-500 mx-auto" />
+            <div class="font-bold text-slate-800 dark:text-slate-200 text-[11px]">
+              WhatsApp Cloud API
+            </div>
+            <div class="text-[9px] text-slate-400">Official Meta Gateway</div>
+          </div>
+
+          <div class="p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/60 text-center space-y-1">
+            <Icon name="lucide:message-square" class="w-5 h-5 text-blue-500 mx-auto" />
+            <div class="font-bold text-slate-800 dark:text-slate-200 text-[11px]">
+              Africa's Talking SMS
+            </div>
+            <div class="text-[9px] text-slate-400">BYOC Direct Billing</div>
+          </div>
+
+          <div class="p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/60 text-center space-y-1">
+            <Icon name="simple-icons:instagram" class="w-5 h-5 text-rose-500 mx-auto" />
+            <div class="font-bold text-slate-800 dark:text-slate-200 text-[11px]">
+              Instagram DMs
+            </div>
+            <div class="text-[9px] text-slate-400">Story Replies &amp; DMs</div>
+          </div>
+
+          <div class="p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/60 text-center space-y-1">
+            <Icon name="simple-icons:facebook" class="w-5 h-5 text-blue-600 mx-auto" />
+            <div class="font-bold text-slate-800 dark:text-slate-200 text-[11px]">
+              Facebook Messenger
+            </div>
+            <div class="text-[9px] text-slate-400">Page Messages</div>
+          </div>
+
+          <div class="p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/60 text-center space-y-1">
+            <Icon name="lucide:message-circle" class="w-5 h-5 text-primary mx-auto" />
+            <div class="font-bold text-slate-800 dark:text-slate-200 text-[11px]">
+              Website Live Chat
+            </div>
+            <div class="text-[9px] text-slate-400">Customizable Widget</div>
+          </div>
+
+          <div class="p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/60 text-center space-y-1">
+            <Icon name="lucide:mail" class="w-5 h-5 text-amber-500 mx-auto" />
+            <div class="font-bold text-slate-800 dark:text-slate-200 text-[11px]">
+              Support Email
+            </div>
+            <div class="text-[9px] text-slate-400">IMAP / SMTP Ingestion</div>
+          </div>
+        </div>
+
+        {/* BYOC Guarantee Callout */}
+        <div class="p-2.5 rounded-xl bg-blue-500/10 border border-blue-500/30 text-[11px] text-blue-800 dark:text-blue-300 flex items-center justify-between">
+          <span class="font-medium flex items-center gap-1.5">
+            <Icon name="lucide:check-circle" class="w-4 h-4 text-blue-500" />
+            BYOC: Bring Your Own Carrier (Africa's Talking)
+          </span>
+          <span class="font-mono text-[10px] bg-blue-500/20 px-2 py-0.5 rounded font-bold">
+            0% Markup
+          </span>
+        </div>
+      </div>
+    )
+  }
+
+  {
+    /* CRM: Customer 360 & Unified Identity */
+    category === 'crm' && (
+      <div class="space-y-4">
+        {/* Visual Topbar */}
+        <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800 text-xs">
+          <div class="flex items-center gap-2">
+            <Icon name="lucide:contact" class="w-4 h-4 text-primary" />
+            <span class="font-bold text-slate-900 dark:text-white">Customer 360 Record</span>
+          </div>
+          <span class="font-mono text-[11px] bg-primary/10 text-primary px-2 py-0.5 rounded font-bold">
+            ID: crm_9281
+          </span>
+        </div>
+
+        {/* Customer Identity Card */}
+        <div class="flex items-center gap-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700">
+          <div class="w-10 h-10 rounded-full bg-primary text-white font-bold flex items-center justify-center text-sm shrink-0">
+            JM
+          </div>
+          <div class="min-w-0 flex-1">
+            <div class="flex items-center justify-between">
+              <h5 class="text-xs font-bold text-slate-900 dark:text-white truncate">
+                Joseph Mutua
+              </h5>
+              <span class="text-[10px] bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 px-2 py-0.5 rounded font-bold">
+                Verified
+              </span>
+            </div>
+            <p class="text-[11px] text-slate-500 font-mono mt-0.5">+254 722 998 877</p>
+          </div>
+        </div>
+
+        {/* Channels Linked Under One Identity */}
+        <div class="space-y-1.5 text-xs">
+          <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">
+            Connected Conversation Streams
+          </span>
+          <div class="grid grid-cols-2 gap-2 text-[11px]">
+            <div class="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center gap-2">
+              <Icon name="simple-icons:whatsapp" class="w-3.5 h-3.5 text-emerald-500" />
+              <span>WhatsApp: 28 chats</span>
+            </div>
+            <div class="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center gap-2">
+              <Icon name="lucide:message-square" class="w-3.5 h-3.5 text-blue-500" />
+              <span>SMS: 4 broadcasts</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Purchase & Payment History */}
+        <div class="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-xs">
+          <div class="flex items-center justify-between mb-1.5">
+            <span class="font-bold text-slate-800 dark:text-slate-200 text-[11px]">
+              Total Confirmed Spend
+            </span>
+            <span class="font-mono font-bold text-emerald-600 dark:text-emerald-400">
+              KES 48,500.00
+            </span>
+          </div>
+          <div class="text-[10px] text-slate-500 dark:text-slate-400 flex justify-between">
+            <span>6 M-Pesa STK transactions</span>
+            <span>Last order: Yesterday</span>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  {
+    /* AUTOMATION: Business Hours & Conditional Routing Rules */
+    category === 'automation' && (
+      <div class="space-y-4">
+        {/* Visual Topbar */}
+        <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800 text-xs">
+          <div class="flex items-center gap-2">
+            <Icon name="lucide:workflow" class="w-4 h-4 text-primary" />
+            <span class="font-bold text-slate-900 dark:text-white">Workflow Logic Builder</span>
+          </div>
+          <span class="font-mono text-[11px] text-emerald-600 dark:text-emerald-400 font-bold bg-emerald-500/10 px-2 py-0.5 rounded">
+            Active Rule #04
+          </span>
+        </div>
+
+        {/* Visual Logic Blocks */}
+        <div class="space-y-2 text-xs">
+          {/* WHEN Trigger */}
+          <div class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700">
+            <span class="text-[10px] font-bold text-primary uppercase tracking-wider block mb-1">
+              WHEN: Message Received
+            </span>
+            <div class="font-mono text-[11px] text-slate-700 dark:text-slate-300">
+              Channel = <span class="text-emerald-600 font-bold">'whatsapp'</span>
+            </div>
+          </div>
+
+          {/* IF Conditions */}
+          <div class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700">
+            <span class="text-[10px] font-bold text-amber-500 uppercase tracking-wider block mb-1">
+              IF: Condition Matched
+            </span>
+            <div class="space-y-1 font-mono text-[11px] text-slate-700 dark:text-slate-300">
+              <div>
+                Body contains:{' '}
+                <span class="text-primary font-bold">['price', 'bei', 'order', 'stock']</span>
+              </div>
+              <div>
+                Time:{' '}
+                <span class="text-rose-500 font-bold">Outside 08:00 - 18:00 EAT (Nairobi)</span>
+              </div>
+            </div>
+          </div>
+
+          {/* THEN Action */}
+          <div class="p-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30">
+            <span class="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider block mb-1">
+              THEN: Execute Actions
+            </span>
+            <div class="space-y-1 text-[11px] text-slate-800 dark:text-slate-200">
+              <div class="flex items-center gap-1.5">
+                <Icon name="lucide:check" class="w-3.5 h-3.5 text-emerald-500" />
+                <span>Send automated after-hours response + catalog attachment</span>
+              </div>
+              <div class="flex items-center gap-1.5">
+                <Icon name="lucide:check" class="w-3.5 h-3.5 text-emerald-500" />
+                <span>Assign conversation to Morning Shift Queue</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="text-[11px] text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
+          <Icon name="lucide:clock" class="w-3.5 h-3.5 text-primary shrink-0" />
+          <span>Configured in Africa/Nairobi timezone (GMT+03:00). Zero code required.</span>
+        </div>
+      </div>
+    )
+  }
+
+  {
+    /* INFRASTRUCTURE: Kenyan Mobile Money Connectivity Modes */
+    category === 'infrastructure' && (
+      <div class="space-y-4">
+        {/* Visual Topbar */}
+        <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800 text-xs">
+          <div class="flex items-center gap-2">
+            <Icon name="lucide:landmark" class="w-4 h-4 text-emerald-500" />
+            <span class="font-bold text-slate-900 dark:text-white">
+              Supported Mobile Money Modes
+            </span>
+          </div>
+          <span class="font-mono text-[11px] bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-bold px-2 py-0.5 rounded">
+            All 4 Modes
+          </span>
+        </div>
+
+        {/* 3 Architecture Modes Grid */}
+        <div class="space-y-2 text-xs">
+          <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700">
+            <div class="flex items-center justify-between mb-1">
+              <span class="font-bold text-slate-900 dark:text-white text-[11px]">
+                1. Dedicated Safaricom Paybill / Till
+              </span>
+              <span class="text-[10px] text-emerald-600 font-bold">Daraja C2B / STK</span>
+            </div>
+            <p class="text-[11px] text-slate-600 dark:text-slate-400">
+              Direct connection via merchant Consumer Key and Secret for automated in-chat STK push
+              prompts.
+            </p>
+          </div>
+
+          <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700">
+            <div class="flex items-center justify-between mb-1">
+              <span class="font-bold text-slate-900 dark:text-white text-[11px]">
+                2. Shared Bank Paybills (Equity, KCB, Co-op)
+              </span>
+              <span class="text-[10px] text-primary font-bold">Account Routing</span>
+            </div>
+            <p class="text-[11px] text-slate-600 dark:text-slate-400">
+              Matches customer deposits by bank account reference number for automated
+              reconciliation.
+            </p>
+          </div>
+
+          <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700">
+            <div class="flex items-center justify-between mb-1">
+              <span class="font-bold text-slate-900 dark:text-white text-[11px]">
+                3. Companion Android Forwarder APK
+              </span>
+              <span class="text-[10px] text-amber-600 font-bold">Pochi &amp; Offline Sync</span>
+            </div>
+            <p class="text-[11px] text-slate-600 dark:text-slate-400">
+              Background SMS forwarder for micro-merchants on personal Safaricom lines without API
+              credentials.
+            </p>
+          </div>
+        </div>
+
+        <div class="text-[11px] text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
+          <Icon name="lucide:shield-check" class="w-3.5 h-3.5 text-emerald-500 shrink-0" />
+          <span>
+            Every transaction undergoes unique TransID database validation before marking orders
+            paid.
+          </span>
+        </div>
+      </div>
+    )
+  }
+</div>
+
+<style>
+  .feature-visual-card {
+    transition:
+      transform 200ms ease,
+      box-shadow 200ms ease;
+  }
+  .feature-visual-card:hover {
+    transform: translateY(-2px);
+    box-shadow:
+      0 20px 40px -15px rgba(0, 0, 0, 0.12),
+      0 0 25px -8px rgba(99, 102, 241, 0.1);
+  }
+</style>

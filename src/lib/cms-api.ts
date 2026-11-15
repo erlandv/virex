@@ -156,13 +156,24 @@ export interface CareersPageContent {
   generalAppEmail: string;
 }
 
+export interface FaqCategoryItem {
+  id: string;
+  name: string;
+  description?: string;
+  icon?: string;
+  order: number;
+  status: CmsLifecycleStatus;
+}
+
 export interface FaqItem {
   id: string;
   question: string;
   answer: string;
-  category: 'general' | 'mpesa' | 'sms' | 'markcopilot' | 'pricing';
+  category: string;
   order: number;
   status: CmsLifecycleStatus;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface LeadPayload {
@@ -701,6 +712,57 @@ export const DEFAULT_CAREERS_CONTENT: CareersPageContent = {
   generalAppEmail: 'careers@markchat.co.ke',
 };
 
+export const DEFAULT_FAQ_CATEGORIES: FaqCategoryItem[] = [
+  {
+    id: 'general',
+    name: 'General & Onboarding',
+    description: 'Account setup, team inboxes, and basic MarkChat architecture.',
+    icon: 'lucide:help-circle',
+    order: 1,
+    status: 'published',
+  },
+  {
+    id: 'mpesa',
+    name: 'M-Pesa & Payments',
+    description: 'In-chat /stk checkout, Daraja C2B fraud verification, and mobile money setups.',
+    icon: 'lucide:credit-card',
+    order: 2,
+    status: 'published',
+  },
+  {
+    id: 'sms',
+    name: 'Bulk SMS & Channels',
+    description: 'Africa’s Talking integration, BYOC, custom sender IDs, and WhatsApp Cloud API.',
+    icon: 'lucide:message-square',
+    order: 3,
+    status: 'published',
+  },
+  {
+    id: 'markcopilot',
+    name: 'Markcopilot AI',
+    description: 'Knowledge base RAG, English/Swahili/Sheng comprehension, and agent suggestions.',
+    icon: 'lucide:bot',
+    order: 4,
+    status: 'published',
+  },
+  {
+    id: 'pricing',
+    name: 'Pricing & Plans',
+    description: 'Transparent KES billing, tier capabilities, and enterprise volume discounts.',
+    icon: 'lucide:tag',
+    order: 5,
+    status: 'published',
+  },
+  {
+    id: 'security',
+    name: 'Security & KDPA',
+    description: 'Kenya Data Protection Act (KDPA 2019) compliance, encryption, and audit logs.',
+    icon: 'lucide:shield-check',
+    order: 6,
+    status: 'published',
+  },
+];
+
 const DEFAULT_FAQS: FaqItem[] = [
   {
     id: 'faq-1',
@@ -734,7 +796,7 @@ const DEFAULT_FAQS: FaqItem[] = [
     id: 'faq-4',
     question: 'How does Bulk SMS work and what is Bring Your Own Carrier (BYOC)?',
     answer:
-      'All new accounts include 50 free trial Bulk SMS credits. You can top up prepaid SMS bundles instantly via M-Pesa. If your business already has an Africa’s Talking account with custom sender IDs or negotiated high-volume carrier rates, you can enable BYOC in MarkChat: plug in your API credentials to send messages with 0% platform markup.',
+      'You can top up prepaid SMS bundles seamlessly via M-Pesa. If your business already has an Africa’s Talking account with custom sender IDs or negotiated high-volume carrier rates, you can enable BYOC in MarkChat: plug in your API credentials to send messages with 0% platform markup.',
     category: 'sms',
     order: 4,
     status: 'published',
@@ -750,11 +812,65 @@ const DEFAULT_FAQS: FaqItem[] = [
   },
   {
     id: 'faq-6',
-    question: 'How long does onboarding take and is there a free trial?',
+    question: 'How long does workspace setup and channel onboarding take?',
     answer:
-      'You can create your account and access the dashboard in less than 30 seconds. Connecting your WhatsApp Business number and Bulk SMS takes approximately 5 minutes. The Starter tier is completely free with 50 SMS credits included, and Pro plans come with a 14-day free trial.',
+      'Setting up your MarkChat workspace takes less than 5 minutes. Connecting your Safaricom Daraja API credentials, Africa’s Talking Bulk SMS, or WhatsApp Business Cloud API involves simple guided configuration in the settings panel. Our Nairobi team also provides guided technical onboarding and live setup assistance.',
     category: 'general',
     order: 6,
+    status: 'published',
+  },
+  {
+    id: 'faq-7',
+    question: 'Which communication channels can I connect to my MarkChat inbox?',
+    answer:
+      'MarkChat consolidates WhatsApp Business Cloud API, Africa’s Talking Bulk SMS & BYOC, Instagram Direct Messages, Facebook Messenger, Telegram Bot, and Website Live Chat into a single unified shared team inbox. Your agents manage all incoming customer inquiries from one screen.',
+    category: 'sms',
+    order: 7,
+    status: 'published',
+  },
+  {
+    id: 'faq-8',
+    question: 'Are subscription fees billed in Kenyan Shillings (KES)?',
+    answer:
+      'Yes, all MarkChat subscriptions are billed transparently in Kenyan Shillings (KES) without foreign exchange conversion surcharges. You can pay via M-Pesa or local bank invoice. Pricing tiers are structured around agent seats and monthly conversation volume.',
+    category: 'pricing',
+    order: 8,
+    status: 'published',
+  },
+  {
+    id: 'faq-9',
+    question: 'Is customer data protected under the Kenya Data Protection Act (KDPA)?',
+    answer:
+      'Yes. MarkChat strictly complies with the Kenya Data Protection Act, 2019 (KDPA). All customer data and conversation logs are encrypted in transit via TLS 1.3 and at rest with AES-256. We enforce strict data minimization, granular access permissions, and support customer data subject rights including data export and erasure.',
+    category: 'security',
+    order: 9,
+    status: 'published',
+  },
+  {
+    id: 'faq-10',
+    question: 'How does Markcopilot prevent hallucinations or incorrect answers?',
+    answer:
+      'Markcopilot uses strict Retrieval-Augmented Generation (RAG) grounded exclusively in your uploaded company documents, catalogs, pricing tables, and policies. If a customer asks a question outside your verified knowledge base, Markcopilot does not invent an answer; it politely informs the customer and hands off the conversation to a human agent.',
+    category: 'markcopilot',
+    order: 10,
+    status: 'published',
+  },
+  {
+    id: 'faq-11',
+    question: 'Can multiple agents collaborate on the same customer conversation?',
+    answer:
+      'Yes. MarkChat provides team collaboration features including conversation assignment, private internal notes (visible only to your team, not the customer), typing collision indicators, and custom status labels to keep support and sales teams perfectly aligned.',
+    category: 'general',
+    order: 11,
+    status: 'published',
+  },
+  {
+    id: 'faq-12',
+    question: 'Where are payment receipts and transaction records stored?',
+    answer:
+      'All verified M-Pesa transaction records, Safaricom TransIDs, customer phone numbers, and timestamps are securely logged directly inside the conversation timeline and the central MarkChat finance audit log. Workspace administrators can filter, search, and export transaction logs at any time.',
+    category: 'security',
+    order: 12,
     status: 'published',
   },
 ];
@@ -1320,6 +1436,7 @@ const STORAGE_KEYS = {
   careers_content: 'markchat_cms_careers_content',
   applications: 'markchat_cms_applications',
   faqs: 'markchat_cms_faqs',
+  faq_categories: 'markchat_cms_faq_categories',
   leads: 'markchat_cms_leads',
   integrations: 'markchat_cms_integrations',
   legal: 'markchat_cms_legal',
@@ -1702,6 +1819,78 @@ export async function fetchFaqs(): Promise<FaqItem[]> {
 }
 
 /**
+ * Fetch all published FAQ categories
+ */
+export async function fetchFaqCategories(): Promise<FaqCategoryItem[]> {
+  try {
+    const res = await apiFetch(`${BRIDGE_API_URL}/api/public/faq-categories`, {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' },
+    });
+    if (res.ok) {
+      const data: FaqCategoryItem[] = await res.json();
+      return data.filter((cat) => cat.status === 'published').sort((a, b) => a.order - b.order);
+    }
+  } catch {
+    // Fallback
+  }
+  const categories = getLocalItem<FaqCategoryItem[]>(
+    STORAGE_KEYS.faq_categories,
+    DEFAULT_FAQ_CATEGORIES
+  );
+  return categories.filter((cat) => cat.status === 'published').sort((a, b) => a.order - b.order);
+}
+
+/**
+ * Admin fetch all FAQs including draft, paused, archived
+ */
+export async function adminFetchFaqs(): Promise<FaqItem[]> {
+  try {
+    const res = await apiFetch(`${BRIDGE_API_URL}/api/admin/cms/faqs`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${getAdminToken()}`,
+      },
+    });
+    if (res.ok) {
+      const data: FaqItem[] = await res.json();
+      return data.sort((a, b) => a.order - b.order);
+    }
+  } catch {
+    // Fallback
+  }
+  const allFaqs = getLocalItem<FaqItem[]>(STORAGE_KEYS.faqs, DEFAULT_FAQS);
+  return allFaqs.sort((a, b) => a.order - b.order);
+}
+
+/**
+ * Admin fetch all FAQ categories including draft, paused, archived
+ */
+export async function adminFetchFaqCategories(): Promise<FaqCategoryItem[]> {
+  try {
+    const res = await apiFetch(`${BRIDGE_API_URL}/api/admin/cms/faq-categories`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${getAdminToken()}`,
+      },
+    });
+    if (res.ok) {
+      const data: FaqCategoryItem[] = await res.json();
+      return data.sort((a, b) => a.order - b.order);
+    }
+  } catch {
+    // Fallback
+  }
+  const categories = getLocalItem<FaqCategoryItem[]>(
+    STORAGE_KEYS.faq_categories,
+    DEFAULT_FAQ_CATEGORIES
+  );
+  return categories.sort((a, b) => a.order - b.order);
+}
+
+/**
  * Fetch all published integrations
  */
 export async function fetchIntegrations(): Promise<MarketingIntegration[]> {
@@ -1865,6 +2054,10 @@ export async function adminFetchAllCmsData() {
   const blogs = getLocalItem<BlogPost[]>(STORAGE_KEYS.blogs, DEFAULT_BLOG_POSTS);
   const careers = getLocalItem<Career[]>(STORAGE_KEYS.careers, DEFAULT_CAREERS);
   const faqs = getLocalItem<FaqItem[]>(STORAGE_KEYS.faqs, DEFAULT_FAQS);
+  const faqCategories = getLocalItem<FaqCategoryItem[]>(
+    STORAGE_KEYS.faq_categories,
+    DEFAULT_FAQ_CATEGORIES
+  );
   const leads = getLocalItem<LeadItem[]>(STORAGE_KEYS.leads, DEFAULT_LEADS);
   const applications = getLocalItem<CareerApplication[]>(STORAGE_KEYS.applications, []);
   const integrations = getLocalItem<MarketingIntegration[]>(
@@ -1873,7 +2066,17 @@ export async function adminFetchAllCmsData() {
   );
   const legal = getLocalItem<LegalPolicy[]>(STORAGE_KEYS.legal, DEFAULT_LEGAL_POLICIES);
 
-  return { pricing, blogs, careers, faqs, leads, applications, integrations, legal };
+  return {
+    pricing,
+    blogs,
+    careers,
+    faqs,
+    faqCategories,
+    leads,
+    applications,
+    integrations,
+    legal,
+  };
 }
 
 /**
@@ -2140,6 +2343,84 @@ export async function upsertFaq(
 }
 
 /**
+ * Upsert FAQ Category item
+ */
+export async function upsertFaqCategory(
+  category: Partial<FaqCategoryItem> & { name: string }
+): Promise<FaqCategoryItem> {
+  const categories = getLocalItem<FaqCategoryItem[]>(
+    STORAGE_KEYS.faq_categories,
+    DEFAULT_FAQ_CATEGORIES
+  );
+  let saved: FaqCategoryItem;
+
+  const id =
+    category.id ||
+    category.name
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/(^-|-$)/g, '');
+
+  const idx = categories.findIndex((c) => c.id === id);
+  if (idx !== -1) {
+    saved = { ...categories[idx], ...category, id } as FaqCategoryItem;
+    categories[idx] = saved;
+  } else {
+    saved = {
+      id,
+      name: category.name,
+      description: category.description || '',
+      icon: category.icon || 'lucide:help-circle',
+      order: category.order || categories.length + 1,
+      status: category.status || 'published',
+    };
+    categories.push(saved);
+  }
+
+  setLocalItem(STORAGE_KEYS.faq_categories, categories);
+
+  try {
+    await apiFetch(`${BRIDGE_API_URL}/api/admin/cms/faq-categories`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${getAdminToken()}`,
+      },
+      body: JSON.stringify(saved),
+    });
+  } catch {
+    // Offline local state persisted
+  }
+
+  return saved;
+}
+
+/**
+ * Delete FAQ Category item
+ */
+export async function deleteFaqCategory(id: string): Promise<boolean> {
+  const categories = getLocalItem<FaqCategoryItem[]>(
+    STORAGE_KEYS.faq_categories,
+    DEFAULT_FAQ_CATEGORIES
+  );
+  const filtered = categories.filter((c) => c.id !== id);
+  setLocalItem(STORAGE_KEYS.faq_categories, filtered);
+
+  try {
+    await apiFetch(`${BRIDGE_API_URL}/api/admin/cms/faq-categories/${id}`, {
+      method: 'DELETE',
+      headers: {
+        Authorization: `Bearer ${getAdminToken()}`,
+      },
+    });
+  } catch {
+    // Offline local state persisted
+  }
+
+  return true;
+}
+
+/**
  * Upsert integration (Add or Edit)
  */
 export async function upsertIntegration(
@@ -2374,7 +2655,7 @@ export async function deleteLegalPolicy(id: string): Promise<boolean> {
  * Update lifecycle status of any CMS item
  */
 export async function updateItemStatus(
-  collection: 'blogs' | 'careers' | 'faqs' | 'leads' | 'integrations' | 'legal',
+  collection: 'blogs' | 'careers' | 'faqs' | 'faq_categories' | 'leads' | 'integrations' | 'legal',
   id: string,
   status: CmsLifecycleStatus | 'new' | 'contacted' | 'qualified' | 'closed'
 ): Promise<boolean> {
@@ -2398,6 +2679,16 @@ export async function updateItemStatus(
     if (item) {
       item.status = status as CmsLifecycleStatus;
       setLocalItem(STORAGE_KEYS.faqs, list);
+    }
+  } else if (collection === 'faq_categories') {
+    const list = getLocalItem<FaqCategoryItem[]>(
+      STORAGE_KEYS.faq_categories,
+      DEFAULT_FAQ_CATEGORIES
+    );
+    const item = list.find((i) => i.id === id);
+    if (item) {
+      item.status = status as CmsLifecycleStatus;
+      setLocalItem(STORAGE_KEYS.faq_categories, list);
     }
   } else if (collection === 'leads') {
     const list = getLocalItem<LeadItem[]>(STORAGE_KEYS.leads, DEFAULT_LEADS);
@@ -2445,7 +2736,7 @@ export async function updateItemStatus(
  * Delete any CMS item by ID
  */
 export async function deleteCmsItem(
-  collection: 'blogs' | 'careers' | 'faqs' | 'leads' | 'integrations' | 'legal',
+  collection: 'blogs' | 'careers' | 'faqs' | 'faq_categories' | 'leads' | 'integrations' | 'legal',
   id: string
 ): Promise<boolean> {
   if (collection === 'blogs') {
@@ -2460,6 +2751,13 @@ export async function deleteCmsItem(
     const list = getLocalItem<FaqItem[]>(STORAGE_KEYS.faqs, DEFAULT_FAQS);
     const filtered = list.filter((i) => i.id !== id);
     setLocalItem(STORAGE_KEYS.faqs, filtered);
+  } else if (collection === 'faq_categories') {
+    const list = getLocalItem<FaqCategoryItem[]>(
+      STORAGE_KEYS.faq_categories,
+      DEFAULT_FAQ_CATEGORIES
+    );
+    const filtered = list.filter((i) => i.id !== id);
+    setLocalItem(STORAGE_KEYS.faq_categories, filtered);
   } else if (collection === 'leads') {
     const list = getLocalItem<LeadItem[]>(STORAGE_KEYS.leads, DEFAULT_LEADS);
     const filtered = list.filter((i) => i.id !== id);

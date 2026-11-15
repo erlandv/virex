@@ -1,181 +1,500 @@
 ---
 /**
- * MarkChat Kenya — Features Overview
+ * MarkChat Kenya — Features & Capabilities Overview
+ *
+ * Grounded, CMS-driven product capabilities showcase demonstrating:
+ * - Section A: Hero with 3-pane interactive-looking workspace preview
+ * - Sections B–G: Alternating feature showcases (Shared Inbox, In-Chat M-Pesa, Omnichannel, CRM, Workflows, Infrastructure)
+ * - Section H: Developer & Integration Foundation (REST APIs, HMAC-SHA256 Webhooks)
+ * - Section I: Markcopilot Contextual AI Assistant
+ * - Section J: Frequently Asked Questions
+ * - Section K: Closing CTA
  */
 import MarketingLayout from '@/layouts/MarketingLayout.astro';
-import PageHeader from '@sections/content/PageHeader.astro';
-import FeatureHighlight from '@sections/marketing/FeatureHighlight.astro';
-import BentoGrid from '@sections/marketing/BentoGrid.astro';
-import ValuesSection from '@sections/team/ValuesSection.astro';
-import CTA from '@sections/marketing/CTA.astro';
+import { Icon } from 'astro-icon/components';
+import WorkspaceHeroShowcase from '@sections/features/WorkspaceHeroShowcase.astro';
+import FeatureVisualShowcase from '@sections/features/FeatureVisualShowcase.astro';
+import FAQSection from '@sections/content/FAQSection.astro';
+import { fetchFeatures, fetchFeaturesSettings } from '@/lib/cms-api';
 import { siteConfig } from '@/config';
 
-const highlightedFeatures = [
+// Retrieve published features and global page settings from authoritative CMS bridge
+const features = await fetchFeatures();
+const settings = await fetchFeaturesSettings();
+
+// Sort features by display order
+const sortedFeatures = [...features].sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0));
+
+function getCategoryKey(
+  cat: string
+): 'inbox' | 'payments' | 'channels' | 'crm' | 'automation' | 'infrastructure' {
+  const c = (cat || '').toLowerCase();
+  if (c.includes('inbox')) return 'inbox';
+  if (c.includes('payment')) return 'payments';
+  if (c.includes('channel')) return 'channels';
+  if (c.includes('crm') || c.includes('contact')) return 'crm';
+  if (c.includes('workflow') || c.includes('auto')) return 'automation';
+  return 'infrastructure';
+}
+
+const developerEndpoints = [
   {
-    title: 'In-Chat M-Pesa Checkout (/stk) & C2B Auto-Receipting',
-    description:
-      'Turn customer conversations directly into confirmed transactions. Agents type /stk <amount> <phone> to push an instant PIN prompt to the customer’s Safaricom line. Once authorized, Daraja cryptographically verifies the TransID, logs the payment in the chat timeline, and sends an automated digital receipt.',
-    icon: 'lucide:smartphone',
-    badge: 'Fintech Breakthrough',
-    highlights: [
-      'Trigger STK push prompts directly within WhatsApp, Live Chat & IG',
-      'Stops fake M-Pesa confirmation SMS screenshots permanently',
-      'Zero manual verification or app switching for sales staff',
-      'Sends automated branded WhatsApp & SMS payment receipts',
-    ],
-    cta: { label: 'Explore Daraja integration', href: '/integrations/safaricom-mpesa-daraja' },
+    method: 'POST',
+    path: '/api/v1/conversations',
+    description: 'Initiate or update multichannel conversation sessions',
   },
   {
-    title: 'Unified Omnichannel Inbox for Kenyan Retail & Support Teams',
-    description:
-      'Consolidate WhatsApp Business Cloud API, Bulk SMS, Instagram DMs, Facebook Messenger, Website Live Chat, and Email into one shared workspace. Assign conversations to agents, leave internal team notes, track SLA targets, and avoid missing leads across scattered devices.',
-    icon: 'lucide:inbox',
-    badge: 'Team Operations',
-    highlights: [
-      'Official WhatsApp Cloud API without phone number bans',
-      'Shared team inbox with real-time agent collision detection',
-      'Private internal notes and thread tagging between staff',
-      'Centralized 360-degree customer purchase and conversation history',
-    ],
-    cta: { label: 'See WhatsApp Cloud features', href: '/integrations/whatsapp-cloud-api' },
+    method: 'POST',
+    path: '/api/v1/payments/stk',
+    description: 'Trigger authenticated M-Pesa STK push prompt to customer',
   },
   {
-    title: 'Markcopilot Dual-Mode AI Assistant (English & Swahili)',
-    description:
-      'A specialized commerce AI trained on Kenyan business vocabulary, Sheng slang, and your actual product catalog. Operates in Customer Mode to answer price, stock, and delivery inquiries 24/7, and in Agent Copilot Mode to provide 1-click reply drafts and urgency tagging.',
-    icon: 'lucide:sparkles',
-    badge: '24/7 AI Concierge',
-    highlights: [
-      'Ingests PDF price sheets, menus, and return policies seamlessly',
-      'Answers customer inquiries autonomously in Swahili, Sheng, and English',
-      'Generates 1-click reply suggestions for inbox agents',
-      'Detects customer intent, sentiment, and urgent purchase readiness',
-    ],
-    cta: { label: 'Learn about Markcopilot', href: '/integrations/markcopilot-ai' },
+    method: 'GET',
+    path: '/api/v1/customers/:phone',
+    description: 'Retrieve consolidated 360 profile and transaction history',
   },
 ];
 
-const bentoFeatures = [
+const webhookPayloadExample = JSON.stringify(
   {
-    title: 'All 4 Mobile Money Modes',
+    event: 'payment.confirmed',
+    timestamp: '2026-11-15T10:14:32Z',
+    data: {
+      trans_id: 'QKH78219LM',
+      amount: 3500,
+      currency: 'KES',
+      phone: '+254712345678',
+      channel: 'whatsapp',
+      conversation_id: 'conv_849204',
+      merchant_type: 'c2b_paybill',
+    },
+  },
+  null,
+  2
+);
+
+const markcopilotCapabilities = [
+  {
+    title: 'Business Knowledge Grounding',
     description:
-      'Support dedicated Paybill/Till (Daraja), Shared Bank Paybills (Equity, KCB, Co-op with account reference routing), Pochi la Biashara Android SMS sync, or SMS-Only mode.',
-    icon: 'lucide:credit-card',
-    size: 'large' as const,
-    accent: 'primary' as const,
-    href: '/docs/mpesa-setup',
+      'Ingests PDF catalogs, menus, price sheets, and policies to answer questions accurately without hallucinations.',
+    icon: 'lucide:file-text',
   },
   {
-    title: 'Prepaid & BYOC Bulk SMS',
+    title: 'Agent Copilot Drafts',
     description:
-      'Send high-delivery broadcasts via Africa’s Talking. 50 free trial credits included.',
+      'Suggests 1-click contextual reply drafts in English, Swahili, and Sheng for human agents in the team inbox.',
     icon: 'lucide:message-square',
-    accent: 'blue' as const,
-    href: '/docs/sms-gateway',
   },
   {
-    title: 'Fake Screenshot Shield',
-    description: 'Server-side TransID checking eliminates counterfeit SMS and fake payment apps.',
-    icon: 'lucide:shield-check',
-    accent: 'green' as const,
-  },
-  {
-    title: 'Multi-Tenant Team Subscriptions',
+    title: 'Conversation Summarization',
     description:
-      'Role-based access (Owner, Admin, Agent), custom domain whitelabeling, and response SLA tracking.',
-    icon: 'lucide:users',
-    size: 'medium' as const,
-    accent: 'purple' as const,
+      'Generates instant bullet-point summaries and urgency tags before handoffs between shifts or departments.',
+    icon: 'lucide:sparkles',
   },
 ];
-
-const featureCategories = [
-  {
-    title: 'In-Chat Commerce & Mobile Money',
-    subtitle: 'Streamline payment collection across East Africa’s largest payment network',
-    items: [
-      {
-        icon: 'lucide:smartphone',
-        title: 'Instant /stk Prompting',
-        description:
-          'Prompt customers to enter their M-Pesa PIN directly on their phone while chatting. Reduces average cart completion time from 4 minutes to 10 seconds.',
-      },
-      {
-        icon: 'lucide:shield-alert',
-        title: 'TransID Anti-Replay Engine',
-        description:
-          'Every Safaricom transaction is logged with its unique confirmation code. Attempts to reuse the same M-Pesa message across multiple orders are blocked instantly.',
-      },
-      {
-        icon: 'lucide:refresh-cw',
-        title: 'Pochi la Biashara Sync Forwarder',
-        description:
-          'Small merchants using personal lines can sync SMS receipts in real time using our Android background forwarder without complex API registration.',
-      },
-    ],
-  },
-  {
-    title: 'Omnichannel Customer Communication',
-    subtitle: 'Never lose a sale because a message was left unread on an unattended phone',
-    items: [
-      {
-        icon: 'simple-icons:whatsapp',
-        title: 'Official Meta Cloud API',
-        description:
-          'Operate compliant multi-agent WhatsApp customer support with pre-approved message templates, interactive buttons, and media attachments.',
-      },
-      {
-        icon: 'lucide:messages-square',
-        title: 'Carrier-Grade Bulk SMS',
-        description:
-          'Send transactional dispatch notifications, refill reminders, and promotional campaigns via Africa’s Talking with 99%+ local carrier delivery.',
-      },
-      {
-        icon: 'simple-icons:instagram',
-        title: 'Social Commerce Inbox',
-        description:
-          'Funnel Instagram direct messages and Facebook page inquiries into the same queue so sales reps can respond and collect payments immediately.',
-      },
-    ],
-  },
-];
-
-const APP_URL = import.meta.env.PUBLIC_APP_URL || 'http://localhost:3000';
 ---
 
 <MarketingLayout
-  title={`Features - ${siteConfig.name}`}
-  description="Explore MarkChat features: in-chat /stk M-Pesa checkout, WhatsApp Cloud API, Bulk SMS, Pochi la Biashara sync, and Markcopilot AI."
+  title={`Platform Features - ${siteConfig.name}`}
+  description="Explore MarkChat's unified customer communication platform: collaborative team inbox, in-chat Safaricom M-Pesa STK push, official WhatsApp Cloud API, and Markcopilot AI."
 >
-  <PageHeader
-    title="Everything You Need to Power Conversational Commerce in Kenya"
-    subtitle="From official WhatsApp Cloud API and Africa’s Talking Bulk SMS to in-chat M-Pesa STK push and Markcopilot AI."
-  />
+  <!-- ======================================================== -->
+  <!-- SECTION A: HERO SECTION                                  -->
+  <!-- ======================================================== -->
+  <section
+    class="relative pt-24 pb-16 md:pt-32 md:pb-24 overflow-hidden bg-slate-50 dark:bg-[#0B1120]"
+  >
+    <!-- Ambient Background Glows -->
+    <div
+      class="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[350px] bg-primary/10 dark:bg-primary/20 blur-[130px] rounded-full pointer-events-none -z-10"
+    >
+    </div>
+    <div
+      class="absolute top-1/3 right-1/4 w-[400px] h-[300px] bg-emerald-500/10 blur-[120px] rounded-full pointer-events-none -z-10"
+    >
+    </div>
 
-  <!-- Three Major Feature Highlights -->
-  <FeatureHighlight features={highlightedFeatures} startImageLeft={false} background="default" />
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <!-- Eyebrow Pill -->
+      <div
+        class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 dark:bg-primary/20 border border-primary/20 text-primary text-xs font-bold tracking-wide uppercase mb-6 animate-fade-in"
+      >
+        <Icon name="lucide:sparkles" class="w-3.5 h-3.5" />
+        <span>{settings.hero.eyebrow}</span>
+      </div>
 
-  <!-- Bento Grid of Key Capabilities -->
-  <BentoGrid
-    title="Core Architecture Built for African Retailers"
-    subtitle="Engineered for reliability, zero fraud, and instantaneous customer response."
-    items={bentoFeatures}
-    background="muted"
-  />
+      <!-- Headline -->
+      <h1
+        class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-slate-900 dark:text-white max-w-4xl mx-auto leading-tight sm:leading-tight"
+      >
+        {settings.hero.heading}
+      </h1>
 
-  <!-- Detailed Feature Categories -->
-  <div class="py-16 space-y-16">
+      <!-- Grounded Narrative Description -->
+      <p
+        class="mt-6 text-base sm:text-lg md:text-xl text-slate-600 dark:text-slate-300 max-w-3xl mx-auto leading-relaxed"
+      >
+        {settings.hero.description}
+      </p>
+
+      <!-- Action Buttons -->
+      <div class="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
+        <a
+          href={settings.hero.primaryCtaHref || '/demo'}
+          class="w-full sm:w-auto inline-flex items-center justify-center px-6 py-3.5 rounded-xl font-bold text-sm text-white bg-primary hover:brightness-110 shadow-lg shadow-primary/25 transition-all"
+        >
+          <Icon name="lucide:calendar" class="w-4 h-4 mr-2" />
+          {settings.hero.primaryCtaLabel || 'Book a Live Demo'}
+        </a>
+        <a
+          href={settings.hero.secondaryCtaHref || '/pricing'}
+          class="w-full sm:w-auto inline-flex items-center justify-center px-6 py-3.5 rounded-xl font-bold text-sm text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-800/80 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm transition-all"
+        >
+          <Icon name="lucide:credit-card" class="w-4 h-4 mr-2" />
+          {settings.hero.secondaryCtaLabel || 'Explore Plans & Pricing'}
+        </a>
+      </div>
+
+      <!-- Verified Architecture Badges -->
+      <div
+        class="mt-8 flex flex-wrap items-center justify-center gap-4 sm:gap-6 text-xs text-slate-500 dark:text-slate-400 font-medium"
+      >
+        <span class="inline-flex items-center gap-1.5">
+          <Icon name="lucide:check-circle" class="w-4 h-4 text-emerald-500" />
+          Official Meta WhatsApp Cloud API
+        </span>
+        <span class="inline-flex items-center gap-1.5">
+          <Icon name="lucide:check-circle" class="w-4 h-4 text-emerald-500" />
+          Safaricom Daraja In-Chat STK Push
+        </span>
+        <span class="inline-flex items-center gap-1.5">
+          <Icon name="lucide:check-circle" class="w-4 h-4 text-emerald-500" />
+          Africa's Talking BYOC SMS
+        </span>
+      </div>
+
+      <!-- Interactive 3-Pane Product Showcase -->
+      <div class="mt-14 sm:mt-16">
+        <WorkspaceHeroShowcase />
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================================================== -->
+  <!-- SECTIONS B–G: CMS-DRIVEN ALTERNATING FEATURE SHOWCASES   -->
+  <!-- ======================================================== -->
+  <div class="py-12 sm:py-20 space-y-24 sm:space-y-32 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     {
-      featureCategories.map((category) => (
-        <ValuesSection title={category.title} subtitle={category.subtitle} items={category.items} />
-      ))
+      sortedFeatures.map((feature, index) => {
+        const isReversed = index % 2 === 1;
+        const categoryKey = getCategoryKey(feature.category);
+
+        return (
+          <section id={feature.slug} class="scroll-mt-24">
+            <div
+              class={`grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center ${isReversed ? 'lg:flex-row-reverse' : ''}`}
+            >
+              {/* Text Column (6 cols) */}
+              <div class={`lg:col-span-6 space-y-5 ${isReversed ? 'lg:order-2' : 'lg:order-1'}`}>
+                {/* Eyebrow & Badge */}
+                <div class="flex flex-wrap items-center gap-2">
+                  {feature.eyebrow && (
+                    <span class="text-xs font-bold uppercase tracking-wider text-primary">
+                      {feature.eyebrow}
+                    </span>
+                  )}
+                  {feature.badge && (
+                    <span class="inline-flex items-center text-[11px] font-bold px-2 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20">
+                      {feature.badge}
+                    </span>
+                  )}
+                </div>
+
+                {/* Feature Title */}
+                <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white leading-tight">
+                  {feature.title}
+                </h2>
+
+                {/* Core Description / Summary */}
+                <p class="text-sm sm:text-base text-slate-600 dark:text-slate-300 leading-relaxed">
+                  {feature.summary || feature.description}
+                </p>
+
+                {/* Extended Description if available */}
+                {feature.description &&
+                  feature.summary &&
+                  feature.description !== feature.summary && (
+                    <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 leading-relaxed border-l-2 border-primary/30 pl-3">
+                      {feature.description}
+                    </p>
+                  )}
+
+                {/* Feature Highlights Checklist */}
+                {feature.highlights && feature.highlights.length > 0 && (
+                  <ul class="space-y-2.5 pt-2">
+                    {feature.highlights.map((highlight) => (
+                      <li class="flex items-start gap-2.5 text-xs sm:text-sm text-slate-700 dark:text-slate-300 font-medium">
+                        <span class="w-5 h-5 rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0 mt-0.5">
+                          <Icon name="lucide:check" class="w-3.5 h-3.5" />
+                        </span>
+                        <span>{highlight}</span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+
+                {/* Technical Specification Details Block */}
+                {feature.technicalDetails && (
+                  <div class="p-3.5 rounded-xl bg-slate-100/70 dark:bg-slate-800/50 border border-slate-200/80 dark:border-slate-700/60 text-xs space-y-1.5">
+                    <span class="font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wide text-[10px] flex items-center gap-1.5">
+                      <Icon name="lucide:cpu" class="w-3.5 h-3.5 text-primary" />
+                      {feature.technicalDetails.title}
+                    </span>
+                    <ul class="space-y-1 font-mono text-[11px] text-slate-600 dark:text-slate-400">
+                      {feature.technicalDetails.points.map((point: string) => (
+                        <li class="flex items-center gap-1.5">
+                          <span class="text-primary font-bold">&bull;</span>
+                          <span>{point}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                {/* CTA Button */}
+                {feature.ctaText && feature.ctaUrl && (
+                  <div class="pt-2">
+                    <a
+                      href={feature.ctaUrl}
+                      class="inline-flex items-center text-xs sm:text-sm font-bold text-primary hover:text-primary-hover gap-1.5 transition-colors group"
+                    >
+                      <span>{feature.ctaText}</span>
+                      <Icon
+                        name="lucide:arrow-right"
+                        class="w-4 h-4 transition-transform group-hover:translate-x-1"
+                      />
+                    </a>
+                  </div>
+                )}
+              </div>
+
+              {/* Visual Column (6 cols) */}
+              <div class={`lg:col-span-6 ${isReversed ? 'lg:order-1' : 'lg:order-2'}`}>
+                <FeatureVisualShowcase category={categoryKey} slug={feature.slug} />
+              </div>
+            </div>
+          </section>
+        );
+      })
     }
   </div>
 
-  <CTA
-    title="Ready to automate your customer chats and M-Pesa payments?"
-    description="Sign up in 30 seconds. 50 free Bulk SMS credits included on all accounts."
-    action={{ label: 'Start Free Forever', href: `${APP_URL}/app/auth/signup` }}
+  <!-- ======================================================== -->
+  <!-- SECTION H: DEVELOPER & INTEGRATION FOUNDATION            -->
+  <!-- ======================================================== -->
+  <section
+    class="py-16 sm:py-24 bg-slate-100/70 dark:bg-slate-900/60 border-y border-slate-200 dark:border-slate-800"
+  >
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center max-w-3xl mx-auto mb-12 sm:mb-16">
+        <div
+          class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold tracking-wide uppercase mb-3"
+        >
+          <Icon name="lucide:code" class="w-3.5 h-3.5" />
+          <span>{settings.developerSection.eyebrow}</span>
+        </div>
+        <h2
+          class="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white"
+        >
+          {settings.developerSection.heading}
+        </h2>
+        <p class="mt-4 text-sm sm:text-base text-slate-600 dark:text-slate-300">
+          {settings.developerSection.description}
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        <!-- Endpoints List (5 cols) -->
+        <div class="lg:col-span-5 space-y-4">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+            Core REST Endpoints
+          </h3>
+          <div class="space-y-3">
+            {
+              developerEndpoints.map((ep) => (
+                <div class="p-3.5 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700/80 shadow-xs space-y-1">
+                  <div class="flex items-center gap-2 font-mono text-xs">
+                    <span
+                      class={`px-2 py-0.5 rounded font-bold text-[10px] ${ep.method === 'POST' ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400' : 'bg-blue-500/15 text-blue-600 dark:text-blue-400'}`}
+                    >
+                      {ep.method}
+                    </span>
+                    <span class="font-bold text-slate-900 dark:text-white">{ep.path}</span>
+                  </div>
+                  <p class="text-xs text-slate-500 dark:text-slate-400">{ep.description}</p>
+                </div>
+              ))
+            }
+          </div>
+
+          <!-- Webhook Security Callout -->
+          <div
+            class="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-xs space-y-2"
+          >
+            <div class="flex items-center gap-2 font-bold text-emerald-800 dark:text-emerald-300">
+              <Icon name="lucide:shield-check" class="w-4 h-4 text-emerald-500 shrink-0" />
+              <span>HMAC-SHA256 Cryptographic Verification</span>
+            </div>
+            <p class="text-slate-600 dark:text-slate-300 text-[11px] leading-relaxed">
+              Every outbound webhook request includes an <code
+                class="font-mono bg-emerald-500/20 px-1 py-0.5 rounded text-emerald-800 dark:text-emerald-200"
+                >X-MarkChat-Signature</code
+              > header generated using your secret key, allowing your backend to independently verify
+              authenticity.
+            </p>
+          </div>
+        </div>
+
+        <!-- Live Code Payload Showcase (7 cols) -->
+        <div class="lg:col-span-7">
+          <div
+            class="rounded-2xl border border-slate-800 bg-slate-950 shadow-xl overflow-hidden text-left"
+          >
+            <!-- Terminal Header -->
+            <div
+              class="flex items-center justify-between px-4 py-2.5 bg-slate-900 border-b border-slate-800 text-xs text-slate-400 font-mono"
+            >
+              <div class="flex items-center gap-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-rose-500/80 inline-block"></span>
+                <span class="w-2.5 h-2.5 rounded-full bg-amber-500/80 inline-block"></span>
+                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500/80 inline-block"></span>
+                <span class="ml-2 text-slate-300 text-[11px]">webhook-payment-confirmed.json</span>
+              </div>
+              <span class="text-[10px] text-emerald-400">HTTP 200 OK</span>
+            </div>
+            <!-- Code Body -->
+            <div
+              class="p-4 sm:p-5 overflow-x-auto font-mono text-xs text-slate-300 leading-relaxed"
+            >
+              <pre><code>{webhookPayloadExample}</code></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================================================== -->
+  <!-- SECTION I: MARKCOPILOT CONTEXTUAL AI ASSISTANT           -->
+  <!-- ======================================================== -->
+  <section class="py-16 sm:py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center max-w-3xl mx-auto mb-12 sm:mb-16">
+      <div
+        class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 text-xs font-bold tracking-wide uppercase mb-3"
+      >
+        <Icon name="lucide:sparkles" class="w-3.5 h-3.5" />
+        <span>{settings.markcopilotSection.eyebrow}</span>
+      </div>
+      <h2
+        class="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white"
+      >
+        {settings.markcopilotSection.heading}
+      </h2>
+      <p class="mt-4 text-sm sm:text-base text-slate-600 dark:text-slate-300 leading-relaxed">
+        {settings.markcopilotSection.description}
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
+      {
+        markcopilotCapabilities.map((cap) => (
+          <div class="p-6 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 shadow-md hover:shadow-xl transition-all space-y-3">
+            <div class="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
+              <Icon name={cap.icon || 'lucide:sparkles'} class="w-5 h-5" />
+            </div>
+            <h3 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white">
+              {cap.title}
+            </h3>
+            <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+              {cap.description}
+            </p>
+          </div>
+        ))
+      }
+    </div>
+
+    <!-- Commercial Transparency Callout -->
+    <div
+      class="mt-10 p-4 rounded-xl bg-slate-100 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/80 text-center max-w-2xl mx-auto text-xs text-slate-600 dark:text-slate-300 flex items-center justify-center gap-2"
+    >
+      <Icon name="lucide:info" class="w-4 h-4 text-primary shrink-0" />
+      <span
+        >Markcopilot assists human teams with grounded recommendations and 1-click drafts; human
+        staff retain full oversight and final send control.</span
+      >
+    </div>
+  </section>
+
+  <!-- ======================================================== -->
+  <!-- SECTION J: FREQUENTLY ASKED QUESTIONS                    -->
+  <!-- ======================================================== -->
+  <FAQSection
+    title="Frequently Asked Questions"
+    subtitle="Clear, verified answers about channels, carrier billing, in-chat M-Pesa, and team seats."
+    faqs={settings.faqs}
     background="muted"
   />
+
+  <!-- ======================================================== -->
+  <!-- SECTION K: CLOSING CTA                                   -->
+  <!-- ======================================================== -->
+  <section class="py-20 sm:py-28 relative overflow-hidden bg-slate-900 text-white">
+    <!-- Background Ambient Glow -->
+    <div
+      class="absolute inset-0 bg-gradient-to-tr from-primary/30 to-indigo-600/20 blur-[100px] pointer-events-none"
+    >
+    </div>
+
+    <div class="relative max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-6">
+      <div
+        class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 text-slate-200 text-xs font-bold tracking-wide uppercase"
+      >
+        <Icon name="lucide:shield-check" class="w-3.5 h-3.5 text-emerald-400" />
+        <span>Kenyan Conversational Commerce</span>
+      </div>
+
+      <h2 class="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight leading-tight">
+        {settings.closingCta.heading}
+      </h2>
+
+      <p class="text-base sm:text-lg text-slate-300 max-w-2xl mx-auto leading-relaxed">
+        {settings.closingCta.description}
+      </p>
+
+      <div class="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4">
+        <a
+          href={settings.closingCta.primaryCtaHref || '/demo'}
+          class="w-full sm:w-auto inline-flex items-center justify-center px-8 py-4 rounded-xl font-bold text-sm text-white bg-primary hover:brightness-110 shadow-xl shadow-primary/30 transition-all"
+        >
+          <Icon name="lucide:calendar" class="w-4 h-4 mr-2" />
+          {settings.closingCta.primaryCtaLabel || 'Book a Live Demo'}
+        </a>
+        <a
+          href={settings.closingCta.secondaryCtaHref || '/pricing'}
+          class="w-full sm:w-auto inline-flex items-center justify-center px-8 py-4 rounded-xl font-bold text-sm text-slate-200 bg-white/10 hover:bg-white/15 border border-white/20 transition-all"
+        >
+          <Icon name="lucide:credit-card" class="w-4 h-4 mr-2" />
+          {settings.closingCta.secondaryCtaLabel || 'Explore Plans & Pricing'}
+        </a>
+      </div>
+
+      <div class="pt-6 flex flex-wrap items-center justify-center gap-6 text-xs text-slate-400">
+        <span>&bull; Nairobi GMT+03:00 Support</span>
+        <span>&bull; Safaricom Daraja Ready</span>
+        <span>&bull; Africa's Talking BYOC</span>
+        <span>&bull; No Per-Message Markup</span>
+      </div>
+    </div>
+  </section>
 </MarketingLayout>

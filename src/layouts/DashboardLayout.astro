@@ -53,11 +53,12 @@ const { title, description, breadcrumbs } = Astro.props;
     (function () {
       if (typeof window !== 'undefined') {
         var path = window.location.pathname;
-        if (
-          path.startsWith('/dashboard') &&
+        var isProtectedAdminRoute =
+          (path.startsWith('/dashboard') || path.startsWith('/dashboardMain')) &&
           path !== '/dashboard/login' &&
-          path !== '/dashboard/login/'
-        ) {
+          path !== '/dashboard/login/';
+
+        if (isProtectedAdminRoute) {
           // Client-side UX navigation guard.
           // Note: True security enforcement occurs at the central CMS API layer
           // via Bearer token verification on all protected administrative operations.

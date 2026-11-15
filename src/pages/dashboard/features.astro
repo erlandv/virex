@@ -1,0 +1,923 @@
+---
+/**
+ * MarkChat CMS — Features & Capabilities Showcase Manager
+ */
+import DashboardLayout from '@/layouts/DashboardLayout.astro';
+import Card from '@dashboard-ui/Card.astro';
+import Modal from '@dashboard-ui/Modal.astro';
+import StatCard from '@dashboard-ui/StatCard.astro';
+import { Icon } from 'astro-icon/components';
+import { adminFetchFeatures, fetchFeaturesSettings } from '@/lib/cms-api';
+
+const features = await adminFetchFeatures();
+const settings = await fetchFeaturesSettings();
+
+const totalFeatures = features.length;
+const publishedFeatures = features.filter((f) => f.status === 'published').length;
+const draftFeatures = features.filter((f) => f.status === 'draft' || f.status === 'paused').length;
+const categoriesCount = new Set(features.map((f) => f.category)).size;
+---
+
+<DashboardLayout
+  title="Features Showcase Manager"
+  description="Manage verified product capabilities, hero messaging, and developer specs on the public /features page"
+  breadcrumbs={[{ label: 'Dashboard', href: '/dashboard' }, { label: 'Features Showcase' }]}
+>
+  <div class="cms-features-page space-y-8">
+    <!-- Header -->
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div>
+        <h1 class="text-2xl font-bold tracking-tight text-text">
+          Features &amp; Capabilities Manager
+        </h1>
+        <p class="text-sm text-text-muted mt-1">
+          Control verified capability showcases, in-chat M-Pesa flows, team inbox specs, and
+          developer endpoints.
+        </p>
+      </div>
+      <div class="flex flex-wrap items-center gap-3">
+        <a href="/features" target="_blank" class="btn btn-secondary text-sm">
+          <Icon name="lucide:external-link" class="w-4 h-4 mr-1.5 inline" />
+          Preview Live /features
+        </a>
+        <button type="button" id="open-settings-modal" class="btn btn-secondary text-sm">
+          <Icon name="lucide:settings" class="w-4 h-4 mr-1.5 inline" />
+          Page Settings
+        </button>
+        <button type="button" id="open-feature-modal" class="btn btn-primary text-sm">
+          <Icon name="lucide:plus" class="w-4 h-4 mr-1.5 inline" />
+          Add Capability
+        </button>
+      </div>
+    </div>
+
+    <!-- Quick Stats -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <StatCard
+        title="Total Capabilities"
+        value={totalFeatures}
+        icon="sparkles"
+        description="All registered capability records"
+      />
+      <StatCard
+        title="Live on /features"
+        value={publishedFeatures}
+        icon="check-circle"
+        description="Publicly showcased capabilities"
+      />
+      <StatCard
+        title="Draft / Review"
+        value={draftFeatures}
+        icon="clock"
+        description="Unpublished capability drafts"
+      />
+      <StatCard
+        title="Active Categories"
+        value={categoriesCount}
+        icon="layers"
+        description="Architecture functional pillars"
+      />
+    </div>
+
+    <!-- Capabilities Table -->
+    <Card
+      title="Registered Product Capabilities"
+      description="Alternating feature showcases ordered by display priority on /features"
+      padding="none"
+    >
+      <div class="table-responsive">
+        <table class="cms-table w-full">
+          <thead>
+            <tr>
+              <th class="text-left py-3 px-4 w-16">Order</th>
+              <th class="text-left py-3 px-4">Capability Title &amp; Eyebrow</th>
+              <th class="text-left py-3 px-4 w-32">Category</th>
+              <th class="text-left py-3 px-4 w-32">Badge</th>
+              <th class="text-left py-3 px-4 w-28">Status</th>
+              <th class="text-right py-3 px-4 w-36">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="features-table-body">
+            {
+              features.map((feature) => (
+                <tr data-id={feature.id} data-feature={JSON.stringify(feature)}>
+                  <td class="py-3 px-4 font-mono text-xs text-text-muted">
+                    #{feature.displayOrder || 1}
+                  </td>
+                  <td class="py-3 px-4">
+                    <div class="font-medium text-text flex items-center gap-2">
+                      <Icon
+                        name={feature.icon || 'lucide:sparkles'}
+                        class="w-4 h-4 text-primary shrink-0"
+                      />
+                      <span>{feature.title}</span>
+                    </div>
+                    {feature.eyebrow && (
+                      <div class="text-xs text-text-muted mt-0.5 tracking-wide uppercase font-semibold">
+                        {feature.eyebrow}
+                      </div>
+                    )}
+                    <div class="text-xs text-text-muted line-clamp-1 mt-1 font-mono">
+                      /features#{feature.slug}
+                    </div>
+                  </td>
+                  <td class="py-3 px-4 text-xs">
+                    <span class="inline-block bg-surface-hover px-2 py-0.5 rounded border border-border capitalize">
+                      {feature.category}
+                    </span>
+                  </td>
+                  <td class="py-3 px-4 text-xs">
+                    {feature.badge ? (
+                      <span class="inline-block bg-primary/10 text-primary px-2 py-0.5 rounded border border-primary/20 font-medium">
+                        {feature.badge}
+                      </span>
+                    ) : (
+                      <span class="text-text-muted text-xs">—</span>
+                    )}
+                  </td>
+                  <td class="py-3 px-4 text-xs">
+                    <span class={`status-pill status-${feature.status}`}>
+                      {feature.status.toUpperCase()}
+                    </span>
+                  </td>
+                  <td class="py-3 px-4 text-right">
+                    <div class="flex items-center justify-end gap-2">
+                      <button
+                        type="button"
+                        class="action-btn edit-feature-btn"
+                        data-id={feature.id}
+                        title="Edit Capability"
+                      >
+                        <Icon name="lucide:edit-3" class="w-4 h-4" />
+                      </button>
+                      <select class="status-select text-xs" data-id={feature.id}>
+                        <option value="published" selected={feature.status === 'published'}>
+                          Published
+                        </option>
+                        <option value="draft" selected={feature.status === 'draft'}>
+                          Draft
+                        </option>
+                        <option value="paused" selected={feature.status === 'paused'}>
+                          Paused
+                        </option>
+                        <option value="archived" selected={feature.status === 'archived'}>
+                          Archived
+                        </option>
+                      </select>
+                      <button
+                        type="button"
+                        class="action-btn text-red-400 hover:text-red-300 delete-feature-btn"
+                        data-id={feature.id}
+                        title="Delete Capability"
+                      >
+                        <Icon name="lucide:trash-2" class="w-4 h-4" />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))
+            }
+          </tbody>
+        </table>
+      </div>
+    </Card>
+  </div>
+
+  <!-- Add / Edit Capability Modal -->
+  <Modal id="feature-modal" title="Add / Edit Product Capability" size="lg">
+    <form id="feature-form" class="space-y-4">
+      <input type="hidden" id="feature-id" value="" />
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div class="form-group">
+          <label class="form-label" for="feature-title">Capability Title *</label>
+          <input
+            type="text"
+            id="feature-title"
+            required
+            class="form-input"
+            placeholder="e.g. Collaborative Team Inbox"
+          />
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="feature-slug">Slug Identifier *</label>
+          <input
+            type="text"
+            id="feature-slug"
+            required
+            class="form-input font-mono"
+            placeholder="e.g. team-inbox"
+          />
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div class="form-group">
+          <label class="form-label" for="feature-category">Category *</label>
+          <select id="feature-category" required class="form-input">
+            <option value="inbox">Shared Inbox</option>
+            <option value="payments">In-Chat Payments</option>
+            <option value="channels">Omnichannel</option>
+            <option value="crm">Customer CRM</option>
+            <option value="automation">Automation &amp; Workflows</option>
+            <option value="infrastructure">Infrastructure</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="feature-order">Display Order *</label>
+          <input type="number" id="feature-order" required min="1" class="form-input" value="1" />
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="feature-status">Status *</label>
+          <select id="feature-status" required class="form-input">
+            <option value="published">Published</option>
+            <option value="draft">Draft</option>
+            <option value="paused">Paused</option>
+            <option value="archived">Archived</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div class="form-group">
+          <label class="form-label" for="feature-eyebrow">Eyebrow Tagline</label>
+          <input
+            type="text"
+            id="feature-eyebrow"
+            class="form-input"
+            placeholder="e.g. Team Operations & Routing"
+          />
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="feature-badge">Badge Label</label>
+          <input
+            type="text"
+            id="feature-badge"
+            class="form-input"
+            placeholder="e.g. Core Architecture"
+          />
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="feature-icon">Icon (Lucide name)</label>
+          <input
+            type="text"
+            id="feature-icon"
+            class="form-input"
+            placeholder="e.g. lucide:inbox"
+            value="lucide:sparkles"
+          />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="feature-description">Executive Summary *</label>
+        <textarea
+          id="feature-description"
+          rows="2"
+          required
+          class="form-textarea"
+          placeholder="Brief, high-impact summary of this capability"></textarea>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="feature-long-description"
+          >Extended Architecture Description</label
+        >
+        <textarea
+          id="feature-long-description"
+          rows="3"
+          class="form-textarea"
+          placeholder="Detailed narrative explaining workflow, mechanics, and business outcomes"
+        ></textarea>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="feature-highlights"
+          >Key Capability Highlights (One per line)</label
+        >
+        <textarea
+          id="feature-highlights"
+          rows="4"
+          class="form-textarea font-mono text-xs"
+          placeholder="Agent collision detection
+Private internal notes
+Round-robin team assignment"
+        ></textarea>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div class="form-group">
+          <label class="form-label" for="feature-tech-title">Technical Specifications Title</label>
+          <input
+            type="text"
+            id="feature-tech-title"
+            class="form-input"
+            placeholder="e.g. Operational Mechanics"
+          />
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="feature-cta-label">CTA Button Label</label>
+          <input
+            type="text"
+            id="feature-cta-label"
+            class="form-input"
+            placeholder="e.g. See in-chat M-Pesa demo"
+          />
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div class="form-group">
+          <label class="form-label" for="feature-tech-points"
+            >Technical Specification Points (One per line)</label
+          >
+          <textarea
+            id="feature-tech-points"
+            rows="3"
+            class="form-textarea font-mono text-xs"
+            placeholder="RFC-compliant WebSocket sync
+Database unique TransID constraint"></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="feature-cta-href">CTA Target Link</label>
+          <input
+            type="text"
+            id="feature-cta-href"
+            class="form-input"
+            placeholder="e.g. /demo or /integrations/safaricom-mpesa-daraja"
+          />
+        </div>
+      </div>
+    </form>
+
+    <div slot="footer" class="flex justify-end gap-3">
+      <button
+        type="button"
+        class="btn btn-secondary text-sm"
+        onclick="window.closeModal('feature-modal')"
+      >
+        Cancel
+      </button>
+      <button type="submit" form="feature-form" class="btn btn-primary text-sm">
+        Save Capability
+      </button>
+    </div>
+  </Modal>
+
+  <!-- Page Settings Modal -->
+  <Modal id="settings-modal" title="Features Page Global Settings" size="xl">
+    <form id="settings-form" class="space-y-6">
+      <!-- Section A: Hero Settings -->
+      <div class="p-4 rounded-xl border border-border bg-surface/50 space-y-4">
+        <h3 class="text-sm font-bold uppercase tracking-wider text-text flex items-center gap-2">
+          <Icon name="lucide:layout" class="w-4 h-4 text-primary" />
+          Hero Section (Section A)
+        </h3>
+        <div class="form-group">
+          <label class="form-label" for="hero-eyebrow">Hero Eyebrow</label>
+          <input type="text" id="hero-eyebrow" class="form-input" value={settings.hero.eyebrow} />
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="hero-heading">Hero Headline</label>
+          <input
+            type="text"
+            id="hero-heading"
+            class="form-input font-bold"
+            value={settings.hero.heading}
+          />
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="hero-description">Hero Description</label>
+          <textarea id="hero-description" rows="3" class="form-textarea"
+            >{settings.hero.description}</textarea
+          >
+        </div>
+      </div>
+
+      <!-- Developer Section Settings -->
+      <div class="p-4 rounded-xl border border-border bg-surface/50 space-y-4">
+        <h3 class="text-sm font-bold uppercase tracking-wider text-text flex items-center gap-2">
+          <Icon name="lucide:code" class="w-4 h-4 text-primary" />
+          Developer &amp; Integration Foundation (Section H)
+        </h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div class="form-group">
+            <label class="form-label" for="dev-eyebrow">Developer Eyebrow</label>
+            <input
+              type="text"
+              id="dev-eyebrow"
+              class="form-input"
+              value={settings.developerSection.eyebrow}
+            />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="dev-heading">Developer Headline</label>
+            <input
+              type="text"
+              id="dev-heading"
+              class="form-input"
+              value={settings.developerSection.heading}
+            />
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="dev-description">Developer Description</label>
+          <textarea id="dev-description" rows="2" class="form-textarea"
+            >{settings.developerSection.description}</textarea
+          >
+        </div>
+      </div>
+
+      <!-- Markcopilot Section Settings -->
+      <div class="p-4 rounded-xl border border-border bg-surface/50 space-y-4">
+        <h3 class="text-sm font-bold uppercase tracking-wider text-text flex items-center gap-2">
+          <Icon name="lucide:sparkles" class="w-4 h-4 text-primary" />
+          Markcopilot Contextual AI (Section I)
+        </h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div class="form-group">
+            <label class="form-label" for="ai-eyebrow">Markcopilot Eyebrow</label>
+            <input
+              type="text"
+              id="ai-eyebrow"
+              class="form-input"
+              value={settings.markcopilotSection.eyebrow}
+            />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="ai-heading">Markcopilot Headline</label>
+            <input
+              type="text"
+              id="ai-heading"
+              class="form-input"
+              value={settings.markcopilotSection.heading}
+            />
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="ai-description">Markcopilot Description</label>
+          <textarea id="ai-description" rows="2" class="form-textarea"
+            >{settings.markcopilotSection.description}</textarea
+          >
+        </div>
+      </div>
+
+      <!-- Section K: Closing CTA Settings -->
+      <div class="p-4 rounded-xl border border-border bg-surface/50 space-y-4">
+        <h3 class="text-sm font-bold uppercase tracking-wider text-text flex items-center gap-2">
+          <Icon name="lucide:arrow-right-circle" class="w-4 h-4 text-primary" />
+          Closing CTA (Section K)
+        </h3>
+        <div class="form-group">
+          <label class="form-label" for="cta-heading">Closing Headline</label>
+          <input
+            type="text"
+            id="cta-heading"
+            class="form-input font-bold"
+            value={settings.closingCta.heading}
+          />
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="cta-description">Closing Description</label>
+          <textarea id="cta-description" rows="2" class="form-textarea"
+            >{settings.closingCta.description}</textarea
+          >
+        </div>
+      </div>
+    </form>
+
+    <div slot="footer" class="flex justify-end gap-3">
+      <button
+        type="button"
+        class="btn btn-secondary text-sm"
+        onclick="window.closeModal('settings-modal')"
+      >
+        Cancel
+      </button>
+      <button type="submit" form="settings-form" class="btn btn-primary text-sm">
+        Save Page Settings
+      </button>
+    </div>
+  </Modal>
+</DashboardLayout>
+
+<style>
+  .table-responsive {
+    overflow-x: auto;
+  }
+
+  .cms-table {
+    border-collapse: collapse;
+    width: 100%;
+    font-size: 0.875rem;
+  }
+
+  .cms-table th {
+    background: var(--color-surface-hover, #1f1f23);
+    color: var(--color-text-muted, #a1a1aa);
+    font-weight: 600;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-bottom: 1px solid var(--color-border, #27272a);
+  }
+
+  .cms-table td {
+    border-bottom: 1px solid var(--color-border, #27272a);
+  }
+
+  .status-pill {
+    padding: 0.2rem 0.5rem;
+    border-radius: 9999px;
+    font-size: 0.6875rem;
+    font-weight: 700;
+  }
+
+  .status-published {
+    background: rgba(34, 197, 94, 0.15);
+    color: #4ade80;
+  }
+
+  .status-draft {
+    background: rgba(234, 179, 8, 0.15);
+    color: #facc15;
+  }
+
+  .status-paused {
+    background: rgba(59, 130, 246, 0.15);
+    color: #60a5fa;
+  }
+
+  .status-archived {
+    background: rgba(148, 163, 184, 0.15);
+    color: #94a3b8;
+  }
+
+  .action-btn {
+    background: transparent;
+    border: none;
+    color: var(--color-text-muted, #a1a1aa);
+    cursor: pointer;
+    padding: 0.35rem;
+    border-radius: var(--radius-sm, 0.25rem);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 150ms ease;
+  }
+
+  .action-btn:hover {
+    color: var(--color-text, #fafafa);
+    background: var(--color-surface-hover, #1f1f23);
+  }
+
+  .status-select {
+    padding: 0.25rem 0.5rem;
+    background: var(--color-surface, #141418);
+    border: 1px solid var(--color-border, #27272a);
+    border-radius: var(--radius-sm, 0.25rem);
+    color: var(--color-text, #fafafa);
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+
+  .form-label {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--color-text, #fafafa);
+  }
+
+  .form-input,
+  .form-textarea {
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.875rem;
+    background: var(--color-surface, #141418);
+    border: 1px solid var(--color-border, #27272a);
+    border-radius: var(--radius-md, 0.5rem);
+    color: var(--color-text, #fafafa);
+  }
+
+  .form-input:focus,
+  .form-textarea:focus {
+    outline: none;
+    border-color: var(--color-primary, #6366f1);
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    border-radius: var(--radius-md, 0.5rem);
+    cursor: pointer;
+    transition: all 150ms ease;
+    text-decoration: none;
+    border: 1px solid transparent;
+  }
+
+  .btn-primary {
+    background: var(--color-primary, #6366f1);
+    color: #ffffff;
+  }
+
+  .btn-primary:hover {
+    filter: brightness(1.1);
+  }
+
+  .btn-secondary {
+    background: var(--color-surface, #141418);
+    border-color: var(--color-border, #27272a);
+    color: var(--color-text, #fafafa);
+  }
+
+  .btn-secondary:hover {
+    background: var(--color-surface-hover, #1f1f23);
+  }
+</style>
+
+<script>
+  import {
+    upsertFeature,
+    updateFeaturesSettings,
+    updateItemStatus,
+    deleteCmsItem,
+    type MarketingFeature,
+    type FeaturesPageSettings,
+    type CmsLifecycleStatus,
+  } from '@/lib/cms-api';
+
+  function initFeaturesAdmin() {
+    const createBtn = document.getElementById('open-feature-modal');
+    const settingsBtn = document.getElementById('open-settings-modal');
+    const featureForm = document.getElementById('feature-form') as HTMLFormElement;
+    const settingsForm = document.getElementById('settings-form') as HTMLFormElement;
+
+    if (createBtn) {
+      createBtn.addEventListener('click', () => {
+        featureForm?.reset();
+        (document.getElementById('feature-id') as HTMLInputElement).value = '';
+        (document.getElementById('feature-order') as HTMLInputElement).value = '1';
+        (document.getElementById('feature-icon') as HTMLInputElement).value = 'lucide:sparkles';
+        (document.getElementById('feature-status') as HTMLSelectElement).value = 'published';
+        window.openModal?.('feature-modal');
+      });
+    }
+
+    if (settingsBtn) {
+      settingsBtn.addEventListener('click', () => {
+        window.openModal?.('settings-modal');
+      });
+    }
+
+    // Edit button listeners
+    document.querySelectorAll('.edit-feature-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const row = btn.closest('tr');
+        if (!row) return;
+        const feat: MarketingFeature = JSON.parse(row.getAttribute('data-feature') || '{}');
+
+        (document.getElementById('feature-id') as HTMLInputElement).value = feat.id || '';
+        (document.getElementById('feature-title') as HTMLInputElement).value = feat.title || '';
+        (document.getElementById('feature-slug') as HTMLInputElement).value = feat.slug || '';
+        (document.getElementById('feature-eyebrow') as HTMLInputElement).value = feat.eyebrow || '';
+        (document.getElementById('feature-category') as HTMLSelectElement).value =
+          feat.category || 'inbox';
+        (document.getElementById('feature-badge') as HTMLInputElement).value = feat.badge || '';
+        (document.getElementById('feature-icon') as HTMLInputElement).value =
+          feat.icon || 'lucide:sparkles';
+        (document.getElementById('feature-order') as HTMLInputElement).value = String(
+          feat.displayOrder || 1
+        );
+        (document.getElementById('feature-status') as HTMLSelectElement).value =
+          feat.status || 'published';
+        (document.getElementById('feature-description') as HTMLTextAreaElement).value =
+          feat.summary || feat.description || '';
+        (document.getElementById('feature-long-description') as HTMLTextAreaElement).value =
+          feat.description || '';
+        (document.getElementById('feature-highlights') as HTMLTextAreaElement).value = (
+          feat.highlights || []
+        ).join('\n');
+        (document.getElementById('feature-tech-title') as HTMLInputElement).value =
+          feat.technicalDetails?.title || '';
+        (document.getElementById('feature-tech-points') as HTMLTextAreaElement).value = (
+          feat.technicalDetails?.points || []
+        ).join('\n');
+        (document.getElementById('feature-cta-label') as HTMLInputElement).value =
+          feat.ctaText || '';
+        (document.getElementById('feature-cta-href') as HTMLInputElement).value = feat.ctaUrl || '';
+
+        window.openModal?.('feature-modal');
+      });
+    });
+
+    // Feature Form Submission
+    if (featureForm) {
+      featureForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const id = (document.getElementById('feature-id') as HTMLInputElement).value;
+        const title = (document.getElementById('feature-title') as HTMLInputElement).value;
+        const slug = (document.getElementById('feature-slug') as HTMLInputElement).value;
+        const eyebrow = (document.getElementById('feature-eyebrow') as HTMLInputElement).value;
+        const category = (document.getElementById('feature-category') as HTMLSelectElement)
+          .value as MarketingFeature['category'];
+        const badge = (document.getElementById('feature-badge') as HTMLInputElement).value;
+        const icon = (document.getElementById('feature-icon') as HTMLInputElement).value;
+        const order = parseInt(
+          (document.getElementById('feature-order') as HTMLInputElement).value || '1',
+          10
+        );
+        const status = (document.getElementById('feature-status') as HTMLSelectElement)
+          .value as CmsLifecycleStatus;
+        const description = (document.getElementById('feature-description') as HTMLTextAreaElement)
+          .value;
+        const longDescription = (
+          document.getElementById('feature-long-description') as HTMLTextAreaElement
+        ).value;
+
+        const highlights = (
+          document.getElementById('feature-highlights') as HTMLTextAreaElement
+        ).value
+          .split('\n')
+          .map((s) => s.trim())
+          .filter(Boolean);
+
+        const techTitle = (document.getElementById('feature-tech-title') as HTMLInputElement).value;
+        const techPoints = (
+          document.getElementById('feature-tech-points') as HTMLTextAreaElement
+        ).value
+          .split('\n')
+          .map((s) => s.trim())
+          .filter(Boolean);
+
+        const ctaLabel = (document.getElementById('feature-cta-label') as HTMLInputElement).value;
+        const ctaHref = (document.getElementById('feature-cta-href') as HTMLInputElement).value;
+
+        const featurePayload: MarketingFeature = {
+          id: id || `feat-${Date.now()}`,
+          title,
+          slug,
+          eyebrow: eyebrow || undefined,
+          category,
+          badge: badge || undefined,
+          icon: icon || 'lucide:sparkles',
+          displayOrder: order,
+          status,
+          summary: description,
+          description: longDescription || description,
+          mediaType: 'conceptual_card',
+          mediaPosition: 'right',
+          highlights,
+          technicalDetails:
+            techTitle && techPoints.length > 0
+              ? { title: techTitle, points: techPoints }
+              : undefined,
+          ctaText: ctaLabel || undefined,
+          ctaUrl: ctaHref || undefined,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        };
+
+        try {
+          await upsertFeature(featurePayload);
+          window.closeModal?.('feature-modal');
+          if (window.showToast) {
+            window.showToast({
+              message: 'Capability saved successfully!',
+              variant: 'success',
+              duration: 3000,
+            });
+          }
+          setTimeout(() => window.location.reload(), 600);
+        } catch (err) {
+          console.error(err);
+          alert('Error saving capability. Check console for details.');
+        }
+      });
+    }
+
+    // Status quick change
+    document.querySelectorAll('.status-select').forEach((sel) => {
+      sel.addEventListener('change', async (e) => {
+        const id = sel.getAttribute('data-id');
+        const status = (e.target as HTMLSelectElement).value as CmsLifecycleStatus;
+        if (id) {
+          await updateItemStatus('features', id, status);
+          if (window.showToast) {
+            window.showToast({
+              message: `Status updated to ${status}`,
+              variant: 'success',
+              duration: 2500,
+            });
+          }
+        }
+      });
+    });
+
+    // Delete capability
+    document.querySelectorAll('.delete-feature-btn').forEach((btn) => {
+      btn.addEventListener('click', async () => {
+        const id = btn.getAttribute('data-id');
+        if (id && confirm('Are you sure you want to delete this product capability?')) {
+          await deleteCmsItem('features', id);
+          btn.closest('tr')?.remove();
+          if (window.showToast) {
+            window.showToast({
+              message: 'Capability deleted successfully',
+              variant: 'success',
+              duration: 2500,
+            });
+          }
+        }
+      });
+    });
+
+    // Settings form submission
+    if (settingsForm) {
+      settingsForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const heroEyebrow = (document.getElementById('hero-eyebrow') as HTMLInputElement).value;
+        const heroHeading = (document.getElementById('hero-heading') as HTMLInputElement).value;
+        const heroDescription = (document.getElementById('hero-description') as HTMLTextAreaElement)
+          .value;
+
+        const devEyebrow = (document.getElementById('dev-eyebrow') as HTMLInputElement).value;
+        const devHeading = (document.getElementById('dev-heading') as HTMLInputElement).value;
+        const devDescription = (document.getElementById('dev-description') as HTMLTextAreaElement)
+          .value;
+
+        const aiEyebrow = (document.getElementById('ai-eyebrow') as HTMLInputElement).value;
+        const aiHeading = (document.getElementById('ai-heading') as HTMLInputElement).value;
+        const aiDescription = (document.getElementById('ai-description') as HTMLTextAreaElement)
+          .value;
+
+        const ctaHeading = (document.getElementById('cta-heading') as HTMLInputElement).value;
+        const ctaDescription = (document.getElementById('cta-description') as HTMLTextAreaElement)
+          .value;
+
+        const updatedSettings: Partial<FeaturesPageSettings> = {
+          hero: {
+            eyebrow: heroEyebrow,
+            heading: heroHeading,
+            description: heroDescription,
+            primaryCtaLabel: 'Book a Live Demo',
+            primaryCtaHref: '/demo',
+            secondaryCtaLabel: 'Explore Plans & Pricing',
+            secondaryCtaHref: '/pricing',
+          },
+          developerSection: {
+            eyebrow: devEyebrow,
+            heading: devHeading,
+            description: devDescription,
+          },
+          markcopilotSection: {
+            eyebrow: aiEyebrow,
+            heading: aiHeading,
+            description: aiDescription,
+            highlights: [
+              'Drafts contextual 1-click reply suggestions for agent review',
+              'Retrieves answers grounded strictly in your indexed business documents',
+              'Understands East African commercial English, Swahili, and Sheng vocabulary',
+              'Smooth handoff to human specialists for urgent checkouts or escalations',
+            ],
+            ctaLabel: 'Learn About Markcopilot AI',
+            ctaHref: '/markcopilot',
+          },
+          closingCta: {
+            heading: ctaHeading,
+            description: ctaDescription,
+            primaryCtaLabel: 'Book a Live Demo',
+            primaryCtaHref: '/demo',
+            secondaryCtaLabel: 'Explore Plans & Pricing',
+            secondaryCtaHref: '/pricing',
+          },
+        };
+
+        try {
+          await updateFeaturesSettings(updatedSettings);
+          window.closeModal?.('settings-modal');
+          if (window.showToast) {
+            window.showToast({
+              message: 'Features page settings saved successfully!',
+              variant: 'success',
+              duration: 3000,
+            });
+          }
+          setTimeout(() => window.location.reload(), 600);
+        } catch (err) {
+          console.error(err);
+          alert('Error saving settings. Check console for details.');
+        }
+      });
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', initFeaturesAdmin);
+  document.addEventListener('astro:page-load', initFeaturesAdmin);
+</script>

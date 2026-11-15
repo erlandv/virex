@@ -14,6 +14,7 @@ Allow: /favicon.svg
 
 # Disallow internal administrative CMS routes and non-indexable utility endpoints
 Disallow: /dashboard/
+Disallow: /dashboardMain
 Disallow: /api/
 Disallow: /403
 Disallow: /500

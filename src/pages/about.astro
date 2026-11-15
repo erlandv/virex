@@ -69,6 +69,7 @@ const corePrinciples = [
       'We design exclusively for local commerce reality: Safaricom Paybill, Buy Goods Tills, Pochi la Biashara, and WhatsApp-driven sales across Nairobi, Mombasa, and regional retail hubs.',
     icon: 'lucide:map-pin',
     badge: 'Local Context',
+    accent: 'blue',
   },
   {
     id: 'zero-fraud',
@@ -77,6 +78,7 @@ const corePrinciples = [
       'We protect hardworking merchants from counterfeit M-Pesa SMS screenshots by cryptographically validating every TransID server-side before goods are packaged or dispatched.',
     icon: 'lucide:shield-check',
     badge: 'Fraud Shield',
+    accent: 'emerald',
   },
   {
     id: 'conversational-speed',
@@ -85,6 +87,7 @@ const corePrinciples = [
       'Every second a customer waits for an account number is an abandoned sale. We prompt instant STK PIN popups in under 10 seconds to close sales while buyer intent is highest.',
     icon: 'lucide:zap',
     badge: 'Checkout Velocity',
+    accent: 'amber',
   },
   {
     id: 'radical-simplicity',
@@ -93,8 +96,47 @@ const corePrinciples = [
       'No complex enterprise installations. Onboard your sales team in 5 minutes, connect your WhatsApp number, and start selling today with collaborative collision detection.',
     icon: 'lucide:sparkles',
     badge: 'Zero Friction',
+    accent: 'indigo',
   },
 ];
+
+const principleStyles: Record<
+  string,
+  {
+    borderTop: string;
+    iconBox: string;
+    badge: string;
+  }
+> = {
+  blue: {
+    borderTop: 'border-t-blue-500',
+    iconBox:
+      'bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 border-blue-200/80 dark:border-blue-800/70',
+    badge:
+      'bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border-blue-200/80 dark:border-blue-800/70',
+  },
+  emerald: {
+    borderTop: 'border-t-emerald-500',
+    iconBox:
+      'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 border-emerald-200/80 dark:border-emerald-800/70',
+    badge:
+      'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border-emerald-200/80 dark:border-emerald-800/70',
+  },
+  amber: {
+    borderTop: 'border-t-amber-500',
+    iconBox:
+      'bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 border-amber-200/80 dark:border-amber-800/70',
+    badge:
+      'bg-amber-50 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 border-amber-200/80 dark:border-amber-800/70',
+  },
+  indigo: {
+    borderTop: 'border-t-indigo-500',
+    iconBox:
+      'bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border-indigo-200/80 dark:border-indigo-800/70',
+    badge:
+      'bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border-indigo-200/80 dark:border-indigo-800/70',
+  },
+};
 
 /**
  * Team Members Collection (With Clean Avatar Placeholders)
@@ -153,11 +195,11 @@ const APP_URL = import.meta.env.PUBLIC_APP_URL || 'http://localhost:3000';
   <!-- 1. HERO SECTION (VISION & MISSION)                                    -->
   <!-- ===================================================================== -->
   <section
-    class="relative pt-24 pb-20 sm:pt-32 sm:pb-28 overflow-hidden bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-blue-50/50 via-white to-white dark:from-slate-900 dark:to-[#0B1120] border-b border-slate-200 dark:border-slate-800/80 transition-colors duration-200"
+    class="relative pt-20 pb-16 sm:pt-32 sm:pb-24 overflow-hidden bg-gradient-to-b from-blue-50/40 via-background to-background dark:from-slate-900/50 dark:via-[#0B1120] dark:to-[#0B1120] border-b border-slate-200 dark:border-slate-800/80 transition-colors duration-200"
   >
     {/* Ambient Glow Orbs */}
     <div
-      class="pointer-events-none absolute -top-40 left-1/2 -translate-x-1/2 w-[900px] h-[450px] bg-gradient-to-b from-blue-600/10 via-primary/5 to-transparent dark:from-blue-600/15 dark:via-primary/10 dark:to-transparent rounded-full blur-3xl"
+      class="pointer-events-none absolute -top-40 left-1/2 -translate-x-1/2 w-[760px] h-[380px] bg-gradient-to-b from-blue-600/10 via-primary/5 to-transparent dark:from-blue-600/15 dark:via-primary/10 dark:to-transparent rounded-full blur-3xl"
       aria-hidden="true"
     >
     </div>
@@ -166,7 +208,7 @@ const APP_URL = import.meta.env.PUBLIC_APP_URL || 'http://localhost:3000';
       <div class="text-center max-w-4xl mx-auto">
         <!-- Story Badge -->
         <div
-          class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800/80 mb-6 shadow-xs"
+          class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200/80 dark:border-blue-800/80 mb-6 shadow-xs"
         >
           <span class="relative flex h-2 w-2">
             <span
@@ -179,24 +221,22 @@ const APP_URL = import.meta.env.PUBLIC_APP_URL || 'http://localhost:3000';
 
         <!-- H1 Headline -->
         <h1
-          class="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-slate-900 dark:text-white leading-[1.12]"
+          class="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-slate-900 dark:text-white leading-[1.15]"
         >
           Empowering African Commerce Through Instant Conversational Sales
         </h1>
 
-        <!-- Reading-Constrained Narrative Paragraphs (max-w-3xl) -->
-        <div class="mt-8 max-w-3xl mx-auto space-y-4 text-left sm:text-center">
-          <p class="text-lg sm:text-xl text-slate-600 dark:text-slate-300 leading-relaxed">
-            MarkChat was born in Westlands, Nairobi, out of a simple observation: Kenyan merchants
-            were closing over 70% of their sales on WhatsApp, Instagram, and SMS, but payment
-            collection remained manual, error-prone, and vulnerable to counterfeit M-Pesa
-            confirmation screenshots.
+        <!-- Reading-Constrained Narrative Paragraphs (max-w-2xl) -->
+        <div class="mt-8 max-w-2xl mx-auto space-y-4 text-center">
+          <p class="text-base sm:text-lg text-slate-600 dark:text-slate-300 leading-relaxed">
+            MarkChat was built in Nairobi to address the everyday friction of African commerce:
+            customer conversations happen across WhatsApp, Instagram, and SMS, yet payment
+            collection too often depends on manual back-and-forth and vulnerable screenshots.
           </p>
-          <p class="text-base sm:text-lg text-slate-500 dark:text-slate-400 leading-relaxed">
-            We united official Meta WhatsApp Cloud API, Africa’s Talking Bulk SMS, and Safaricom
-            Daraja STK push into one seamless platform. Today, thousands of retail stores,
-            pharmacies, salons, and logistics businesses use MarkChat to turn everyday chats into
-            confirmed, reconciled mobile money revenue.
+          <p class="text-sm sm:text-base text-slate-500 dark:text-slate-400 leading-relaxed">
+            By uniting official Meta WhatsApp Cloud API, Africa’s Talking Bulk SMS, and Safaricom
+            Daraja STK push into a unified team inbox, MarkChat helps merchants, retail teams, and
+            growing businesses turn everyday chats into verified, reconciled mobile money revenue.
           </p>
         </div>
       </div>
@@ -257,30 +297,39 @@ const APP_URL = import.meta.env.PUBLIC_APP_URL || 'http://localhost:3000';
         </p>
       </div>
 
-      {/* 4-Column Modernized Principles Grid with Top Border Highlight */}
+      {/* 4-Column Modernized Principles Grid with Accent Borders */}
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {
-          corePrinciples.map((principle) => (
-            <div class="bg-white dark:bg-slate-900/70 border border-slate-200 dark:border-slate-800 rounded-2xl p-7 sm:p-8 shadow-xs hover:shadow-lg dark:hover:shadow-black/50 transition-all duration-300 border-t-4 border-t-blue-600 flex flex-col justify-between group">
-              <div>
-                <div class="w-12 h-12 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800/80 flex items-center justify-center mb-6 group-hover:scale-105 transition-transform duration-200 shadow-2xs">
-                  <Icon name={principle.icon} class="w-6 h-6" />
+          corePrinciples.map((principle) => {
+            const style = principleStyles[principle.accent] || principleStyles.blue;
+            return (
+              <div
+                class={`bg-white dark:bg-slate-900/60 border border-slate-200/90 dark:border-slate-800 rounded-2xl p-6 sm:p-7 shadow-xs hover:shadow-lg dark:hover:shadow-black/50 transition-all duration-300 border-t-2 ${style.borderTop} flex flex-col justify-between group`}
+              >
+                <div>
+                  <div
+                    class={`w-11 h-11 rounded-xl flex items-center justify-center mb-5 group-hover:scale-105 transition-transform duration-200 border shadow-2xs ${style.iconBox}`}
+                  >
+                    <Icon name={principle.icon} class="w-5 h-5" />
+                  </div>
+                  <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-2 leading-snug">
+                    {principle.title}
+                  </h3>
+                  <p class="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+                    {principle.description}
+                  </p>
                 </div>
-                <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-2 leading-snug">
-                  {principle.title}
-                </h3>
-                <p class="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
-                  {principle.description}
-                </p>
-              </div>
 
-              <div class="mt-6 pt-4 border-t border-slate-100 dark:border-slate-800/80">
-                <span class="inline-block px-2.5 py-1 rounded-full text-[11px] font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200/80 dark:border-slate-700/80">
-                  {principle.badge}
-                </span>
+                <div class="mt-6 pt-4 border-t border-slate-100 dark:border-slate-800/80">
+                  <span
+                    class={`inline-block px-2.5 py-1 rounded-full text-[11px] font-semibold border ${style.badge}`}
+                  >
+                    {principle.badge}
+                  </span>
+                </div>
               </div>
-            </div>
-          ))
+            );
+          })
         }
       </div>
     </div>
