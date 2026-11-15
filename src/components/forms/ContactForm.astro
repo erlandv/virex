@@ -406,10 +406,7 @@ const { action = '', method = 'POST', netlify = false, formName = 'contact' } = 
 
     function validateSingleField(fieldId: string): boolean {
       const fieldEl = document.getElementById(fieldId) as
-        | HTMLInputElement
-        | HTMLSelectElement
-        | HTMLTextAreaElement
-        | null;
+        HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement | null;
       const errorEl = document.querySelector(`[data-error="${fieldId}"]`) as HTMLElement | null;
       if (!fieldEl || !validators[fieldId]) return true;
 

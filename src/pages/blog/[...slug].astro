@@ -31,12 +31,10 @@ interface RelatedPostWithScore {
 
 const relatedPosts: BlogPost[] = allPosts
   .filter((p: BlogPost) => p.id !== post.id)
-  .map(
-    (p: BlogPost): RelatedPostWithScore => ({
-      post: p,
-      sharedTags: p.data.tags.filter((tag: string) => post.data.tags.includes(tag)).length,
-    })
-  )
+  .map((p: BlogPost): RelatedPostWithScore => ({
+    post: p,
+    sharedTags: p.data.tags.filter((tag: string) => post.data.tags.includes(tag)).length,
+  }))
   .filter((p: RelatedPostWithScore) => p.sharedTags > 0)
   .sort((a: RelatedPostWithScore, b: RelatedPostWithScore) => {
     if (b.sharedTags !== a.sharedTags) {

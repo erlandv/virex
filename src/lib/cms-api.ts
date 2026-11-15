@@ -35,6 +35,197 @@ export interface MarketingIntegration {
   sortOrder: number;
 }
 
+export interface MarketingFeature {
+  id: string;
+  slug: string;
+  title: string;
+  eyebrow?: string;
+  category: string;
+  summary: string;
+  description: string;
+  badge?: string;
+  icon?: string;
+  mediaUrl?: string;
+  mediaAlt?: string;
+  mediaType: 'screenshot' | 'conceptual_card' | 'none';
+  mediaPosition: 'left' | 'right';
+  highlights: string[];
+  technicalDetails?: {
+    title: string;
+    points: string[];
+  };
+  ctaText?: string;
+  ctaUrl?: string;
+  displayOrder: number;
+  status: CmsLifecycleStatus;
+  isFeatured?: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface FeaturesPageSettings {
+  hero: {
+    eyebrow: string;
+    heading: string;
+    description: string;
+    primaryCtaLabel: string;
+    primaryCtaHref: string;
+    secondaryCtaLabel: string;
+    secondaryCtaHref: string;
+  };
+  developerSection: {
+    eyebrow: string;
+    heading: string;
+    description: string;
+  };
+  markcopilotSection: {
+    eyebrow: string;
+    heading: string;
+    description: string;
+    highlights: string[];
+    ctaLabel: string;
+    ctaHref: string;
+  };
+  closingCta: {
+    heading: string;
+    description: string;
+    primaryCtaLabel: string;
+    primaryCtaHref: string;
+    secondaryCtaLabel: string;
+    secondaryCtaHref: string;
+  };
+  faqs: Array<{
+    question: string;
+    answer: string;
+  }>;
+}
+
+export interface HomepageHeroSettings {
+  badge: string;
+  title: string;
+  subtitle: string;
+  primaryCtaLabel: string;
+  primaryCtaHref: string;
+  secondaryCtaLabel: string;
+  secondaryCtaHref: string;
+  stats: Array<{
+    value: string;
+    label: string;
+    highlight?: boolean;
+  }>;
+}
+
+export interface HomepageSectionVisibility {
+  hero: boolean;
+  omnichannelFlow: boolean;
+  howItWorks: boolean;
+  coreCapabilities: boolean;
+  operationalScenarios: boolean;
+  markcopilot: boolean;
+  solutionsPreview: boolean;
+  integrations: boolean;
+  pricing: boolean;
+  kenyaPrinciples: boolean;
+  faqs: boolean;
+  closingCta: boolean;
+  newsletter: boolean;
+}
+
+export interface HomepageClosingCtaSettings {
+  title: string;
+  description: string;
+  primaryCtaLabel: string;
+  primaryCtaHref: string;
+  secondaryCtaLabel: string;
+  secondaryCtaHref: string;
+}
+
+export interface HomepageSettings {
+  hero: HomepageHeroSettings;
+  sections: HomepageSectionVisibility;
+  closingCta: HomepageClosingCtaSettings;
+  updatedAt?: string;
+}
+
+export interface MarkcopilotCapability {
+  id: string;
+  title: string;
+  badge: string;
+  eyebrow?: string;
+  description: string;
+  icon: string;
+  mode: 'autonomous' | 'copilot' | 'shared';
+  highlights: string[];
+  displayOrder: number;
+  status: CmsLifecycleStatus;
+  updatedAt?: string;
+}
+
+export interface MarkcopilotVideoSettings {
+  enabled: boolean;
+  title: string;
+  description: string;
+  videoUrl: string;
+  provider: 'youtube' | 'vimeo' | 'self-hosted' | 'none';
+  posterUrl?: string;
+  fallbackHeading: string;
+  fallbackDescription: string;
+}
+
+export interface MarkcopilotPageSettings {
+  hero: {
+    badge: string;
+    title: string;
+    subtitle: string;
+    primaryCtaLabel: string;
+    primaryCtaHref: string;
+    secondaryCtaLabel: string;
+    secondaryCtaHref: string;
+    trustBadges: Array<{ text: string; icon: string }>;
+  };
+  introduction: {
+    eyebrow: string;
+    heading: string;
+    description: string;
+    pillars: Array<{ title: string; description: string; icon: string }>;
+  };
+  howItWorks: {
+    eyebrow: string;
+    heading: string;
+    description: string;
+    steps: Array<{
+      stepNumber: number;
+      title: string;
+      description: string;
+      highlight: string;
+      icon: string;
+    }>;
+  };
+  video: MarkcopilotVideoSettings;
+  businessValue: {
+    eyebrow: string;
+    heading: string;
+    description: string;
+    metrics: Array<{ title: string; description: string; impact: string; icon: string }>;
+  };
+  ecosystem: {
+    eyebrow: string;
+    heading: string;
+    description: string;
+    cards: Array<{ title: string; description: string; href: string; icon: string; badge: string }>;
+  };
+  closingCta: {
+    heading: string;
+    description: string;
+    primaryCtaLabel: string;
+    primaryCtaHref: string;
+    secondaryCtaLabel: string;
+    secondaryCtaHref: string;
+  };
+  faqs: Array<{ question: string; answer: string }>;
+  updatedAt?: string;
+}
+
 export interface PricingTier {
   id: 'starter' | 'pro' | 'enterprise';
   name: string;
@@ -223,11 +414,11 @@ const DEFAULT_PRICING_MATRIX: PricingMatrixResponse = {
         'Ideal for small Kenyan dukas, solo merchants, and Instagram/WhatsApp sellers getting started.',
       highlighted: false,
       badge: 'Free Forever',
-      ctaLabel: 'Start Free — 50 SMS Included',
+      ctaLabel: 'Start Free',
       ctaHref: `${APP_URL}/app/auth/signup?plan=starter`,
       features: [
         '1 Inbox (WhatsApp Cloud or SMS)',
-        '50 Free Trial Bulk SMS credits',
+        'BYOC or prepaid SMS integration',
         'Manual M-Pesa C2B payment log verification',
         'Basic Markcopilot AI (50 messages/mo)',
         '1 Team Agent seat',
@@ -412,7 +603,7 @@ Bulk SMS remains one of the highest-converting customer retention channels in Ke
 
 ### Managed Bundles vs. BYOC
 MarkChat provides two flexible ways to run Bulk SMS:
-1. **Prepaid Bundles:** Instant setup with 50 free trial credits on registration. Top up seamlessly via M-Pesa STK push.
+1. **Prepaid Bundles:** Instant setup. Top up seamlessly via M-Pesa STK push.
 2. **Bring Your Own Carrier (BYOC):** Plug in your existing Africa’s Talking API key and registered Sender ID. MarkChat routes messages directly through your carrier credentials with 0% platform markup.
     `,
     author: {
@@ -950,7 +1141,7 @@ const DEFAULT_INTEGRATIONS: MarketingIntegration[] = [
       'Daraja C2B verifies the unique TransID cryptographically and sends an automated SMS/WhatsApp receipt.',
     ],
     businessBenefits: [
-      '100% Elimination of Fake M-Pesa SMS Fraud: zero counterfeit screenshots or spoofed messages accepted',
+      'Cryptographic TransID Verification: prevents counterfeit screenshot and duplicate transaction replay fraud',
       'Sub-10 Second In-Chat Checkout Completion: buyers never switch apps or mistype Till numbers',
       'Automated Accounting & Ledger Reconciliation: every TransID matched to customer order history',
       'Supports Paybill, Buy Goods Till & Pochi la Biashara with zero hardware POS machines required',
@@ -978,8 +1169,8 @@ const DEFAULT_INTEGRATIONS: MarketingIntegration[] = [
       'Trigger /stk M-Pesa checkouts and automated catalog order confirmations directly in the WhatsApp thread.',
     ],
     businessBenefits: [
-      'Zero Phone Ban Risk with official Meta-certified Cloud API infrastructure and verified business badges',
-      'Unlimited Multi-Agent Collaboration on a single Kenyan phone number (+254)',
+      'Official Meta Cloud API Infrastructure: reduces ban risks associated with unofficial third-party scrapers',
+      'Multi-Agent Team Collaboration on a single Kenyan business phone number (+254)',
       'Meta Pre-approved Broadcast Templates for marketing updates, flash sales, and delivery alerts',
       'Seamless handoff between Markcopilot 24/7 AI and human sales agents without chat interruption',
     ],
@@ -997,18 +1188,18 @@ const DEFAULT_INTEGRATIONS: MarketingIntegration[] = [
     category: 'SMS Gateway',
     iconKey: 'africas-talking',
     shortDescription:
-      'Kenyan SMS gateway, 50 free trial credits, M-Pesa bundle top-ups, or Bring Your Own Carrier (BYOC) with zero markup.',
+      'Kenyan SMS gateway with two-way messaging, Alphanumeric Sender IDs, and Bring Your Own Carrier (BYOC) direct billing.',
     overview:
-      'Bulk SMS remains Kenya’s most reliable communication channel with over 98% open rates within 3 minutes of delivery. MarkChat integrates seamlessly with Africa’s Talking and local telco routing, giving Kenyan businesses two powerful choices: use our prepaid instant bundles or connect your own carrier credentials (BYOC) with zero platform markup.',
+      'Bulk SMS remains a vital communication channel for Kenyan retail and logistics. MarkChat integrates directly with Africa’s Talking, allowing businesses to connect their own carrier credentials (BYOC) with zero per-message platform markup.',
     howItWorksSteps: [
-      'Auto-provision 50 free trial SMS credits immediately on registration or top up bundles via M-Pesa STK.',
-      'Optionally connect your existing Africa’s Talking API key and custom registered Alphanumeric Sender ID.',
+      'Connect your existing Africa’s Talking API key and custom registered Alphanumeric Sender ID.',
+      'Configure automated transactional SMS notifications, order receipts, and customer updates.',
       'Dispatch automated order receipts, abandoned cart reminders, and targeted segment broadcasts at scale.',
     ],
     businessBenefits: [
-      '99.4% Delivery Rate via direct Safaricom, Airtel, and Telkom telco SS7 priority routing',
+      'Direct Telco Routing via Safaricom, Airtel, and Telkom cellular networks',
       'Zero Platform Markup on BYOC (Bring Your Own Carrier) accounts with negotiated carrier rates',
-      'Instant M-Pesa STK bundle top-ups from KES 500 with real-time credit ledger transparency',
+      'Transparent Carrier Billing: all SMS costs handled directly with your Africa’s Talking account',
       'Automated 2-way SMS conversations that feed directly into your central MarkChat team inbox',
     ],
     setupRequirements:
@@ -1427,7 +1618,634 @@ const DEFAULT_INTEGRATIONS: MarketingIntegration[] = [
     status: 'published',
     sortOrder: 18,
   },
+  {
+    id: 'int-19',
+    slug: 'developer-api-webhooks',
+    name: 'Developer REST APIs & Webhooks',
+    category: 'Productivity',
+    iconKey: 'api',
+    shortDescription:
+      'REST endpoints and HMAC-SHA256 outbound webhooks to sync customer chats, orders, and M-Pesa payments with custom ERPs.',
+    overview:
+      'Connect internal ERPs, CRM databases, or custom ecommerce frontends to MarkChat. Access REST endpoints for conversations and payments, and receive real-time webhook event notifications verified with HMAC-SHA256 signatures.',
+    howItWorksSteps: [
+      'Generate an API Key and Webhook Signing Secret in your MarkChat workspace settings.',
+      'Trigger programmatic M-Pesa STK prompts via POST /api/v1/payments/stk.',
+      'Validate incoming webhook events like payment.confirmed using the X-MarkChat-Signature header.',
+    ],
+    businessBenefits: [
+      'Custom ERP & Warehouse Sync: integrate proprietary inventory and billing systems seamlessly',
+      'Cryptographically Verified Webhooks: HMAC-SHA256 signatures ensure requests originate from MarkChat',
+      'Automated STK Triggers: initiate M-Pesa checkout prompts directly from custom shopping carts',
+      'Unified Developer Documentation: OpenAPI schemas and payload samples for rapid onboarding',
+    ],
+    setupRequirements:
+      'MarkChat API Key and Webhook Signing Secret generated in workspace developer settings.',
+    isPopular: true,
+    isFeatured: true,
+    status: 'published',
+    sortOrder: 19,
+  },
 ];
+
+const DEFAULT_FEATURES: MarketingFeature[] = [
+  {
+    id: 'feat-shared-inbox',
+    slug: 'collaborative-shared-inbox',
+    title: 'Collaborative Omnichannel Team Inbox',
+    eyebrow: 'Unified Communications',
+    category: 'Team Inbox',
+    summary:
+      'Unify WhatsApp, SMS, Instagram, Messenger, and live chat into a single collaborative workspace designed for high-volume customer engagement.',
+    description:
+      'Eliminate fragmented communication across disconnected staff phones. MarkChat aggregates customer threads into a central interface with multi-agent assignment, conversation status states (Open, Pending, Resolved), real-time agent collision warnings, and private internal @mention notes.',
+    icon: 'lucide:inbox',
+    mediaType: 'conceptual_card',
+    mediaPosition: 'right',
+    highlights: [
+      'Real-time collision detection prevents overlapping agent replies',
+      'Multi-agent conversation assignment with personal and team queues',
+      'Private internal notes for seamless staff handoffs and supervisor advice',
+      'Unified customer conversation history across all connected channels',
+    ],
+    ctaText: 'Explore Inbox Workflows',
+    ctaUrl: '/docs/team-collaboration',
+    displayOrder: 1,
+    status: 'published',
+    isFeatured: true,
+    createdAt: '2026-11-14T00:00:00Z',
+    updatedAt: '2026-11-15T00:00:00Z',
+  },
+  {
+    id: 'feat-mpesa-payments',
+    slug: 'in-chat-mpesa-checkout',
+    title: 'In-Chat M-Pesa Checkout (/stk) & Automated C2B Callbacks',
+    eyebrow: 'Safaricom Daraja Integration',
+    category: 'Payments',
+    summary:
+      'Prompt official Safaricom SIM Toolkit PIN requests directly in conversation threads and reconcile payments automatically.',
+    description:
+      'While chatting with a buyer on WhatsApp or live chat, agents type /stk <amount> <phone> to trigger an official PIN prompt on the customer’s phone. Safaricom’s Daraja C2B webhook callbacks verify transaction authenticity, record receipts in the conversation timeline, and prevent duplicate TransID submissions.',
+    icon: 'lucide:smartphone',
+    mediaType: 'conceptual_card',
+    mediaPosition: 'left',
+    highlights: [
+      'Trigger in-chat /stk PIN prompts in under 10 seconds without manual typing',
+      'Server-side Safaricom C2B webhook reconciliation before order dispatch',
+      'Database unique index tracking on TransID blocks duplicate receipt attempts',
+      'Generates verified digital payment confirmations directly in customer threads',
+    ],
+    ctaText: 'See Daraja C2B Setup',
+    ctaUrl: '/docs/daraja-c2b-callbacks',
+    displayOrder: 2,
+    status: 'published',
+    isFeatured: true,
+    createdAt: '2026-11-14T00:00:00Z',
+    updatedAt: '2026-11-15T00:00:00Z',
+  },
+  {
+    id: 'feat-omnichannel-messaging',
+    slug: 'carrier-grade-omnichannel-messaging',
+    title: 'Carrier-Grade Omnichannel Messaging',
+    eyebrow: 'WhatsApp Cloud API & BYOC SMS',
+    category: 'Channels',
+    summary:
+      'Connect official Meta WhatsApp Business Cloud and Africa’s Talking Bulk SMS with zero MarkChat per-message markups.',
+    description:
+      'Deliver official WhatsApp messaging using Meta’s Cloud API with permanent access tokens, pre-approved message templates, and interactive quick replies. Connect Africa’s Talking via Bring Your Own Carrier (BYOC) to send branded notifications with your CAK-approved Alphanumeric Sender ID, paying your carrier directly.',
+    icon: 'lucide:message-square',
+    mediaType: 'conceptual_card',
+    mediaPosition: 'right',
+    highlights: [
+      'Official WhatsApp Business Cloud API with Meta-approved templates',
+      'Africa’s Talking BYOC gateway with custom Alphanumeric Sender IDs',
+      'Two-way SMS conversation threading via inbound carrier callbacks',
+      'Zero message volume markup from MarkChat—pay your carrier directly',
+    ],
+    ctaText: 'View SMS Gateway Guide',
+    ctaUrl: '/docs/sms-gateway',
+    displayOrder: 3,
+    status: 'published',
+    isFeatured: true,
+    createdAt: '2026-11-14T00:00:00Z',
+    updatedAt: '2026-11-15T00:00:00Z',
+  },
+  {
+    id: 'feat-customer-profiles',
+    slug: 'customer-crm-profiles',
+    title: 'Centralized Customer CRM Profiles & Custom Attributes',
+    eyebrow: 'Contact Context & Purchase Ledgers',
+    category: 'Customer CRM',
+    summary:
+      'Maintain 360-degree customer context across every touchpoint, order, and conversation history.',
+    description:
+      'Every interaction across WhatsApp, SMS, and socials links automatically to a unified customer directory. Agents see past orders, payment ledgers, and custom attributes (such as KRA PIN or loyalty tiers) right beside the active chat, eliminating the need to ask customers repetitive questions.',
+    icon: 'lucide:users',
+    mediaType: 'conceptual_card',
+    mediaPosition: 'left',
+    highlights: [
+      'Unified cross-channel conversation timeline for every contact',
+      'Custom attribute schema for Kenyan business fields (KRA PIN, delivery zone)',
+      'Integrated M-Pesa payment ledger showing confirmed order history',
+      'One-click contact merging to reconcile email and mobile inquiries',
+    ],
+    ctaText: 'Manage Customer Attributes',
+    ctaUrl: '/docs/contact-management',
+    displayOrder: 4,
+    status: 'published',
+    isFeatured: true,
+    createdAt: '2026-11-14T00:00:00Z',
+    updatedAt: '2026-11-15T00:00:00Z',
+  },
+  {
+    id: 'feat-automation-rules',
+    slug: 'event-automation-rules',
+    title: 'Event Automation Rules & Operating Hours',
+    eyebrow: 'Workflow Routing & Out-of-Office',
+    category: 'Workflows',
+    summary:
+      'Automate conversation routing, team triage, priority escalation, and out-of-office responses.',
+    description:
+      'Create event-driven rules that trigger automatically when conversations or messages are created. Filter by channel, customer phone prefix, or content keywords to auto-assign chats to designated teams, route evenly across online agents, and schedule out-of-office greetings in Nairobi time (GMT+03:00).',
+    icon: 'lucide:git-merge',
+    mediaType: 'conceptual_card',
+    mediaPosition: 'right',
+    highlights: [
+      'Event triggers evaluate new inquiries and message updates automatically',
+      'Keyword and custom attribute conditions route high-priority checkouts',
+      'Round-robin distribution balances inquiries among currently online agents',
+      'Custom weekly business-hour schedules with automated out-of-office greetings',
+    ],
+    ctaText: 'Configure Automation Rules',
+    ctaUrl: '/docs/automation-rules',
+    displayOrder: 5,
+    status: 'published',
+    isFeatured: true,
+    createdAt: '2026-11-14T00:00:00Z',
+    updatedAt: '2026-11-15T00:00:00Z',
+  },
+  {
+    id: 'feat-mobile-money-connectivity',
+    slug: 'kenyan-mobile-money-connectivity',
+    title: 'Kenyan Mobile Money Connectivity Options',
+    eyebrow: 'Daraja, Bank Paybills & Pochi Sync',
+    category: 'Mobile Money',
+    summary:
+      'Flexible integration paths supporting registered corporate shortcodes, bank paybills, and shop phone sync.',
+    description:
+      'Whether operating an official corporate Paybill, a bank-hosted shortcode (Equity, KCB, Co-op with account reference routing), or a personal Pochi la Biashara line, MarkChat adapts to your business reality. Informal merchants can sync SMS receipts in real time using our companion Android bridge APK over secure websockets.',
+    icon: 'lucide:credit-card',
+    mediaType: 'conceptual_card',
+    mediaPosition: 'left',
+    highlights: [
+      'Direct Safaricom Daraja API support for dedicated Paybill and Till numbers',
+      'Shared Bank Paybill routing based on invoice account reference matching',
+      'Companion Android forwarder APK for Pochi la Biashara shop phones',
+      'Encrypted websocket receipt streaming into customer conversation timelines',
+    ],
+    ctaText: 'Read Mobile Money Guide',
+    ctaUrl: '/docs/mpesa-setup',
+    displayOrder: 6,
+    status: 'published',
+    isFeatured: true,
+    createdAt: '2026-11-14T00:00:00Z',
+    updatedAt: '2026-11-15T00:00:00Z',
+  },
+];
+
+const DEFAULT_FEATURES_SETTINGS: FeaturesPageSettings = {
+  hero: {
+    eyebrow: 'CUSTOMER COMMUNICATIONS, SUPPORT & COMMERCE PLATFORM',
+    heading: 'Every Conversation. Every Customer. One Connected Workspace.',
+    description:
+      'Bring customer conversations from WhatsApp, SMS, Instagram, Messenger and live chat into one collaborative workspace. Empower your team with customer context, intelligent workflows and integrated M-Pesa payment experiences.',
+    primaryCtaLabel: 'Book a Live Demo',
+    primaryCtaHref: '/demo',
+    secondaryCtaLabel: 'Explore Plans & Pricing',
+    secondaryCtaHref: '/pricing',
+  },
+  developerSection: {
+    eyebrow: 'DEVELOPER & INTEGRATION FOUNDATION',
+    heading: 'Engineered for Extensibility and Enterprise Integration',
+    description:
+      'Connect your existing ERP, CRM, inventory, and accounting software directly to MarkChat using REST APIs and secure outbound webhooks.',
+  },
+  markcopilotSection: {
+    eyebrow: 'BILINGUAL AI ASSISTANCE',
+    heading: 'Markcopilot: Contextual AI Assistance for Support Teams',
+    description:
+      'Empower agents with context-aware reply suggestions drafted from your uploaded product catalogs, price lists, and business FAQs in English and Swahili.',
+    highlights: [
+      'Drafts contextual 1-click reply suggestions for agent review',
+      'Retrieves answers grounded strictly in your indexed business documents',
+      'Understands East African commercial English, Swahili, and Sheng vocabulary',
+      'Smooth handoff to human specialists for urgent checkouts or escalations',
+    ],
+    ctaLabel: 'Learn About Markcopilot AI',
+    ctaHref: '/markcopilot',
+  },
+  closingCta: {
+    heading: 'Bring Your Customer Conversations, Support and Sales Together.',
+    description:
+      'Discover how MarkChat can help your team manage customer engagement from one connected workspace.',
+    primaryCtaLabel: 'Book a Live Demo',
+    primaryCtaHref: '/demo',
+    secondaryCtaLabel: 'Explore Plans & Pricing',
+    secondaryCtaHref: '/pricing',
+  },
+  faqs: [
+    {
+      question: 'Which communication channels does MarkChat connect?',
+      answer:
+        'MarkChat natively connects official Meta WhatsApp Business Cloud API, Africa’s Talking Bulk SMS, Instagram Direct Messages, Facebook Messenger, embeddable Website Live Chat, and incoming customer support email.',
+    },
+    {
+      question: 'How does Bring Your Own Carrier (BYOC) Bulk SMS work?',
+      answer:
+        'With BYOC, you connect your own Africa’s Talking API key and approved Alphanumeric Sender ID directly into MarkChat. You pay Africa’s Talking directly at wholesale volume rates with zero message markup from MarkChat.',
+    },
+    {
+      question: 'How does the in-chat M-Pesa /stk command work?',
+      answer:
+        'While chatting with a customer, an authorized agent types `/stk <amount> <phone>` (e.g. `/stk 2500 0712345678`). MarkChat communicates directly with Safaricom’s Daraja API to trigger a SIM Toolkit prompt on the customer’s phone. When approved, Safaricom delivers an HTTPS callback to MarkChat, verifying the unique TransID and logging the receipt.',
+    },
+    {
+      question: 'Can multiple agents respond to customer chats simultaneously?',
+      answer:
+        'Yes. MarkChat is built for team collaboration with role-based seats (Owner, Admin, Agent). Built-in real-time collision detection alerts agents when a teammate is viewing or typing a reply, preventing conflicting answers or duplicate prompts.',
+    },
+    {
+      question: 'What if my business uses Pochi la Biashara instead of a corporate Paybill?',
+      answer:
+        'Merchants without corporate Daraja credentials can use our companion MarkChat Android SMS Bridge APK. Running on your shop phone, it securely forwards incoming Safaricom payment confirmation SMS notifications into MarkChat in real time.',
+    },
+    {
+      question: 'Can we integrate MarkChat with our existing ERP or custom software?',
+      answer:
+        'Yes. MarkChat provides REST API endpoints for conversations and contacts, alongside outbound webhooks for real-time lifecycle notifications. All webhooks are cryptographically signed with HMAC-SHA256 signatures.',
+    },
+  ],
+};
+
+const DEFAULT_HOMEPAGE_SETTINGS: HomepageSettings = {
+  hero: {
+    badge: 'Unified Customer Communications & Engagement Platform',
+    title: 'Bring Customer Conversations, Engagement & Sales Together',
+    subtitle:
+      'Unify WhatsApp Business Cloud, Africa’s Talking Bulk SMS, Instagram DMs, Messenger, and website live chat into one collaborative team inbox. Empower your support team, automate repetitive queries with Markcopilot AI, and close deals with in-chat M-Pesa.',
+    primaryCtaLabel: 'Book Live Demo',
+    primaryCtaHref: '/demo',
+    secondaryCtaLabel: 'Explore Plans & Pricing',
+    secondaryCtaHref: '/pricing',
+    stats: [
+      { value: '6 Channels', label: 'Single Shared Hub' },
+      { value: '< 10s', label: 'In-Chat /stk Delivery' },
+      { value: 'Bilingual AI', label: 'English, Swahili & Sheng', highlight: true },
+    ],
+  },
+  sections: {
+    hero: true,
+    omnichannelFlow: true,
+    howItWorks: true,
+    coreCapabilities: true,
+    operationalScenarios: true,
+    markcopilot: true,
+    solutionsPreview: true,
+    integrations: true,
+    pricing: true,
+    kenyaPrinciples: true,
+    faqs: true,
+    closingCta: true,
+    newsletter: true,
+  },
+  closingCta: {
+    title: 'Ready to bring customer conversations, engagement and sales together?',
+    description:
+      'Empower your team with a unified inbox across WhatsApp, SMS, and social channels. Automate support with Markcopilot AI and close sales with in-chat M-Pesa.',
+    primaryCtaLabel: 'Book Live Demo',
+    primaryCtaHref: '/demo',
+    secondaryCtaLabel: 'Explore Plans & Pricing',
+    secondaryCtaHref: '/pricing',
+  },
+};
+
+const DEFAULT_MARKCOPILOT_CAPABILITIES: MarkcopilotCapability[] = [
+  {
+    id: 'cap-autonomous-deflection',
+    title: '24/7 First-Line Deflection',
+    badge: 'Customer 24/7',
+    eyebrow: 'Autonomous Mode',
+    description:
+      'Resolves routine customer inquiries on WhatsApp, SMS, and Web Chat around the clock using your verified store catalog, pricing tables, and operating policies.',
+    icon: 'lucide:bot',
+    mode: 'autonomous',
+    highlights: [
+      'Grounded in uploaded Knowledge Vault PDFs',
+      'Instant answers with zero response latency',
+      'Immediate escalation to human agents when requested',
+      'Automated business-hours and weekend availability',
+    ],
+    displayOrder: 1,
+    status: 'published',
+    updatedAt: '2026-11-15T00:00:00.000Z',
+  },
+  {
+    id: 'cap-agent-copilot',
+    title: '1-Click Agent Draft Suggestions',
+    badge: 'Productivity',
+    eyebrow: 'Agent-Assist Mode',
+    description:
+      'Accelerates agent reply times by generating context-aware draft responses directly inside the conversation composer for human review before sending.',
+    icon: 'lucide:wand-2',
+    mode: 'copilot',
+    highlights: [
+      '1-click insert, edit, or regenerate in composer',
+      'Tone adjustment (Professional English, Friendly, Sheng)',
+      'Thread summarization via @markcopilot summarize',
+      'Cuts repetitive typing fatigue during peak surges',
+    ],
+    displayOrder: 2,
+    status: 'published',
+    updatedAt: '2026-11-15T00:00:00.000Z',
+  },
+  {
+    id: 'cap-multilingual-intelligence',
+    title: 'Native Sheng, Swahili & English',
+    badge: 'Cultural Fluency',
+    eyebrow: 'Multilingual NLP',
+    description:
+      'Native interpretation of commercial Swahili, English, and urban Nairobi Sheng colloquialisms without forcing customers into rigid numbered menus.',
+    icon: 'lucide:languages',
+    mode: 'shared',
+    highlights: [
+      'Understands phrases like "bei ya mwisho" & "boda delivery"',
+      'No artificial keyword menus like "Press 1 for Sales"',
+      'Preserves respectful commercial courtesies',
+      'Extracts order quantities and delivery estates accurately',
+    ],
+    displayOrder: 3,
+    status: 'published',
+    updatedAt: '2026-11-15T00:00:00.000Z',
+  },
+  {
+    id: 'cap-knowledge-vault',
+    title: 'RAG Knowledge Vault Grounding',
+    badge: 'Zero Hallucinations',
+    eyebrow: 'Vector Retrieval',
+    description:
+      'Strictly adheres to uploaded shop PDFs, price sheets, delivery zone tables, and warranty guidelines to eliminate hallucinated prices or terms.',
+    icon: 'lucide:book-open',
+    mode: 'shared',
+    highlights: [
+      'Vector semantic retrieval across PDFs and policy sheets',
+      'Never quotes unlisted prices or unauthorized discounts',
+      'Flags unrecognized questions instead of guessing',
+      'Multi-document support up to 15MB per file',
+    ],
+    displayOrder: 4,
+    status: 'published',
+    updatedAt: '2026-11-15T00:00:00.000Z',
+  },
+  {
+    id: 'cap-human-handoff',
+    title: 'Human Agent Escalation & Safety Guardrails',
+    badge: 'Operational Safety',
+    eyebrow: 'Safeguards',
+    description:
+      'Seamlessly transitions conversations to human support queues when customer questions exceed confidence thresholds or require manager intervention.',
+    icon: 'lucide:shield-check',
+    mode: 'shared',
+    highlights: [
+      'Automated reassignment to human queue on uncertainty',
+      'Agent collision detection prevents duplicate replies',
+      'No autonomous payment pulls or account debits',
+      'KDPA 2019 compliant: data never used to train public LLMs',
+    ],
+    displayOrder: 5,
+    status: 'published',
+    updatedAt: '2026-11-15T00:00:00.000Z',
+  },
+  {
+    id: 'cap-mpesa-stk-prep',
+    title: 'In-Chat M-Pesa STK Command Preparation',
+    badge: 'Financial Flow',
+    eyebrow: 'Commerce Integration',
+    description:
+      'Pre-populates verified /stk payment prompts with correct amount and customer phone for human agent authorization rather than unverified automated pulls.',
+    icon: 'lucide:smartphone',
+    mode: 'copilot',
+    highlights: [
+      'Prepares /stk <amount> <phone> for 1-click agent review',
+      'Eliminates manual payment computation mistakes',
+      'Daraja C2B webhook validation reconciles TransID',
+      'Complies with Kenyan banking and payment regulations',
+    ],
+    displayOrder: 6,
+    status: 'published',
+    updatedAt: '2026-11-15T00:00:00.000Z',
+  },
+];
+
+const DEFAULT_MARKCOPILOT_SETTINGS: MarkcopilotPageSettings = {
+  hero: {
+    badge: 'Markcopilot AI Intelligence',
+    title: 'The AI Copilot for Customer Conversations & East African Commerce',
+    subtitle:
+      'Empower your team with dual-mode AI that resolves routine inquiries 24/7 in English, Swahili, and Sheng—grounded strictly in your shop catalog and policies.',
+    primaryCtaLabel: 'Book Live Demo',
+    primaryCtaHref: '/demo',
+    secondaryCtaLabel: 'Explore Capabilities',
+    secondaryCtaHref: '#capabilities',
+    trustBadges: [
+      { text: 'Grounded in Knowledge Vault', icon: 'lucide:book-open' },
+      { text: 'English, Swahili & Sheng', icon: 'lucide:languages' },
+      { text: 'Human Escalation Safeguards', icon: 'lucide:shield-check' },
+      { text: 'KDPA 2019 Compliant', icon: 'lucide:lock' },
+    ],
+  },
+  introduction: {
+    eyebrow: 'Purpose & Role',
+    heading: 'Why Markcopilot Exists Within MarkChat',
+    description:
+      'Customer messaging in East Africa is fast-paced, multi-lingual, and commerce-driven. Markcopilot was engineered to eliminate ticket backlogs and empower agents without sacrificing local conversational nuance or financial safety.',
+    pillars: [
+      {
+        title: 'Zero Ticket Backlogs',
+        description:
+          'Handles the 60% of incoming questions that ask about shop location, opening hours, delivery fees, or basic product availability.',
+        icon: 'lucide:clock',
+      },
+      {
+        title: 'Bilingual Cultural Fluency',
+        description:
+          'Understands mixed Kenyan speech patterns naturally without forcing customers through rigid, frustrating keypad menu trees.',
+        icon: 'lucide:message-square',
+      },
+      {
+        title: 'Grounded Human Co-Pilot',
+        description:
+          'Acts as an assistant to human agents with 1-click draft replies, leaving your team in full control of critical customer interactions.',
+        icon: 'lucide:wand-2',
+      },
+    ],
+  },
+  howItWorks: {
+    eyebrow: 'Operational Architecture',
+    heading: 'How Markcopilot Works in Your Workspace',
+    description:
+      'A structured, transparent workflow designed for reliability, compliance, and effortless team adoption.',
+    steps: [
+      {
+        stepNumber: 1,
+        title: 'Upload Documents to Knowledge Vault',
+        description:
+          'Upload PDF catalogs, price lists, clinic schedules, or warranty terms. MarkChat breaks content into semantic chunks and creates vector embeddings.',
+        highlight: 'PDF, DOCX, TXT & URLs up to 15MB',
+        icon: 'lucide:file-text',
+      },
+      {
+        stepNumber: 2,
+        title: 'Dual-Mode Processing & Language Detection',
+        description:
+          'Markcopilot automatically detects customer intent and linguistic tone across English, Swahili, and Sheng, retrieving answers strictly from indexed documents.',
+        highlight: 'Dual-Mode: 24/7 Bot vs Agent Co-pilot',
+        icon: 'lucide:cpu',
+      },
+      {
+        stepNumber: 3,
+        title: 'Grounded Action & Seamless Human Escalation',
+        description:
+          'Answers customers 24/7 or generates 1-click draft replies in the agent composer. If confidence is uncertain or the user asks for a person, it routes immediately to human staff.',
+        highlight: 'Zero hallucinations with safe human handoff',
+        icon: 'lucide:check-circle-2',
+      },
+    ],
+  },
+  video: {
+    enabled: true,
+    title: 'Markcopilot Interactive Architecture & Tour',
+    description:
+      'Explore how Markcopilot ingests company knowledge, handles 24/7 customer chats, and accelerates human agent workflows.',
+    videoUrl: '',
+    provider: 'none',
+    posterUrl: '',
+    fallbackHeading: 'Interactive Tour: How Markcopilot Operates',
+    fallbackDescription:
+      'Step through the 3 operational stages: Knowledge Vault Ingestion, 24/7 Autonomous Customer Care, and Real-Time Agent Copilot.',
+  },
+  businessValue: {
+    eyebrow: 'Measurable Value',
+    heading: 'Substantiated Benefits for Support & Commerce Teams',
+    description:
+      'Markcopilot delivers practical operational improvements for businesses managing high-volume customer communication across East Africa.',
+    metrics: [
+      {
+        title: 'Instant First Response',
+        description:
+          'Provide immediate, accurate answers to routine questions 24/7, even during evenings, weekends, and public holidays.',
+        impact: 'Round-the-clock availability',
+        icon: 'lucide:zap',
+      },
+      {
+        title: 'Reduced Agent Typing Fatigue',
+        description:
+          'Agents review and insert pre-grounded draft answers with one click, cutting repetitive typing during sales surges.',
+        impact: '1-click draft suggestions',
+        icon: 'lucide:smile',
+      },
+      {
+        title: '100% Pricing & Policy Consistency',
+        description:
+          'Never worry about an agent quoting outdated prices or unverified return policies—every suggestion matches your Knowledge Vault.',
+        impact: 'Strict policy adherence',
+        icon: 'lucide:check-check',
+      },
+      {
+        title: 'Uninterrupted Human Control',
+        description:
+          'Full transparency with easy toggles between Autonomous and Copilot modes per inbox, with automatic human escalation.',
+        impact: 'Full human oversight',
+        icon: 'lucide:shield',
+      },
+    ],
+  },
+  ecosystem: {
+    eyebrow: 'Platform Synergy',
+    heading: 'Markcopilot Within the MarkChat Ecosystem',
+    description:
+      'Markcopilot does not live in an isolated silo. It works synchronously with MarkChat’s omnichannel inbox, in-chat payments, and team collaboration tools.',
+    cards: [
+      {
+        title: 'Omnichannel Shared Inbox',
+        description:
+          'Unify WhatsApp, SMS, Instagram DMs, Messenger, and live chat into one inbox where Markcopilot assists every conversation.',
+        href: '/features#shared-inbox',
+        icon: 'lucide:inbox',
+        badge: 'Multi-Channel',
+      },
+      {
+        title: 'In-Chat Safaricom M-Pesa STK',
+        description:
+          'Markcopilot prepares /stk commands so human agents can prompt instant customer PIN popups with one click.',
+        href: '/integrations/safaricom-mpesa-daraja',
+        icon: 'lucide:smartphone',
+        badge: 'Daraja STK',
+      },
+      {
+        title: 'Help Center & Documentation',
+        description:
+          'Articles published in your public Help Center automatically feed Markcopilot’s Knowledge Vault for zero-latency deflection.',
+        href: '/product/help-center',
+        icon: 'lucide:help-circle',
+        badge: 'Help Center',
+      },
+      {
+        title: 'Developer APIs & Webhooks',
+        description:
+          'Connect internal ERPs, order catalogs, and inventory databases to keep Markcopilot’s knowledge base continuously up to date.',
+        href: '/integrations/developer-api-webhooks',
+        icon: 'lucide:code-2',
+        badge: 'REST APIs',
+      },
+    ],
+  },
+  closingCta: {
+    heading: 'Ready to bring Markcopilot intelligence to your team?',
+    description:
+      'Automate routine first-line customer questions 24/7 and give your support agents a 1-click draft copilot. Set up your workspace in minutes.',
+    primaryCtaLabel: 'Book Live Demo',
+    primaryCtaHref: '/demo',
+    secondaryCtaLabel: 'Explore All Features',
+    secondaryCtaHref: '/features',
+  },
+  faqs: [
+    {
+      question: 'How does Markcopilot prevent AI hallucinations and wrong prices?',
+      answer:
+        'Markcopilot utilizes strict Retrieval-Augmented Generation (RAG). It only answers based on the documentation, product catalogs, shipping fees, and FAQ articles explicitly uploaded to your workspace. If a customer asks a question outside your uploaded knowledge base, Markcopilot does not invent an answer; it politely flags the inquiry and routes it directly to a human agent.',
+    },
+    {
+      question: 'Can Markcopilot automatically trigger M-Pesa payments on its own?',
+      answer:
+        'No. For financial security and regulatory compliance, Markcopilot does not initiate automated payment pulls autonomously. Instead, it suggests the appropriate /stk command (with amount and phone number) to your authorized human agent, or presents the verified customer with an explicit checkout payment prompt.',
+    },
+    {
+      question: 'How does Markcopilot handle Sheng and colloquial Swahili phrasing?',
+      answer:
+        'Markcopilot is specifically adapted for East African conversational commerce. It recognizes everyday commercial Sheng terms (such as "bei ya mwisho", "kuorder", "boda delivery", "lipa na Paybill") and normalizes customer intent into actionable order parameters while responding in the customer\'s preferred language tone.',
+    },
+    {
+      question: 'Can I disable autonomous mode and use Markcopilot strictly as an agent helper?',
+      answer:
+        'Yes. In your MarkChat workspace settings, you can toggle between "Autonomous Mode" (handles incoming chats before agent intervention) and "Copilot Mode" (runs purely in the background to suggest draft answers for human agents to review and edit before sending).',
+    },
+    {
+      question: 'Is customer conversation data used to train public AI models?',
+      answer:
+        'No. Your conversation logs, customer phone numbers, and transaction records remain strictly confidential within your tenant database. In accordance with the Kenya Data Protection Act (KDPA 2019), customer data is never shared with third-party public foundation models.',
+    },
+  ],
+};
 
 const STORAGE_KEYS = {
   pricing: 'markchat_cms_pricing_matrix',
@@ -1440,6 +2258,11 @@ const STORAGE_KEYS = {
   leads: 'markchat_cms_leads',
   integrations: 'markchat_cms_integrations',
   legal: 'markchat_cms_legal',
+  features: 'markchat_cms_features',
+  features_settings: 'markchat_cms_features_settings',
+  homepage_settings: 'markchat_cms_homepage_settings',
+  markcopilot_capabilities: 'markchat_cms_markcopilot_capabilities',
+  markcopilot_settings: 'markchat_cms_markcopilot_settings',
 };
 
 const serverMemoryStore = new Map<string, unknown>();
@@ -1946,6 +2769,239 @@ export async function fetchIntegrationBySlug(slug: string): Promise<MarketingInt
 }
 
 /**
+ * Fetch all published features (Public / Build)
+ */
+export async function fetchFeatures(): Promise<MarketingFeature[]> {
+  try {
+    const res = await apiFetch(`${BRIDGE_API_URL}/api/public/features`, {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' },
+    });
+    if (res.ok) {
+      const data: MarketingFeature[] = await res.json();
+      return data
+        .filter((item) => item.status === 'published')
+        .sort((a, b) => a.displayOrder - b.displayOrder);
+    }
+  } catch {
+    // Fallback to local store or defaults
+  }
+  const allFeatures = getLocalItem<MarketingFeature[]>(STORAGE_KEYS.features, DEFAULT_FEATURES);
+  return allFeatures
+    .filter((item) => item.status === 'published')
+    .sort((a, b) => a.displayOrder - b.displayOrder);
+}
+
+/**
+ * Fetch single published feature by slug
+ */
+export async function fetchFeatureBySlug(slug: string): Promise<MarketingFeature | null> {
+  try {
+    const res = await apiFetch(
+      `${BRIDGE_API_URL}/api/public/features/${encodeURIComponent(slug)}`,
+      {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' },
+      }
+    );
+    if (res.ok) {
+      const item: MarketingFeature = await res.json();
+      if (item && item.status === 'published') {
+        return item;
+      }
+    }
+  } catch {
+    // Fallback
+  }
+  const allFeatures = getLocalItem<MarketingFeature[]>(STORAGE_KEYS.features, DEFAULT_FEATURES);
+  return allFeatures.find((f) => f.slug === slug && f.status === 'published') || null;
+}
+
+/**
+ * Fetch Features page settings (Hero, Markcopilot, Developer, Closing CTA, FAQs)
+ */
+export async function fetchFeaturesSettings(): Promise<FeaturesPageSettings> {
+  try {
+    const res = await apiFetch(`${BRIDGE_API_URL}/api/public/features/settings`, {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' },
+    });
+    if (res.ok) {
+      const data: FeaturesPageSettings = await res.json();
+      return data;
+    }
+  } catch {
+    // Fallback
+  }
+  return getLocalItem<FeaturesPageSettings>(
+    STORAGE_KEYS.features_settings,
+    DEFAULT_FEATURES_SETTINGS
+  );
+}
+
+/**
+ * Admin fetch all features including draft, paused, archived
+ */
+export async function adminFetchFeatures(): Promise<MarketingFeature[]> {
+  try {
+    const res = await apiFetch(`${BRIDGE_API_URL}/api/admin/cms/features`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${getAdminToken()}`,
+      },
+    });
+    if (res.ok) {
+      const data: MarketingFeature[] = await res.json();
+      return data.sort((a, b) => a.displayOrder - b.displayOrder);
+    }
+  } catch {
+    // Fallback
+  }
+  const allFeatures = getLocalItem<MarketingFeature[]>(STORAGE_KEYS.features, DEFAULT_FEATURES);
+  return allFeatures.sort((a, b) => a.displayOrder - b.displayOrder);
+}
+
+/**
+ * Fetch Homepage settings (Hero, section visibility flags, closing CTA)
+ */
+export async function fetchHomepageSettings(): Promise<HomepageSettings> {
+  try {
+    const res = await apiFetch(`${BRIDGE_API_URL}/api/public/homepage/settings`, {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' },
+    });
+    if (res.ok) {
+      const data: HomepageSettings = await res.json();
+      return data;
+    }
+  } catch {
+    // Fallback
+  }
+  return getLocalItem<HomepageSettings>(STORAGE_KEYS.homepage_settings, DEFAULT_HOMEPAGE_SETTINGS);
+}
+
+/**
+ * Admin fetch Homepage settings
+ */
+export async function adminFetchHomepageSettings(): Promise<HomepageSettings> {
+  try {
+    const res = await apiFetch(`${BRIDGE_API_URL}/api/admin/cms/homepage/settings`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${getAdminToken()}`,
+      },
+    });
+    if (res.ok) {
+      const data: HomepageSettings = await res.json();
+      return data;
+    }
+  } catch {
+    // Fallback
+  }
+  return getLocalItem<HomepageSettings>(STORAGE_KEYS.homepage_settings, DEFAULT_HOMEPAGE_SETTINGS);
+}
+
+/**
+ * Fetch Markcopilot Page Settings (Hero, Intro, How It Works, Video, Business Value, Ecosystem, Closing CTA, FAQs)
+ */
+export async function fetchMarkcopilotSettings(): Promise<MarkcopilotPageSettings> {
+  try {
+    const res = await apiFetch(`${BRIDGE_API_URL}/api/public/markcopilot/settings`, {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' },
+    });
+    if (res.ok) {
+      const data: MarkcopilotPageSettings = await res.json();
+      return { ...DEFAULT_MARKCOPILOT_SETTINGS, ...data };
+    }
+  } catch {
+    // Fallback
+  }
+  return getLocalItem<MarkcopilotPageSettings>(
+    STORAGE_KEYS.markcopilot_settings,
+    DEFAULT_MARKCOPILOT_SETTINGS
+  );
+}
+
+/**
+ * Admin fetch Markcopilot Page Settings
+ */
+export async function adminFetchMarkcopilotSettings(): Promise<MarkcopilotPageSettings> {
+  try {
+    const res = await apiFetch(`${BRIDGE_API_URL}/api/admin/cms/markcopilot/settings`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${getAdminToken()}`,
+      },
+    });
+    if (res.ok) {
+      const data: MarkcopilotPageSettings = await res.json();
+      return { ...DEFAULT_MARKCOPILOT_SETTINGS, ...data };
+    }
+  } catch {
+    // Fallback
+  }
+  return getLocalItem<MarkcopilotPageSettings>(
+    STORAGE_KEYS.markcopilot_settings,
+    DEFAULT_MARKCOPILOT_SETTINGS
+  );
+}
+
+/**
+ * Fetch all published Markcopilot capabilities
+ */
+export async function fetchMarkcopilotCapabilities(): Promise<MarkcopilotCapability[]> {
+  try {
+    const res = await apiFetch(`${BRIDGE_API_URL}/api/public/markcopilot/capabilities`, {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' },
+    });
+    if (res.ok) {
+      const data: MarkcopilotCapability[] = await res.json();
+      return data;
+    }
+  } catch {
+    // Fallback
+  }
+  const all = getLocalItem<MarkcopilotCapability[]>(
+    STORAGE_KEYS.markcopilot_capabilities,
+    DEFAULT_MARKCOPILOT_CAPABILITIES
+  );
+  return all
+    .filter((c) => c.status === 'published')
+    .sort((a, b) => (a.displayOrder || 1) - (b.displayOrder || 1));
+}
+
+/**
+ * Admin fetch all Markcopilot capabilities (published, draft, archived)
+ */
+export async function adminFetchMarkcopilotCapabilities(): Promise<MarkcopilotCapability[]> {
+  try {
+    const res = await apiFetch(`${BRIDGE_API_URL}/api/admin/cms/markcopilot/capabilities`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${getAdminToken()}`,
+      },
+    });
+    if (res.ok) {
+      const data: MarkcopilotCapability[] = await res.json();
+      return data;
+    }
+  } catch {
+    // Fallback
+  }
+  const all = getLocalItem<MarkcopilotCapability[]>(
+    STORAGE_KEYS.markcopilot_capabilities,
+    DEFAULT_MARKCOPILOT_CAPABILITIES
+  );
+  return all.sort((a, b) => (a.displayOrder || 1) - (b.displayOrder || 1));
+}
+
+/**
  * Submit inbound lead / demo request
  */
 export async function submitLead(
@@ -2065,6 +3121,11 @@ export async function adminFetchAllCmsData() {
     DEFAULT_INTEGRATIONS
   );
   const legal = getLocalItem<LegalPolicy[]>(STORAGE_KEYS.legal, DEFAULT_LEGAL_POLICIES);
+  const features = getLocalItem<MarketingFeature[]>(STORAGE_KEYS.features, DEFAULT_FEATURES);
+  const featuresSettings = getLocalItem<FeaturesPageSettings>(
+    STORAGE_KEYS.features_settings,
+    DEFAULT_FEATURES_SETTINGS
+  );
 
   return {
     pricing,
@@ -2076,6 +3137,8 @@ export async function adminFetchAllCmsData() {
     applications,
     integrations,
     legal,
+    features,
+    featuresSettings,
   };
 }
 
@@ -2652,10 +3715,329 @@ export async function deleteLegalPolicy(id: string): Promise<boolean> {
 }
 
 /**
+ * Upsert marketing feature (Add or Edit)
+ */
+export async function upsertFeature(
+  feature: Partial<MarketingFeature> & {
+    title: string;
+    category: string;
+    summary: string;
+  }
+): Promise<MarketingFeature> {
+  const list = getLocalItem<MarketingFeature[]>(STORAGE_KEYS.features, DEFAULT_FEATURES);
+  let saved: MarketingFeature;
+
+  const generatedSlug =
+    feature.slug ||
+    feature.title
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/(^-|-$)/g, '');
+
+  const now = new Date().toISOString();
+
+  if (feature.id) {
+    const idx = list.findIndex((f) => f.id === feature.id);
+    if (idx !== -1) {
+      saved = {
+        ...list[idx],
+        ...feature,
+        slug: generatedSlug,
+        updatedAt: now,
+      } as MarketingFeature;
+      list[idx] = saved;
+    } else {
+      saved = {
+        id: feature.id,
+        slug: generatedSlug,
+        title: feature.title,
+        eyebrow: feature.eyebrow,
+        category: feature.category,
+        summary: feature.summary,
+        description: feature.description || feature.summary,
+        icon: feature.icon || 'lucide:sparkles',
+        mediaUrl: feature.mediaUrl,
+        mediaAlt: feature.mediaAlt || feature.title,
+        mediaType: feature.mediaType || 'conceptual_card',
+        mediaPosition: feature.mediaPosition || 'right',
+        highlights: feature.highlights || [],
+        ctaText: feature.ctaText,
+        ctaUrl: feature.ctaUrl,
+        displayOrder: feature.displayOrder ?? list.length + 1,
+        status: feature.status || 'draft',
+        isFeatured: feature.isFeatured ?? false,
+        createdAt: feature.createdAt || now,
+        updatedAt: now,
+      };
+      list.push(saved);
+    }
+  } else {
+    saved = {
+      id: `feat-${Date.now()}`,
+      slug: generatedSlug,
+      title: feature.title,
+      eyebrow: feature.eyebrow,
+      category: feature.category,
+      summary: feature.summary,
+      description: feature.description || feature.summary,
+      icon: feature.icon || 'lucide:sparkles',
+      mediaUrl: feature.mediaUrl,
+      mediaAlt: feature.mediaAlt || feature.title,
+      mediaType: feature.mediaType || 'conceptual_card',
+      mediaPosition: feature.mediaPosition || 'right',
+      highlights: feature.highlights || [],
+      ctaText: feature.ctaText,
+      ctaUrl: feature.ctaUrl,
+      displayOrder: feature.displayOrder ?? list.length + 1,
+      status: feature.status || 'draft',
+      isFeatured: feature.isFeatured ?? false,
+      createdAt: now,
+      updatedAt: now,
+    };
+    list.push(saved);
+  }
+
+  setLocalItem(STORAGE_KEYS.features, list);
+
+  try {
+    await apiFetch(`${BRIDGE_API_URL}/api/admin/cms/features`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${getAdminToken()}`,
+      },
+      body: JSON.stringify(saved),
+    });
+  } catch {
+    // Handled locally
+  }
+
+  return saved;
+}
+
+/**
+ * Update features page settings (Hero, Markcopilot, Developer, Closing CTA, FAQs)
+ */
+export async function updateFeaturesSettings(
+  settings: Partial<FeaturesPageSettings>
+): Promise<FeaturesPageSettings> {
+  const current = getLocalItem<FeaturesPageSettings>(
+    STORAGE_KEYS.features_settings,
+    DEFAULT_FEATURES_SETTINGS
+  );
+  const updated: FeaturesPageSettings = {
+    ...current,
+    ...settings,
+    hero: { ...current.hero, ...(settings.hero || {}) },
+    developerSection: { ...current.developerSection, ...(settings.developerSection || {}) },
+    markcopilotSection: { ...current.markcopilotSection, ...(settings.markcopilotSection || {}) },
+    closingCta: { ...current.closingCta, ...(settings.closingCta || {}) },
+    faqs: settings.faqs || current.faqs,
+  };
+
+  setLocalItem(STORAGE_KEYS.features_settings, updated);
+
+  try {
+    await apiFetch(`${BRIDGE_API_URL}/api/admin/cms/features/settings`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${getAdminToken()}`,
+      },
+      body: JSON.stringify(updated),
+    });
+  } catch {
+    // Handled locally
+  }
+
+  return updated;
+}
+
+/**
+ * Update homepage settings (Hero, section visibility flags, closing CTA)
+ */
+export async function updateHomepageSettings(
+  settings: Partial<HomepageSettings>
+): Promise<HomepageSettings> {
+  const current = getLocalItem<HomepageSettings>(
+    STORAGE_KEYS.homepage_settings,
+    DEFAULT_HOMEPAGE_SETTINGS
+  );
+  const updated: HomepageSettings = {
+    ...current,
+    ...settings,
+    hero: { ...current.hero, ...(settings.hero || {}) },
+    sections: { ...current.sections, ...(settings.sections || {}) },
+    closingCta: { ...current.closingCta, ...(settings.closingCta || {}) },
+    updatedAt: new Date().toISOString(),
+  };
+
+  setLocalItem(STORAGE_KEYS.homepage_settings, updated);
+
+  try {
+    await apiFetch(`${BRIDGE_API_URL}/api/admin/cms/homepage/settings`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${getAdminToken()}`,
+      },
+      body: JSON.stringify(updated),
+    });
+  } catch {
+    // Handled locally
+  }
+
+  return updated;
+}
+
+/**
+ * Update Markcopilot page settings
+ */
+export async function updateMarkcopilotSettings(
+  settings: Partial<MarkcopilotPageSettings>
+): Promise<MarkcopilotPageSettings> {
+  const current = getLocalItem<MarkcopilotPageSettings>(
+    STORAGE_KEYS.markcopilot_settings,
+    DEFAULT_MARKCOPILOT_SETTINGS
+  );
+  const updated: MarkcopilotPageSettings = {
+    ...current,
+    ...settings,
+    hero: { ...current.hero, ...(settings.hero || {}) },
+    introduction: { ...current.introduction, ...(settings.introduction || {}) },
+    howItWorks: { ...current.howItWorks, ...(settings.howItWorks || {}) },
+    video: { ...current.video, ...(settings.video || {}) },
+    businessValue: { ...current.businessValue, ...(settings.businessValue || {}) },
+    ecosystem: { ...current.ecosystem, ...(settings.ecosystem || {}) },
+    closingCta: { ...current.closingCta, ...(settings.closingCta || {}) },
+    faqs: settings.faqs || current.faqs,
+    updatedAt: new Date().toISOString(),
+  };
+
+  setLocalItem(STORAGE_KEYS.markcopilot_settings, updated);
+
+  try {
+    await apiFetch(`${BRIDGE_API_URL}/api/admin/cms/markcopilot/settings`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${getAdminToken()}`,
+      },
+      body: JSON.stringify(updated),
+    });
+  } catch {
+    // Handled locally
+  }
+
+  return updated;
+}
+
+/**
+ * Create Markcopilot capability
+ */
+export async function createMarkcopilotCapability(
+  capability: Omit<MarkcopilotCapability, 'id'>
+): Promise<MarkcopilotCapability> {
+  const newCap: MarkcopilotCapability = {
+    ...capability,
+    id: `cap-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
+    updatedAt: new Date().toISOString(),
+  };
+  const list = getLocalItem<MarkcopilotCapability[]>(
+    STORAGE_KEYS.markcopilot_capabilities,
+    DEFAULT_MARKCOPILOT_CAPABILITIES
+  );
+  list.push(newCap);
+  setLocalItem(STORAGE_KEYS.markcopilot_capabilities, list);
+
+  try {
+    await apiFetch(`${BRIDGE_API_URL}/api/admin/cms/markcopilot/capabilities`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${getAdminToken()}`,
+      },
+      body: JSON.stringify(newCap),
+    });
+  } catch {
+    // Handled locally
+  }
+  return newCap;
+}
+
+/**
+ * Update Markcopilot capability
+ */
+export async function updateMarkcopilotCapability(
+  id: string,
+  updates: Partial<MarkcopilotCapability>
+): Promise<MarkcopilotCapability> {
+  const list = getLocalItem<MarkcopilotCapability[]>(
+    STORAGE_KEYS.markcopilot_capabilities,
+    DEFAULT_MARKCOPILOT_CAPABILITIES
+  );
+  const index = list.findIndex((c) => c.id === id);
+  if (index === -1) {
+    throw new Error(`Capability with id ${id} not found`);
+  }
+  list[index] = {
+    ...list[index],
+    ...updates,
+    updatedAt: new Date().toISOString(),
+  };
+  setLocalItem(STORAGE_KEYS.markcopilot_capabilities, list);
+
+  try {
+    await apiFetch(
+      `${BRIDGE_API_URL}/api/admin/cms/markcopilot/capabilities/${encodeURIComponent(id)}`,
+      {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${getAdminToken()}`,
+        },
+        body: JSON.stringify(list[index]),
+      }
+    );
+  } catch {
+    // Handled locally
+  }
+  return list[index];
+}
+
+/**
+ * Delete Markcopilot capability
+ */
+export async function deleteMarkcopilotCapability(id: string): Promise<boolean> {
+  const list = getLocalItem<MarkcopilotCapability[]>(
+    STORAGE_KEYS.markcopilot_capabilities,
+    DEFAULT_MARKCOPILOT_CAPABILITIES
+  );
+  const filtered = list.filter((c) => c.id !== id);
+  setLocalItem(STORAGE_KEYS.markcopilot_capabilities, filtered);
+
+  try {
+    await apiFetch(
+      `${BRIDGE_API_URL}/api/admin/cms/markcopilot/capabilities/${encodeURIComponent(id)}`,
+      {
+        method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${getAdminToken()}`,
+        },
+      }
+    );
+  } catch {
+    // Handled locally
+  }
+  return true;
+}
+
+/**
  * Update lifecycle status of any CMS item
  */
 export async function updateItemStatus(
-  collection: 'blogs' | 'careers' | 'faqs' | 'faq_categories' | 'leads' | 'integrations' | 'legal',
+  collection:
+    'blogs' | 'careers' | 'faqs' | 'leads' | 'integrations' | 'legal' | 'features' | 'markcopilot',
   id: string,
   status: CmsLifecycleStatus | 'new' | 'contacted' | 'qualified' | 'closed'
 ): Promise<boolean> {
@@ -2679,16 +4061,6 @@ export async function updateItemStatus(
     if (item) {
       item.status = status as CmsLifecycleStatus;
       setLocalItem(STORAGE_KEYS.faqs, list);
-    }
-  } else if (collection === 'faq_categories') {
-    const list = getLocalItem<FaqCategoryItem[]>(
-      STORAGE_KEYS.faq_categories,
-      DEFAULT_FAQ_CATEGORIES
-    );
-    const item = list.find((i) => i.id === id);
-    if (item) {
-      item.status = status as CmsLifecycleStatus;
-      setLocalItem(STORAGE_KEYS.faq_categories, list);
     }
   } else if (collection === 'leads') {
     const list = getLocalItem<LeadItem[]>(STORAGE_KEYS.leads, DEFAULT_LEADS);
@@ -2714,6 +4086,25 @@ export async function updateItemStatus(
       item.status = status as CmsLifecycleStatus;
       setLocalItem(STORAGE_KEYS.legal, list);
     }
+  } else if (collection === 'features') {
+    const list = getLocalItem<MarketingFeature[]>(STORAGE_KEYS.features, DEFAULT_FEATURES);
+    const item = list.find((i) => i.id === id);
+    if (item) {
+      item.status = status as CmsLifecycleStatus;
+      item.updatedAt = new Date().toISOString();
+      setLocalItem(STORAGE_KEYS.features, list);
+    }
+  } else if (collection === 'markcopilot') {
+    const list = getLocalItem<MarkcopilotCapability[]>(
+      STORAGE_KEYS.markcopilot_capabilities,
+      DEFAULT_MARKCOPILOT_CAPABILITIES
+    );
+    const item = list.find((i) => i.id === id);
+    if (item) {
+      item.status = status as CmsLifecycleStatus;
+      item.updatedAt = new Date().toISOString();
+      setLocalItem(STORAGE_KEYS.markcopilot_capabilities, list);
+    }
   }
 
   try {
@@ -2736,7 +4127,8 @@ export async function updateItemStatus(
  * Delete any CMS item by ID
  */
 export async function deleteCmsItem(
-  collection: 'blogs' | 'careers' | 'faqs' | 'faq_categories' | 'leads' | 'integrations' | 'legal',
+  collection:
+    'blogs' | 'careers' | 'faqs' | 'leads' | 'integrations' | 'legal' | 'features' | 'markcopilot',
   id: string
 ): Promise<boolean> {
   if (collection === 'blogs') {
@@ -2751,13 +4143,6 @@ export async function deleteCmsItem(
     const list = getLocalItem<FaqItem[]>(STORAGE_KEYS.faqs, DEFAULT_FAQS);
     const filtered = list.filter((i) => i.id !== id);
     setLocalItem(STORAGE_KEYS.faqs, filtered);
-  } else if (collection === 'faq_categories') {
-    const list = getLocalItem<FaqCategoryItem[]>(
-      STORAGE_KEYS.faq_categories,
-      DEFAULT_FAQ_CATEGORIES
-    );
-    const filtered = list.filter((i) => i.id !== id);
-    setLocalItem(STORAGE_KEYS.faq_categories, filtered);
   } else if (collection === 'leads') {
     const list = getLocalItem<LeadItem[]>(STORAGE_KEYS.leads, DEFAULT_LEADS);
     const filtered = list.filter((i) => i.id !== id);
@@ -2773,6 +4158,17 @@ export async function deleteCmsItem(
     const list = getLocalItem<LegalPolicy[]>(STORAGE_KEYS.legal, DEFAULT_LEGAL_POLICIES);
     const filtered = list.filter((i) => i.id !== id);
     setLocalItem(STORAGE_KEYS.legal, filtered);
+  } else if (collection === 'features') {
+    const list = getLocalItem<MarketingFeature[]>(STORAGE_KEYS.features, DEFAULT_FEATURES);
+    const filtered = list.filter((i) => i.id !== id);
+    setLocalItem(STORAGE_KEYS.features, filtered);
+  } else if (collection === 'markcopilot') {
+    const list = getLocalItem<MarkcopilotCapability[]>(
+      STORAGE_KEYS.markcopilot_capabilities,
+      DEFAULT_MARKCOPILOT_CAPABILITIES
+    );
+    const filtered = list.filter((c) => c.id !== id);
+    setLocalItem(STORAGE_KEYS.markcopilot_capabilities, filtered);
   }
 
   try {

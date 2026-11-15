@@ -349,10 +349,7 @@ const initialLeads = [
       sel.addEventListener('change', async (e) => {
         const id = sel.getAttribute('data-id');
         const status = (e.target as HTMLSelectElement).value as
-          | 'new'
-          | 'contacted'
-          | 'qualified'
-          | 'closed';
+          'new' | 'contacted' | 'qualified' | 'closed';
         if (id) {
           await updateItemStatus('leads', id, status);
           if (window.showToast) {

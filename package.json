@@ -1,65 +1,64 @@
-﻿{
-    "name":  "markchat-marketing",
-    "type":  "module",
-    "version":  "1.4.1",
-    "description":  "MarkChat Public Marketing Platform \u0026 Single-Admin Website CMS",
-    "keywords":  [
-                     "markchat",
-                     "mpesa",
-                     "whatsapp",
-                     "sms",
-                     "kenya",
-                     "astro",
-                     "tailwindcss"
-                 ],
-    "author":  "MarkChat Technologies Ltd \u003chello@markchat.co.ke\u003e",
-    "repository":  {
-                       "type":  "git",
-                       "url":  "https://github.com/erlandv/virex.git"
-                   },
-    "homepage":  "https://virex.erland.me",
-    "scripts":  {
-                    "dev":  "astro dev",
-                    "build":  "astro build",
-                    "preview":  "astro preview",
-                    "astro":  "astro",
-                    "lint":  "eslint .",
-                    "lint:fix":  "eslint . --fix",
-                    "format":  "prettier --write .",
-                    "format:check":  "prettier --check .",
-                    "test":  "node --experimental-strip-types --test tests/seo-privacy-legal.test.mjs",
-                    "check":  "npm run lint \u0026\u0026 npm run format:check \u0026\u0026 astro check"
-                },
-    "dependencies":  {
-                         "@astrojs/mdx":  "^4.0.0",
-                         "@astrojs/react":  "4.2.1",
-                         "@astrojs/rss":  "^4.0.0",
-                         "@astrojs/sitemap":  "^3.2.0",
-                         "@iconify-json/lucide":  "^1.2.82",
-                         "@iconify-json/simple-icons":  "^1.2.63",
-                         "@tailwindcss/typography":  "^0.5.19",
-                         "astro":  "^5.16.6",
-                         "astro-icon":  "^1.1.5",
-                         "chart.js":  "^4.4.0",
-                         "framer-motion":  "^14.14.0",
-                         "react":  "^19.3.1",
-                         "react-dom":  "^19.3.1"
-                     },
-    "devDependencies":  {
-                            "@astrojs/check":  "^0.9.6",
-                            "@tailwindcss/vite":  "^4.0.0",
-                            "@types/react":  "^19.0.0",
-                            "@types/react-dom":  "^19.0.0",
-                            "@typescript-eslint/eslint-plugin":  "^8.50.1",
-                            "@typescript-eslint/parser":  "^8.50.1",
-                            "eslint":  "^9.39.2",
-                            "eslint-config-prettier":  "^10.1.8",
-                            "eslint-plugin-astro":  "^1.5.0",
-                            "globals":  "^16.5.0",
-                            "prettier":  "^3.7.4",
-                            "prettier-plugin-astro":  "^0.14.1",
-                            "tailwindcss":  "^4.0.0",
-                            "typescript":  "^5.7.0"
-                        },
-    "packageManager":  "npm@12.0.2"
+{
+  "name": "markchat-marketing",
+  "type": "module",
+  "version": "1.4.1",
+  "description": "MarkChat Public Marketing Platform & Single-Admin Website CMS",
+  "keywords": [
+    "markchat",
+    "mpesa",
+    "whatsapp",
+    "sms",
+    "kenya",
+    "astro",
+    "tailwindcss"
+  ],
+  "author": "MarkChat Technologies Ltd <hello@markchat.co.ke>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/erlandv/virex.git"
+  },
+  "homepage": "https://virex.erland.me",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test": "node --experimental-strip-types --test tests/seo-privacy-legal.test.mjs",
+    "check": "npm run lint && npm run format:check && astro check"
+  },
+  "dependencies": {
+    "@astrojs/mdx": "^4.0.0",
+    "@astrojs/react": "^4.2.1",
+    "@astrojs/rss": "^4.0.0",
+    "@astrojs/sitemap": "^3.2.0",
+    "@iconify-json/lucide": "^1.2.82",
+    "@iconify-json/simple-icons": "^1.2.63",
+    "@tailwindcss/typography": "^0.5.19",
+    "astro": "^5.16.6",
+    "astro-icon": "^1.1.5",
+    "chart.js": "^4.4.0",
+    "framer-motion": "^14.14.0",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.6",
+    "@tailwindcss/vite": "^4.0.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "@typescript-eslint/eslint-plugin": "^8.50.1",
+    "@typescript-eslint/parser": "^8.50.1",
+    "eslint": "^9.39.2",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-astro": "^1.5.0",
+    "globals": "^16.5.0",
+    "prettier": "^3.7.4",
+    "prettier-plugin-astro": "^0.14.1",
+    "tailwindcss": "^4.0.0",
+    "typescript": "^5.7.0"
+  }
 }
