@@ -90,7 +90,7 @@ export const productMegaMenu: MegaMenuConfig = {
             {
               label: 'Cloud Pricing',
               href: '/pricing',
-              description: 'Transparent KES plans with complimentary Bulk SMS credits.',
+              description: 'Transparent KES plans with multi-channel shared inboxes.',
               icon: 'lucide:cloud',
             },
             {
@@ -264,7 +264,7 @@ export const solutionsMegaMenu: MegaMenuConfig = {
             {
               label: 'Startups',
               href: '/solutions/startups',
-              description: 'KES 0 tier with 50 free trial SMS credits',
+              description: 'Starter tier at KES 1,500/mo for 3 agents & 2 inboxes',
               icon: 'lucide:rocket',
             },
             {
@@ -529,6 +529,6 @@ export const directNavLinks = [
 ];
 
 export const headerCtas = [
-  { label: 'Login', href: `${APP_URL}/app/auth/login`, variant: 'ghost' as const },
-  { label: 'Get Started', href: `${APP_URL}/app/auth/signup`, variant: 'primary' as const },
+  { label: 'Login', href: '/login', variant: 'ghost' as const },
+  { label: 'Get Started', href: '/register', variant: 'primary' as const },
 ];

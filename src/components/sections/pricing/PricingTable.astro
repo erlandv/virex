@@ -154,7 +154,13 @@ function formatPrice(price: number): string {
     </div>
 
     <!-- Pricing Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="pricing-cards">
+    <div
+      class:list={[
+        'grid grid-cols-1 md:grid-cols-2 gap-8',
+        plans.length === 4 ? 'xl:grid-cols-4 lg:grid-cols-2' : 'lg:grid-cols-3',
+      ]}
+      id="pricing-cards"
+    >
       {
         plans.map((plan) => {
           const hasNumericPrice = plan.monthlyPrice !== null;

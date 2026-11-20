@@ -1,184 +1,413 @@
 ---
 /**
- * RegisterForm - Registration form with validation and multiple backend support
+ * RegisterForm - Guided Two-Step Registration Wizard for MarkChat SaaS (Direction A + D)
  *
- * @description
- * A fully-featured registration form with client-side validation, loading states,
- * and success/error feedback. Supports Netlify Identity, custom endpoints,
- * and runs in demo mode (simulates success) when no action URL is provided.
- *
- * @example Demo mode (no backend)
- * ```astro
- * <RegisterForm />
- * ```
- *
- * @example Netlify Identity
- * ```astro
- * <RegisterForm netlify />
- * ```
- *
- * @example Custom endpoint
- * ```astro
- * <RegisterForm action="https://api.example.com/register" method="POST" />
- * ```
+ * Implements:
+ * - Step 1: Organization details (Business Name, Admin Full Name, Email, Phone)
+ * - Step 2: Account security & Plan review (Password, Password Confirmation, Plan Summary, Terms)
+ * - Step progress indicator (Step 1/2 pills + progress bar)
+ * - Seamless Back/Continue navigation with complete state preservation
+ * - Real-time client-side validation + authoritative server-side saga integration
+ * - Honeypot anti-spam defense, durable Idempotency-Key handling, and SSO handoff
  */
 
 interface Props {
-  /** Form action URL - leave empty for demo mode */
   action?: string;
-  /** HTTP method for form submission */
   method?: 'POST' | 'GET';
-  /** Enable Netlify Identity integration */
-  netlify?: boolean;
-  /** Redirect URL after successful registration */
+  defaultPlanId?: string;
   redirectUrl?: string;
 }
 
-const { action = '', method = 'POST', netlify = false, redirectUrl = '/dashboard' } = Astro.props;
+const {
+  action = '',
+  method = 'POST',
+  defaultPlanId = 'growth',
+  redirectUrl = '/dashboard',
+} = Astro.props;
+
+const controlPlaneUrl = (typeof import.meta !== 'undefined' && import.meta.env?.PUBLIC_CONTROL_PLANE_API_URL) || 'http://localhost:5000';
+
+const plansInfo: Record<string, { name: string; price: string; badge: string; isTrial: boolean; agents: string; inboxes: string }> = {
+  starter: { name: 'Starter', price: 'KES 1,500/mo', badge: '3 Agents, 2 Inboxes', isTrial: false, agents: '3 Agents included', inboxes: '2 Inboxes' },
+  growth: { name: 'Growth', price: 'KES 3,500/mo', badge: '72-Hour Full Trial Included', isTrial: true, agents: '10 Agents included', inboxes: '5 Inboxes' },
+  scale: { name: 'Scale', price: 'KES 5,000/mo', badge: '25 Agents, High Volume', isTrial: false, agents: '25 Agents included', inboxes: 'Unlimited Inboxes' },
+  enterprise: { name: 'Enterprise', price: 'Custom', badge: 'Dedicated SLA', isTrial: false, agents: 'Custom capacity', inboxes: 'Dedicated SLA' },
+};
+
+const initialPlan = plansInfo[defaultPlanId] || plansInfo.growth;
 ---
 
-<form
-  id="register-form"
-  action={action}
-  method={method}
-  class="space-y-6"
-  data-netlify={netlify ? 'true' : undefined}
-  data-redirect={redirectUrl}
-  novalidate
->
-  <!-- Honeypot field for spam protection -->
-  <div class="hidden" aria-hidden="true">
-    <label>
-      Don't fill this out if you're human:
-      <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" />
-    </label>
+<div class="w-full">
+  <!-- ===================================================================== -->
+  <!-- STEP PROGRESS INDICATOR                                               -->
+  <!-- ===================================================================== -->
+  <div class="mb-8" aria-label="Registration Progress">
+    <div class="flex items-center justify-between mb-2">
+      <!-- Step 1 Pill -->
+      <button
+        type="button"
+        id="step-1-indicator"
+        class="flex items-center gap-2 text-xs font-bold text-primary transition-colors focus:outline-none cursor-pointer"
+        aria-current="step"
+      >
+        <span
+          id="step-1-badge"
+          class="w-7 h-7 rounded-full bg-primary text-white flex items-center justify-center text-xs font-extrabold shadow-sm shadow-primary/30"
+        >
+          1
+        </span>
+        <span class="hidden sm:inline">Organization Details</span>
+      </button>
+
+      <!-- Connecting Progress Line -->
+      <div class="flex-1 mx-3 sm:mx-4 h-1 bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden">
+        <div
+          id="step-progress-bar"
+          class="h-full bg-primary transition-all duration-300 w-1/2"
+        ></div>
+      </div>
+
+      <!-- Step 2 Pill -->
+      <button
+        type="button"
+        id="step-2-indicator"
+        class="flex items-center gap-2 text-xs font-semibold text-slate-400 dark:text-slate-500 transition-colors focus:outline-none cursor-pointer"
+      >
+        <span
+          id="step-2-badge"
+          class="w-7 h-7 rounded-full bg-slate-200 dark:bg-slate-800 text-slate-500 dark:text-slate-400 flex items-center justify-center text-xs font-extrabold"
+        >
+          2
+        </span>
+        <span class="hidden sm:inline">Security & Plan</span>
+      </button>
+    </div>
+
+    <!-- Mobile Step Name Label -->
+    <div class="text-xs font-medium text-slate-500 dark:text-slate-400 sm:hidden text-center mt-1">
+      <span id="mobile-step-label">Step 1 of 2: Organization Details</span>
+    </div>
   </div>
 
-  <!-- Full name field -->
-  <div>
-    <label for="fullName" class="block text-sm font-medium text-text mb-2"> Full name </label>
-    <input
-      type="text"
-      id="fullName"
-      name="fullName"
-      required
-      minlength="2"
-      autocomplete="name"
-      class="w-full px-4 py-3 rounded-md border border-border bg-background text-text placeholder-text-muted focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-colors"
-      placeholder="John Doe"
-    />
-    <p class="mt-1 text-sm text-red-500 hidden" data-error="fullName"></p>
-  </div>
-
-  <!-- Email field -->
-  <div>
-    <label for="registerEmail" class="block text-sm font-medium text-text mb-2">
-      Email address
-    </label>
-    <input
-      type="email"
-      id="registerEmail"
-      name="email"
-      required
-      autocomplete="email"
-      class="w-full px-4 py-3 rounded-md border border-border bg-background text-text placeholder-text-muted focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-colors"
-      placeholder="you@example.com"
-    />
-    <p class="mt-1 text-sm text-red-500 hidden" data-error="registerEmail"></p>
-  </div>
-
-  <!-- Password field -->
-  <div>
-    <label for="registerPassword" class="block text-sm font-medium text-text mb-2">
-      Password
-    </label>
-    <input
-      type="password"
-      id="registerPassword"
-      name="password"
-      required
-      minlength="8"
-      autocomplete="new-password"
-      class="w-full px-4 py-3 rounded-md border border-border bg-background text-text placeholder-text-muted focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-colors"
-      placeholder="••••••••"
-    />
-    <p class="mt-1 text-sm text-text-muted">Must be at least 8 characters</p>
-    <p class="mt-1 text-sm text-red-500 hidden" data-error="registerPassword"></p>
-  </div>
-
-  <!-- Terms agreement checkbox -->
-  <div>
-    <div class="flex items-start">
-      <input
-        type="checkbox"
-        id="agreeTerms"
-        name="agreeTerms"
-        required
-        class="h-4 w-4 mt-0.5 rounded border-border text-primary focus:ring-primary focus:ring-offset-background"
-      />
-      <label for="agreeTerms" class="ml-2 text-sm text-text-muted">
-        I agree to the{' '}
-        <a href="/terms" class="text-primary hover:text-primary-dark transition-colors underline">
-          Terms of Service
-        </a>{' '}
-        and{' '}
-        <a href="/privacy" class="text-primary hover:text-primary-dark transition-colors underline">
-          Privacy Policy
-        </a>
+  <!-- ===================================================================== -->
+  <!-- REGISTRATION FORM (Single Form Preserving Full State)                  -->
+  <!-- ===================================================================== -->
+  <form
+    id="register-form"
+    action={action}
+    method={method}
+    class="space-y-6"
+    data-redirect={redirectUrl}
+    data-api-url={controlPlaneUrl}
+    novalidate
+  >
+    <!-- Honeypot field for anti-bot spam defense -->
+    <div class="hidden" aria-hidden="true">
+      <label>
+        Don't fill this out if you're human:
+        <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" />
       </label>
     </div>
-    <p class="mt-1 text-sm text-red-500 hidden" data-error="agreeTerms"></p>
-  </div>
 
-  <!-- Form status messages -->
-  <div id="register-form-status" class="hidden">
-    <div
-      id="register-form-success"
-      class="hidden p-4 rounded-md bg-green-100 dark:bg-green-950 border border-green-300 dark:border-green-800"
-    >
-      <p class="text-green-900 dark:text-green-100 font-medium">Account created successfully!</p>
-      <p class="text-green-800 dark:text-green-300 text-sm mt-1">Redirecting you now...</p>
-    </div>
-    <div
-      id="register-form-error"
-      class="hidden p-4 rounded-md bg-red-100 dark:bg-red-950 border border-red-300 dark:border-red-800"
-    >
-      <p class="text-red-900 dark:text-red-100 font-medium">Registration failed</p>
-      <p class="text-red-800 dark:text-red-300 text-sm mt-1">
-        Please check your information and try again.
-      </p>
-    </div>
-  </div>
+    <!-- Hidden plan input -->
+    <input type="hidden" id="planId" name="planId" value={defaultPlanId} />
 
-  <!-- Submit button -->
-  <button
-    type="submit"
-    id="register-submit-button"
-    class="w-full cursor-pointer px-6 py-3 rounded-md bg-primary text-white font-medium hover:bg-primary-dark transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background disabled:opacity-50 disabled:cursor-not-allowed"
-  >
-    <span id="register-button-text">Create account</span>
-    <span id="register-button-loading" class="hidden">
-      <svg
-        class="animate-spin inline-block w-5 h-5 mr-2"
-        xmlns="http://www.w3.org/2000/svg"
-        fill="none"
-        viewBox="0 0 24 24"
+    <!-- =================================================================== -->
+    <!-- STEP 1: ORGANIZATION & ADMIN DETAILS                                -->
+    <!-- =================================================================== -->
+    <div id="step-1-container" class="space-y-5 transition-opacity duration-200">
+      <div class="border-b border-slate-100 dark:border-slate-800 pb-3">
+        <h2 class="text-base font-bold text-slate-900 dark:text-white">Organization Details</h2>
+        <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+          Tell us about your business to configure your workspace.
+        </p>
+      </div>
+
+      <!-- Business / Organization Name field -->
+      <div>
+        <label for="businessName" class="block text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5">
+          Organization / Business Name <span class="text-red-500">*</span>
+        </label>
+        <input
+          type="text"
+          id="businessName"
+          name="businessName"
+          required
+          minlength="2"
+          autocomplete="organization"
+          class="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/80 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-colors text-sm shadow-2xs"
+          placeholder="e.g. Acme Retail Kenya Ltd"
+        />
+        <p class="mt-1 text-xs text-red-500 hidden" data-error="businessName"></p>
+      </div>
+
+      <!-- Administrator Full Name field -->
+      <div>
+        <label for="fullName" class="block text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5">
+          Administrator Full Name <span class="text-red-500">*</span>
+        </label>
+        <input
+          type="text"
+          id="fullName"
+          name="fullName"
+          required
+          minlength="2"
+          autocomplete="name"
+          class="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/80 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-colors text-sm shadow-2xs"
+          placeholder="e.g. Wanjiku Kimani"
+        />
+        <p class="mt-1 text-xs text-red-500 hidden" data-error="fullName"></p>
+      </div>
+
+      <!-- Business Email Address field -->
+      <div>
+        <label for="registerEmail" class="block text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5">
+          Business Email Address <span class="text-red-500">*</span>
+        </label>
+        <input
+          type="email"
+          id="registerEmail"
+          name="email"
+          required
+          autocomplete="email"
+          class="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/80 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-colors text-sm shadow-2xs"
+          placeholder="wanjiku@acmeretail.co.ke"
+        />
+        <p class="mt-1 text-xs text-red-500 hidden" data-error="registerEmail"></p>
+      </div>
+
+      <!-- Phone Number field (M-Pesa & Alerts) -->
+      <div>
+        <div class="flex items-center justify-between mb-1.5">
+          <label for="registerPhone" class="block text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300">
+            Phone Number
+          </label>
+          <span class="text-[11px] text-slate-400">For M-Pesa & Account Alerts</span>
+        </div>
+        <input
+          type="tel"
+          id="registerPhone"
+          name="phone"
+          autocomplete="tel"
+          class="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/80 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-colors text-sm shadow-2xs"
+          placeholder="+254 712 345 678"
+        />
+        <p class="mt-1 text-xs text-red-500 hidden" data-error="registerPhone"></p>
+      </div>
+
+      <!-- Step 1 Continue Action -->
+      <div class="pt-2">
+        <button
+          type="button"
+          id="btn-continue-step1"
+          class="w-full cursor-pointer px-6 py-3.5 rounded-xl bg-primary text-white font-semibold hover:bg-blue-600 transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background text-sm shadow-md shadow-primary/25 flex items-center justify-center gap-2 group"
+        >
+          <span>Continue to Account Setup</span>
+          <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- =================================================================== -->
+    <!-- STEP 2: SECURITY, PLAN CONFIRMATION & SUBMIT                       -->
+    <!-- =================================================================== -->
+    <div id="step-2-container" class="space-y-5 hidden transition-opacity duration-200">
+      <div class="border-b border-slate-100 dark:border-slate-800 pb-3 flex items-center justify-between">
+        <div>
+          <h2 class="text-base font-bold text-slate-900 dark:text-white">Account Security & Plan</h2>
+          <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+            Set your administrator password and review your plan.
+          </p>
+        </div>
+        <button
+          type="button"
+          id="btn-back-header"
+          class="text-xs text-primary font-medium hover:underline flex items-center gap-1 cursor-pointer"
+        >
+          &larr; Back
+        </button>
+      </div>
+
+      <!-- Password field with visibility toggle -->
+      <div>
+        <label for="registerPassword" class="block text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5">
+          Password <span class="text-red-500">*</span>
+        </label>
+        <div class="relative">
+          <input
+            type="password"
+            id="registerPassword"
+            name="password"
+            required
+            minlength="8"
+            autocomplete="new-password"
+            class="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/80 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-colors text-sm pr-11 shadow-2xs"
+            placeholder="••••••••"
+          />
+          <button
+            type="button"
+            id="toggle-register-password"
+            class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer"
+            aria-label="Toggle password visibility"
+          >
+            <svg id="eye-icon-reg" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+            </svg>
+          </button>
+        </div>
+        <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">Min 8 characters with uppercase, lowercase, number, and special character (e.g. @, #, !)</p>
+        <p class="mt-1 text-xs text-red-500 hidden" data-error="registerPassword"></p>
+      </div>
+
+      <!-- Password Confirmation field -->
+      <div>
+        <label for="confirmPassword" class="block text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5">
+          Confirm Password <span class="text-red-500">*</span>
+        </label>
+        <input
+          type="password"
+          id="confirmPassword"
+          name="confirmPassword"
+          required
+          minlength="8"
+          autocomplete="new-password"
+          class="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/80 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-colors text-sm shadow-2xs"
+          placeholder="••••••••"
+        />
+        <p class="mt-1 text-xs text-red-500 hidden" data-error="confirmPassword"></p>
+      </div>
+
+      <!-- Plan Review Card -->
+      <div class="p-4 rounded-xl border border-blue-500/30 bg-blue-50/50 dark:bg-blue-950/20 text-slate-900 dark:text-white">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-[11px] font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400">Selected Plan</span>
+          <a href="/pricing" class="text-xs font-semibold text-primary hover:underline">Change Plan &rarr;</a>
+        </div>
+        <div class="flex items-baseline justify-between">
+          <h3 id="plan-display-name" class="text-base font-extrabold text-slate-900 dark:text-white">
+            {initialPlan.name} Plan ({initialPlan.price})
+          </h3>
+          <span
+            id="plan-trial-badge"
+            class="text-[11px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20"
+          >
+            {initialPlan.isTrial ? '72-Hour Free Trial' : 'Instant Activation'}
+          </span>
+        </div>
+        <p id="plan-display-badge" class="text-xs text-slate-600 dark:text-slate-400 mt-1">
+          {initialPlan.badge} • Full omnichannel features enabled
+        </p>
+      </div>
+
+      <!-- Terms agreement checkbox -->
+      <div>
+        <div class="flex items-start">
+          <input
+            type="checkbox"
+            id="agreeTerms"
+            name="agreeTerms"
+            required
+            class="h-4 w-4 mt-0.5 rounded border-slate-300 dark:border-slate-600 text-primary focus:ring-primary focus:ring-offset-background cursor-pointer"
+          />
+          <label for="agreeTerms" class="ml-2.5 text-xs text-slate-600 dark:text-slate-400 leading-normal cursor-pointer select-none">
+            I agree to the{' '}
+            <a href="/terms" class="text-primary hover:underline font-semibold" target="_blank" rel="noopener">Terms of Service</a>
+            {' '}and{' '}
+            <a href="/privacy" class="text-primary hover:underline font-semibold" target="_blank" rel="noopener">Privacy Policy (KDPA 2019)</a>.
+          </label>
+        </div>
+        <p class="mt-1 text-xs text-red-500 hidden" data-error="agreeTerms"></p>
+      </div>
+
+      <!-- Navigation Actions (Back + Submit) -->
+      <div class="flex items-center gap-3 pt-2">
+        <button
+          type="button"
+          id="btn-back-step2"
+          class="w-1/3 cursor-pointer px-4 py-3.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-semibold hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors text-sm"
+        >
+          &larr; Back
+        </button>
+
+        <button
+          type="submit"
+          id="register-submit-button"
+          class="w-2/3 cursor-pointer px-6 py-3.5 rounded-xl bg-primary text-white font-semibold hover:bg-blue-600 transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background disabled:opacity-50 disabled:cursor-not-allowed text-sm shadow-md shadow-primary/25"
+        >
+          <span id="register-button-text">Start 72-Hour Free Trial</span>
+          <span id="register-button-loading" class="hidden">
+            <svg class="animate-spin inline-block w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            Provisioning workspace...
+          </span>
+        </button>
+      </div>
+    </div>
+
+    <!-- =================================================================== -->
+    <!-- ASYNCHRONOUS SAGA STATUS & FEEDBACK                                 -->
+    <!-- =================================================================== -->
+    <div id="register-form-status" class="hidden">
+      <div
+        id="register-form-success"
+        class="hidden p-4 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-200 text-sm"
       >
-        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"
-        ></circle>
-        <path
-          class="opacity-75"
-          fill="currentColor"
-          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-        ></path>
-      </svg>
-      Creating account...
-    </span>
-  </button>
-</form>
+        <p class="font-bold flex items-center gap-2">
+          <svg class="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+          </svg>
+          Workspace provisioned successfully!
+        </p>
+        <p id="register-success-subtext" class="text-xs mt-1 text-emerald-700 dark:text-emerald-300">
+          Redirecting you to your team workspace...
+        </p>
+      </div>
+
+      <div
+        id="register-form-error"
+        class="hidden p-4 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-rose-800 dark:text-rose-200 text-sm"
+      >
+        <p class="font-bold flex items-center gap-2">
+          <svg class="w-4 h-4 text-rose-600 dark:text-rose-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+          </svg>
+          Registration Error
+        </p>
+        <p id="register-error-subtext" class="text-xs mt-1 text-rose-700 dark:text-rose-300">
+          Please check your information and try again.
+        </p>
+      </div>
+    </div>
+
+    <!-- Sign In Alternative Link -->
+    <p class="text-center text-xs text-slate-500 dark:text-slate-400 pt-1">
+      Already have a MarkChat workspace?{' '}
+      <a href="/login" class="text-primary font-semibold hover:underline">Sign in &rarr;</a>
+    </p>
+  </form>
+</div>
 
 <script>
+  // DOM Elements
   const form = document.getElementById('register-form') as HTMLFormElement;
+  const step1Container = document.getElementById('step-1-container');
+  const step2Container = document.getElementById('step-2-container');
+  const btnContinueStep1 = document.getElementById('btn-continue-step1') as HTMLButtonElement;
+  const btnBackStep2 = document.getElementById('btn-back-step2') as HTMLButtonElement;
+  const btnBackHeader = document.getElementById('btn-back-header') as HTMLButtonElement;
+
+  const step1Indicator = document.getElementById('step-1-indicator');
+  const step2Indicator = document.getElementById('step-2-indicator');
+  const step1Badge = document.getElementById('step-1-badge');
+  const step2Badge = document.getElementById('step-2-badge');
+  const progressBar = document.getElementById('step-progress-bar');
+  const mobileStepLabel = document.getElementById('mobile-step-label');
+
   const submitButton = document.getElementById('register-submit-button') as HTMLButtonElement;
   const buttonText = document.getElementById('register-button-text');
   const buttonLoading = document.getElementById('register-button-loading');
@@ -186,15 +415,62 @@ const { action = '', method = 'POST', netlify = false, redirectUrl = '/dashboard
   const formSuccess = document.getElementById('register-form-success');
   const formError = document.getElementById('register-form-error');
 
+  const passwordInput = document.getElementById('registerPassword') as HTMLInputElement;
+  const confirmPasswordInput = document.getElementById('confirmPassword') as HTMLInputElement;
+  const toggleBtn = document.getElementById('toggle-register-password');
+
+  // Plan synchronization from URL
+  const planInput = document.getElementById('planId') as HTMLInputElement;
+  const planDisplayName = document.getElementById('plan-display-name');
+  const planDisplayBadge = document.getElementById('plan-display-badge');
+  const planTrialBadge = document.getElementById('plan-trial-badge');
+
+  const plansMap: Record<string, { name: string; price: string; badge: string; isTrial: boolean }> = {
+    starter: { name: 'Starter', price: 'KES 1,500/mo', badge: '3 Agents, 2 Inboxes', isTrial: false },
+    growth: { name: 'Growth', price: 'KES 3,500/mo', badge: '72-Hour Full Trial Included', isTrial: true },
+    scale: { name: 'Scale', price: 'KES 5,000/mo', badge: '25 Agents, High Volume', isTrial: false },
+    enterprise: { name: 'Enterprise', price: 'Custom', badge: 'Dedicated SLA', isTrial: false },
+  };
+
+  const urlParams = new URLSearchParams(window.location.search);
+  const planParam = urlParams.get('plan')?.toLowerCase();
+  if (planParam && plansMap[planParam]) {
+    if (planInput) planInput.value = planParam;
+    if (planDisplayName) planDisplayName.textContent = `${plansMap[planParam].name} Plan (${plansMap[planParam].price})`;
+    if (planDisplayBadge) planDisplayBadge.textContent = `${plansMap[planParam].badge} • Full omnichannel features enabled`;
+    if (planTrialBadge) {
+      planTrialBadge.textContent = plansMap[planParam].isTrial ? '72-Hour Free Trial' : 'Instant Activation';
+    }
+    if (buttonText) {
+      buttonText.textContent = plansMap[planParam].isTrial ? 'Start 72-Hour Free Trial' : 'Create MarkChat Account';
+    }
+  }
+
+  // Password visibility toggle
+  if (toggleBtn && passwordInput) {
+    toggleBtn.addEventListener('click', () => {
+      const isPassword = passwordInput.type === 'password';
+      passwordInput.type = isPassword ? 'text' : 'password';
+      if (confirmPasswordInput) {
+        confirmPasswordInput.type = isPassword ? 'text' : 'password';
+      }
+    });
+  }
+
   // Validation rules
   const validationRules: Record<string, (value: string) => string | null> = {
+    businessName: (value) => {
+      if (!value.trim()) return 'Organization or business name is required';
+      if (value.trim().length < 2) return 'Business name must be at least 2 characters';
+      return null;
+    },
     fullName: (value) => {
-      if (!value.trim()) return 'Full name is required';
-      if (value.trim().length < 2) return 'Full name must be at least 2 characters';
+      if (!value.trim()) return 'Administrator full name is required';
+      if (value.trim().length < 2) return 'Name must be at least 2 characters';
       return null;
     },
     registerEmail: (value) => {
-      if (!value.trim()) return 'Email is required';
+      if (!value.trim()) return 'Email address is required';
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(value)) return 'Please enter a valid email address';
       return null;
@@ -202,180 +478,355 @@ const { action = '', method = 'POST', netlify = false, redirectUrl = '/dashboard
     registerPassword: (value) => {
       if (!value) return 'Password is required';
       if (value.length < 8) return 'Password must be at least 8 characters';
+      if (!/[A-Z]/.test(value)) return 'Password must include at least one uppercase letter';
+      if (!/[a-z]/.test(value)) return 'Password must include at least one lowercase letter';
+      if (!/\d/.test(value)) return 'Password must include at least one number';
+      if (!/[!@#$%^&*()_+\-=\[\]{}|"/\\.,`<>:;?~']/.test(value)) {
+        return 'Password must include at least one special character (e.g. @, #, !, $)';
+      }
+      return null;
+    },
+    confirmPassword: (value) => {
+      if (!value) return 'Please confirm your password';
+      const original = passwordInput?.value;
+      if (original && value !== original) return 'Passwords do not match';
       return null;
     },
   };
 
-  // Checkbox validation (separate because it's a boolean)
   function validateCheckbox(): string | null {
     const checkbox = document.getElementById('agreeTerms') as HTMLInputElement;
-    if (!checkbox.checked) {
-      return 'You must agree to the Terms of Service and Privacy Policy';
+    if (!checkbox?.checked) {
+      return 'You must agree to the Terms of Service and Privacy Policy to proceed';
     }
     return null;
   }
 
-  // Show/hide error message
   function showError(fieldName: string, message: string | null) {
     const errorEl = document.querySelector(`#register-form [data-error="${fieldName}"]`);
     const inputEl = document.getElementById(fieldName);
-
     if (errorEl) {
       if (message) {
         errorEl.textContent = message;
         errorEl.classList.remove('hidden');
-        if (inputEl) {
-          inputEl.classList.add('border-red-500');
-          inputEl.classList.remove('border-border');
-        }
+        if (inputEl) inputEl.classList.add('border-red-500');
       } else {
         errorEl.classList.add('hidden');
-        if (inputEl) {
-          inputEl.classList.remove('border-red-500');
-          inputEl.classList.add('border-border');
-        }
+        if (inputEl) inputEl.classList.remove('border-red-500');
       }
     }
   }
 
-  // Validate single field
   function validateField(fieldName: string): boolean {
     if (fieldName === 'agreeTerms') {
       const error = validateCheckbox();
       showError('agreeTerms', error);
       return !error;
     }
-
-    const input = form.elements.namedItem(
-      fieldName === 'registerEmail'
-        ? 'email'
-        : fieldName === 'registerPassword'
-          ? 'password'
-          : fieldName
-    ) as HTMLInputElement;
+    const input = document.getElementById(fieldName) as HTMLInputElement | null;
     if (!input || !validationRules[fieldName]) return true;
-
     const error = validationRules[fieldName](input.value);
     showError(fieldName, error);
     return !error;
   }
 
-  // Validate all fields
-  function validateForm(): boolean {
-    let isValid = true;
-    for (const fieldName of Object.keys(validationRules)) {
-      if (!validateField(fieldName)) {
-        isValid = false;
+  function validateStep1(): boolean {
+    const step1Fields = ['businessName', 'fullName', 'registerEmail'];
+    let valid = true;
+    for (const f of step1Fields) {
+      if (!validateField(f)) valid = false;
+    }
+    return valid;
+  }
+
+  function validateStep2(): boolean {
+    let valid = true;
+    if (!validateField('registerPassword')) valid = false;
+    if (!validateField('confirmPassword')) valid = false;
+    if (!validateField('agreeTerms')) valid = false;
+    return valid;
+  }
+
+  // =====================================================================
+  // STEP TRANSITION ENGINE
+  // =====================================================================
+  let currentStep = 1;
+
+  function goToStep(step: number) {
+    if (step === 2) {
+      if (!validateStep1()) {
+        const firstError = step1Container?.querySelector('.border-red-500') as HTMLElement;
+        firstError?.focus();
+        return;
+      }
+      currentStep = 2;
+      step1Container?.classList.add('hidden');
+      step2Container?.classList.remove('hidden');
+
+      // Update indicators
+      if (progressBar) progressBar.style.width = '100%';
+      if (mobileStepLabel) mobileStepLabel.textContent = 'Step 2 of 2: Security & Plan Review';
+
+      if (step1Badge) {
+        step1Badge.className = 'w-7 h-7 rounded-full bg-emerald-500 text-white flex items-center justify-center text-xs font-bold shadow-sm';
+        step1Badge.innerHTML = '<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>';
+      }
+      if (step2Badge) {
+        step2Badge.className = 'w-7 h-7 rounded-full bg-primary text-white flex items-center justify-center text-xs font-extrabold shadow-sm shadow-primary/30';
+      }
+      if (step2Indicator) {
+        step2Indicator.className = 'flex items-center gap-2 text-xs font-bold text-primary transition-colors focus:outline-none cursor-pointer';
+      }
+
+      passwordInput?.focus();
+    } else {
+      currentStep = 1;
+      step2Container?.classList.add('hidden');
+      step1Container?.classList.remove('hidden');
+
+      // Update indicators
+      if (progressBar) progressBar.style.width = '50%';
+      if (mobileStepLabel) mobileStepLabel.textContent = 'Step 1 of 2: Organization Details';
+
+      if (step1Badge) {
+        step1Badge.className = 'w-7 h-7 rounded-full bg-primary text-white flex items-center justify-center text-xs font-extrabold shadow-sm shadow-primary/30';
+        step1Badge.textContent = '1';
+      }
+      if (step2Badge) {
+        step2Badge.className = 'w-7 h-7 rounded-full bg-slate-200 dark:bg-slate-800 text-slate-500 dark:text-slate-400 flex items-center justify-center text-xs font-extrabold';
+        step2Badge.textContent = '2';
+      }
+      if (step2Indicator) {
+        step2Indicator.className = 'flex items-center gap-2 text-xs font-semibold text-slate-400 dark:text-slate-500 transition-colors focus:outline-none cursor-pointer';
       }
     }
-    // Validate checkbox
-    if (!validateField('agreeTerms')) {
-      isValid = false;
-    }
-    return isValid;
   }
 
-  // Real-time validation on blur
-  for (const fieldName of Object.keys(validationRules)) {
-    const inputId = fieldName;
-    const input = document.getElementById(inputId) as HTMLInputElement | null;
-    if (input && 'addEventListener' in input) {
-      input.addEventListener('blur', () => validateField(fieldName));
-      input.addEventListener('input', () => {
-        // Clear error on input if field was previously invalid
-        const errorEl = document.querySelector(`#register-form [data-error="${fieldName}"]`);
-        if (errorEl && !errorEl.classList.contains('hidden')) {
-          validateField(fieldName);
-        }
-      });
-    }
+  // Event Listeners for Step Controls
+  btnContinueStep1?.addEventListener('click', () => goToStep(2));
+  btnBackStep2?.addEventListener('click', () => goToStep(1));
+  btnBackHeader?.addEventListener('click', () => goToStep(1));
+
+  step1Indicator?.addEventListener('click', () => goToStep(1));
+  step2Indicator?.addEventListener('click', () => {
+    if (currentStep === 1) goToStep(2);
+  });
+
+  // Real-time blur & input event bindings
+  const allFieldNames = ['businessName', 'fullName', 'registerEmail', 'registerPassword', 'confirmPassword'];
+  for (const fieldName of allFieldNames) {
+    const input = document.getElementById(fieldName);
+    input?.addEventListener('blur', () => validateField(fieldName));
+    input?.addEventListener('input', () => {
+      const errorEl = document.querySelector(`#register-form [data-error="${fieldName}"]`);
+      if (errorEl && !errorEl.classList.contains('hidden')) {
+        validateField(fieldName);
+      }
+      if (fieldName === 'registerPassword' && confirmPasswordInput?.value) {
+        validateField('confirmPassword');
+      }
+    });
   }
 
-  // Checkbox validation on change
-  const agreeTermsCheckbox = document.getElementById('agreeTerms') as HTMLInputElement;
+  const agreeTermsCheckbox = document.getElementById('agreeTerms');
   agreeTermsCheckbox?.addEventListener('change', () => validateField('agreeTerms'));
 
-  // Form submission
-  form.addEventListener('submit', async (e) => {
-    e.preventDefault();
+  // =====================================================================
+  // FORM SUBMISSION & SAGA POLLING
+  // =====================================================================
+  if (form) {
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
 
-    // Hide previous status messages
-    formStatus?.classList.add('hidden');
-    formSuccess?.classList.add('hidden');
-    formError?.classList.add('hidden');
+      formStatus?.classList.add('hidden');
+      formSuccess?.classList.add('hidden');
+      formError?.classList.add('hidden');
 
-    // Validate form
-    if (!validateForm()) {
-      // Focus first invalid field
-      const firstError = form.querySelector('.border-red-500') as HTMLElement;
-      if (firstError) {
-        firstError.focus();
-      } else {
-        // If no input has error border, focus the checkbox error
-        const checkboxError = document.querySelector('#register-form [data-error="agreeTerms"]');
-        if (checkboxError && !checkboxError.classList.contains('hidden')) {
-          agreeTermsCheckbox?.focus();
-        }
-      }
-      return;
-    }
+      // 1. Honeypot anti-bot verification
+      const gotcha = (form.querySelector('input[name="_gotcha"]') as HTMLInputElement)?.value;
+      if (gotcha) return; // Silently deflect bots
 
-    // Show loading state
-    submitButton.disabled = true;
-    buttonText?.classList.add('hidden');
-    buttonLoading?.classList.remove('hidden');
+      // 2. Validate all fields across both steps
+      const isStep1Valid = validateStep1();
+      const isStep2Valid = validateStep2();
 
-    const formData = new FormData(form);
-    const action = form.action;
-
-    try {
-      // If no action URL, simulate success (demo mode)
-      if (!action || action === window.location.href) {
-        await new Promise((resolve) => setTimeout(resolve, 1500));
-        showSuccess();
+      if (!isStep1Valid) {
+        goToStep(1);
+        const firstError = step1Container?.querySelector('.border-red-500') as HTMLElement;
+        firstError?.focus();
         return;
       }
 
-      // Submit to actual endpoint
-      const response = await fetch(action, {
-        method: form.method || 'POST',
-        body: formData,
-        headers: {
-          Accept: 'application/json',
-        },
-      });
-
-      if (response.ok) {
-        showSuccess();
-      } else {
-        showErrorState();
+      if (!isStep2Valid) {
+        const firstError = step2Container?.querySelector('.border-red-500') as HTMLElement;
+        firstError?.focus();
+        return;
       }
-    } catch {
-      showErrorState();
-    }
-  });
 
-  function showSuccess() {
-    formStatus?.classList.remove('hidden');
-    formSuccess?.classList.remove('hidden');
-    resetButtonState();
+      // 3. Enter submitting UI state
+      submitButton.disabled = true;
+      buttonText?.classList.add('hidden');
+      buttonLoading?.classList.remove('hidden');
 
-    // Redirect after showing success message
-    const redirectUrl = form.dataset.redirect || '/';
-    setTimeout(() => {
-      window.location.href = redirectUrl;
-    }, 1500);
-  }
+      const apiUrl = form.dataset.apiUrl || 'http://localhost:5000';
+      const redirectTarget = form.dataset.redirect || '/dashboard';
 
-  function showErrorState() {
-    formStatus?.classList.remove('hidden');
-    formError?.classList.remove('hidden');
-    resetButtonState();
-  }
+      // 4. Retrieve or generate durable Idempotency Key
+      let idempotencyKey = sessionStorage.getItem('markchat_reg_idempotency_key');
+      if (!idempotencyKey) {
+        idempotencyKey = (typeof crypto !== 'undefined' && crypto.randomUUID)
+          ? crypto.randomUUID()
+          : 'mc_reg_' + Date.now() + '_' + Math.random().toString(36).substring(2, 10);
+        sessionStorage.setItem('markchat_reg_idempotency_key', idempotencyKey);
+      }
 
-  function resetButtonState() {
-    submitButton.disabled = false;
-    buttonText?.classList.remove('hidden');
-    buttonLoading?.classList.add('hidden');
+      const businessName = (document.getElementById('businessName') as HTMLInputElement)?.value.trim();
+      const fullName = (document.getElementById('fullName') as HTMLInputElement)?.value.trim();
+      const email = (document.getElementById('registerEmail') as HTMLInputElement)?.value.trim().toLowerCase();
+      const phone = (document.getElementById('registerPhone') as HTMLInputElement)?.value.trim();
+      const password = (document.getElementById('registerPassword') as HTMLInputElement)?.value;
+      const planId = (document.getElementById('planId') as HTMLInputElement)?.value || 'growth';
+
+      const payload = {
+        businessName,
+        fullName,
+        email,
+        phone: phone || undefined,
+        password,
+        planId,
+      };
+
+      // Show initial provisioning notification
+      formStatus?.classList.remove('hidden');
+      formSuccess?.classList.remove('hidden');
+      const successTitle = formSuccess?.querySelector('p.font-bold');
+      const successSub = document.getElementById('register-success-subtext');
+      if (successTitle) successTitle.textContent = 'Registering organization workspace...';
+      if (successSub) successSub.textContent = 'Contacting MarkChat provisioning engine...';
+
+      try {
+        const response = await fetch(`${apiUrl}/api/v1/registration`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Idempotency-Key': idempotencyKey,
+          },
+          body: JSON.stringify(payload),
+        });
+
+        if (!response.ok) {
+          const errData = await response.json().catch(() => ({}));
+          let userMessage = 'Unable to complete registration. Please check your information and try again.';
+          if (response.status === 409) {
+            userMessage = errData.message || 'An organization or account with this email is already registered.';
+          } else if (response.status === 400) {
+            userMessage = errData.message || 'Invalid registration details provided.';
+            sessionStorage.removeItem('markchat_reg_idempotency_key');
+          } else if (errData.message && !errData.message.includes('stack')) {
+            userMessage = errData.message;
+          }
+
+          formSuccess?.classList.add('hidden');
+          formError?.classList.remove('hidden');
+          const errorSub = document.getElementById('register-error-subtext');
+          if (errorSub) errorSub.textContent = userMessage;
+
+          submitButton.disabled = false;
+          buttonText?.classList.remove('hidden');
+          buttonLoading?.classList.add('hidden');
+          return;
+        }
+
+        const data = await response.json();
+        const regInfo = data.data || {};
+
+        // If completed immediately with SSO url
+        if (regInfo.status === 'completed' && regInfo.ssoUrl) {
+          sessionStorage.removeItem('markchat_reg_idempotency_key');
+          if (successTitle) successTitle.textContent = 'Workspace provisioned successfully!';
+          if (successSub) successSub.textContent = 'Launching your MarkChat workspace...';
+          setTimeout(() => {
+            window.location.href = regInfo.ssoUrl;
+          }, 1200);
+          return;
+        }
+
+        // Asynchronous saga polling
+        const registrationId = regInfo.registrationId;
+        if (!registrationId) {
+          sessionStorage.removeItem('markchat_reg_idempotency_key');
+          if (successTitle) successTitle.textContent = 'Workspace registration received!';
+          if (successSub) successSub.textContent = 'Redirecting to sign in...';
+          setTimeout(() => {
+            window.location.href = '/login?registered=true';
+          }, 1500);
+          return;
+        }
+
+        if (successTitle) successTitle.textContent = 'Provisioning workspace & channels...';
+        if (successSub) successSub.textContent = 'Setting up team inbox and commercial trial entitlements...';
+
+        let attempts = 0;
+        const maxAttempts = 30; // 45 seconds max polling
+        const pollInterval = setInterval(async () => {
+          attempts++;
+          try {
+            const statusRes = await fetch(`${apiUrl}/api/v1/registration/${registrationId}`);
+            if (!statusRes.ok) return;
+
+            const statusJson = await statusRes.json();
+            const statusData = statusJson.data || {};
+
+            if (statusData.status === 'completed') {
+              clearInterval(pollInterval);
+              sessionStorage.removeItem('markchat_reg_idempotency_key');
+              formSuccess?.classList.remove('hidden');
+              formError?.classList.add('hidden');
+              if (successTitle) successTitle.textContent = 'Workspace provisioned successfully!';
+              if (successSub) successSub.textContent = 'Redirecting to your workspace...';
+              setTimeout(() => {
+                window.location.href = statusData.ssoUrl || redirectTarget;
+              }, 1200);
+            } else if (statusData.status === 'failed') {
+              clearInterval(pollInterval);
+              formSuccess?.classList.add('hidden');
+              formError?.classList.remove('hidden');
+              const errorSub = document.getElementById('register-error-subtext');
+              if (errorSub) {
+                errorSub.textContent = statusData.last_error || 'Workspace provisioning encountered an issue. Our support team has been notified.';
+              }
+              submitButton.disabled = false;
+              buttonText?.classList.remove('hidden');
+              buttonLoading?.classList.add('hidden');
+            } else if (attempts > 6) {
+              if (successSub) successSub.textContent = 'Finalizing Chatwoot configuration and permissions...';
+            }
+          } catch {
+            // Transient retry
+          }
+
+          if (attempts >= maxAttempts) {
+            clearInterval(pollInterval);
+            sessionStorage.removeItem('markchat_reg_idempotency_key');
+            if (successTitle) successTitle.textContent = 'Registration completed!';
+            if (successSub) successSub.textContent = 'Your workspace is finishing setup. Redirecting you to sign in...';
+            setTimeout(() => {
+              window.location.href = '/login?registered=true';
+            }, 2000);
+          }
+        }, 1500);
+
+      } catch {
+        formSuccess?.classList.add('hidden');
+        formError?.classList.remove('hidden');
+        const errorSub = document.getElementById('register-error-subtext');
+        if (errorSub) {
+          errorSub.textContent = 'Network communication error. Please check your internet connection and try again.';
+        }
+        submitButton.disabled = false;
+        buttonText?.classList.remove('hidden');
+        buttonLoading?.classList.add('hidden');
+      }
+    });
   }
 </script>

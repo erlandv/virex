@@ -74,7 +74,7 @@ const APP_URL = import.meta.env.PUBLIC_APP_URL || 'http://localhost:3000';
 
         <div class="flex flex-col sm:flex-row md:flex-col gap-3 shrink-0">
           <a
-            href={`${APP_URL}/app/auth/signup`}
+            href={`/register`}
             class="inline-flex items-center justify-center px-6 py-3 rounded-xl bg-primary text-white font-semibold text-sm hover:opacity-90 transition-opacity shadow-lg"
           >
             <span>Connect {integration.name}</span>
@@ -164,7 +164,7 @@ const APP_URL = import.meta.env.PUBLIC_APP_URL || 'http://localhost:3000';
               <h3 class="text-base font-bold text-text">Setup Prerequisites</h3>
               <p class="text-xs text-text-muted mt-1">{integration.setupRequirements}</p>
             </div>
-            <a href={`${APP_URL}/app/auth/signup`} class="btn btn-primary text-xs shrink-0">
+            <a href={`/register`} class="btn btn-primary text-xs shrink-0">
               Start Configuration
             </a>
           </div>
@@ -214,7 +214,7 @@ const APP_URL = import.meta.env.PUBLIC_APP_URL || 'http://localhost:3000';
   <CTA
     title={`Ready to connect ${integration.name}?`}
     description="Launch your MarkChat workspace to unify customer conversations, mobile money payments, and support channels."
-    action={{ label: 'Get Started with MarkChat', href: `${APP_URL}/app/auth/signup` }}
+    action={{ label: 'Get Started with MarkChat', href: `/register` }}
     background="muted"
   />
 </MarketingLayout>

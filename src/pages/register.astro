@@ -1,0 +1,24 @@
+---
+/**
+ * MarkChat Customer Registration Page
+ *
+ * Implements the approved Direction A + D Split-Screen SaaS Layout.
+ * Synchronizes with plan query parameters and prepares organization onboarding.
+ */
+import AuthSplitLayout from '@/layouts/AuthSplitLayout.astro';
+import RegisterForm from '@/components/forms/RegisterForm.astro';
+import { siteConfig } from '@/config';
+
+const url = new URL(Astro.request.url);
+const selectedPlan = url.searchParams.get('plan') || 'growth';
+---
+
+<AuthSplitLayout
+  title={`Create Account — ${siteConfig.name} Kenya`}
+  description="Register your business on MarkChat. Unify WhatsApp, SMS, Instagram, and Safaricom Daraja M-Pesa into one collaborative team workspace."
+  headline="Create your MarkChat Workspace"
+  subheadline="Start your 72-hour trial with unified WhatsApp, in-chat M-Pesa, and team inbox."
+  pageType="register"
+>
+  <RegisterForm defaultPlanId={selectedPlan} redirectUrl="/billing" />
+</AuthSplitLayout>

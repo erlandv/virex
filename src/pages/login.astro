@@ -1,0 +1,21 @@
+---
+/**
+ * MarkChat Customer Login Page
+ *
+ * Implements the approved Direction A + D Split-Screen SaaS Layout.
+ * Provides customer workspace access and authentication handoff.
+ */
+import AuthSplitLayout from '@/layouts/AuthSplitLayout.astro';
+import LoginForm from '@/components/forms/LoginForm.astro';
+import { siteConfig } from '@/config';
+---
+
+<AuthSplitLayout
+  title={`Sign In — ${siteConfig.name} Kenya`}
+  description="Sign in to your MarkChat workspace to manage customer conversations, orders, and M-Pesa payments."
+  headline="Welcome back to MarkChat"
+  subheadline="Sign in to access your unified team inbox and customer conversations."
+  pageType="login"
+>
+  <LoginForm redirectUrl="/billing" />
+</AuthSplitLayout>

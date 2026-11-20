@@ -227,7 +227,7 @@ export interface MarkcopilotPageSettings {
 }
 
 export interface PricingTier {
-  id: 'starter' | 'pro' | 'enterprise';
+  id: 'starter' | 'growth' | 'scale' | 'enterprise' | 'pro' | string;
   name: string;
   monthlyPrice: number | null;
   annualMonthlyPrice: number | null;
@@ -245,8 +245,10 @@ export interface FeatureGateItem {
   name: string;
   description: string;
   starter: boolean;
-  pro: boolean;
+  growth: boolean;
+  scale: boolean;
   enterprise: boolean;
+  pro?: boolean;
 }
 
 export interface PricingMatrixResponse {
@@ -398,6 +400,9 @@ export interface LeadItem extends LeadPayload {
 const APP_URL =
   (typeof import.meta !== 'undefined' && import.meta.env?.PUBLIC_APP_URL) ||
   'http://localhost:3000';
+const CONTROL_PLANE_API_URL =
+  (typeof import.meta !== 'undefined' && import.meta.env?.PUBLIC_CONTROL_PLANE_API_URL) ||
+  'http://localhost:5000';
 const BRIDGE_API_URL =
   (typeof import.meta !== 'undefined' && import.meta.env?.PUBLIC_BRIDGE_API_URL) ||
   'http://localhost:4000';
@@ -407,44 +412,65 @@ const DEFAULT_PRICING_MATRIX: PricingMatrixResponse = {
     {
       id: 'starter',
       name: 'Starter',
-      monthlyPrice: 0,
-      annualMonthlyPrice: 0,
+      monthlyPrice: 1500,
+      annualMonthlyPrice: 1200,
       currency: 'KES',
       description:
-        'Ideal for small Kenyan dukas, solo merchants, and Instagram/WhatsApp sellers getting started.',
+        'Essential conversational commerce for solo dukas, local retailers, and growing WhatsApp merchants.',
       highlighted: false,
-      badge: 'Free Forever',
-      ctaLabel: 'Start Free',
-      ctaHref: `${APP_URL}/app/auth/signup?plan=starter`,
+      badge: 'Starter',
+      ctaLabel: 'Get Started',
+      ctaHref: '/register?plan=starter',
       features: [
-        '1 Inbox (WhatsApp Cloud or SMS)',
-        'BYOC or prepaid SMS integration',
-        'Manual M-Pesa C2B payment log verification',
-        'Basic Markcopilot AI (50 messages/mo)',
-        '1 Team Agent seat',
-        'Standard Community & Email support',
+        'Up to 3 Team Agent seats',
+        'Up to 2 Inboxes (WhatsApp Cloud or Web)',
+        'BYO SMS Gateway (Africa’s Talking)',
+        'Safaricom Daraja C2B Payment Verification',
+        'Full access to shared inbox & customer contacts',
+        'Standard Email & Community support',
       ],
     },
     {
-      id: 'pro',
-      name: 'Pro',
+      id: 'growth',
+      name: 'Growth',
       monthlyPrice: 3500,
       annualMonthlyPrice: 2800,
       currency: 'KES',
       description:
-        'The complete sales engine for growing retailers, clinics, salons, and e-commerce brands.',
+        'The complete omnichannel sales engine for expanding retailers, clinics, and e-commerce brands.',
       highlighted: true,
       badge: 'Most Popular',
-      ctaLabel: 'Upgrade to Pro',
-      ctaHref: `${APP_URL}/app/auth/signup?plan=pro`,
+      ctaLabel: 'Start 72-Hour Trial',
+      ctaHref: '/register?plan=growth',
       features: [
-        'All 6 Channels (WhatsApp, SMS, IG, FB, Web, Email)',
-        'In-Chat /stk Checkout & Daraja C2B Auto-Receipting',
-        'All 4 Kenyan Payment Modes (Paybill, Till, Pochi sync, SMS)',
-        '500 Free Bulk SMS credits / month included',
-        'Full Markcopilot AI (Customer 24/7 + Agent Copilot)',
-        '5 Team Agent seats with SLA routing & notes',
-        'Custom domain whitelabel & priority WhatsApp support',
+        'Up to 10 Team Agent seats',
+        'Up to 5 Inboxes across WhatsApp, IG, FB, Web, Email',
+        'BYO SMS Gateway integration',
+        'M-Pesa Daraja STK Push & C2B Auto-Reconciliation',
+        'Team routing, internal notes & conversation labels',
+        'Workspace performance & SLA analytics',
+        'Priority WhatsApp & Email support',
+      ],
+    },
+    {
+      id: 'scale',
+      name: 'Scale',
+      monthlyPrice: 5000,
+      annualMonthlyPrice: 4000,
+      currency: 'KES',
+      description:
+        'High-volume customer support and automated messaging for scaling enterprises.',
+      highlighted: false,
+      badge: 'High Volume',
+      ctaLabel: 'Scale Up',
+      ctaHref: '/register?plan=scale',
+      features: [
+        'Up to 25 Team Agent seats',
+        'Unlimited Inboxes across all channels',
+        'BYO SMS Gateway with multi-sender support',
+        'Advanced M-Pesa automated transaction workflows',
+        'Full workspace analytics & agent performance metrics',
+        'Priority SLA & Dedicated Support',
       ],
     },
     {
@@ -454,18 +480,18 @@ const DEFAULT_PRICING_MATRIX: PricingMatrixResponse = {
       annualMonthlyPrice: null,
       currency: 'KES',
       description:
-        'For high-volume retail chains, regional logistics, banks, and enterprise customer operations.',
+        'Custom infrastructure, dedicated integrations, and SLA guarantees for large retail chains and financial institutions.',
       highlighted: false,
       badge: 'Custom Scale',
       ctaLabel: 'Contact Sales',
-      ctaHref: '/demo',
+      ctaHref: '/contact?plan=enterprise',
       features: [
-        'Unlimited Channels & Agent seats',
-        'Dedicated Daraja Paybill + Shared Bank Paybill routing',
-        'BYOC Bulk SMS Gateway (zero-markup Africa’s Talking)',
-        'Custom Markcopilot AI fine-tuned on custom catalog/ERP',
-        'Full whitelabel branding, custom domain & audit logs',
-        '24/7 Dedicated Account Manager & 99.9% uptime SLA',
+        'Custom / Unlimited Team Agent seats',
+        'Unlimited Inboxes & channels',
+        'Dedicated Daraja Paybill / Till routing',
+        'Custom ERP, CRM & webhook integrations',
+        'Custom domain whitelabeling & SLA guarantee',
+        '24/7 Dedicated Account Manager',
       ],
     },
   ],
@@ -475,56 +501,70 @@ const DEFAULT_PRICING_MATRIX: PricingMatrixResponse = {
       name: 'Official WhatsApp Cloud API',
       description: 'Official Meta WhatsApp Business API integration without phone bans',
       starter: true,
-      pro: true,
+      growth: true,
+      scale: true,
       enterprise: true,
+      pro: true,
+    },
+    {
+      key: 'byo_sms_gateway',
+      name: 'BYO SMS Gateway (Africa’s Talking)',
+      description: 'Connect your own carrier credentials with zero MarkChat markup',
+      starter: true,
+      growth: true,
+      scale: true,
+      enterprise: true,
+      pro: true,
+    },
+    {
+      key: 'social_channels',
+      name: 'Instagram DMs & Facebook Messenger',
+      description: 'Centralize social messages into your shared team inbox',
+      starter: false,
+      growth: true,
+      scale: true,
+      enterprise: true,
+      pro: true,
+    },
+    {
+      key: 'daraja_c2b_verification',
+      name: 'Daraja C2B Auto-Verification',
+      description: 'Server-side TransID validation that eliminates screenshot fraud',
+      starter: true,
+      growth: true,
+      scale: true,
+      enterprise: true,
+      pro: true,
     },
     {
       key: 'mpesa_stk_checkout',
-      name: 'In-Chat M-Pesa (/stk) Checkout',
-      description: 'Trigger instant PIN push to customer phones directly from chat timeline',
+      name: 'M-Pesa STK Push Integration',
+      description: 'Server-verified STK checkout and automated payment receipts',
       starter: false,
-      pro: true,
+      growth: true,
+      scale: true,
       enterprise: true,
-    },
-    {
-      key: 'pochi_sms_sync',
-      name: 'Pochi la Biashara & Till Sync',
-      description: 'Real-time Android SMS forwarder sync for personal & Pochi lines',
-      starter: false,
       pro: true,
-      enterprise: true,
-    },
-    {
-      key: 'markcopilot_ai',
-      name: 'Markcopilot AI Assistant',
-      description: 'Dual-mode customer 24/7 AI + agent reply drafts in English & Swahili',
-      starter: false,
-      pro: true,
-      enterprise: true,
-    },
-    {
-      key: 'bulk_ai_campaigns',
-      name: 'Bulk SMS & AI Broadcasts',
-      description: 'Africa’s Talking gateway with M-Pesa top-ups or BYOC carrier key',
-      starter: false,
-      pro: true,
-      enterprise: true,
     },
     {
       key: 'custom_whitelabel',
       name: 'Custom Whitelabeling & Branding',
       description: 'Custom domain, branded receipts, and personalized widget styling',
       starter: false,
-      pro: true,
+      growth: false,
+      scale: true,
       enterprise: true,
+      pro: false,
     },
     {
       key: 'workspace_analytics',
       name: 'Workspace Performance & SLA Analytics',
       description: 'Omnichannel response time, conversion rates, and agent SLA reports',
       starter: false,
-      pro: true,
+      growth: true,
+      scale: true,
       enterprise: true,
+      pro: true,
     },
   ],
 };
@@ -2319,14 +2359,23 @@ async function apiFetch(url: string, options: ApiRequestOptions = {}): Promise<R
  */
 export async function fetchPricingMatrix(): Promise<PricingMatrixResponse> {
   try {
-    const res = await apiFetch(`${BRIDGE_API_URL}/api/public/pricing`, {
+    const res = await apiFetch(`${CONTROL_PLANE_API_URL}/api/v1/billing/plans`, {
       method: 'GET',
       headers: { 'Content-Type': 'application/json' },
     });
     if (res.ok) {
       const data = await res.json();
-      if (data && data.tiers && data.featureMatrix) {
-        return data;
+      if (data && data.success && Array.isArray(data.plans)) {
+        // Deep clone default matrix and update with canonical prices from Control Plane
+        const matrix = JSON.parse(JSON.stringify(DEFAULT_PRICING_MATRIX)) as PricingMatrixResponse;
+        for (const plan of data.plans) {
+          const tier = matrix.tiers.find((t) => t.id === plan.id);
+          if (tier && typeof plan.priceKes === 'number') {
+            tier.monthlyPrice = plan.priceKes;
+            tier.annualMonthlyPrice = Math.round(plan.priceKes * 0.8);
+          }
+        }
+        return matrix;
       }
     }
   } catch {

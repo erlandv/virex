@@ -1,0 +1,340 @@
+---
+/**
+ * MarkChat Customer Self-Service Billing Portal
+ *
+ * Allows tenants to view active subscription, select canonical plans,
+ * and initiate secure M-Pesa / Card checkout through Paystack.
+ */
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { siteConfig } from '@/config';
+
+const controlPlaneUrl = (typeof import.meta !== 'undefined' && import.meta.env?.PUBLIC_CONTROL_PLANE_API_URL) || 'http://localhost:5000';
+---
+
+<BaseLayout
+  title={`Subscription & Billing — ${siteConfig.name} Kenya`}
+  description="Manage your MarkChat subscription, upgrade agent capacity, and renew via M-Pesa or Card."
+>
+  <div
+    class="min-h-screen w-full bg-slate-50 dark:bg-[#0B1120] relative overflow-hidden px-4 py-12 transition-colors duration-200"
+    data-api-url={controlPlaneUrl}
+    id="billing-portal-container"
+  >
+    <!-- Ambient Background Glowing Orbs -->
+    <div
+      class="pointer-events-none absolute -top-40 left-1/2 -translate-x-1/2 w-[760px] h-[380px] bg-gradient-to-b from-blue-600/15 via-indigo-600/10 to-transparent dark:from-blue-600/25 dark:via-primary/10 dark:to-transparent rounded-full blur-3xl"
+      aria-hidden="true"
+    >
+    </div>
+    <div
+      class="pointer-events-none absolute -bottom-40 -left-20 w-[500px] h-[320px] bg-indigo-500/10 dark:bg-indigo-600/15 rounded-full blur-3xl"
+      aria-hidden="true"
+    >
+    </div>
+
+    <div class="max-w-4xl mx-auto relative z-10">
+      <!-- Top Navigation & Brand -->
+      <div class="flex items-center justify-between mb-8">
+        <a href="/" class="flex items-center gap-2 group">
+          <div class="w-9 h-9 rounded-xl bg-primary flex items-center justify-center text-white font-bold shadow-md shadow-primary/20">
+            M
+          </div>
+          <span class="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
+            Mark<span class="text-primary">Chat</span>
+          </span>
+        </a>
+        <a
+          href="/login"
+          id="billing-back-link"
+          class="text-xs font-semibold px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors text-slate-700 dark:text-slate-200"
+        >
+          &larr; Back to Workspace
+        </a>
+      </div>
+
+      <!-- Main Header -->
+      <div class="text-center mb-10">
+        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-primary/10 text-primary border border-primary/20 mb-3">
+          Self-Service Billing
+        </span>
+        <h1 class="text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white sm:text-4xl">
+          Subscription & Plans
+        </h1>
+        <p class="mt-2 text-sm text-slate-600 dark:text-slate-400 max-w-xl mx-auto">
+          Upgrade your communication capacity with instant Safaricom M-Pesa STK Push or Card payment.
+        </p>
+      </div>
+
+      <!-- Active Subscription Summary Banner -->
+      <div
+        id="subscription-summary-card"
+        class="mb-8 p-6 rounded-2xl border border-slate-200/80 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4"
+      >
+        <div>
+          <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Current Workspace Plan</span>
+          <div class="flex items-center gap-3 mt-1">
+            <h2 id="current-plan-name" class="text-xl font-bold text-slate-900 dark:text-white">
+              Growth Plan
+            </h2>
+            <span
+              id="current-plan-status-badge"
+              class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800"
+            >
+              72-Hour Full Trial
+            </span>
+          </div>
+          <p id="current-plan-expiry-text" class="text-xs text-slate-500 dark:text-slate-400 mt-1">
+            72 hours of unrestricted multi-channel access included with zero upfront charges.
+          </p>
+        </div>
+        <div class="text-right shrink-0">
+          <span class="text-xs font-medium text-slate-500 dark:text-slate-400">Payment Currency</span>
+          <p class="text-base font-bold text-slate-900 dark:text-white">KES (Kenyan Shillings)</p>
+        </div>
+      </div>
+
+      <!-- 4 Canonical Plans Selection Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+        <!-- Starter Plan -->
+        <label
+          class="relative flex flex-col p-5 rounded-2xl border-2 border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 cursor-pointer hover:border-primary/50 transition-all select-none has-checked:border-primary has-checked:ring-2 has-checked:ring-primary/20"
+        >
+          <input type="radio" name="planSelect" value="starter" class="sr-only" />
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-sm font-bold text-slate-900 dark:text-white">Starter</span>
+            <span class="text-xs font-semibold text-slate-500">KES 1,500/mo</span>
+          </div>
+          <p class="text-xs text-slate-500 dark:text-slate-400 mb-3">For micro-teams & emerging merchants.</p>
+          <ul class="text-xs space-y-1.5 text-slate-600 dark:text-slate-300 mt-auto">
+            <li class="flex items-center gap-1.5">&check; 3 Agent Seats</li>
+            <li class="flex items-center gap-1.5">&check; 2 Connected Inboxes</li>
+            <li class="flex items-center gap-1.5">&check; M-Pesa Express Billing</li>
+          </ul>
+        </label>
+
+        <!-- Growth Plan (Recommended) -->
+        <label
+          class="relative flex flex-col p-5 rounded-2xl border-2 border-primary bg-white dark:bg-slate-900 cursor-pointer shadow-md shadow-primary/10 transition-all select-none has-checked:border-primary has-checked:ring-2 has-checked:ring-primary/20"
+        >
+          <input type="radio" name="planSelect" value="growth" checked class="sr-only" />
+          <div class="absolute -top-3 right-4 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-primary text-white tracking-wide uppercase">
+            Recommended
+          </div>
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-sm font-bold text-slate-900 dark:text-white">Growth</span>
+            <span class="text-xs font-bold text-primary">KES 3,500/mo</span>
+          </div>
+          <p class="text-xs text-slate-500 dark:text-slate-400 mb-3">For growing omnichannel businesses.</p>
+          <ul class="text-xs space-y-1.5 text-slate-600 dark:text-slate-300 mt-auto">
+            <li class="flex items-center gap-1.5">&check; 10 Agent Seats</li>
+            <li class="flex items-center gap-1.5">&check; 5 Connected Inboxes</li>
+            <li class="flex items-center gap-1.5">&check; BYO SMS Gateway Integration</li>
+            <li class="flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400 font-medium">&check; 72-Hour Free Trial</li>
+          </ul>
+        </label>
+
+        <!-- Scale Plan -->
+        <label
+          class="relative flex flex-col p-5 rounded-2xl border-2 border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 cursor-pointer hover:border-primary/50 transition-all select-none has-checked:border-primary has-checked:ring-2 has-checked:ring-primary/20"
+        >
+          <input type="radio" name="planSelect" value="scale" class="sr-only" />
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-sm font-bold text-slate-900 dark:text-white">Scale</span>
+            <span class="text-xs font-semibold text-slate-500">KES 5,000/mo</span>
+          </div>
+          <p class="text-xs text-slate-500 dark:text-slate-400 mb-3">High-volume enterprises & agencies.</p>
+          <ul class="text-xs space-y-1.5 text-slate-600 dark:text-slate-300 mt-auto">
+            <li class="flex items-center gap-1.5">&check; 25 Agent Seats</li>
+            <li class="flex items-center gap-1.5">&check; Unlimited Inboxes</li>
+            <li class="flex items-center gap-1.5">&check; Custom Domain & Audit Logs</li>
+            <li class="flex items-center gap-1.5">&check; High-Priority Queueing</li>
+          </ul>
+        </label>
+      </div>
+
+      <!-- Checkout Configuration Card -->
+      <div class="p-6 sm:p-8 rounded-2xl border border-slate-200/80 dark:border-slate-800 bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl shadow-xl">
+        <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-4">
+          Payment Method
+        </h3>
+
+        <!-- Payment Method Toggle -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+          <label class="flex items-center gap-3 p-4 rounded-xl border border-slate-200 dark:border-slate-700 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/50 has-checked:border-primary has-checked:bg-primary/5">
+            <input type="radio" name="paymentMethod" value="mpesa" checked class="text-primary focus:ring-primary" />
+            <div>
+              <span class="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
+                Safaricom M-Pesa
+              </span>
+              <p class="text-xs text-slate-500 dark:text-slate-400">Instant STK prompt on your mobile phone</p>
+            </div>
+          </label>
+
+          <label class="flex items-center gap-3 p-4 rounded-xl border border-slate-200 dark:border-slate-700 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/50 has-checked:border-primary has-checked:bg-primary/5">
+            <input type="radio" name="paymentMethod" value="card" class="text-primary focus:ring-primary" />
+            <div>
+              <span class="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
+                Debit / Credit Card
+              </span>
+              <p class="text-xs text-slate-500 dark:text-slate-400">Visa, Mastercard, & International Cards</p>
+            </div>
+          </label>
+        </div>
+
+        <!-- Phone number input for M-Pesa STK Push -->
+        <div id="mpesa-phone-field" class="mb-6">
+          <label for="billingPhone" class="block text-sm font-medium text-slate-800 dark:text-slate-200 mb-1.5">
+            M-Pesa Phone Number <span class="text-red-500">*</span>
+          </label>
+          <input
+            type="tel"
+            id="billingPhone"
+            name="billingPhone"
+            class="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+            placeholder="+254 712 345 678"
+          />
+          <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">
+            Enter the Safaricom phone number that should receive the STK PIN prompt.
+          </p>
+        </div>
+
+        <!-- Feedback & Error State -->
+        <div id="billing-error-box" class="hidden mb-6 p-4 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-rose-800 dark:text-rose-200 text-sm">
+          <p class="font-bold">Checkout Notice</p>
+          <p id="billing-error-message" class="text-xs mt-1 text-rose-700 dark:text-rose-300"></p>
+        </div>
+
+        <!-- Submit Checkout Button -->
+        <button
+          type="button"
+          id="billing-checkout-btn"
+          class="w-full cursor-pointer px-6 py-4 rounded-xl bg-primary text-white font-bold hover:bg-primary-hover transition-colors shadow-lg shadow-primary/25 text-sm flex items-center justify-center gap-2 disabled:opacity-50"
+        >
+          <span id="btn-label">Proceed to Paystack Checkout &rarr;</span>
+          <span id="btn-loading" class="hidden">
+            <svg class="animate-spin inline-block w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            Initializing secure checkout...
+          </span>
+        </button>
+
+        <p class="text-center text-xs text-slate-400 dark:text-slate-500 mt-4">
+          Protected by Paystack 256-bit SSL encryption. All payments comply with Central Bank of Kenya (CBK) standards.
+        </p>
+      </div>
+    </div>
+  </div>
+</BaseLayout>
+
+<script>
+  const container = document.getElementById('billing-portal-container');
+  const apiUrl = container?.dataset.apiUrl || 'http://localhost:5000';
+  const checkoutBtn = document.getElementById('billing-checkout-btn') as HTMLButtonElement;
+  const btnLabel = document.getElementById('btn-label');
+  const btnLoading = document.getElementById('btn-loading');
+  const errorBox = document.getElementById('billing-error-box');
+  const errorMsg = document.getElementById('billing-error-message');
+
+  function showError(msg: string) {
+    if (errorBox && errorMsg) {
+      errorMsg.textContent = msg;
+      errorBox.classList.remove('hidden');
+    }
+  }
+
+  function hideError() {
+    errorBox?.classList.add('hidden');
+  }
+
+  // Pre-fill phone if saved in localStorage
+  const phoneInput = document.getElementById('billingPhone') as HTMLInputElement;
+  const savedUser = localStorage.getItem('markchat_user');
+  if (savedUser) {
+    try {
+      const parsed = JSON.parse(savedUser);
+      if (parsed.email) {
+        const backLink = document.getElementById('billing-back-link');
+        if (backLink) backLink.textContent = `Signed in as ${parsed.email}`;
+      }
+    } catch {
+      // ignore parse
+    }
+  }
+
+  // Handle Checkout Dispatch
+  checkoutBtn?.addEventListener('click', async () => {
+    hideError();
+
+    const selectedPlan = (document.querySelector('input[name="planSelect"]:checked') as HTMLInputElement)?.value || 'growth';
+    const paymentMethod = (document.querySelector('input[name="paymentMethod"]:checked') as HTMLInputElement)?.value || 'mpesa';
+    const phone = phoneInput?.value.trim();
+
+    if (paymentMethod === 'mpesa' && !phone) {
+      showError('Please provide a valid Safaricom phone number for M-Pesa payment.');
+      phoneInput?.focus();
+      return;
+    }
+
+    checkoutBtn.disabled = true;
+    btnLabel?.classList.add('hidden');
+    btnLoading?.classList.remove('hidden');
+
+    const token = localStorage.getItem('markchat_auth_token');
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    };
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    const callbackUrl = `${window.location.origin}/billing/return`;
+
+    try {
+      const res = await fetch(`${apiUrl}/api/v1/billing/checkout`, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({
+          planId: selectedPlan,
+          paymentMethod,
+          callbackUrl,
+        }),
+      });
+
+      if (!res.ok) {
+        const errJson = await res.json().catch(() => ({}));
+        let message = errJson.message || 'Unable to initialize checkout. Please ensure you are logged in.';
+        if (res.status === 401) {
+          message = 'Please sign in to your workspace before initializing payment.';
+          setTimeout(() => {
+            window.location.href = `/login?redirect=/billing`;
+          }, 1500);
+        }
+        showError(message);
+        checkoutBtn.disabled = false;
+        btnLabel?.classList.remove('hidden');
+        btnLoading?.classList.add('hidden');
+        return;
+      }
+
+      const body = await res.json();
+      const checkoutUrl = body.checkoutUrl || body.data?.checkoutUrl;
+
+      if (checkoutUrl) {
+        window.location.href = checkoutUrl;
+      } else {
+        showError('No checkout redirection URL was received from Paystack.');
+        checkoutBtn.disabled = false;
+        btnLabel?.classList.remove('hidden');
+        btnLoading?.classList.add('hidden');
+      }
+    } catch {
+      showError('Network communication error with billing server. Please verify your connection.');
+      checkoutBtn.disabled = false;
+      btnLabel?.classList.remove('hidden');
+      btnLoading?.classList.add('hidden');
+    }
+  });
+</script>

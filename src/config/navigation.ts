@@ -22,8 +22,8 @@ export const navigation: Navigation = {
       { label: 'Demo', href: '/demo' },
     ],
     cta: [
-      { label: 'Login', href: `${APP_URL}/app/auth/login`, variant: 'ghost' },
-      { label: 'Get Started', href: `${APP_URL}/app/auth/signup`, variant: 'primary' },
+      { label: 'Login', href: '/login', variant: 'ghost' },
+      { label: 'Get Started', href: '/register', variant: 'primary' },
     ],
   },
 

@@ -40,7 +40,8 @@ const comparisonCategories = [
         name: 'Official WhatsApp Cloud API',
         values: [
           featMap.get('whatsapp_api')?.starter ?? true,
-          featMap.get('whatsapp_api')?.pro ?? true,
+          featMap.get('whatsapp_api')?.growth ?? true,
+          featMap.get('whatsapp_api')?.scale ?? true,
           featMap.get('whatsapp_api')?.enterprise ?? true,
         ],
         tooltip: 'Direct Meta Cloud API integration with zero phone ban risk',
@@ -48,16 +49,22 @@ const comparisonCategories = [
       {
         name: 'Bulk SMS Gateway (Africa’s Talking)',
         values: [
-          '50 Trial SMS',
-          featMap.get('bulk_ai_campaigns')?.pro ? '500 SMS / mo Included' : false,
-          'BYOC Zero Markup / Custom',
+          'BYO Gateway',
+          'BYO Gateway',
+          'BYO Gateway',
+          'BYO Gateway & Dedicated Shortcode',
         ],
-        tooltip: 'Prepaid bundles via M-Pesa or Bring Your Own Carrier credentials',
+        tooltip: 'Connect your own carrier credentials (e.g. Africa\'s Talking) with zero platform markup',
       },
       {
         name: 'Instagram DMs & Facebook Messenger',
-        values: [false, true, true],
+        values: [false, true, true, true],
         tooltip: 'Centralize social messages into your shared team inbox',
+      },
+      {
+        name: 'Inboxes Supported',
+        values: ['2 Inboxes', '5 Inboxes', 'Unlimited Inboxes', 'Unlimited Inboxes'],
+        tooltip: 'Total connected communication inboxes per workspace',
       },
     ],
   },
@@ -65,52 +72,24 @@ const comparisonCategories = [
     name: 'M-Pesa & Mobile Money Modes',
     features: [
       {
-        name: 'In-Chat /stk PIN Prompt Checkout',
-        values: [
-          featMap.get('mpesa_stk_checkout')?.starter ?? false,
-          featMap.get('mpesa_stk_checkout')?.pro ?? true,
-          featMap.get('mpesa_stk_checkout')?.enterprise ?? true,
-        ],
-        tooltip: 'Trigger instant M-Pesa PIN popup on customer phone directly in chat',
-      },
-      {
         name: 'Daraja C2B Auto-Verification (Stops Fake SMS)',
-        values: ['Manual Log', true, 'Dedicated Route'],
+        values: [true, true, true, 'Dedicated Route'],
         tooltip: 'Server-side TransID validation that eliminates screenshot fraud',
       },
       {
-        name: 'Pochi la Biashara & Till Forwarder Sync',
+        name: 'M-Pesa STK Push Integration',
         values: [
-          featMap.get('pochi_sms_sync')?.starter ?? false,
-          featMap.get('pochi_sms_sync')?.pro ?? true,
-          featMap.get('pochi_sms_sync')?.enterprise ?? true,
+          featMap.get('mpesa_stk_checkout')?.starter ?? false,
+          featMap.get('mpesa_stk_checkout')?.growth ?? true,
+          featMap.get('mpesa_stk_checkout')?.scale ?? true,
+          featMap.get('mpesa_stk_checkout')?.enterprise ?? true,
         ],
-        tooltip: 'Real-time Android SMS sync forwarder for personal/Pochi lines',
+        tooltip: 'Server-verified STK checkout and automated payment receipts',
       },
       {
-        name: 'Shared Bank Paybill (KCB, Equity, Co-op)',
-        values: [false, true, true],
+        name: 'Shared Bank Paybill Routing (KCB, Equity, Co-op)',
+        values: [false, true, true, true],
         tooltip: 'Auto-routes incoming bank payments by customer account reference',
-      },
-    ],
-  },
-  {
-    name: 'Markcopilot AI Automation',
-    features: [
-      {
-        name: 'Dual-Mode AI Engine (Swahili / English)',
-        values: ['50 msgs / mo', featMap.get('markcopilot_ai')?.pro ?? true, 'Custom Fine-Tuning'],
-        tooltip: 'Trained on your catalog, price lists, and delivery guidelines',
-      },
-      {
-        name: 'Agent 1-Click Reply Drafts & Summaries',
-        values: [false, true, true],
-        tooltip: 'Accelerates human agent response times by 4x',
-      },
-      {
-        name: 'Sentiment & Urgency Order Tagging',
-        values: [false, true, true],
-        tooltip: 'Alerts supervisors to ready-to-pay wholesale leads',
       },
     ],
   },
@@ -119,13 +98,15 @@ const comparisonCategories = [
     features: [
       {
         name: 'Team Agent Seats',
-        values: ['1 Agent', '5 Agents included', 'Unlimited Seats'],
+        values: ['3 Agents', '10 Agents', '25 Agents', 'Custom / Unlimited'],
+        tooltip: 'Configured billable agent seats per workspace',
       },
       {
         name: 'Workspace Performance & SLA Reports',
         values: [
           featMap.get('workspace_analytics')?.starter ?? false,
-          featMap.get('workspace_analytics')?.pro ?? true,
+          featMap.get('workspace_analytics')?.growth ?? true,
+          featMap.get('workspace_analytics')?.scale ?? true,
           featMap.get('workspace_analytics')?.enterprise ?? true,
         ],
       },
@@ -133,13 +114,19 @@ const comparisonCategories = [
         name: 'Custom Domain Whitelabeling & Branding',
         values: [
           featMap.get('custom_whitelabel')?.starter ?? false,
-          featMap.get('custom_whitelabel')?.pro ?? true,
+          featMap.get('custom_whitelabel')?.growth ?? false,
+          featMap.get('custom_whitelabel')?.scale ?? true,
           featMap.get('custom_whitelabel')?.enterprise ?? true,
         ],
       },
       {
         name: 'Customer Support',
-        values: ['Community & Email', 'Priority WhatsApp Support', '24/7 Dedicated Account Lead'],
+        values: [
+          'Email & Community',
+          'Priority WhatsApp & Email',
+          'Priority SLA & Dedicated Support',
+          '24/7 Dedicated Account Lead',
+        ],
       },
     ],
   },
@@ -152,11 +139,11 @@ const pricingFaqs = faqsList
 
 <MarketingLayout
   title={`Pricing & Plans - ${siteConfig.name} Kenya`}
-  description="Transparent KES pricing for MarkChat. Starter KES 0/mo, Pro KES 3,500/mo, Enterprise scale. In-Chat M-Pesa STK, Bulk SMS, and Markcopilot AI."
+  description="Transparent KES pricing for MarkChat. Starter KES 1,500/mo, Growth KES 3,500/mo, Scale KES 5,000/mo, Enterprise scale. In-Chat M-Pesa STK, BYO SMS, and multi-channel shared inboxes."
 >
   <PricingTable
     title="Simple, Transparent KES Pricing"
-    subtitle="All plans include official WhatsApp Cloud API access and 50 free Bulk SMS credits to test. Save 20% when billed annually."
+    subtitle="All plans include official WhatsApp Cloud API access and Bring Your Own SMS Gateway support. Save 20% when billed annually."
     plans={plans}
     annualDiscount={20}
     defaultPeriod="monthly"
@@ -164,15 +151,15 @@ const pricingFaqs = faqsList
 
   <TrustBadges
     guarantee={{
-      title: '14-Day Free Trial on Pro Plans',
+      title: '72-Hour Full-Featured Trial on Growth Plan',
       description:
-        'Try all MarkChat Pro features risk-free. No credit card required to start—pay via M-Pesa only when satisfied.',
+        'Try all MarkChat Growth features risk-free for 72 hours. No payment required to start—pay via M-Pesa or card only when satisfied.',
     }}
   />
 
   <ComparisonTable
     title="Detailed Plan & Feature Gating Matrix"
-    subtitle="Inspect exact channel boundaries, M-Pesa modes, and Markcopilot AI capabilities across all tiers."
+    subtitle="Inspect exact channel boundaries, M-Pesa modes, and collaboration capabilities across all tiers."
     plans={planNames}
     categories={comparisonCategories}
     highlightedPlan={1}

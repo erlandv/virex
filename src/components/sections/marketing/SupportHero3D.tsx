@@ -23,8 +23,8 @@ export const SupportHero3D: React.FC<SupportHero3DProps> = ({
   subtitle = 'Unify WhatsApp Business Cloud, Africa’s Talking Bulk SMS, Instagram DMs, and Facebook Messenger into one shared inbox. Trigger in-chat /stk PIN prompts and auto-verify Safaricom payments in seconds.',
   badge = 'Kenyan Commerce & In-Chat M-Pesa Engine',
   primaryCTA = {
-    label: 'Start Free — 50 Trial SMS Included',
-    href: 'http://localhost:3000/app/auth/signup',
+    label: 'Get Started with MarkChat',
+    href: '/register',
   },
   secondaryCTA = {
     label: 'Book Live Demo',

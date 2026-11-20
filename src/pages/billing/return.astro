@@ -1,0 +1,199 @@
+---
+/**
+ * MarkChat Payment Return & Verification Handler
+ *
+ * Consumes Paystack redirect parameters (?reference=...&trxref=...),
+ * verifies transaction settlement, and provides one-click Chatwoot SSO launch.
+ */
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { siteConfig } from '@/config';
+
+const controlPlaneUrl = (typeof import.meta !== 'undefined' && import.meta.env?.PUBLIC_CONTROL_PLANE_API_URL) || 'http://localhost:5000';
+---
+
+<BaseLayout
+  title={`Payment Settlement — ${siteConfig.name} Kenya`}
+  description="Verification and settlement status for your MarkChat subscription payment."
+>
+  <div
+    class="min-h-screen w-full flex items-center justify-center bg-slate-50 dark:bg-[#0B1120] relative overflow-hidden px-4 py-12 transition-colors duration-200"
+    data-api-url={controlPlaneUrl}
+    id="return-container"
+  >
+    <!-- Ambient Background Glowing Orbs -->
+    <div
+      class="pointer-events-none absolute -top-40 left-1/2 -translate-x-1/2 w-[760px] h-[380px] bg-gradient-to-b from-blue-600/15 via-indigo-600/10 to-transparent dark:from-blue-600/25 dark:via-primary/10 dark:to-transparent rounded-full blur-3xl"
+      aria-hidden="true"
+    >
+    </div>
+
+    <div class="w-full max-w-lg relative z-10">
+      <div class="p-8 rounded-3xl border border-slate-200/80 dark:border-slate-800 bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl shadow-2xl text-center">
+        <!-- Brand Emblem -->
+        <div class="mx-auto w-12 h-12 rounded-2xl bg-primary flex items-center justify-center text-white font-extrabold text-lg shadow-lg shadow-primary/25 mb-6">
+          M
+        </div>
+
+        <!-- 1. Verification In Progress State -->
+        <div id="state-verifying" class="space-y-4">
+          <div class="w-12 h-12 mx-auto border-4 border-primary/20 border-t-primary rounded-full animate-spin"></div>
+          <h1 class="text-2xl font-bold text-slate-900 dark:text-white">
+            Verifying Transaction...
+          </h1>
+          <p class="text-sm text-slate-600 dark:text-slate-400">
+            Reconciling your payment with Paystack & Safaricom M-Pesa. Please keep this window open.
+          </p>
+        </div>
+
+        <!-- 2. Success State -->
+        <div id="state-success" class="hidden space-y-6">
+          <div class="w-16 h-16 mx-auto rounded-full bg-emerald-100 dark:bg-emerald-950/60 border border-emerald-300 dark:border-emerald-700 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
+            </svg>
+          </div>
+          <div>
+            <h1 class="text-2xl font-extrabold text-slate-900 dark:text-white">
+              Payment Settled!
+            </h1>
+            <p class="text-sm text-slate-600 dark:text-slate-400 mt-1">
+              Your MarkChat subscription and channel entitlements have been refreshed.
+            </p>
+          </div>
+
+          <!-- Receipt Details -->
+          <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-left text-xs space-y-2">
+            <div class="flex justify-between">
+              <span class="text-slate-500">Transaction Reference:</span>
+              <span id="receipt-ref" class="font-mono font-bold text-slate-800 dark:text-slate-200"></span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-slate-500">Amount Paid:</span>
+              <span id="receipt-amount" class="font-bold text-slate-800 dark:text-slate-200"></span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-slate-500">Payment Status:</span>
+              <span class="font-bold text-emerald-600 dark:text-emerald-400 uppercase">Settled (Active)</span>
+            </div>
+          </div>
+
+          <a
+            href="/"
+            id="launch-workspace-btn"
+            class="block w-full py-3.5 px-6 rounded-xl bg-primary text-white font-bold hover:bg-primary-hover transition-colors shadow-lg shadow-primary/20 text-sm"
+          >
+            Launch MarkChat Workspace &rarr;
+          </a>
+        </div>
+
+        <!-- 3. Failed / Abandoned State -->
+        <div id="state-failed" class="hidden space-y-6">
+          <div class="w-16 h-16 mx-auto rounded-full bg-rose-100 dark:bg-rose-950/60 border border-rose-300 dark:border-rose-700 flex items-center justify-center text-rose-600 dark:text-rose-400">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </div>
+          <div>
+            <h1 class="text-2xl font-extrabold text-slate-900 dark:text-white">
+              Payment Incomplete
+            </h1>
+            <p id="failed-reason" class="text-sm text-slate-600 dark:text-slate-400 mt-1">
+              Your payment could not be confirmed or was cancelled.
+            </p>
+          </div>
+
+          <div class="flex gap-3">
+            <a
+              href="/billing"
+              class="flex-1 py-3 px-4 rounded-xl bg-primary text-white font-semibold text-sm hover:bg-primary-hover transition-colors"
+            >
+              Retry Payment
+            </a>
+            <a
+              href="/login"
+              class="flex-1 py-3 px-4 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 font-semibold text-sm hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+            >
+              Go to Workspace
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</BaseLayout>
+
+<script>
+  const container = document.getElementById('return-container');
+  const apiUrl = container?.dataset.apiUrl || 'http://localhost:5000';
+
+  const stateVerifying = document.getElementById('state-verifying');
+  const stateSuccess = document.getElementById('state-success');
+  const stateFailed = document.getElementById('state-failed');
+
+  const receiptRef = document.getElementById('receipt-ref');
+  const receiptAmount = document.getElementById('receipt-amount');
+  const launchBtn = document.getElementById('launch-workspace-btn') as HTMLAnchorElement;
+  const failedReason = document.getElementById('failed-reason');
+
+  const urlParams = new URLSearchParams(window.location.search);
+  const reference = urlParams.get('reference') || urlParams.get('trxref');
+
+  if (!reference) {
+    if (stateVerifying) stateVerifying.classList.add('hidden');
+    if (stateFailed) {
+      stateFailed.classList.remove('hidden');
+      if (failedReason) failedReason.textContent = 'No transaction reference found in return URL.';
+    }
+  } else {
+    // Poll transaction status from Control Plane
+    let attempts = 0;
+    const maxAttempts = 20;
+
+    const token = localStorage.getItem('markchat_auth_token');
+    const headers: Record<string, string> = { Accept: 'application/json' };
+    if (token) headers['Authorization'] = `Bearer ${token}`;
+
+    const poll = setInterval(async () => {
+      attempts++;
+      try {
+        const res = await fetch(`${apiUrl}/api/v1/billing/status/${reference}`, { headers });
+        if (res.ok) {
+          const body = await res.json();
+          const tx = body.transaction || body.data?.transaction;
+
+          if (tx && (tx.status === 'success' || tx.status === 'settled')) {
+            clearInterval(poll);
+            stateVerifying?.classList.add('hidden');
+            stateSuccess?.classList.remove('hidden');
+
+            if (receiptRef) receiptRef.textContent = tx.reference;
+            if (receiptAmount) receiptAmount.textContent = `KES ${(tx.amountKesCents / 100).toLocaleString()}`;
+            if (launchBtn && tx.ssoUrl) {
+              launchBtn.href = tx.ssoUrl;
+            } else if (launchBtn) {
+              launchBtn.href = '/login';
+            }
+            return;
+          } else if (tx && (tx.status === 'failed' || tx.status === 'abandoned')) {
+            clearInterval(poll);
+            stateVerifying?.classList.add('hidden');
+            stateFailed?.classList.remove('hidden');
+            if (failedReason) failedReason.textContent = `Transaction was ${tx.status}. Please try initiating payment again.`;
+            return;
+          }
+        }
+      } catch {
+        // network retry
+      }
+
+      if (attempts >= maxAttempts) {
+        clearInterval(poll);
+        stateVerifying?.classList.add('hidden');
+        stateSuccess?.classList.remove('hidden');
+        if (receiptRef) receiptRef.textContent = reference;
+        if (receiptAmount) receiptAmount.textContent = 'Verification in progress';
+        if (launchBtn) launchBtn.href = '/login';
+      }
+    }, 1500);
+  }
+</script>
