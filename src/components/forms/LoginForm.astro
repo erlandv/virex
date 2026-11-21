@@ -56,7 +56,7 @@ const controlPlaneUrl = (typeof import.meta !== 'undefined' && import.meta.env?.
         autocomplete="email"
         aria-describedby="email-error"
         aria-invalid="false"
-        class="w-full h-11 px-4 rounded-xl border border-border bg-background text-text placeholder:text-text-muted/60 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-colors text-sm shadow-xs"
+        class="w-full h-11 px-4 rounded-xl border border-border bg-background text-text placeholder:text-text-muted/60 focus:outline-none focus-visible:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 focus-visible:ring-2 focus-visible:ring-primary transition-colors text-sm shadow-xs"
         placeholder="you@company.co.ke"
       />
       <p id="email-error" class="mt-1 text-xs text-error hidden" data-error="email" role="alert"></p>
@@ -84,7 +84,7 @@ const controlPlaneUrl = (typeof import.meta !== 'undefined' && import.meta.env?.
           autocomplete="current-password"
           aria-describedby="password-error"
           aria-invalid="false"
-          class="w-full h-11 px-4 pr-11 rounded-xl border border-border bg-background text-text placeholder:text-text-muted/60 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-colors text-sm shadow-xs"
+          class="w-full h-11 px-4 pr-11 rounded-xl border border-border bg-background text-text placeholder:text-text-muted/60 focus:outline-none focus-visible:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 focus-visible:ring-2 focus-visible:ring-primary transition-colors text-sm shadow-xs"
           placeholder="••••••••"
         />
         <button
@@ -153,7 +153,7 @@ const controlPlaneUrl = (typeof import.meta !== 'undefined' && import.meta.env?.
       class="w-full h-11 cursor-pointer px-6 rounded-xl bg-primary hover:bg-primary-dark text-white font-medium text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:opacity-50 disabled:cursor-not-allowed shadow-xs flex items-center justify-center"
     >
       <span id="login-button-text">Sign in to workspace</span>
-      <span id="login-button-loading" class="hidden inline-flex items-center gap-2">
+      <span id="login-button-loading" class="hidden items-center gap-2">
         <svg class="animate-spin w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" aria-hidden="true">
           <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
           <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
@@ -162,11 +162,6 @@ const controlPlaneUrl = (typeof import.meta !== 'undefined' && import.meta.env?.
       </span>
     </button>
   </form>
-
-  <p class="text-center text-xs text-text-muted pt-4">
-    Don't have an account?{' '}
-    <a href="/register" class="font-medium text-primary hover:text-primary-dark hover:underline">Create a workspace &rarr;</a>
-  </p>
 </div>
 
 <script>
@@ -183,6 +178,23 @@ const controlPlaneUrl = (typeof import.meta !== 'undefined' && import.meta.env?.
 
   // Track touched fields to strictly prevent premature errors on initial load
   const touchedFields = new Set<string>();
+
+  // Surface OAuth Errors Gracefully
+  const initialParams = new URLSearchParams(window.location.search);
+  const oauthError = initialParams.get('oauth_error');
+  if (oauthError) {
+    let message = 'Google authentication could not be completed. Please try again.';
+    if (oauthError === 'google_not_configured') {
+      message = 'Google Sign-In is not configured on this environment yet. Please sign in with your business email below.';
+    } else if (oauthError === 'access_denied') {
+      message = 'Google sign-in was canceled.';
+    }
+    showFormError(message);
+    initialParams.delete('oauth_error');
+    const cleanSearch = initialParams.toString();
+    const cleanUrl = window.location.pathname + (cleanSearch ? `?${cleanSearch}` : '') + window.location.hash;
+    window.history.replaceState({}, document.title, cleanUrl);
+  }
 
   // Open-Redirect Protection Helper (CWE-601)
   function getSafeRedirect(targetUrl: string | null | undefined, fallback: string = '/billing'): string {
@@ -305,6 +317,7 @@ const controlPlaneUrl = (typeof import.meta !== 'undefined' && import.meta.env?.
       form.setAttribute('aria-busy', 'true');
       buttonText?.classList.add('hidden');
       buttonLoading?.classList.remove('hidden');
+      buttonLoading?.classList.add('inline-flex');
 
       const email = emailInput?.value.trim().toLowerCase();
       const password = passwordInput?.value;
@@ -351,11 +364,20 @@ const controlPlaneUrl = (typeof import.meta !== 'undefined' && import.meta.env?.
         }
 
         const data = await response.json();
+        const payload = data.data || data;
+
+        if (payload.token) {
+          try {
+            localStorage.setItem('markchat_cp_token', payload.token);
+          } catch {
+            // Storage unavailable or quota exceeded
+          }
+        }
 
         formStatus?.classList.remove('hidden');
         formSuccess?.classList.remove('hidden');
 
-        const destination = data.ssoUrl || targetRedirect;
+        const destination = payload.ssoUrl || targetRedirect;
         setTimeout(() => {
           window.location.href = destination;
         }, 800);
@@ -383,5 +405,6 @@ const controlPlaneUrl = (typeof import.meta !== 'undefined' && import.meta.env?.
     form.removeAttribute('aria-busy');
     buttonText?.classList.remove('hidden');
     buttonLoading?.classList.add('hidden');
+    buttonLoading?.classList.remove('inline-flex');
   }
 </script>

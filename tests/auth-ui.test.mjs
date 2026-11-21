@@ -71,9 +71,10 @@ describe('MarkChat Authentication & Registration UI (Distraction-Free AuthLayout
     assert.ok(fs.existsSync(socialPath), 'SocialAuthButtons.astro must exist');
     const content = fs.readFileSync(socialPath, 'utf8');
 
-    // Google presence
+    // Google presence and Control Plane start route
     assert.ok(content.includes('simple-icons:google') || content.includes('Google'), 'must include Google authentication');
     assert.ok(content.includes('googleUrl'), 'must support googleUrl prop');
+    assert.ok(content.includes('/api/v1/auth/google/start'), 'must point to Control Plane Google OAuth start route');
 
     // GitHub absence
     assert.ok(!content.includes('simple-icons:github'), 'must NOT include GitHub icon');
@@ -156,5 +157,16 @@ describe('MarkChat Authentication & Registration UI (Distraction-Free AuthLayout
     assert.ok(content.includes('name="confirmPassword"'), 'must include confirm password input');
     assert.ok(content.includes('Passwords do not match'), 'must validate password matching');
     assert.ok(content.includes('name="_gotcha"'), 'must include honeypot anti-spam');
+  });
+
+  test('OAuth callback page exists, uses AuthLayout with noindex, and scrubs URL fragment', () => {
+    const callbackPath = path.join(SRC_DIR, 'pages', 'auth', 'callback.astro');
+    assert.ok(fs.existsSync(callbackPath), 'src/pages/auth/callback.astro must exist');
+    const content = fs.readFileSync(callbackPath, 'utf8');
+
+    assert.ok(content.includes('AuthLayout'), 'Callback page must use AuthLayout');
+    assert.ok(content.includes('noindex={true}'), 'Callback page must enforce noindex to prevent indexing');
+    assert.ok(content.includes('replaceState'), 'Callback page must scrub URL fragment via history.replaceState');
+    assert.ok(content.includes('markchat_cp_token'), 'Callback page must store authentication token');
   });
 });

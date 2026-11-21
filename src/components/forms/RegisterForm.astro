@@ -143,7 +143,7 @@ const initialPlan = plansInfo[defaultPlanId] || plansInfo.growth;
           autocomplete="organization"
           aria-describedby="businessName-error"
           aria-invalid="false"
-          class="w-full h-11 px-4 rounded-xl border border-border bg-background text-text placeholder:text-text-muted/60 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-colors text-sm shadow-xs"
+          class="w-full h-11 px-4 rounded-xl border border-border bg-background text-text placeholder:text-text-muted/60 focus:outline-none focus-visible:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 focus-visible:ring-2 focus-visible:ring-primary transition-colors text-sm shadow-xs"
           placeholder="e.g. Acme Retail Kenya Ltd"
         />
         <div class="mt-1.5 flex items-center gap-1.5 text-xs text-text-muted font-mono tabular-nums">
@@ -167,7 +167,7 @@ const initialPlan = plansInfo[defaultPlanId] || plansInfo.growth;
           autocomplete="name"
           aria-describedby="fullName-error"
           aria-invalid="false"
-          class="w-full h-11 px-4 rounded-xl border border-border bg-background text-text placeholder:text-text-muted/60 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-colors text-sm shadow-xs"
+          class="w-full h-11 px-4 rounded-xl border border-border bg-background text-text placeholder:text-text-muted/60 focus:outline-none focus-visible:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 focus-visible:ring-2 focus-visible:ring-primary transition-colors text-sm shadow-xs"
           placeholder="e.g. Wanjiku Kimani"
         />
         <p id="fullName-error" class="mt-1 text-xs text-error hidden" data-error="fullName" role="alert"></p>
@@ -186,7 +186,7 @@ const initialPlan = plansInfo[defaultPlanId] || plansInfo.growth;
           autocomplete="email"
           aria-describedby="registerEmail-error"
           aria-invalid="false"
-          class="w-full h-11 px-4 rounded-xl border border-border bg-background text-text placeholder:text-text-muted/60 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-colors text-sm shadow-xs"
+          class="w-full h-11 px-4 rounded-xl border border-border bg-background text-text placeholder:text-text-muted/60 focus:outline-none focus-visible:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 focus-visible:ring-2 focus-visible:ring-primary transition-colors text-sm shadow-xs"
           placeholder="wanjiku@acmeretail.co.ke"
         />
         <p id="registerEmail-error" class="mt-1 text-xs text-error hidden" data-error="registerEmail" role="alert"></p>
@@ -207,7 +207,7 @@ const initialPlan = plansInfo[defaultPlanId] || plansInfo.growth;
           autocomplete="tel"
           aria-describedby="registerPhone-error"
           aria-invalid="false"
-          class="w-full h-11 px-4 rounded-xl border border-border bg-background text-text placeholder:text-text-muted/60 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-colors text-sm shadow-xs"
+          class="w-full h-11 px-4 rounded-xl border border-border bg-background text-text placeholder:text-text-muted/60 focus:outline-none focus-visible:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 focus-visible:ring-2 focus-visible:ring-primary transition-colors text-sm shadow-xs"
           placeholder="+254 712 345 678"
         />
         <p id="registerPhone-error" class="mt-1 text-xs text-error hidden" data-error="registerPhone" role="alert"></p>
@@ -263,7 +263,7 @@ const initialPlan = plansInfo[defaultPlanId] || plansInfo.growth;
             autocomplete="new-password"
             aria-describedby="registerPassword-error"
             aria-invalid="false"
-            class="w-full h-11 px-4 pr-11 rounded-xl border border-border bg-background text-text placeholder:text-text-muted/60 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-colors text-sm shadow-xs"
+            class="w-full h-11 px-4 pr-11 rounded-xl border border-border bg-background text-text placeholder:text-text-muted/60 focus:outline-none focus-visible:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 focus-visible:ring-2 focus-visible:ring-primary transition-colors text-sm shadow-xs"
             placeholder="••••••••••••"
           />
           <button
@@ -311,7 +311,7 @@ const initialPlan = plansInfo[defaultPlanId] || plansInfo.growth;
           autocomplete="new-password"
           aria-describedby="confirmPassword-error"
           aria-invalid="false"
-          class="w-full h-11 px-4 rounded-xl border border-border bg-background text-text placeholder:text-text-muted/60 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-colors text-sm shadow-xs"
+          class="w-full h-11 px-4 rounded-xl border border-border bg-background text-text placeholder:text-text-muted/60 focus:outline-none focus-visible:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 focus-visible:ring-2 focus-visible:ring-primary transition-colors text-sm shadow-xs"
           placeholder="••••••••••••"
         />
         <p id="confirmPassword-error" class="mt-1 text-xs text-error hidden" data-error="confirmPassword" role="alert"></p>
@@ -412,7 +412,7 @@ const initialPlan = plansInfo[defaultPlanId] || plansInfo.growth;
           <span id="register-button-text">
             {initialPlan.isTrial ? 'Start 72-Hour Free Trial' : 'Create MarkChat Account'}
           </span>
-          <span id="register-button-loading" class="hidden inline-flex items-center gap-2">
+          <span id="register-button-loading" class="hidden items-center gap-2">
             <svg class="animate-spin w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" aria-hidden="true">
               <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
               <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
@@ -495,6 +495,23 @@ const initialPlan = plansInfo[defaultPlanId] || plansInfo.growth;
 
   // Track touched fields to strictly prevent premature errors on initial load
   const touchedFields = new Set<string>();
+
+  // Surface OAuth Errors Gracefully
+  const initialParams = new URLSearchParams(window.location.search);
+  const oauthError = initialParams.get('oauth_error');
+  if (oauthError) {
+    let message = 'Google authentication could not be completed. Please try again.';
+    if (oauthError === 'google_not_configured') {
+      message = 'Google Sign-In is not configured on this environment yet. Please register with your details below.';
+    } else if (oauthError === 'access_denied') {
+      message = 'Google sign-up was canceled.';
+    }
+    showFormError(message);
+    initialParams.delete('oauth_error');
+    const cleanSearch = initialParams.toString();
+    const cleanUrl = window.location.pathname + (cleanSearch ? `?${cleanSearch}` : '') + window.location.hash;
+    window.history.replaceState({}, document.title, cleanUrl);
+  }
 
   // Plan metadata
   const plansMap: Record<string, { name: string; isTrial: boolean }> = {
@@ -881,6 +898,7 @@ const initialPlan = plansInfo[defaultPlanId] || plansInfo.growth;
       form.setAttribute('aria-busy', 'true');
       buttonText?.classList.add('hidden');
       buttonLoading?.classList.remove('hidden');
+      buttonLoading?.classList.add('inline-flex');
 
       // 4. Gather Payload
       const businessName = (document.getElementById('businessName') as HTMLInputElement).value.trim();
@@ -1039,5 +1057,6 @@ const initialPlan = plansInfo[defaultPlanId] || plansInfo.growth;
     form.removeAttribute('aria-busy');
     buttonText?.classList.remove('hidden');
     buttonLoading?.classList.add('hidden');
+    buttonLoading?.classList.remove('inline-flex');
   }
 </script>
