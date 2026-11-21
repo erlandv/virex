@@ -1,0 +1,97 @@
+---
+/**
+ * AuthLayout - Minimal, Distraction-Free SaaS Authentication Layout
+ *
+ * Built directly on BaseLayout for optimal conversion, speed, and focus.
+ * Excludes the marketing header navigation, announcement banner, multi-column footer,
+ * and floating chat widget on auth and onboarding routes.
+ *
+ * Implements:
+ * - Minimal top bar: MarkChat logo linking to `/` + contextual link + ThemeToggle
+ * - Centered viewport slot using native Virex semantic OKLCH tokens
+ * - Clean single-line micro-footer (Back to MarkChat, Terms, Privacy KDPA)
+ */
+import BaseLayout from './BaseLayout.astro';
+import ThemeToggle from '@/components/ui/ThemeToggle.astro';
+import { siteConfig } from '@/config';
+
+interface Props {
+  title: string;
+  description: string;
+  pageType?: 'login' | 'register' | 'forgot-password' | 'reset-password';
+  noindex?: boolean;
+}
+
+const {
+  title,
+  description,
+  pageType = 'login',
+  noindex = false,
+} = Astro.props;
+---
+
+<BaseLayout title={title} description={description} noindex={noindex}>
+  <div class="flex flex-col min-h-screen bg-background text-text">
+    <!-- Minimal, distraction-free Top Bar -->
+    <header class="border-b border-border bg-background/95 backdrop-blur-sm sticky top-0 z-40">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+        <!-- Logo -->
+        <a href="/" class="flex items-center gap-2 font-semibold text-lg text-text shrink-0" aria-label="MarkChat Home">
+          {siteConfig.logo ? (
+            <img src={siteConfig.logo} alt={siteConfig.name} class="h-8 w-auto" />
+          ) : (
+            <span class="tracking-tight">{siteConfig.name}</span>
+          )}
+        </a>
+
+        <!-- Contextual Action & Theme Toggle -->
+        <div class="flex items-center gap-4 text-sm">
+          {pageType === 'register' ? (
+            <span class="text-text-muted hidden sm:inline">
+              Already have an account?{' '}
+              <a href="/login" class="font-medium text-primary hover:text-primary-dark hover:underline">
+                Sign in
+              </a>
+            </span>
+          ) : (
+            <span class="text-text-muted hidden sm:inline">
+              Don't have an account?{' '}
+              <a href="/register" class="font-medium text-primary hover:text-primary-dark hover:underline">
+                Get started
+              </a>
+            </span>
+          )}
+          <ThemeToggle />
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content: Centered Auth Card -->
+    <main id="main-content" class="flex-1 flex flex-col justify-center py-12 sm:py-16 px-4 sm:px-6">
+      <slot />
+    </main>
+
+    <!-- Single-line Micro-Footer -->
+    <footer class="border-t border-border/80 py-6 px-4 sm:px-6 bg-surface/50">
+      <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-text-muted">
+        <div class="flex items-center gap-4">
+          <a href="/" class="hover:text-text hover:underline transition-colors flex items-center gap-1">
+            <span>←</span>
+            <span>Back to MarkChat</span>
+          </a>
+          <span>•</span>
+          <a href="/terms" class="hover:text-text hover:underline transition-colors">Terms</a>
+          <span>•</span>
+          <a href="/privacy" class="hover:text-text hover:underline transition-colors">Privacy (KDPA)</a>
+        </div>
+        <div class="flex items-center gap-2 text-text-muted">
+          <span>KDPA 2019 Compliant</span>
+          <span>•</span>
+          <span>256-Bit TLS</span>
+          <span>•</span>
+          <span>Nairobi, Kenya</span>
+        </div>
+      </div>
+    </footer>
+  </div>
+</BaseLayout>

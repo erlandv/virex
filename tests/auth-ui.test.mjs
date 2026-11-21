@@ -1,21 +1,22 @@
 /**
- * Tests for MarkChat Authentication & Registration UI Redesign (Direction A + D)
+ * Tests for MarkChat Authentication & Registration UI Redesign (Distraction-Free AuthLayout)
  *
  * Verifies that:
  * 1. Customer-facing pages exist: /register, /login, /forgot-password, /reset-password.
- * 2. All 4 authentication pages use the approved AuthSplitLayout.
- * 3. AuthSplitLayout implements the split-screen SaaS layout (Showcase + Spacious Form panel).
- * 4. RegisterForm implements the guided two-step registration wizard:
- *    - Step 1: businessName, fullName, email, phone.
+ * 2. All 4 authentication pages use minimal AuthLayout (built on BaseLayout) and NOT MarketingLayout or AuthSplitLayout.
+ * 3. AuthLayout implements distraction-free SaaS chrome (minimal top bar + single-line micro-footer).
+ * 4. SocialAuthButtons includes Google OAuth and strictly excludes GitHub.
+ * 5. RegisterForm implements the guided two-step registration wizard:
+ *    - Step 1: businessName, fullName, email, phone, and SocialAuthButtons.
  *    - Step 2: password, confirmPassword, planId, agreeTerms.
  *    - Step navigation buttons (btn-continue-step1, btn-back-step2, btn-back-header).
  *    - Step progress indicators (step-1-indicator, step-2-indicator, step-progress-bar).
  *    - Full form state retention across step transitions.
  *    - Password matching validation and visibility toggles.
- * 5. LoginForm has email, password, visibility toggle, remember-me, forgot-password link.
- * 6. ForgotPasswordForm provides generic timing-safe confirmation without email enumeration.
- * 7. ResetPasswordForm consumes tokens and enforces 8-character minimum and matching confirmation.
- * 8. All forms retain honeypot anti-spam protection and accessibility attributes.
+ * 6. LoginForm has email, password, visibility toggle, remember-me, forgot-password link, and SocialAuthButtons.
+ * 7. ForgotPasswordForm provides generic timing-safe confirmation without email disclosure.
+ * 8. ResetPasswordForm consumes tokens and enforces 8-character minimum and matching confirmation.
+ * 9. All forms retain honeypot anti-spam protection, accessibility attributes, and zero premature errors on load.
  */
 
 import { test, describe } from 'node:test';
@@ -26,8 +27,8 @@ import { fileURLToPath } from 'node:url';
 
 const SRC_DIR = fileURLToPath(new URL('../src', import.meta.url));
 
-describe('MarkChat Authentication & Registration UI Redesign (Direction A + D)', () => {
-  test('all 4 customer authentication pages exist and use AuthSplitLayout', () => {
+describe('MarkChat Authentication & Registration UI (Distraction-Free AuthLayout)', () => {
+  test('all 4 customer authentication pages exist and use AuthLayout (and NOT MarketingLayout or AuthSplitLayout)', () => {
     const requiredPages = [
       'register.astro',
       'login.astro',
@@ -39,29 +40,45 @@ describe('MarkChat Authentication & Registration UI Redesign (Direction A + D)',
       const fullPath = path.join(SRC_DIR, 'pages', pageFile);
       assert.ok(fs.existsSync(fullPath), `Page ${pageFile} must exist`);
       const content = fs.readFileSync(fullPath, 'utf8');
-      assert.ok(content.includes('AuthSplitLayout'), `${pageFile} must use AuthSplitLayout`);
+      assert.ok(content.includes('AuthLayout'), `${pageFile} must use AuthLayout`);
+      assert.ok(!content.includes('MarketingLayout'), `${pageFile} must NOT use MarketingLayout`);
+      assert.ok(!content.includes('AuthSplitLayout'), `${pageFile} must NOT use AuthSplitLayout`);
     });
   });
 
-  test('AuthSplitLayout implements split-screen showcase with authentic capabilities and trust badges', () => {
-    const layoutPath = path.join(SRC_DIR, 'layouts', 'AuthSplitLayout.astro');
-    assert.ok(fs.existsSync(layoutPath), 'AuthSplitLayout.astro must exist');
+  test('AuthLayout is built on BaseLayout with minimal top bar and micro-footer without marketing chrome', () => {
+    const layoutPath = path.join(SRC_DIR, 'layouts', 'AuthLayout.astro');
+    assert.ok(fs.existsSync(layoutPath), 'AuthLayout.astro must exist');
     const content = fs.readFileSync(layoutPath, 'utf8');
 
-    // Split-screen grid layout
-    assert.ok(content.includes('lg:grid-cols-12'), 'must have 12-column grid on desktop');
-    assert.ok(content.includes('lg:col-span-5') || content.includes('lg:col-span-6'), 'must have showcase column');
-    assert.ok(content.includes('lg:col-span-7') || content.includes('lg:col-span-6'), 'must have form container column');
+    // Built on BaseLayout
+    assert.ok(content.includes('BaseLayout'), 'AuthLayout must wrap BaseLayout');
 
-    // Authentic MarkChat features (no generic claims)
-    assert.ok(content.includes('WhatsApp Business'), 'showcase must mention WhatsApp Business');
-    assert.ok(content.includes('M-Pesa'), 'showcase must mention M-Pesa');
-    assert.ok(content.includes('SMS Gateway'), 'showcase must mention SMS Gateway');
-    assert.ok(content.includes('Markcopilot'), 'showcase must mention Markcopilot');
+    // Distraction-free: must NOT include full marketing chrome
+    assert.ok(!content.includes('AnnouncementBar'), 'must NOT include AnnouncementBar');
+    assert.ok(!content.includes('MarkcopilotWidget'), 'must NOT include MarkcopilotWidget');
+    assert.ok(!content.includes('mega-menu'), 'must NOT include Header mega-menus');
 
-    // Trust and statutory compliance badges
-    assert.ok(content.includes('KDPA 2019 Compliant'), 'must display KDPA 2019 badge');
-    assert.ok(content.includes('256-Bit SSL Encryption'), 'must display 256-bit SSL badge');
+    // Minimal top bar and single-line micro-footer
+    assert.ok(content.includes('Back to MarkChat'), 'micro-footer must have link Back to MarkChat');
+    assert.ok(content.includes('Terms'), 'micro-footer must have Terms link');
+    assert.ok(content.includes('Privacy (KDPA)'), 'micro-footer must have Privacy (KDPA) link');
+    assert.ok(content.includes('KDPA 2019 Compliant'), 'micro-footer must have KDPA 2019 badge');
+  });
+
+  test('SocialAuthButtons includes Google OAuth and strictly excludes GitHub', () => {
+    const socialPath = path.join(SRC_DIR, 'components', 'forms', 'SocialAuthButtons.astro');
+    assert.ok(fs.existsSync(socialPath), 'SocialAuthButtons.astro must exist');
+    const content = fs.readFileSync(socialPath, 'utf8');
+
+    // Google presence
+    assert.ok(content.includes('simple-icons:google') || content.includes('Google'), 'must include Google authentication');
+    assert.ok(content.includes('googleUrl'), 'must support googleUrl prop');
+
+    // GitHub absence
+    assert.ok(!content.includes('simple-icons:github'), 'must NOT include GitHub icon');
+    assert.ok(!content.includes('githubUrl'), 'must NOT include githubUrl prop');
+    assert.ok(!content.includes('GitHub'), 'must NOT reference GitHub');
   });
 
   test('RegisterForm implements Guided Two-Step Registration with progress indicators and navigation', () => {
@@ -76,6 +93,7 @@ describe('MarkChat Authentication & Registration UI Redesign (Direction A + D)',
 
     // Step 1 container & fields
     assert.ok(content.includes('id="step-1-container"'), 'must have step 1 container');
+    assert.ok(content.includes('SocialAuthButtons'), 'step 1 must include SocialAuthButtons');
     assert.ok(content.includes('name="businessName"'), 'must include businessName field');
     assert.ok(content.includes('name="fullName"'), 'must include fullName field');
     assert.ok(content.includes('name="email"'), 'must include email field');
@@ -101,11 +119,12 @@ describe('MarkChat Authentication & Registration UI Redesign (Direction A + D)',
     assert.ok(content.includes('Passwords do not match'), 'must enforce password matching');
   });
 
-  test('LoginForm includes email, password toggle, remember me, and forgot password link', () => {
+  test('LoginForm includes email, password toggle, remember me, forgot password link, and SocialAuthButtons', () => {
     const formPath = path.join(SRC_DIR, 'components', 'forms', 'LoginForm.astro');
     assert.ok(fs.existsSync(formPath), 'LoginForm.astro must exist');
     const content = fs.readFileSync(formPath, 'utf8');
 
+    assert.ok(content.includes('SocialAuthButtons'), 'must include SocialAuthButtons');
     assert.ok(content.includes('name="email"'), 'must include email field');
     assert.ok(content.includes('name="password"'), 'must include password field');
     assert.ok(content.includes('toggle-login-password'), 'must include password visibility toggle');

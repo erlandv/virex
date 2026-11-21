@@ -2,20 +2,29 @@
 /**
  * MarkChat Customer Login Page
  *
- * Implements the approved Direction A + D Split-Screen SaaS Layout.
- * Provides customer workspace access and authentication handoff.
+ * Implements the minimal, distraction-free AuthLayout built directly on BaseLayout.
+ * Centered Virex card UI with native semantic OKLCH tokens.
  */
-import AuthSplitLayout from '@/layouts/AuthSplitLayout.astro';
+import AuthLayout from '@/layouts/AuthLayout.astro';
 import LoginForm from '@/components/forms/LoginForm.astro';
 import { siteConfig } from '@/config';
 ---
 
-<AuthSplitLayout
+<AuthLayout
   title={`Sign In — ${siteConfig.name} Kenya`}
   description="Sign in to your MarkChat workspace to manage customer conversations, orders, and M-Pesa payments."
-  headline="Welcome back to MarkChat"
-  subheadline="Sign in to access your unified team inbox and customer conversations."
   pageType="login"
 >
-  <LoginForm redirectUrl="/billing" />
-</AuthSplitLayout>
+  <div class="max-w-md mx-auto w-full">
+    <!-- Centered Header with Title & Subheadline -->
+    <div class="text-center mb-8">
+      <h1 class="text-2xl sm:text-3xl font-bold text-text tracking-tight">Sign in to MarkChat</h1>
+      <p class="mt-2 text-sm text-text-muted">Sign in to access your unified team inbox and customer conversations.</p>
+    </div>
+
+    <!-- Virex Card Container -->
+    <div class="bg-surface border border-border rounded-2xl shadow-sm p-6 sm:p-8">
+      <LoginForm redirectUrl="/billing" />
+    </div>
+  </div>
+</AuthLayout>

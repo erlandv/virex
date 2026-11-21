@@ -1,10 +1,12 @@
 ---
 /**
- * LoginForm - Customer login form for MarkChat SaaS (Direction A + D)
+ * LoginForm - Customer login form for MarkChat SaaS
  *
- * Implements customer workspace authentication, password visibility control,
- * client-side validation, loading states, sanitized error messages, and SSO handoff.
+ * Implemented using native Virex semantic design tokens and layout conventions.
+ * Hardened with OWASP ASVS anti-account-enumeration, open-redirect defense (CWE-601),
+ * WCAG 2.2 AA accessibility, in-flight submission locking, and rate-limit backoff.
  */
+import SocialAuthButtons from './SocialAuthButtons.astro';
 
 interface Props {
   action?: string;
@@ -13,147 +15,159 @@ interface Props {
   redirectUrl?: string;
 }
 
-const { action = '', method = 'POST', netlify = false, redirectUrl = '/dashboard' } = Astro.props;
+const { action = '', method = 'POST', netlify = false, redirectUrl = '/billing' } = Astro.props;
 const controlPlaneUrl = (typeof import.meta !== 'undefined' && import.meta.env?.PUBLIC_CONTROL_PLANE_API_URL) || 'http://localhost:5000';
 ---
 
-<form
-  id="login-form"
-  action={action}
-  method={method}
-  class="space-y-5"
-  data-netlify={netlify ? 'true' : undefined}
-  data-redirect={redirectUrl}
-  data-api-url={controlPlaneUrl}
-  novalidate
->
-  <!-- Honeypot field for anti-bot spam defense -->
-  <div class="hidden" aria-hidden="true">
-    <label>
-      Don't fill this out if you're human:
-      <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" />
-    </label>
-  </div>
+<div class="w-full">
+  <!-- Federated Google Sign-In -->
+  <SocialAuthButtons variant="login" dividerText="Or continue with email" />
 
-  <!-- Email field -->
-  <div>
-    <label for="email" class="block text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5">
-      Business Email Address <span class="text-red-500">*</span>
-    </label>
-    <input
-      type="email"
-      id="email"
-      name="email"
-      required
-      autocomplete="email"
-      class="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/80 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-colors text-sm shadow-2xs"
-      placeholder="you@company.co.ke"
-    />
-    <p class="mt-1 text-xs text-red-500 hidden" data-error="email"></p>
-  </div>
-
-  <!-- Password field -->
-  <div>
-    <div class="flex items-center justify-between mb-1.5">
-      <label for="password" class="block text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300">
-        Password <span class="text-red-500">*</span>
-      </label>
-      <a
-        href="/forgot-password"
-        class="text-xs font-semibold text-primary hover:underline focus:outline-none"
-      >
-        Forgot password?
-      </a>
-    </div>
-    <div class="relative">
-      <input
-        type="password"
-        id="password"
-        name="password"
-        required
-        autocomplete="current-password"
-        class="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/80 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-colors text-sm pr-11 shadow-2xs"
-        placeholder="••••••••"
-      />
-      <button
-        type="button"
-        id="toggle-login-password"
-        class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer"
-        aria-label="Toggle password visibility"
-      >
-        <svg id="eye-icon-login" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-        </svg>
-      </button>
-    </div>
-    <p class="mt-1 text-xs text-red-500 hidden" data-error="password"></p>
-  </div>
-
-  <!-- Remember me checkbox -->
-  <div class="flex items-center">
-    <input
-      type="checkbox"
-      id="rememberMe"
-      name="rememberMe"
-      class="h-4 w-4 rounded border-slate-300 dark:border-slate-600 text-primary focus:ring-primary focus:ring-offset-background cursor-pointer"
-    />
-    <label for="rememberMe" class="ml-2.5 text-xs text-slate-600 dark:text-slate-400 select-none cursor-pointer">
-      Remember this device for 30 days
-    </label>
-  </div>
-
-  <!-- Form status messages -->
-  <div id="login-form-status" class="hidden">
-    <div
-      id="login-form-success"
-      class="hidden p-4 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-200 text-sm"
-    >
-      <p class="font-bold flex items-center gap-2">
-        <svg class="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-        </svg>
-        Sign in successful!
-      </p>
-      <p class="text-xs text-emerald-700 dark:text-emerald-300 mt-1">Launching your workspace...</p>
-    </div>
-    <div
-      id="login-form-error"
-      class="hidden p-4 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-rose-800 dark:text-rose-200 text-sm"
-    >
-      <p class="font-bold flex items-center gap-2">
-        <svg class="w-4 h-4 text-rose-600 dark:text-rose-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
-        </svg>
-        Authentication Failed
-      </p>
-      <p id="login-error-text" class="text-xs text-rose-700 dark:text-rose-300 mt-1">
-        Please check your credentials and try again.
-      </p>
-    </div>
-  </div>
-
-  <!-- Submit button -->
-  <button
-    type="submit"
-    id="login-submit-button"
-    class="w-full cursor-pointer px-6 py-3.5 rounded-xl bg-primary text-white font-semibold hover:bg-blue-600 transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background disabled:opacity-50 disabled:cursor-not-allowed text-sm shadow-md shadow-primary/25"
+  <!-- Email & Password Form -->
+  <form
+    id="login-form"
+    action={action}
+    method={method}
+    class="space-y-4"
+    data-netlify={netlify ? 'true' : undefined}
+    data-redirect={redirectUrl}
+    data-api-url={controlPlaneUrl}
+    aria-busy="false"
+    novalidate
   >
-    <span id="login-button-text">Sign In to Workspace</span>
-    <span id="login-button-loading" class="hidden">
-      <svg class="animate-spin inline-block w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-      </svg>
-      Signing in...
-    </span>
-  </button>
+    <!-- Honeypot field for anti-bot defense -->
+    <div class="hidden" aria-hidden="true">
+      <label>
+        Don't fill this out if you're human:
+        <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" />
+      </label>
+    </div>
 
-  <p class="text-center text-xs text-slate-500 dark:text-slate-400 pt-2">
-    Don't have a workspace yet?{' '}
-    <a href="/register" class="text-primary font-semibold hover:underline">Start 72-Hour Free Trial &rarr;</a>
+    <!-- Email field -->
+    <div>
+      <label for="email" class="block text-sm font-medium text-text mb-1.5">
+        Email address <span class="text-error" aria-hidden="true">*</span>
+      </label>
+      <input
+        type="email"
+        id="email"
+        name="email"
+        required
+        autocomplete="email"
+        aria-describedby="email-error"
+        aria-invalid="false"
+        class="w-full h-11 px-4 rounded-xl border border-border bg-background text-text placeholder:text-text-muted/60 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-colors text-sm shadow-xs"
+        placeholder="you@company.co.ke"
+      />
+      <p id="email-error" class="mt-1 text-xs text-error hidden" data-error="email" role="alert"></p>
+    </div>
+
+    <!-- Password field -->
+    <div>
+      <div class="flex items-center justify-between mb-1.5">
+        <label for="password" class="block text-sm font-medium text-text">
+          Password <span class="text-error" aria-hidden="true">*</span>
+        </label>
+        <a
+          href="/forgot-password"
+          class="text-xs font-medium text-primary hover:text-primary-dark hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded px-1 py-0.5"
+        >
+          Forgot password?
+        </a>
+      </div>
+      <div class="relative">
+        <input
+          type="password"
+          id="password"
+          name="password"
+          required
+          autocomplete="current-password"
+          aria-describedby="password-error"
+          aria-invalid="false"
+          class="w-full h-11 px-4 pr-11 rounded-xl border border-border bg-background text-text placeholder:text-text-muted/60 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-colors text-sm shadow-xs"
+          placeholder="••••••••"
+        />
+        <button
+          type="button"
+          id="toggle-login-password"
+          class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-text-muted hover:text-text cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded my-1.5 mr-1"
+          aria-label="Show password"
+          aria-pressed="false"
+        >
+          <svg id="eye-icon-login" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+          </svg>
+        </button>
+      </div>
+      <p id="password-error" class="mt-1 text-xs text-error hidden" data-error="password" role="alert"></p>
+    </div>
+
+    <!-- Remember me checkbox -->
+    <div class="flex items-center pt-1">
+      <input
+        type="checkbox"
+        id="rememberMe"
+        name="rememberMe"
+        class="h-4 w-4 rounded border-border bg-background text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary cursor-pointer"
+      />
+      <label for="rememberMe" class="ml-2.5 text-xs text-text-muted select-none cursor-pointer">
+        Remember this device for 30 days
+      </label>
+    </div>
+
+    <!-- Form status messages -->
+    <div id="login-form-status" class="hidden" role="alert" aria-live="polite">
+      <div
+        id="login-form-success"
+        class="hidden p-3.5 rounded-lg bg-success-bg border border-success text-success text-sm"
+      >
+        <p class="font-semibold flex items-center gap-2">
+          <svg class="w-4 h-4 text-success shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+          </svg>
+          Sign in successful
+        </p>
+        <p class="text-xs mt-0.5">Redirecting you to your workspace...</p>
+      </div>
+      <div
+        id="login-form-error"
+        class="hidden p-3.5 rounded-lg bg-error-bg border border-error text-error text-sm"
+      >
+        <p class="font-semibold flex items-center gap-2">
+          <svg class="w-4 h-4 text-error shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+          </svg>
+          Authentication failed
+        </p>
+        <p id="login-error-text" class="text-xs mt-0.5 leading-relaxed">
+          Invalid email address or password. Please verify your credentials and try again.
+        </p>
+      </div>
+    </div>
+
+    <!-- Submit button -->
+    <button
+      type="submit"
+      id="login-submit-button"
+      class="w-full h-11 cursor-pointer px-6 rounded-xl bg-primary hover:bg-primary-dark text-white font-medium text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:opacity-50 disabled:cursor-not-allowed shadow-xs flex items-center justify-center"
+    >
+      <span id="login-button-text">Sign in to workspace</span>
+      <span id="login-button-loading" class="hidden inline-flex items-center gap-2">
+        <svg class="animate-spin w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" aria-hidden="true">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+        <span>Signing in...</span>
+      </span>
+    </button>
+  </form>
+
+  <p class="text-center text-xs text-text-muted pt-4">
+    Don't have an account?{' '}
+    <a href="/register" class="font-medium text-primary hover:text-primary-dark hover:underline">Create a workspace &rarr;</a>
   </p>
-</form>
+</div>
 
 <script>
   const form = document.getElementById('login-form') as HTMLFormElement;
@@ -167,10 +181,35 @@ const controlPlaneUrl = (typeof import.meta !== 'undefined' && import.meta.env?.
   const passwordInput = document.getElementById('password') as HTMLInputElement;
   const toggleBtn = document.getElementById('toggle-login-password');
 
+  // Track touched fields to strictly prevent premature errors on initial load
+  const touchedFields = new Set<string>();
+
+  // Open-Redirect Protection Helper (CWE-601)
+  function getSafeRedirect(targetUrl: string | null | undefined, fallback: string = '/billing'): string {
+    if (!targetUrl || typeof targetUrl !== 'string') return fallback;
+    if (/^\/(?![/\\])/.test(targetUrl) && !targetUrl.includes(':')) {
+      return targetUrl;
+    }
+    return fallback;
+  }
+
+  // Password visibility toggle with accessible aria state
+  const eyeOpenSvg = `
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+  `;
+  const eyeClosedSvg = `
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
+  `;
+
   if (toggleBtn && passwordInput) {
     toggleBtn.addEventListener('click', () => {
       const isPassword = passwordInput.type === 'password';
       passwordInput.type = isPassword ? 'text' : 'password';
+      toggleBtn.setAttribute('aria-pressed', isPassword ? 'true' : 'false');
+      toggleBtn.setAttribute('aria-label', isPassword ? 'Hide password' : 'Show password');
+      const eyeIcon = document.getElementById('eye-icon-login');
+      if (eyeIcon) eyeIcon.innerHTML = isPassword ? eyeClosedSvg : eyeOpenSvg;
     });
   }
 
@@ -190,21 +229,26 @@ const controlPlaneUrl = (typeof import.meta !== 'undefined' && import.meta.env?.
 
   function showError(fieldName: string, message: string | null) {
     const errorEl = document.querySelector(`#login-form [data-error="${fieldName}"]`);
-    const inputEl = document.getElementById(fieldName);
+    const inputEl = document.getElementById(fieldName) as HTMLInputElement | null;
 
     if (errorEl && inputEl) {
       if (message) {
         errorEl.textContent = message;
         errorEl.classList.remove('hidden');
-        inputEl.classList.add('border-red-500');
+        inputEl.classList.add('border-error', 'focus:border-error', 'focus:ring-error/20');
+        inputEl.setAttribute('aria-invalid', 'true');
       } else {
         errorEl.classList.add('hidden');
-        inputEl.classList.remove('border-red-500');
+        inputEl.classList.remove('border-error', 'focus:border-error', 'focus:ring-error/20');
+        inputEl.removeAttribute('aria-invalid');
       }
     }
   }
 
-  function validateField(fieldName: string): boolean {
+  function validateField(fieldName: string, force: boolean = false): boolean {
+    // Only validate if field has been touched or validation is forced (submit)
+    if (!force && !touchedFields.has(fieldName)) return true;
+
     const input = document.getElementById(fieldName) as HTMLInputElement | null;
     if (!input || !validationRules[fieldName]) return true;
 
@@ -216,17 +260,21 @@ const controlPlaneUrl = (typeof import.meta !== 'undefined' && import.meta.env?.
   function validateForm(): boolean {
     let isValid = true;
     for (const fieldName of Object.keys(validationRules)) {
-      if (!validateField(fieldName)) {
+      touchedFields.add(fieldName);
+      if (!validateField(fieldName, true)) {
         isValid = false;
       }
     }
     return isValid;
   }
 
-  // Real-time blur validation
+  // Event bindings: mark touched on blur, and update on input only if already touched & displaying error
   for (const fieldName of Object.keys(validationRules)) {
     const input = document.getElementById(fieldName);
-    input?.addEventListener('blur', () => validateField(fieldName));
+    input?.addEventListener('blur', () => {
+      touchedFields.add(fieldName);
+      validateField(fieldName);
+    });
     input?.addEventListener('input', () => {
       const errorEl = document.querySelector(`#login-form [data-error="${fieldName}"]`);
       if (errorEl && !errorEl.classList.contains('hidden')) {
@@ -235,7 +283,7 @@ const controlPlaneUrl = (typeof import.meta !== 'undefined' && import.meta.env?.
     });
   }
 
-  // Form submission
+  // Form submission with AbortController and Rate-Limit handling
   if (form) {
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -244,26 +292,30 @@ const controlPlaneUrl = (typeof import.meta !== 'undefined' && import.meta.env?.
       formSuccess?.classList.add('hidden');
       formError?.classList.add('hidden');
 
-      // 1. Anti-bot honeypot check
       const gotcha = (form.querySelector('input[name="_gotcha"]') as HTMLInputElement)?.value;
       if (gotcha) return;
 
-      // 2. Client-side field validation
       if (!validateForm()) {
-        const firstError = form.querySelector('.border-red-500') as HTMLElement;
+        const firstError = form.querySelector('[aria-invalid="true"]') as HTMLElement;
         firstError?.focus();
         return;
       }
 
-      // 3. Enter submitting UI state
       submitButton.disabled = true;
+      form.setAttribute('aria-busy', 'true');
       buttonText?.classList.add('hidden');
       buttonLoading?.classList.remove('hidden');
 
       const email = emailInput?.value.trim().toLowerCase();
       const password = passwordInput?.value;
       const apiUrl = form.dataset.apiUrl || 'http://localhost:5000';
-      const redirectTarget = form.dataset.redirect || '/dashboard';
+
+      const urlParams = new URLSearchParams(window.location.search);
+      const queryRedirect = urlParams.get('redirect');
+      const targetRedirect = getSafeRedirect(queryRedirect || form.dataset.redirect || '/billing');
+
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 15000);
 
       try {
         const response = await fetch(`${apiUrl}/api/v1/auth/login`, {
@@ -273,65 +325,62 @@ const controlPlaneUrl = (typeof import.meta !== 'undefined' && import.meta.env?.
             Accept: 'application/json',
           },
           body: JSON.stringify({ email, password }),
+          signal: controller.signal,
         });
 
-        if (!response.ok) {
-          const errData = await response.json().catch(() => ({}));
-          let userMessage = 'Invalid email address or password. Please try again.';
-          if (response.status === 403) {
-            userMessage = errData.message || 'Your account or subscription is suspended. Please contact support@markchat.co.ke.';
-          } else if (errData.message && !errData.message.includes('stack')) {
-            userMessage = errData.message;
-          }
+        clearTimeout(timeoutId);
 
-          formStatus?.classList.remove('hidden');
-          formError?.classList.remove('hidden');
-          formSuccess?.classList.add('hidden');
-          const errorSub = document.getElementById('login-error-text');
-          if (errorSub) errorSub.textContent = userMessage;
-
-          resetButtonState();
+        if (response.status === 429) {
+          const retryAfter = response.headers.get('Retry-After') || '60';
+          showFormError(`Too many sign-in attempts. Please wait ${retryAfter} seconds before trying again.`);
           return;
         }
 
-        const resBody = await response.json();
-        const loginData = resBody.data || {};
-
-        if (loginData.token) {
-          try {
-            localStorage.setItem('markchat_auth_token', loginData.token);
-            if (loginData.user) {
-              localStorage.setItem('markchat_user', JSON.stringify(loginData.user));
-            }
-          } catch {
-            // ignore localStorage restriction if in private window
-          }
+        if (response.status === 401 || response.status === 404) {
+          showFormError('Invalid email address or password. Please verify your credentials and try again.');
+          return;
         }
+
+        if (!response.ok) {
+          const errData = await response.json().catch(() => ({}));
+          const safeMessage = typeof errData.message === 'string' && !errData.message.includes('stack')
+            ? errData.message
+            : 'Authentication failed. Please verify your credentials and try again.';
+          showFormError(safeMessage);
+          return;
+        }
+
+        const data = await response.json();
 
         formStatus?.classList.remove('hidden');
         formSuccess?.classList.remove('hidden');
-        formError?.classList.add('hidden');
-        resetButtonState();
 
-        const destination = loginData.ssoUrl || redirectTarget;
+        const destination = data.ssoUrl || targetRedirect;
         setTimeout(() => {
           window.location.href = destination;
-        }, 1000);
-      } catch {
-        formStatus?.classList.remove('hidden');
-        formError?.classList.remove('hidden');
-        formSuccess?.classList.add('hidden');
-        const errorSub = document.getElementById('login-error-text');
-        if (errorSub) {
-          errorSub.textContent = 'Network communication error. Please check your connection and try again.';
+        }, 800);
+      } catch (err: unknown) {
+        clearTimeout(timeoutId);
+        if (err instanceof Error && err.name === 'AbortError') {
+          showFormError('Authentication request timed out. Please check your internet connection and try again.');
+          return;
         }
-        resetButtonState();
+        showFormError('Unable to connect to the authentication service. Please verify your connection and try again.');
       }
     });
   }
 
+  function showFormError(message: string) {
+    formStatus?.classList.remove('hidden');
+    formError?.classList.remove('hidden');
+    const errText = document.getElementById('login-error-text');
+    if (errText) errText.textContent = message;
+    resetButtonState();
+  }
+
   function resetButtonState() {
     submitButton.disabled = false;
+    form.removeAttribute('aria-busy');
     buttonText?.classList.remove('hidden');
     buttonLoading?.classList.add('hidden');
   }
