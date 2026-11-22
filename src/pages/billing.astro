@@ -87,9 +87,18 @@ const controlPlaneUrl = (typeof import.meta !== 'undefined' && import.meta.env?.
             72 hours of unrestricted multi-channel access included with zero upfront charges.
           </p>
         </div>
-        <div class="text-right shrink-0">
-          <span class="text-xs font-medium text-slate-500 dark:text-slate-400">Payment Currency</span>
-          <p class="text-base font-bold text-slate-900 dark:text-white">KES (Kenyan Shillings)</p>
+        <div class="flex flex-col sm:items-end gap-2 shrink-0">
+          <div class="sm:text-right">
+            <span class="text-xs font-medium text-slate-500 dark:text-slate-400">Payment Currency</span>
+            <p class="text-base font-bold text-slate-900 dark:text-white">KES (Kenyan Shillings)</p>
+          </div>
+          <button
+            type="button"
+            id="launch-sms-studio-btn"
+            class="cursor-pointer inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-sm transition-colors disabled:opacity-50"
+          >
+            <span id="sms-studio-btn-label">Launch SMS Studio &nearr;</span>
+          </button>
         </div>
       </div>
 
@@ -262,6 +271,62 @@ const controlPlaneUrl = (typeof import.meta !== 'undefined' && import.meta.env?.
       // ignore parse
     }
   }
+
+  // Launch SMS Studio via single-use Control Plane SSO handoff
+  const smsStudioBtn = document.getElementById('launch-sms-studio-btn') as HTMLButtonElement | null;
+  const smsStudioLabel = document.getElementById('sms-studio-btn-label');
+
+  smsStudioBtn?.addEventListener('click', async () => {
+    hideError();
+    const token = localStorage.getItem('markchat_auth_token');
+    if (!token) {
+      showError('Please sign in to your workspace before launching SMS Studio.');
+      setTimeout(() => {
+        window.location.href = '/login?redirect=/billing';
+      }, 1200);
+      return;
+    }
+
+    smsStudioBtn.disabled = true;
+    if (smsStudioLabel) smsStudioLabel.textContent = 'Connecting SMS Studio...';
+
+    try {
+      const res = await fetch(`${apiUrl}/api/v1/auth/sms-studio-sso`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({}),
+      });
+
+      const body = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        if (res.status === 401) {
+          showError('Session expired. Redirecting to workspace sign-in...');
+          setTimeout(() => {
+            window.location.href = '/login?redirect=/billing';
+          }, 1200);
+          return;
+        }
+        showError(body.message || body.error?.message || 'Unable to launch SMS Studio for this workspace.');
+        return;
+      }
+
+      const ssoUrl = body.data?.url || body.url;
+      if (ssoUrl) {
+        window.open(ssoUrl, '_blank', 'noopener,noreferrer');
+      } else {
+        showError('No SMS Studio SSO URL returned from Control Plane.');
+      }
+    } catch {
+      showError('Unable to reach Control Plane server to initialize SMS Studio SSO.');
+    } finally {
+      smsStudioBtn.disabled = false;
+      if (smsStudioLabel) smsStudioLabel.textContent = 'Launch SMS Studio ↗';
+    }
+  });
 
   // Handle Checkout Dispatch
   checkoutBtn?.addEventListener('click', async () => {
