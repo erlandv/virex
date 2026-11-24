@@ -61,3 +61,13 @@ npm test
 ```
 
 `npm test` now starts an owned Astro preview on port 4321 and runs all `tests/*.test.mjs`. It rejects an occupied port to prevent testing the wrong website. `.github/workflows/marketing-quality.yml` contains the same pipeline and applies the repository's Prettier formatting to the new pages. If GitHub-hosted runners are unavailable or workflow billing is blocked, run the commands locally before deployment.
+
+### Enterprise sandbox, sender readiness, quote scoping
+
+- `DeveloperPlayground.astro` includes an isolated browser-only JSON request/response simulator for SMS and example payment callbacks. It computes GSM-7/UCS-2 segments using `src/lib/sms-segments.ts`, gives an explicitly fictional wallet estimate, and previews HMAC-SHA256 using a publicly embedded **demonstration-only** key. **No requests are issued to telecom, payment, or Control Plane APIs by the simulator.** A prefix-derived carrier hint cannot determine the current network after number portability.
+- `SenderReadinessMatrix.astro` compares illustrative 24/7 transactional eligibility with 07:00–19:00 EAT promotional scheduling and requires consent and opt-out handling. The checklist verifies local input formatting only; carrier acceptance and KYC approval must be obtained separately.
+- `EnterpriseScopeFields.astro` enriches existing `/demo` and `/contact?topic=enterprise` form submissions with requested SMS volume, channels, and M-Pesa mode. A scoped summary is serialized through the existing CMS lead contract; no second or unapproved submission endpoint was added.
+- `fetchPricingMatrix()` obtains the Control Plane catalog from `PUBLIC_CONTROL_PLANE_URL/api/v1/billing/plans` **at static build time**. It understands `{ data: { plans } }` and `{ plans }`, checks numeric KES prices, maps declared seat/inbox caps and boolean entitlements, and falls back to static canonical tiers if offline. Live checkout remains server-authoritative; an already-generated static website does not refresh catalog prices until the next build.
+- Annual checkout remains unsupported; SMS wallet credits are separate from Core workspace subscriptions.
+
+Quality gate: `npm run check && npm run build && npm test`. The full test command launches a temporary local preview server on port 4321. Run formatting before checks if the branch contains freshly authored Astro components: `npm run format`. GitHub Actions is **read-only** and does not auto-commit into `main`; runners and permissions must be configured for the build to execute. All browser and billing flows require staging acceptance before production use.
