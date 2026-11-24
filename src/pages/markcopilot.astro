@@ -7,6 +7,7 @@
  * trilingual Sheng/Swahili/English NLP, CMS-managed video presentation, and ecosystem synergy.
  */
 import MarketingLayout from '@/layouts/MarketingLayout.astro';
+import ServiceBoundaryNotice from '@/components/common/ServiceBoundaryNotice.astro';
 import ProductOperations from '@/components/enterprise/ProductOperations.astro';
 import { Icon } from 'astro-icon/components';
 import { siteConfig } from '@/config';
@@ -40,6 +41,7 @@ const badgeColorMap: Record<string, string> = {
   description={settings.hero.subtitle ||
     'Markcopilot is the AI copilot for customer conversations and M-Pesa sales. Automate routine questions 24/7, assist support agents with 1-click draft replies, and communicate naturally in English, Swahili, and Sheng.'}
 >
+  <ServiceBoundaryNotice />
   <!-- 1. HERO SECTION -->
   <section class="relative pt-24 pb-20 sm:pt-28 sm:pb-24 overflow-hidden bg-background">
     <!-- Subtle Ambient Glow -->

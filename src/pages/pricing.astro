@@ -3,6 +3,7 @@
  * MarkChat Kenya — Pricing & Plan Feature Matrix
  */
 import MarketingLayout from '@/layouts/MarketingLayout.astro';
+import ServiceBoundaryNotice from '@/components/common/ServiceBoundaryNotice.astro';
 import SmsCampaignCalculator from '@/components/enterprise/SmsCampaignCalculator.astro';
 import PricingTable from '@sections/pricing/PricingTable.astro';
 import ComparisonTable from '@sections/pricing/ComparisonTable.astro';
@@ -145,6 +146,7 @@ const pricingFaqs = faqsList
   title={`Pricing & Plans - ${siteConfig.name} Kenya`}
   description="Transparent KES pricing for MarkChat. Starter KES 1,500/mo, Growth KES 3,500/mo, Scale KES 5,000/mo, Enterprise scale. In-Chat M-Pesa STK, BYO SMS, and multi-channel shared inboxes."
 >
+  <ServiceBoundaryNotice />
   <PricingTable
     title="Simple, Transparent KES Pricing"
     subtitle="Core workspace subscription prices in KES; prepaid SMS credits and branded Sender IDs are purchased separately. Annual checkout is not yet available."

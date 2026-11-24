@@ -38,3 +38,26 @@ When `interval=annual` is supplied, checkout is intentionally blocked until Cont
 Real product screenshots, supplier integrations, security claims, quantified marketing statistics and customer testimonials require evidence before publication. Do not include real customer KYC documents, Paystack secrets, internal tokens or production payment credentials in client-facing Astro code.
 
 See [Phase A/B audit](docs/PHASE_A_B_MARKETING_AUDIT.md) and [original upstream license](LICENSE).
+
+## Enterprise product experience (2026-11)
+
+The Virex marketing site now includes composable Astro sections in `src/components/enterprise/`:
+
+- `LivePlatformWorkbench.astro`: four keyboard-accessible product demonstrations, including fictional SMS DLR and M-Pesa callback state transitions
+- `SmsCampaignCalculator.astro`: editable recipient volume, GSM-7 extension/Unicode segment units, sample rate tiers and sending-window context
+- `DeveloperPlayground.astro`: copyable cURL, Node, PHP/Laravel and Python patterns; not confirmed live endpoints
+- `EnterpriseArchitecture.astro`: accountable service-boundary diagram and Kenyan provider landscape
+- `ProductOperations.astro`, `ComplianceRail.astro`, `IndustryBlueprints.astro`: detail-page operational depth and compliance-informed workflows
+
+The calculator shares its pure segment math with `src/lib/sms-segments.ts`, covered by `tests/enterprise-experience.test.mjs`. For SMS pricing, **all example KES rates are fictional assumptions** and may not be used for billing. Actual rate catalogs, sender approvals, promotions, telco routing and M-Pesa merchant connectivity require independent confirmation. Interactive examples do not transmit anything.
+
+### Quality gates
+
+```bash
+npm ci
+npm run check
+npm run build
+npm test
+```
+
+`npm test` now starts an owned Astro preview on port 4321 and runs all `tests/*.test.mjs`. It rejects an occupied port to prevent testing the wrong website. `.github/workflows/marketing-quality.yml` contains the same pipeline and applies the repository's Prettier formatting to the new pages. If GitHub-hosted runners are unavailable or workflow billing is blocked, run the commands locally before deployment.
