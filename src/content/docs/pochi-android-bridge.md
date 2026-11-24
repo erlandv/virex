@@ -5,7 +5,7 @@ order: 13
 category: "Fintech & M-Pesa"
 section: "Mobile Money & Daraja"
 icon: "lucide:layers"
-draft: false
+draft: true
 tags: ["pochi", "android-bridge", "till", "sms-sync", "informal-commerce", "fintech"]
 lastUpdated: "2026-11-14"
 difficulty: "Intermediate"

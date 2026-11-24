@@ -5,7 +5,7 @@ order: 2
 category: "Getting Started"
 section: "Platform Essentials"
 icon: "lucide:settings"
-draft: false
+draft: true
 tags: ["workspace", "agents", "onboarding", "settings", "roles", "business-hours"]
 lastUpdated: "2026-11-14"
 difficulty: "Beginner"

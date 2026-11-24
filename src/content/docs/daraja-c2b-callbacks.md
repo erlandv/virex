@@ -5,7 +5,7 @@ order: 12
 category: "Fintech & M-Pesa"
 section: "Mobile Money & Daraja"
 icon: "lucide:shield-check"
-draft: false
+draft: true
 tags: ["c2b", "daraja", "callbacks", "fraud-prevention", "transid", "fintech"]
 lastUpdated: "2026-11-14"
 difficulty: "Advanced"

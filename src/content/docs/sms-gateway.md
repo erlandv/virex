@@ -1,113 +1,45 @@
 ---
-title: "Bulk SMS Gateway & BYOC Configuration"
-description: "How to configure Africa's Talking Bulk SMS, request Kenyan Alphanumeric Sender IDs, and utilize Bring Your Own Carrier (BYOC) routing."
+title: "MarkChat SMS Studio — Prepaid Credits & Sender IDs"
+description: "Learn how separate prepaid SMS credits, approved Kenyan sender identities and carrier routing work in MarkChat SMS Studio."
 order: 9
 category: "Channels"
 section: "Messaging Channels"
 icon: "lucide:message-square"
 draft: false
-tags: ["sms", "africas-talking", "byoc", "alphanumeric", "kenya-telco", "channels"]
-lastUpdated: "2026-11-14"
-difficulty: "Intermediate"
+tags: ["sms", "africas-talking", "sender-id", "prepaid", "kenya", "compliance"]
+lastUpdated: "2026-11-24"
+difficulty: "Beginner"
 ---
 
-Bulk SMS remains Kenya’s most reliable communication channel, reaching 100% of mobile phones without requiring mobile internet, smartphone apps, or data bundles. 
+MarkChat SMS Studio is an **independent prepaid SMS service**, separate from recurring MarkChat Core workspace subscriptions. Choosing a Core plan **does not** automatically issue SMS credits, approve a branded Sender ID, or provision a carrier account.
 
-MarkChat features deep integration with **Africa's Talking**, enabling two-way customer messaging, transactional order receipts, and custom Alphanumeric Sender IDs (e.g., `MARKCHAT`, `MYBRAND`).
+## What is available in the SMS application
 
----
+- A Kenyan SMS credit wallet showing issued, reserved, available and consumed credit units.
+- KES-priced package selection when the authoritative SMS package catalog and payment checkout are enabled by the service operator.
+- M-Pesa STK Push and Paystack payment paths, gated until provider testing, reconciliation and launch approval are complete.
+- Sender ID applications and Super Admin review; requests begin **pending**.
+- CSV contacts, message segmentation preview and STOP/suppression handling through separately configured application workflows.
 
-## 2 Operational Modes: Prepaid vs. BYOC
+**No fixed per-SMS price or complimentary credit allocation is promised.** The payable KES price, package sizes and actual provider availability must come from the live SMS package catalog. Carrier cost may depend on message encoding and segment count.
 
-MarkChat accommodates both small businesses and large enterprises with two flexible operating models:
+## Branded Sender ID application
 
-### Mode 1: MarkChat Managed Prepaid Bundles (Instant Start)
-- Every new MarkChat workspace receives **50 free trial SMS credits** upon signup.
-- Top up prepaid credits directly via Safaricom M-Pesa inside your billing portal.
-- Zero server maintenance, zero minimum monthly commitments, and instant activation using MarkChat’s pooled Alphanumeric Sender ID.
+Within an authenticated SMS Studio workspace, visit **Sender IDs** and select your intended route. Upload a Business Registration/CR12 document and a signed authorization letter through the protected document flow. Only PDF, PNG and JPEG are accepted, up to **10 MB per file**. A Super Admin must verify ownership and the actual carrier registration before approving the sender.
 
-### Mode 2: Bring Your Own Carrier (BYOC)
-- Connect your own **Africa's Talking API Key**, **Username**, and **Custom Alphanumeric Sender ID**.
-- Pay Africa’s Talking directly at your negotiated telco bulk rates (e.g., KES 0.20 - 0.40 per SMS).
-- MarkChat charges **zero markup** on BYOC volume.
+- **Promotional:** allowed only **07:00 inclusive to 19:00 exclusive**, Africa/Nairobi time.
+- **Transactional:** eligible to dispatch around the clock **only after approval**; consent, suppression, credit and provider controls still apply.
 
----
+Registration and an uploaded letter never guarantee telco approval.
 
-## Prerequisites for BYOC
+## Credits and delivery status
 
-1. An **Africa's Talking Account** ([africastalking.com](https://africastalking.com)).
-2. An active Africa's Talking **Username** and generated **API Key**.
-3. An approved **Alphanumeric Sender ID** (e.g., `NAIROBI_SHOP`) registered with the Communications Authority of Kenya (CAK) via Africa's Talking.
+Credit issuance requires independently verified settlement. MarkChat SMS reserves credit units before accepted dispatch, settles them after carrier acceptance according to its reconciliation contract and does not blindly resend unknown outcomes. Carrier acceptance is **not** proof of recipient delivery.
 
----
+The SMS service's trusted failed-DLR refund and optional timeout-based reimbursement are distinct: the latter is disabled by default and requires explicit platform policy approval. Always review the wallet and delivery status rather than inferring that a sent message has reached the handset.
 
-## Step 1: Generate Africa's Talking API Credentials
+## MarkChat Core integration status
 
-1. Log into your Africa's Talking dashboard.
-2. Ensure you have selected the **Kenya** team context.
-3. In the left navigation menu, open **Settings > API Key**.
-4. Enter your account password and generate a new API key.
-5. Copy the key immediately (it is only displayed once).
+The Marketing Website and Control Panel support separate plans, registration and optional signed SMS Studio handoff. **Omnichannel Core federation is deferred** until the Core integration is explicitly approved. Do not assume that purchasing SMS credits creates a WhatsApp, Instagram or Chatwoot inbox.
 
----
-
-## Step 2: Configure SMS Channel in MarkChat
-
-1. In MarkChat, open **Settings > Inboxes**.
-2. Click **Add Inbox** and choose **SMS (Africa's Talking)**.
-3. Configure the channel parameters:
-   - **Inbox Name:** e.g., *Customer Service SMS*
-   - **Provider:** `Africa's Talking`
-   - **Username:** Your Africa's Talking username (or `sandbox` for testing).
-   - **API Key:** Paste your generated API key.
-   - **Sender ID / Shortcode:** Enter your approved Alphanumeric Sender ID or dedicated shortcode.
-4. Click **Create SMS Channel**.
-
----
-
-## Step 3: Two-Way Inbound SMS Configuration (Optional)
-
-If your business owns a dedicated shortcode or two-way virtual number from Africa's Talking, you can receive inbound customer SMS messages into MarkChat:
-
-1. Copy the **Inbound Callback URL** generated by MarkChat (e.g., `https://app.markchat.co.ke/webhooks/sms/africastalking/<TOKEN>`).
-2. Open your Africa's Talking dashboard and navigate to **SMS > SMS Callback URLs**.
-3. Under **Incoming Messages Callback URL**, paste your MarkChat webhook URL and click **Submit**.
-4. When customers reply to your SMS, their message instantly appears in your MarkChat inbox.
-
----
-
-## Outbound SMS Delivery & Character Encoding
-
-Standard SMS telecommunications enforce strict encoding guidelines:
-
-- **Single SMS (1 Credit):** Up to **160 characters** using standard 7-bit GSM character set.
-- **Multipart SMS:** Messages exceeding 160 characters are automatically split and concatenated into multipart messages (153 characters per segment).
-- **Unicode Messages (Emojis / Special Characters):** Emojis limit message segments to **70 characters** per SMS due to 16-bit UCS-2 encoding. Avoid excessive emojis in bulk transactional notifications to preserve credits.
-
----
-
-## In-Chat M-Pesa Checkout via SMS
-
-Agents can prompt payments inside any SMS conversation:
-```text
-/stk 1200 0712345678
-```
-The customer receives the Safaricom SIM prompt on their handset. Upon successful PIN entry, MarkChat dispatches an automated SMS confirmation containing the transaction ID and order receipt.
-
----
-
-## Troubleshooting
-
-| Error | Cause | Resolution |
-|---|---|---|
-| `UserInBlackList` | Customer has opted out of promotional SMS via Safaricom `*456*9*5#`. | The customer must unblock promotional shortcodes on their mobile line. |
-| `InvalidSenderId` | Sender ID is not yet approved by CAK or telco network. | Verify that your Alphanumeric Sender ID is fully approved in your Africa's Talking dashboard. |
-| `InsufficientBalance` | Prepaid balance depleted. | Top up credits in your MarkChat dashboard or Africa's Talking portal. |
-
----
-
-## Related Documentation
-
-- [Channel & Message Delivery Troubleshooting](/docs/troubleshooting-channels)
-- [Safaricom M-Pesa Setup & STK Prompting](/docs/mpesa-setup)
-- [Automation Rules & Event Triggers](/docs/automation-rules)
+To begin, review [Core workspace plans](/pricing) and complete registration; SMS Studio eligibility and access are handled through the Control Panel. For current availability, contact [MarkChat support](/contact).

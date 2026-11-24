@@ -5,7 +5,7 @@ order: 25
 category: "Troubleshooting"
 section: "Security & Governance"
 icon: "lucide:lock"
-draft: false
+draft: true
 tags: ["security", "rbac", "privacy", "kdpa", "tokens", "compliance"]
 lastUpdated: "2026-11-14"
 difficulty: "Intermediate"

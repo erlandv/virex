@@ -5,7 +5,7 @@ order: 11
 category: "Fintech & M-Pesa"
 section: "Mobile Money & Daraja"
 icon: "lucide:smartphone"
-draft: false
+draft: true
 tags: ["mpesa", "daraja", "safaricom", "stk-push", "payments", "fintech"]
 lastUpdated: "2026-11-14"
 difficulty: "Intermediate"

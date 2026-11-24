@@ -5,7 +5,7 @@ order: 19
 category: "Developer APIs"
 section: "REST API Reference"
 icon: "lucide:key"
-draft: false
+draft: true
 tags: ["api", "rest", "authentication", "tokens", "developer", "headers"]
 lastUpdated: "2026-11-14"
 difficulty: "Intermediate"

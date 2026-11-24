@@ -5,7 +5,7 @@ order: 4
 category: "Channels"
 section: "Messaging Channels"
 icon: "simple-icons:whatsapp"
-draft: false
+draft: true
 tags: ["whatsapp", "meta", "cloud-api", "waba", "channels", "webhooks"]
 lastUpdated: "2026-11-14"
 difficulty: "Intermediate"
