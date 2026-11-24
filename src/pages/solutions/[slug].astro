@@ -85,19 +85,7 @@ const { page } = Astro.props;
         </div>
       </div>
 
-      <!-- Key Stats Bar -->
-      {
-        page.keyStats && page.keyStats.length > 0 && (
-          <div class="mt-14 pt-10 border-t border-border grid grid-cols-2 md:grid-cols-3 gap-6">
-            {page.keyStats.map((stat) => (
-              <div>
-                <div class="text-2xl sm:text-3xl font-extrabold text-text">{stat.value}</div>
-                <div class="text-xs sm:text-sm text-text-muted font-medium mt-1">{stat.label}</div>
-              </div>
-            ))}
-          </div>
-        )
-      }
+      <div class="mt-8 rounded-lg bg-primary/5 border border-primary/15 px-4 py-3 text-xs text-text-muted max-w-3xl">Product flows and outcomes here are illustrative. Verify available integrations, carrier approvals, merchant credentials and actual performance before deployment.</div>
     </div>
   </section>
 
