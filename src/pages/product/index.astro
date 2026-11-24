@@ -3,6 +3,7 @@
  * MarkChat Product Suite Overview
  */
 import MarketingLayout from '@/layouts/MarketingLayout.astro';
+import ProductOperations from '@/components/enterprise/ProductOperations.astro';
 import ServiceBoundaryNotice from '@/components/common/ServiceBoundaryNotice.astro';
 import PageHeader from '@sections/content/PageHeader.astro';
 import { Icon } from 'astro-icon/components';
@@ -59,9 +60,10 @@ import { productPages } from '@/data/marketing-content';
     </div>
   </section>
 
+  <ProductOperations kind="inbox" title="Explore the full MarkChat product workflow" />
   <CTA
     title="Ready to transform your customer operations?"
-    description="Start your 14-day free trial or talk to our Nairobi technical team."
+    description="Explore monthly workspace plans or discuss integration requirements with our Nairobi team."
     action={{ label: 'Start Free Trial', href: '/pricing' }}
     secondaryAction={{ label: 'Book Demo', href: '/demo' }}
     background="muted"

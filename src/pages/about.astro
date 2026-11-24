@@ -6,6 +6,7 @@
  * Built with a modern, data-driven pseudo-CMS architecture and Framer Motion micro-interactions.
  */
 import MarketingLayout from '@/layouts/MarketingLayout.astro';
+import ComplianceRail from '@/components/enterprise/ComplianceRail.astro';
 import { Icon } from 'astro-icon/components';
 import AboutMetricsBento, { type MetricItem } from '@sections/about/AboutMetricsBento.tsx';
 import AboutTeamGrid, { type TeamMemberItem } from '@sections/about/AboutTeamGrid.tsx';
@@ -366,6 +367,7 @@ const teamMembers: TeamMemberItem[] = [
   <!-- ===================================================================== -->
   <!-- 5. CALL TO ACTION SECTION                                            -->
   <!-- ===================================================================== -->
+  <ComplianceRail heading="Compliance-informed engineering, not marketing guarantees" />
   <CTA
     title="Ready to accelerate your conversational sales?"
     description="Sign up in 30 seconds. Start your 72-hour trial on the Growth plan. No payment required to start."

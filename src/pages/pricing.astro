@@ -3,6 +3,7 @@
  * MarkChat Kenya — Pricing & Plan Feature Matrix
  */
 import MarketingLayout from '@/layouts/MarketingLayout.astro';
+import SmsCampaignCalculator from '@/components/enterprise/SmsCampaignCalculator.astro';
 import PricingTable from '@sections/pricing/PricingTable.astro';
 import ComparisonTable from '@sections/pricing/ComparisonTable.astro';
 import TrustBadges from '@sections/pricing/TrustBadges.astro';
@@ -152,6 +153,7 @@ const pricingFaqs = faqsList
     defaultPeriod="monthly"
   />
 
+  <SmsCampaignCalculator />
   <TrustBadges
     guarantee={{
       title: '72-hour Growth trial (subject to workspace provisioning)',

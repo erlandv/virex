@@ -7,6 +7,7 @@
  * trilingual Sheng/Swahili/English NLP, CMS-managed video presentation, and ecosystem synergy.
  */
 import MarketingLayout from '@/layouts/MarketingLayout.astro';
+import ProductOperations from '@/components/enterprise/ProductOperations.astro';
 import { Icon } from 'astro-icon/components';
 import { siteConfig } from '@/config';
 import FAQSection from '@sections/content/FAQSection.astro';
@@ -461,6 +462,7 @@ const badgeColorMap: Record<string, string> = {
   </section>
 
   <!-- 8. FREQUENTLY ASKED QUESTIONS -->
+  <ProductOperations kind="ai" title="From reviewed knowledge to a human-approved response" />
   <FAQSection
     title="Markcopilot Intelligence FAQ"
     subtitle="Clear, factual answers regarding RAG grounding, Kenyan linguistic nuances, M-Pesa safety, and data privacy."

@@ -13,6 +13,7 @@
  */
 import { getCollection, type CollectionEntry } from 'astro:content';
 import MarketingLayout from '@/layouts/MarketingLayout.astro';
+import DeveloperPlayground from '@/components/enterprise/DeveloperPlayground.astro';
 import ServiceBoundaryNotice from '@/components/common/ServiceBoundaryNotice.astro';
 import { Icon } from 'astro-icon/components';
 import { siteConfig } from '@/config';
@@ -113,6 +114,7 @@ const categoriesList = [
   title={`Documentation & Developer Center — ${siteConfig.name}`}
   description={`Comprehensive documentation for MarkChat: Safaricom Daraja M-Pesa STK, WhatsApp Business Cloud, Africa's Talking SMS, REST APIs, and team collaboration.`}
 >
+  <DeveloperPlayground compact />
   <ServiceBoundaryNotice />
   <div
     class="py-14 sm:py-20 bg-slate-50 dark:bg-[#0B1120] min-h-screen transition-colors duration-200"

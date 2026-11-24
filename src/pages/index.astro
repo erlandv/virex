@@ -6,6 +6,8 @@
  * Grounded in verified product capabilities and authentic Kenyan commerce workflows.
  */
 import MarketingLayout from '@/layouts/MarketingLayout.astro';
+import LivePlatformWorkbench from '@/components/enterprise/LivePlatformWorkbench.astro';
+import EnterpriseArchitecture from '@/components/enterprise/EnterpriseArchitecture.astro';
 import Hero from '@sections/marketing/Hero.astro';
 import HowItWorks from '@sections/marketing/HowItWorks.astro';
 import OmnichannelFlowHub from '@sections/marketing/OmnichannelFlowHub.astro';
@@ -609,6 +611,9 @@ const homepageFaqs = [
       />
     )
   }
+
+  <LivePlatformWorkbench />
+  <EnterpriseArchitecture />
 
   <!-- 13. Newsletter -->
   {sections.newsletter && <Newsletter />}

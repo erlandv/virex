@@ -3,6 +3,7 @@
  * MarkChat Solutions Directory
  */
 import MarketingLayout from '@/layouts/MarketingLayout.astro';
+import IndustryBlueprints from '@/components/enterprise/IndustryBlueprints.astro';
 import ServiceBoundaryNotice from '@/components/common/ServiceBoundaryNotice.astro';
 import PageHeader from '@sections/content/PageHeader.astro';
 import { Icon } from 'astro-icon/components';
@@ -120,6 +121,7 @@ const byIndustry = solutionsPages.filter(
     </div>
   </section>
 
+  <IndustryBlueprints />
   <CTA
     title="Need a custom industry deployment?"
     description="We integrate with custom ERPs, core banking Paybills, and regional telco gateways."

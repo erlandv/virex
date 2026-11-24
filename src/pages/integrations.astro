@@ -9,6 +9,7 @@
  * 4. Technical Consultation CTA
  */
 import MarketingLayout from '@/layouts/MarketingLayout.astro';
+import DeveloperPlayground from '@/components/enterprise/DeveloperPlayground.astro';
 import ServiceBoundaryNotice from '@/components/common/ServiceBoundaryNotice.astro';
 import { Icon } from 'astro-icon/components';
 import IntegrationIcon from '@/components/ui/IntegrationIcon.astro';
@@ -312,6 +313,7 @@ const filterCategories = [
   <!-- ======================================================== -->
   <!-- 4. ENTERPRISE CONSULTATION CLOSING CTA                   -->
   <!-- ======================================================== -->
+  <DeveloperPlayground compact />
   <CTA
     title="Have a custom ERP, Till, or Bank Paybill?"
     description="MarkChat supports dedicated shortcodes, core banking callbacks, and custom webhooks for Kenyan enterprises."
