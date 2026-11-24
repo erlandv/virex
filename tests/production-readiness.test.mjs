@@ -87,3 +87,19 @@ test('production pages have canonical links and SEO descriptions', () => {
     assert.match(html, /<meta name="description" content="[^"]+"/);
   }
 });
+
+test('documentation FAQ and blog emit appropriate structured data', () => {
+  assert.match(read('dist/docs/webhooks/index.html'), /"TechArticle"/);
+  assert.match(read('dist/faq/index.html'), /"FAQPage"/);
+  assert.match(read('dist/blog/whatsapp-cloud-api-kenya/index.html'), /"Article"/);
+});
+
+test('account and billing documents are explicitly noindex', () => {
+  for (const file of [
+    'dist/login/index.html',
+    'dist/register/index.html',
+    'dist/billing/index.html',
+  ]) {
+    assert.match(read(file), /name="robots" content="noindex, nofollow"/);
+  }
+});
