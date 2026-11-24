@@ -11,7 +11,7 @@ export const name = 'MarkChat';
 export const description =
   'The omnichannel customer communication, bulk messaging, and in-chat M-Pesa checkout platform for Kenyan businesses.';
 
-export const url = import.meta.env.SITE_URL || 'http://localhost:4321';
+export const url = import.meta.env.SITE_URL || 'https://markchat.co.ke';
 
 export const author = 'MarkChat Technologies Ltd';
 
