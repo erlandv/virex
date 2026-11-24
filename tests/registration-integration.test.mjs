@@ -97,11 +97,21 @@ describe('Batch 5: Registration and Provisioning Integration', () => {
     );
   });
 
-  test('SSO redirect and error sanitization integrity', () => {
+  test('Safe post-registration login redirect and error sanitization integrity', () => {
     assert.match(
       registerFormSource,
-      /statusData\.ssoUrl/,
-      'Must consume ssoUrl provided by Control Plane on completion'
+      /completeRegistration\(redirectTarget\)/,
+      'Completed provisioning must lead to the registration completion handler'
+    );
+    assert.match(
+      registerFormSource,
+      /const destination = '\/login\?redirect=' \+ encodeURIComponent\(redirectTarget\)/,
+      'Registration must lead to local login with an encoded redirect target'
+    );
+    assert.doesNotMatch(
+      registerFormSource,
+      /window\.location\.href\s*=\s*(?:statusData|data)\.ssoUrl/,
+      'Untrusted Control Plane SSO URLs must not be used as browser navigation targets'
     );
     assert.match(
       registerFormSource,
