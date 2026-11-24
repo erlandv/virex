@@ -258,7 +258,13 @@ const controlPlaneUrl =
     fallback: string = '/billing'
   ): string {
     if (!targetUrl || typeof targetUrl !== 'string') return fallback;
-    if (/^\/(?![/\\])/.test(targetUrl) && !/[\\\\\u0000-\u001f:]/.test(targetUrl) && !/%(?:0[0-9a-f]|5c)/i.test(targetUrl)) {
+    if (
+      /^\/(?![/\\])/.test(targetUrl) &&
+      !targetUrl.includes('\\') &&
+      !targetUrl.includes(':') &&
+      !Array.from(targetUrl).some((char) => char.charCodeAt(0) < 32) &&
+      !/%(?:0[0-9a-f]|5c)/i.test(targetUrl)
+    ) {
       return targetUrl;
     }
     return fallback;
