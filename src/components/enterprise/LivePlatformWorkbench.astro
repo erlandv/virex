@@ -73,7 +73,8 @@ const tabs = [
                 <div class="grid grid-cols-3 gap-2">
                   {['Safaricom', 'Airtel', 'Telkom'].map((network) => <div class="bg-surface border border-border rounded-lg p-3"><p class="font-semibold text-text text-xs">{network}</p><p class="text-[11px] text-text-muted mt-2">Carrier route · sample</p></div>)}
                 </div>
-                <div class="flex justify-between border-t border-border pt-4 gap-4"><p class="text-xs text-text-muted">GSM-7 · 1 segment in this sample</p><span class="text-xs font-bold text-primary">Delivered · sample DLR</span></div>
+                <div class="flex flex-wrap items-center justify-between border-t border-border pt-4 gap-4"><p class="text-xs text-text-muted">GSM-7 · 1 segment in this sample</p><span data-demo-dlr aria-live="polite" class="text-xs font-bold text-primary">Queued · sample</span></div>
+                <div class="flex flex-wrap gap-2"><button type="button" data-demo-dlr-step="submitted" class="text-xs font-semibold border border-border bg-surface text-text rounded-md px-3 py-2 hover:border-primary">Simulate carrier accepted</button><button type="button" data-demo-dlr-step="delivered" class="text-xs font-semibold border border-border bg-surface text-text rounded-md px-3 py-2 hover:border-primary">Simulate delivered DLR</button></div>
               </div>
             </div>
           </div>
@@ -96,7 +97,8 @@ const tabs = [
                   ['Verification', 'Matched · demonstration'],
                 ].map(([label, value]) => <div class="flex justify-between gap-4 py-3"><span class="text-text-muted">{label}</span><span class="text-text font-semibold text-right">{value}</span></div>)}
               </div>
-              <p class="rounded-lg bg-primary/10 text-primary text-xs font-medium p-3 mt-4">Sample verified state. No real transaction was looked up or settled.</p>
+              <div class="mt-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3"><p data-demo-mpesa aria-live="polite" class="text-xs font-semibold text-text-muted">Awaiting example callback · not verified</p><button type="button" data-demo-mpesa-action class="text-xs font-bold bg-primary text-white rounded-lg px-3 py-2">Simulate verified match</button></div>
+              <p class="text-xs text-text-muted mt-3">An illustrative state transition only. No real transaction was looked up, verified or settled.</p>
             </div>
           </div>
         </div>
@@ -153,6 +155,17 @@ const tabs = [
           const target = tabs[(next + tabs.length) % tabs.length];
           if (target) { target.focus(); activate(target.dataset.workbenchTab || 'inbox'); }
         });
+      });
+      root.querySelectorAll<HTMLButtonElement>('[data-demo-dlr-step]').forEach((button) => {
+        button.addEventListener('click', () => {
+          const status = button.dataset.demoDlrStep === 'delivered' ? 'Delivered · sample DLR' : 'Carrier accepted · sample';
+          const target = root.querySelector<HTMLElement>('[data-demo-dlr]');
+          if (target) target.textContent = status;
+        });
+      });
+      root.querySelector<HTMLButtonElement>('[data-demo-mpesa-action]')?.addEventListener('click', () => {
+        const target = root.querySelector<HTMLElement>('[data-demo-mpesa]');
+        if (target) target.textContent = 'Matched to ORD-2049 · simulated';
       });
       activate('inbox');
     });
