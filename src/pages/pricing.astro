@@ -5,6 +5,7 @@
 import MarketingLayout from '@/layouts/MarketingLayout.astro';
 import ServiceBoundaryNotice from '@/components/common/ServiceBoundaryNotice.astro';
 import SmsCampaignCalculator from '@/components/enterprise/SmsCampaignCalculator.astro';
+import SenderReadinessMatrix from '@/components/enterprise/SenderReadinessMatrix.astro';
 import PricingTable from '@sections/pricing/PricingTable.astro';
 import ComparisonTable from '@sections/pricing/ComparisonTable.astro';
 import TrustBadges from '@sections/pricing/TrustBadges.astro';
@@ -156,6 +157,7 @@ const pricingFaqs = faqsList
   />
 
   <SmsCampaignCalculator />
+  <SenderReadinessMatrix />
   <TrustBadges
     guarantee={{
       title: '72-hour Growth trial (subject to workspace provisioning)',
