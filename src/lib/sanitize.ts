@@ -192,7 +192,7 @@ export function validateCanonicalUrl(urlStr: string, allowedHost?: string): stri
   try {
     const parsed = new URL(urlStr);
     if (parsed.protocol !== 'https:' && parsed.protocol !== 'http:') return null;
-    if (allowedHost && parsed.hostname !== allowedHost && !parsed.hostname.endsWith('.' + allowedHost)) return null;
+    if (allowedHost && parsed.hostname !== allowedHost) return null;
     return parsed.href;
   } catch {
     return null;
