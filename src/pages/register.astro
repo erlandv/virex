@@ -10,7 +10,9 @@ import RegisterForm from '@/components/forms/RegisterForm.astro';
 import { siteConfig } from '@/config';
 
 const url = new URL(Astro.request.url);
-const selectedPlan = url.searchParams.get('plan') || 'growth';
+const requestedPlan = url.searchParams.get('plan') || 'growth';
+const selectedPlan = ['starter','growth','scale'].includes(requestedPlan) ? requestedPlan : 'growth';
+const interval = url.searchParams.get('interval') === 'annual' ? 'annual' : 'monthly';
 ---
 
 <AuthLayout
@@ -27,7 +29,7 @@ const selectedPlan = url.searchParams.get('plan') || 'growth';
 
     <!-- Virex Card Container -->
     <div class="bg-surface border border-border rounded-2xl shadow-sm p-6 sm:p-8">
-      <RegisterForm defaultPlanId={selectedPlan} redirectUrl="/billing" />
+      <RegisterForm defaultPlanId={selectedPlan} billingInterval={interval} redirectUrl={`/billing?plan=${selectedPlan}&interval=${interval}`} />
     </div>
   </div>
 </AuthLayout>

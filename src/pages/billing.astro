@@ -8,7 +8,7 @@
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import { siteConfig } from '@/config';
 
-const controlPlaneUrl = (typeof import.meta !== 'undefined' && import.meta.env?.PUBLIC_CONTROL_PLANE_API_URL) || 'http://localhost:5000';
+const controlPlaneUrl = (typeof import.meta !== 'undefined' && (import.meta.env?.PUBLIC_CONTROL_PLANE_URL || import.meta.env?.PUBLIC_CONTROL_PLANE_API_URL)) || 'http://localhost:5000';
 ---
 
 <BaseLayout
@@ -230,7 +230,7 @@ const controlPlaneUrl = (typeof import.meta !== 'undefined' && import.meta.env?.
         </button>
 
         <p class="text-center text-xs text-slate-400 dark:text-slate-500 mt-4">
-          Protected by Paystack 256-bit SSL encryption. All payments comply with Central Bank of Kenya (CBK) standards.
+          Payment information is handled by Paystack. Subscription activation requires verified payment confirmation.
         </p>
       </div>
     </div>
@@ -278,7 +278,7 @@ const controlPlaneUrl = (typeof import.meta !== 'undefined' && import.meta.env?.
 
   smsStudioBtn?.addEventListener('click', async () => {
     hideError();
-    const token = localStorage.getItem('markchat_auth_token');
+    const token = localStorage.getItem('markchat_cp_token');
     if (!token) {
       showError('Please sign in to your workspace before launching SMS Studio.');
       setTimeout(() => {
@@ -328,9 +328,21 @@ const controlPlaneUrl = (typeof import.meta !== 'undefined' && import.meta.env?.
     }
   });
 
+  // Honor plan selection; block unsupported annual checkout rather than misbill.
+  const intent = new URLSearchParams(window.location.search);
+  const chosenPlan = intent.get('plan');
+  if (chosenPlan && ['starter','growth','scale'].includes(chosenPlan)) {
+    const radio = document.querySelector(`input[name="planSelect"][value="${chosenPlan}"]`) as HTMLInputElement | null;
+    if (radio) radio.checked = true;
+  }
+  if (intent.get('interval') === 'annual') showError('Annual billing is not available for online checkout. Choose monthly or contact sales.');
   // Handle Checkout Dispatch
   checkoutBtn?.addEventListener('click', async () => {
     hideError();
+    if (intent.get('interval') === 'annual') {
+      showError('Annual checkout is not enabled; contact sales or select monthly.');
+      return;
+    }
 
     const selectedPlan = (document.querySelector('input[name="planSelect"]:checked') as HTMLInputElement)?.value || 'growth';
     const paymentMethod = (document.querySelector('input[name="paymentMethod"]:checked') as HTMLInputElement)?.value || 'mpesa';
@@ -346,7 +358,7 @@ const controlPlaneUrl = (typeof import.meta !== 'undefined' && import.meta.env?.
     btnLabel?.classList.add('hidden');
     btnLoading?.classList.remove('hidden');
 
-    const token = localStorage.getItem('markchat_auth_token');
+    const token = localStorage.getItem('markchat_cp_token');
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
       Accept: 'application/json',
@@ -385,7 +397,7 @@ const controlPlaneUrl = (typeof import.meta !== 'undefined' && import.meta.env?.
       }
 
       const body = await res.json();
-      const checkoutUrl = body.checkoutUrl || body.data?.checkoutUrl;
+      const checkoutUrl = body.authorizationUrl || body.data?.authorizationUrl;
 
       if (checkoutUrl) {
         window.location.href = checkoutUrl;

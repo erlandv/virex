@@ -401,7 +401,7 @@ const APP_URL =
   (typeof import.meta !== 'undefined' && import.meta.env?.PUBLIC_APP_URL) ||
   'http://localhost:3000';
 const CONTROL_PLANE_API_URL =
-  (typeof import.meta !== 'undefined' && import.meta.env?.PUBLIC_CONTROL_PLANE_API_URL) ||
+  (typeof import.meta !== 'undefined' && (import.meta.env?.PUBLIC_CONTROL_PLANE_URL || import.meta.env?.PUBLIC_CONTROL_PLANE_API_URL)) ||
   'http://localhost:5000';
 const BRIDGE_API_URL =
   (typeof import.meta !== 'undefined' && import.meta.env?.PUBLIC_BRIDGE_API_URL) ||
@@ -420,11 +420,11 @@ const DEFAULT_PRICING_MATRIX: PricingMatrixResponse = {
       highlighted: false,
       badge: 'Starter',
       ctaLabel: 'Get Started',
-      ctaHref: '/register?plan=starter',
+      ctaHref: '/register?plan=starter&interval=monthly',
       features: [
         'Up to 3 Team Agent seats',
         'Up to 2 Inboxes (WhatsApp Cloud or Web)',
-        'BYO SMS Gateway (Africa’s Talking)',
+        'Prepaid SMS credits and approved Sender IDs billed separately',
         'Safaricom Daraja C2B Payment Verification',
         'Full access to shared inbox & customer contacts',
         'Standard Email & Community support',
@@ -441,7 +441,7 @@ const DEFAULT_PRICING_MATRIX: PricingMatrixResponse = {
       highlighted: true,
       badge: 'Most Popular',
       ctaLabel: 'Start 72-Hour Trial',
-      ctaHref: '/register?plan=growth',
+      ctaHref: '/register?plan=growth&interval=monthly',
       features: [
         'Up to 10 Team Agent seats',
         'Up to 5 Inboxes across WhatsApp, IG, FB, Web, Email',
@@ -463,7 +463,7 @@ const DEFAULT_PRICING_MATRIX: PricingMatrixResponse = {
       highlighted: false,
       badge: 'High Volume',
       ctaLabel: 'Scale Up',
-      ctaHref: '/register?plan=scale',
+      ctaHref: '/register?plan=scale&interval=monthly',
       features: [
         'Up to 25 Team Agent seats',
         'Unlimited Inboxes across all channels',
@@ -2372,7 +2372,7 @@ export async function fetchPricingMatrix(): Promise<PricingMatrixResponse> {
           const tier = matrix.tiers.find((t) => t.id === plan.id);
           if (tier && typeof plan.priceKes === 'number') {
             tier.monthlyPrice = plan.priceKes;
-            tier.annualMonthlyPrice = Math.round(plan.priceKes * 0.8);
+            tier.annualMonthlyPrice = null; // Control Plane currently only bills a 30-day period
           }
         }
         return matrix;

@@ -17,6 +17,7 @@ interface Props {
   action?: string;
   method?: 'POST' | 'GET';
   defaultPlanId?: string;
+  billingInterval?: 'monthly' | 'annual';
   redirectUrl?: string;
 }
 
@@ -24,10 +25,11 @@ const {
   action = '',
   method = 'POST',
   defaultPlanId = 'growth',
+  billingInterval = 'monthly',
   redirectUrl = '/billing',
 } = Astro.props;
 
-const controlPlaneUrl = (typeof import.meta !== 'undefined' && import.meta.env?.PUBLIC_CONTROL_PLANE_API_URL) || 'http://localhost:5000';
+const controlPlaneUrl = (typeof import.meta !== 'undefined' && (import.meta.env?.PUBLIC_CONTROL_PLANE_URL || import.meta.env?.PUBLIC_CONTROL_PLANE_API_URL)) || 'http://localhost:5000';
 
 const plansInfo: Record<string, { name: string; price: string; badge: string; isTrial: boolean; agents: string; inboxes: string }> = {
   starter: { name: 'Starter', price: 'KES 1,500/mo', badge: '3 Agents, 2 Inboxes', isTrial: false, agents: '3 Agents included', inboxes: '2 Inboxes' },
@@ -114,6 +116,7 @@ const initialPlan = plansInfo[defaultPlanId] || plansInfo.growth;
 
     <!-- Hidden plan input -->
     <input type="hidden" id="planId" name="planId" value={defaultPlanId} />
+    <input type="hidden" id="billingInterval" name="billingInterval" value={billingInterval} />
 
     <!-- =================================================================== -->
     <!-- STEP 1: ORGANIZATION & ADMIN DETAILS                                -->
@@ -925,7 +928,8 @@ const initialPlan = plansInfo[defaultPlanId] || plansInfo.growth;
       }
 
       const apiUrl = form.dataset.apiUrl || 'http://localhost:5000';
-      const redirectTarget = getSafeRedirect(form.dataset.redirect || '/billing');
+      const interval = (document.getElementById('billingInterval') as HTMLInputElement)?.value === 'annual' ? 'annual' : 'monthly';
+      const redirectTarget = '/billing?plan=' + encodeURIComponent(planId) + '&interval=' + interval;
 
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 15000);
@@ -961,7 +965,8 @@ const initialPlan = plansInfo[defaultPlanId] || plansInfo.growth;
           return;
         }
 
-        const data = await response.json();
+        const envelope = await response.json();
+        const data = envelope.data || envelope;
         const registrationId = data.registrationId;
 
         // 6. Fast-path completion or polling
@@ -974,8 +979,7 @@ const initialPlan = plansInfo[defaultPlanId] || plansInfo.growth;
         if (registrationId) {
           await pollRegistrationStatus(apiUrl, registrationId, redirectTarget);
         } else {
-          sessionStorage.removeItem('markchat_reg_idempotency_key');
-          completeRegistration(null, redirectTarget);
+          showFormError('The registration service returned no tracking reference. Contact support before retrying.');
         }
       } catch (err: unknown) {
         clearTimeout(timeoutId);
@@ -1005,7 +1009,8 @@ const initialPlan = plansInfo[defaultPlanId] || plansInfo.growth;
         });
 
         if (res.ok) {
-          const statusData = await res.json();
+          const envelope = await res.json();
+          const statusData = envelope.data || envelope;
           if (statusData.status === 'completed') {
             sessionStorage.removeItem('markchat_reg_idempotency_key');
             completeRegistration(statusData.ssoUrl, redirectTarget);
@@ -1038,7 +1043,8 @@ const initialPlan = plansInfo[defaultPlanId] || plansInfo.growth;
   function completeRegistration(ssoUrl: string | null | undefined, redirectTarget: string) {
     formStatus?.classList.remove('hidden');
     formSuccess?.classList.remove('hidden');
-    const destination = ssoUrl || redirectTarget;
+    // Registration alone does not establish an authenticated Control Plane session.
+    const destination = '/login?redirect=' + encodeURIComponent(redirectTarget);
     setTimeout(() => {
       window.location.href = destination;
     }, 1200);
