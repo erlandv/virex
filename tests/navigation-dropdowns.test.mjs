@@ -76,26 +76,30 @@ test('Navigation Mega-Menu & Dropdowns Verification', async (t) => {
     }
   );
 
-  await t.test(
-    'Header script endpoint loads successfully with HTTP 200 (zero Vite 500 errors)',
-    async () => {
-      const scriptRes = await fetch(
-        `${LOCALHOST_URL}/src/components/layout/Header.astro?astro&type=script&index=0&lang.ts`
-      );
-      assert.strictEqual(
-        scriptRes.status,
-        200,
-        `Header script endpoint returned HTTP ${scriptRes.status}`
-      );
-      const scriptText = await scriptRes.text();
-      assert.ok(scriptText.length > 500, 'Header script is unexpectedly short');
-      assert.ok(
-        scriptText.includes('initHeaderControllers'),
-        'Script missing initHeaderControllers'
-      );
-      assert.ok(scriptText.includes('data-state'), 'Script missing data-state attribute handling');
+  await t.test('Production header controller exists and emitted scripts return HTTP 200', async () => {
+    const { readFileSync } = await import('node:fs');
+    const headerSource = readFileSync(
+      new URL('../src/components/layout/Header.astro', import.meta.url),
+      'utf8'
+    );
+    assert.match(headerSource, /function initHeaderControllers\(/);
+    assert.match(headerSource, /data-state/);
+
+    // The production preview exposes fingerprinted /_astro/ assets, not
+    // Vite's development-only /src/*.astro?astro&type=script endpoint.
+    const scriptPaths = [
+      ...homepageHtml.matchAll(/<script\b[^>]*\bsrc=["']([^"']+)["']/g),
+    ]
+      .map((match) => match[1])
+      .filter((src) => src?.startsWith('/_astro/'));
+    assert.ok(scriptPaths.length > 0, 'No compiled JS assets referenced in built homepage');
+
+    for (const asset of new Set(scriptPaths)) {
+      const response = await fetch(`${LOCALHOST_URL}${asset}`);
+      assert.equal(response.status, 200, `Compiled script ${asset} returned HTTP ${response.status}`);
+      assert.ok((await response.text()).length > 0, `Compiled script ${asset} was empty`);
     }
-  );
+  });
 
   await t.test('Scoped style contains visibility and opacity rules for data-state="open"', () => {
     assert.ok(

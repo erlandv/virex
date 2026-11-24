@@ -129,10 +129,11 @@ test('Homepage — source files verification', async (t) => {
     );
   });
 
-  await t.test('Micro-metrics present verified capabilities', () => {
-    assert.match(indexContent, /6 Channels/);
-    assert.match(indexContent, /< 10s/);
-    assert.match(indexContent, /Bilingual AI/);
+  await t.test('Hero micro-metrics describe capabilities without invented SLAs', () => {
+    assert.match(indexContent, /value:\s*'6 Channels'/);
+    assert.match(indexContent, /value:\s*'M-Pesa'/);
+    assert.match(indexContent, /value:\s*'Team'/);
+    assert.doesNotMatch(indexContent, /value:\s*'< 10s'/);
   });
 
   await t.test(
