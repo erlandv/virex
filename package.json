@@ -27,7 +27,7 @@
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "test": "node --experimental-strip-types --test tests/seo-privacy-legal.test.mjs tests/about-page.test.mjs tests/auth-ui.test.mjs tests/billing-portal.test.mjs tests/commercial-pricing.test.mjs tests/registration-integration.test.mjs",
+    "test": "node --experimental-strip-types --test tests/seo-privacy-legal.test.mjs tests/about-page.test.mjs tests/auth-ui.test.mjs tests/billing-portal.test.mjs tests/commercial-pricing.test.mjs tests/registration-integration.test.mjs tests/enterprise-experience.test.mjs",
     "check": "npm run lint && npm run format:check && astro check"
   },
   "dependencies": {
