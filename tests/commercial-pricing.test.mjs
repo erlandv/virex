@@ -31,7 +31,11 @@ describe('Batch 2: Commercial Offering & Pricing Alignment', () => {
       const tier = matrix.tiers[idx];
       assert.equal(tier.id, expected.id, `tier ${idx} id must be ${expected.id}`);
       assert.equal(tier.name, expected.name, `tier ${idx} name must be ${expected.name}`);
-      assert.equal(tier.monthlyPrice, expected.price, `tier ${idx} monthlyPrice must be ${expected.price}`);
+      assert.equal(
+        tier.monthlyPrice,
+        expected.price,
+        `tier ${idx} monthlyPrice must be ${expected.price}`
+      );
       assert.equal(tier.currency, 'KES', `tier ${idx} currency must be KES`);
     });
   });
@@ -39,11 +43,20 @@ describe('Batch 2: Commercial Offering & Pricing Alignment', () => {
   test('no free SMS or bundled SMS credit promises remain in pricing tiers', async () => {
     const matrix = await fetchPricingMatrix();
     matrix.tiers.forEach((tier) => {
-      assert.ok(!tier.badge?.toLowerCase().includes('free forever'), `tier ${tier.id} badge must not claim Free Forever`);
+      assert.ok(
+        !tier.badge?.toLowerCase().includes('free forever'),
+        `tier ${tier.id} badge must not claim Free Forever`
+      );
       tier.features.forEach((feat) => {
         const lower = feat.toLowerCase();
-        assert.ok(!lower.includes('free bulk sms'), `feature "${feat}" must not claim free bulk SMS`);
-        assert.ok(!lower.includes('free sms credits'), `feature "${feat}" must not claim free SMS credits`);
+        assert.ok(
+          !lower.includes('free bulk sms'),
+          `feature "${feat}" must not claim free bulk SMS`
+        );
+        assert.ok(
+          !lower.includes('free sms credits'),
+          `feature "${feat}" must not claim free SMS credits`
+        );
         assert.ok(!lower.includes('50 free'), `feature "${feat}" must not claim 50 free`);
         assert.ok(!lower.includes('500 free'), `feature "${feat}" must not claim 500 free`);
       });
@@ -53,10 +66,18 @@ describe('Batch 2: Commercial Offering & Pricing Alignment', () => {
   test('pricing CTAs point to on-brand internal routes instead of localhost:3000', async () => {
     const matrix = await fetchPricingMatrix();
     matrix.tiers.forEach((tier) => {
-      assert.ok(!tier.ctaHref.includes('localhost:3000'), `tier ${tier.id} CTA must not point to localhost:3000`);
-      assert.ok(!tier.ctaHref.includes('/app/auth/signup'), `tier ${tier.id} CTA must not point to raw Chatwoot signup`);
       assert.ok(
-        tier.ctaHref.startsWith('/register') || tier.ctaHref.startsWith('/contact') || tier.ctaHref.startsWith('/demo'),
+        !tier.ctaHref.includes('localhost:3000'),
+        `tier ${tier.id} CTA must not point to localhost:3000`
+      );
+      assert.ok(
+        !tier.ctaHref.includes('/app/auth/signup'),
+        `tier ${tier.id} CTA must not point to raw Chatwoot signup`
+      );
+      assert.ok(
+        tier.ctaHref.startsWith('/register') ||
+          tier.ctaHref.startsWith('/contact') ||
+          tier.ctaHref.startsWith('/demo'),
         `tier ${tier.id} CTA "${tier.ctaHref}" must point to an on-brand internal route`
       );
     });

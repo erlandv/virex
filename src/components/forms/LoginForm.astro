@@ -16,7 +16,10 @@ interface Props {
 }
 
 const { action = '', method = 'POST', netlify = false, redirectUrl = '/billing' } = Astro.props;
-const controlPlaneUrl = (typeof import.meta !== 'undefined' && import.meta.env?.PUBLIC_CONTROL_PLANE_API_URL) || 'http://localhost:5000';
+const controlPlaneUrl =
+  import.meta.env.PUBLIC_CONTROL_PLANE_URL ||
+  import.meta.env.PUBLIC_CONTROL_PLANE_API_URL ||
+  'http://localhost:5000';
 ---
 
 <div class="w-full">
@@ -59,7 +62,8 @@ const controlPlaneUrl = (typeof import.meta !== 'undefined' && import.meta.env?.
         class="w-full h-11 px-4 rounded-xl border border-border bg-background text-text placeholder:text-text-muted/60 focus:outline-none focus-visible:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 focus-visible:ring-2 focus-visible:ring-primary transition-colors text-sm shadow-xs"
         placeholder="you@company.co.ke"
       />
-      <p id="email-error" class="mt-1 text-xs text-error hidden" data-error="email" role="alert"></p>
+      <p id="email-error" class="mt-1 text-xs text-error hidden" data-error="email" role="alert">
+      </p>
     </div>
 
     <!-- Password field -->
@@ -94,13 +98,35 @@ const controlPlaneUrl = (typeof import.meta !== 'undefined' && import.meta.env?.
           aria-label="Show password"
           aria-pressed="false"
         >
-          <svg id="eye-icon-login" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+          <svg
+            id="eye-icon-login"
+            class="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            aria-hidden="true"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+            ></path>
           </svg>
         </button>
       </div>
-      <p id="password-error" class="mt-1 text-xs text-error hidden" data-error="password" role="alert"></p>
+      <p
+        id="password-error"
+        class="mt-1 text-xs text-error hidden"
+        data-error="password"
+        role="alert"
+      >
+      </p>
     </div>
 
     <!-- Remember me checkbox -->
@@ -123,8 +149,15 @@ const controlPlaneUrl = (typeof import.meta !== 'undefined' && import.meta.env?.
         class="hidden p-3.5 rounded-lg bg-success-bg border border-success text-success text-sm"
       >
         <p class="font-semibold flex items-center gap-2">
-          <svg class="w-4 h-4 text-success shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+          <svg
+            class="w-4 h-4 text-success shrink-0"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            aria-hidden="true"
+          >
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"
+            ></path>
           </svg>
           Sign in successful
         </p>
@@ -135,8 +168,19 @@ const controlPlaneUrl = (typeof import.meta !== 'undefined' && import.meta.env?.
         class="hidden p-3.5 rounded-lg bg-error-bg border border-error text-error text-sm"
       >
         <p class="font-semibold flex items-center gap-2">
-          <svg class="w-4 h-4 text-error shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+          <svg
+            class="w-4 h-4 text-error shrink-0"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            aria-hidden="true"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+            ></path>
           </svg>
           Authentication failed
         </p>
@@ -154,9 +198,19 @@ const controlPlaneUrl = (typeof import.meta !== 'undefined' && import.meta.env?.
     >
       <span id="login-button-text">Sign in to workspace</span>
       <span id="login-button-loading" class="hidden items-center gap-2">
-        <svg class="animate-spin w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" aria-hidden="true">
-          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        <svg
+          class="animate-spin w-4 h-4 text-white"
+          fill="none"
+          viewBox="0 0 24 24"
+          aria-hidden="true"
+        >
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"
+          ></circle>
+          <path
+            class="opacity-75"
+            fill="currentColor"
+            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+          ></path>
         </svg>
         <span>Signing in...</span>
       </span>
@@ -185,19 +239,24 @@ const controlPlaneUrl = (typeof import.meta !== 'undefined' && import.meta.env?.
   if (oauthError) {
     let message = 'Google authentication could not be completed. Please try again.';
     if (oauthError === 'google_not_configured') {
-      message = 'Google Sign-In is not configured on this environment yet. Please sign in with your business email below.';
+      message =
+        'Google Sign-In is not configured on this environment yet. Please sign in with your business email below.';
     } else if (oauthError === 'access_denied') {
       message = 'Google sign-in was canceled.';
     }
     showFormError(message);
     initialParams.delete('oauth_error');
     const cleanSearch = initialParams.toString();
-    const cleanUrl = window.location.pathname + (cleanSearch ? `?${cleanSearch}` : '') + window.location.hash;
+    const cleanUrl =
+      window.location.pathname + (cleanSearch ? `?${cleanSearch}` : '') + window.location.hash;
     window.history.replaceState({}, document.title, cleanUrl);
   }
 
   // Open-Redirect Protection Helper (CWE-601)
-  function getSafeRedirect(targetUrl: string | null | undefined, fallback: string = '/billing'): string {
+  function getSafeRedirect(
+    targetUrl: string | null | undefined,
+    fallback: string = '/billing'
+  ): string {
     if (!targetUrl || typeof targetUrl !== 'string') return fallback;
     if (/^\/(?![/\\])/.test(targetUrl) && !targetUrl.includes(':')) {
       return targetUrl;
@@ -345,20 +404,25 @@ const controlPlaneUrl = (typeof import.meta !== 'undefined' && import.meta.env?.
 
         if (response.status === 429) {
           const retryAfter = response.headers.get('Retry-After') || '60';
-          showFormError(`Too many sign-in attempts. Please wait ${retryAfter} seconds before trying again.`);
+          showFormError(
+            `Too many sign-in attempts. Please wait ${retryAfter} seconds before trying again.`
+          );
           return;
         }
 
         if (response.status === 401 || response.status === 404) {
-          showFormError('Invalid email address or password. Please verify your credentials and try again.');
+          showFormError(
+            'Invalid email address or password. Please verify your credentials and try again.'
+          );
           return;
         }
 
         if (!response.ok) {
           const errData = await response.json().catch(() => ({}));
-          const safeMessage = typeof errData.message === 'string' && !errData.message.includes('stack')
-            ? errData.message
-            : 'Authentication failed. Please verify your credentials and try again.';
+          const safeMessage =
+            typeof errData.message === 'string' && !errData.message.includes('stack')
+              ? errData.message
+              : 'Authentication failed. Please verify your credentials and try again.';
           showFormError(safeMessage);
           return;
         }
@@ -384,10 +448,14 @@ const controlPlaneUrl = (typeof import.meta !== 'undefined' && import.meta.env?.
       } catch (err: unknown) {
         clearTimeout(timeoutId);
         if (err instanceof Error && err.name === 'AbortError') {
-          showFormError('Authentication request timed out. Please check your internet connection and try again.');
+          showFormError(
+            'Authentication request timed out. Please check your internet connection and try again.'
+          );
           return;
         }
-        showFormError('Unable to connect to the authentication service. Please verify your connection and try again.');
+        showFormError(
+          'Unable to connect to the authentication service. Please verify your connection and try again.'
+        );
       }
     });
   }

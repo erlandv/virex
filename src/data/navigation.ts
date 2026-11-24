@@ -38,7 +38,6 @@ export interface MegaMenuConfig {
   };
 }
 
-
 export const productMegaMenu: MegaMenuConfig = {
   id: 'product',
   label: 'Product',

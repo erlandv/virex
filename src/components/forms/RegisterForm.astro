@@ -29,13 +29,47 @@ const {
   redirectUrl = '/billing',
 } = Astro.props;
 
-const controlPlaneUrl = (typeof import.meta !== 'undefined' && (import.meta.env?.PUBLIC_CONTROL_PLANE_URL || import.meta.env?.PUBLIC_CONTROL_PLANE_API_URL)) || 'http://localhost:5000';
+const controlPlaneUrl =
+  import.meta.env.PUBLIC_CONTROL_PLANE_URL ||
+  import.meta.env.PUBLIC_CONTROL_PLANE_API_URL ||
+  'http://localhost:5000';
 
-const plansInfo: Record<string, { name: string; price: string; badge: string; isTrial: boolean; agents: string; inboxes: string }> = {
-  starter: { name: 'Starter', price: 'KES 1,500/mo', badge: '3 Agents, 2 Inboxes', isTrial: false, agents: '3 Agents included', inboxes: '2 Inboxes' },
-  growth: { name: 'Growth', price: 'KES 3,500/mo', badge: '72-Hour Full Trial Included', isTrial: true, agents: '10 Agents included', inboxes: '5 Inboxes' },
-  scale: { name: 'Scale', price: 'KES 5,000/mo', badge: '25 Agents, High Volume', isTrial: false, agents: '25 Agents included', inboxes: 'Unlimited Inboxes' },
-  enterprise: { name: 'Enterprise', price: 'Custom', badge: 'Dedicated SLA', isTrial: false, agents: 'Custom capacity', inboxes: 'Dedicated SLA' },
+const plansInfo: Record<
+  string,
+  { name: string; price: string; badge: string; isTrial: boolean; agents: string; inboxes: string }
+> = {
+  starter: {
+    name: 'Starter',
+    price: 'KES 1,500/mo',
+    badge: '3 Agents, 2 Inboxes',
+    isTrial: false,
+    agents: '3 Agents included',
+    inboxes: '2 Inboxes',
+  },
+  growth: {
+    name: 'Growth',
+    price: 'KES 3,500/mo',
+    badge: '72-Hour Full Trial Included',
+    isTrial: true,
+    agents: '10 Agents included',
+    inboxes: '5 Inboxes',
+  },
+  scale: {
+    name: 'Scale',
+    price: 'KES 5,000/mo',
+    badge: '25 Agents, High Volume',
+    isTrial: false,
+    agents: '25 Agents included',
+    inboxes: 'Unlimited Inboxes',
+  },
+  enterprise: {
+    name: 'Enterprise',
+    price: 'Custom',
+    badge: 'Dedicated SLA',
+    isTrial: false,
+    agents: 'Custom capacity',
+    inboxes: 'Dedicated SLA',
+  },
 };
 
 const initialPlan = plansInfo[defaultPlanId] || plansInfo.growth;
@@ -65,10 +99,8 @@ const initialPlan = plansInfo[defaultPlanId] || plansInfo.growth;
 
       <!-- Connecting Progress Line -->
       <div class="flex-1 mx-3 sm:mx-4 h-1 bg-border rounded-full overflow-hidden">
-        <div
-          id="step-progress-bar"
-          class="h-full bg-primary transition-all duration-300 w-1/2"
-        ></div>
+        <div id="step-progress-bar" class="h-full bg-primary transition-all duration-300 w-1/2">
+        </div>
       </div>
 
       <!-- Step 2 Pill -->
@@ -149,11 +181,21 @@ const initialPlan = plansInfo[defaultPlanId] || plansInfo.growth;
           class="w-full h-11 px-4 rounded-xl border border-border bg-background text-text placeholder:text-text-muted/60 focus:outline-none focus-visible:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 focus-visible:ring-2 focus-visible:ring-primary transition-colors text-sm shadow-xs"
           placeholder="e.g. Acme Retail Kenya Ltd"
         />
-        <div class="mt-1.5 flex items-center gap-1.5 text-xs text-text-muted font-mono tabular-nums">
+        <div
+          class="mt-1.5 flex items-center gap-1.5 text-xs text-text-muted font-mono tabular-nums"
+        >
           <span>Workspace URL:</span>
-          <span id="workspace-slug-preview" class="text-text-muted/70 font-medium transition-colors">https://your-workspace.markchat.co.ke</span>
+          <span id="workspace-slug-preview" class="text-text-muted/70 font-medium transition-colors"
+            >https://your-workspace.markchat.co.ke</span
+          >
         </div>
-        <p id="businessName-error" class="mt-1 text-xs text-error hidden" data-error="businessName" role="alert"></p>
+        <p
+          id="businessName-error"
+          class="mt-1 text-xs text-error hidden"
+          data-error="businessName"
+          role="alert"
+        >
+        </p>
       </div>
 
       <!-- Administrator Full Name field -->
@@ -173,7 +215,13 @@ const initialPlan = plansInfo[defaultPlanId] || plansInfo.growth;
           class="w-full h-11 px-4 rounded-xl border border-border bg-background text-text placeholder:text-text-muted/60 focus:outline-none focus-visible:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 focus-visible:ring-2 focus-visible:ring-primary transition-colors text-sm shadow-xs"
           placeholder="e.g. Wanjiku Kimani"
         />
-        <p id="fullName-error" class="mt-1 text-xs text-error hidden" data-error="fullName" role="alert"></p>
+        <p
+          id="fullName-error"
+          class="mt-1 text-xs text-error hidden"
+          data-error="fullName"
+          role="alert"
+        >
+        </p>
       </div>
 
       <!-- Business Email Address field -->
@@ -192,7 +240,13 @@ const initialPlan = plansInfo[defaultPlanId] || plansInfo.growth;
           class="w-full h-11 px-4 rounded-xl border border-border bg-background text-text placeholder:text-text-muted/60 focus:outline-none focus-visible:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 focus-visible:ring-2 focus-visible:ring-primary transition-colors text-sm shadow-xs"
           placeholder="wanjiku@acmeretail.co.ke"
         />
-        <p id="registerEmail-error" class="mt-1 text-xs text-error hidden" data-error="registerEmail" role="alert"></p>
+        <p
+          id="registerEmail-error"
+          class="mt-1 text-xs text-error hidden"
+          data-error="registerEmail"
+          role="alert"
+        >
+        </p>
       </div>
 
       <!-- Phone Number field -->
@@ -213,7 +267,13 @@ const initialPlan = plansInfo[defaultPlanId] || plansInfo.growth;
           class="w-full h-11 px-4 rounded-xl border border-border bg-background text-text placeholder:text-text-muted/60 focus:outline-none focus-visible:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 focus-visible:ring-2 focus-visible:ring-primary transition-colors text-sm shadow-xs"
           placeholder="+254 712 345 678"
         />
-        <p id="registerPhone-error" class="mt-1 text-xs text-error hidden" data-error="registerPhone" role="alert"></p>
+        <p
+          id="registerPhone-error"
+          class="mt-1 text-xs text-error hidden"
+          data-error="registerPhone"
+          role="alert"
+        >
+        </p>
       </div>
 
       <!-- Step 1 Continue Action -->
@@ -224,8 +284,18 @@ const initialPlan = plansInfo[defaultPlanId] || plansInfo.growth;
           class="w-full h-11 cursor-pointer px-6 rounded-xl bg-primary hover:bg-primary-dark text-white font-medium text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background shadow-xs flex items-center justify-center gap-2 group"
         >
           <span>Continue to account setup</span>
-          <svg class="w-4 h-4 group-hover:translate-x-0.5 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+          <svg
+            class="w-4 h-4 group-hover:translate-x-0.5 transition-transform"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            aria-hidden="true"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
           </svg>
         </button>
       </div>
@@ -276,9 +346,25 @@ const initialPlan = plansInfo[defaultPlanId] || plansInfo.growth;
             aria-label="Show password"
             aria-pressed="false"
           >
-            <svg id="eye-icon-reg" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+            <svg
+              id="eye-icon-reg"
+              class="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+              ></path>
             </svg>
           </button>
         </div>
@@ -296,8 +382,16 @@ const initialPlan = plansInfo[defaultPlanId] || plansInfo.growth;
           </div>
         </div>
 
-        <p class="mt-1 text-xs text-text-muted">Min 8 characters (10+ recommended). Avoid common phrases.</p>
-        <p id="registerPassword-error" class="mt-1 text-xs text-error hidden" data-error="registerPassword" role="alert"></p>
+        <p class="mt-1 text-xs text-text-muted">
+          Min 8 characters (10+ recommended). Avoid common phrases.
+        </p>
+        <p
+          id="registerPassword-error"
+          class="mt-1 text-xs text-error hidden"
+          data-error="registerPassword"
+          role="alert"
+        >
+        </p>
       </div>
 
       <!-- Password Confirmation field -->
@@ -317,15 +411,23 @@ const initialPlan = plansInfo[defaultPlanId] || plansInfo.growth;
           class="w-full h-11 px-4 rounded-xl border border-border bg-background text-text placeholder:text-text-muted/60 focus:outline-none focus-visible:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 focus-visible:ring-2 focus-visible:ring-primary transition-colors text-sm shadow-xs"
           placeholder="••••••••••••"
         />
-        <p id="confirmPassword-error" class="mt-1 text-xs text-error hidden" data-error="confirmPassword" role="alert"></p>
+        <p
+          id="confirmPassword-error"
+          class="mt-1 text-xs text-error hidden"
+          data-error="confirmPassword"
+          role="alert"
+        >
+        </p>
       </div>
 
       <!-- Plan Selection Cards -->
       <div>
-        <label class="block text-sm font-medium text-text mb-2">
-          Selected subscription plan
-        </label>
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5" role="radiogroup" aria-label="Subscription Plans">
+        <label class="block text-sm font-medium text-text mb-2"> Selected subscription plan </label>
+        <div
+          class="grid grid-cols-1 sm:grid-cols-3 gap-2.5"
+          role="radiogroup"
+          aria-label="Subscription Plans"
+        >
           <!-- Starter Plan -->
           <div
             class="plan-card cursor-pointer p-3 rounded-xl border border-border bg-background hover:bg-surface transition-all"
@@ -352,7 +454,9 @@ const initialPlan = plansInfo[defaultPlanId] || plansInfo.growth;
           >
             <div class="flex items-center justify-between">
               <span class="font-semibold text-xs text-text">Growth</span>
-              <span class="text-[9px] px-1.5 py-0.5 rounded bg-primary text-white font-medium">Trial</span>
+              <span class="text-[9px] px-1.5 py-0.5 rounded bg-primary text-white font-medium"
+                >Trial</span
+              >
             </div>
             <div class="mt-1 font-bold text-sm text-text tabular-nums">KES 3,500/mo</div>
             <div class="text-[10px] text-text-muted mt-0.5">72-Hr Free Trial</div>
@@ -388,13 +492,22 @@ const initialPlan = plansInfo[defaultPlanId] || plansInfo.growth;
           />
           <span class="ml-2.5 text-xs text-text-muted leading-relaxed">
             I agree to MarkChat's{' '}
-            <a href="/terms" target="_blank" class="text-primary hover:underline">Terms of Service</a>
+            <a href="/terms" target="_blank" class="text-primary hover:underline"
+              >Terms of Service</a
+            >
             {' '}and{' '}
-            <a href="/privacy" target="_blank" class="text-primary hover:underline">Privacy Policy</a>.
-            I acknowledge Kenya Data Protection Act (KDPA 2019) compliance requirements.
+            <a href="/privacy" target="_blank" class="text-primary hover:underline"
+              >Privacy Policy</a
+            >. I acknowledge Kenya Data Protection Act (KDPA 2019) compliance requirements.
           </span>
         </label>
-        <p id="agreeTerms-error" class="mt-1 text-xs text-error hidden" data-error="agreeTerms" role="alert"></p>
+        <p
+          id="agreeTerms-error"
+          class="mt-1 text-xs text-error hidden"
+          data-error="agreeTerms"
+          role="alert"
+        >
+        </p>
       </div>
 
       <!-- Navigation & Submit Controls for Step 2 -->
@@ -416,9 +529,24 @@ const initialPlan = plansInfo[defaultPlanId] || plansInfo.growth;
             {initialPlan.isTrial ? 'Start 72-Hour Free Trial' : 'Create MarkChat Account'}
           </span>
           <span id="register-button-loading" class="hidden items-center gap-2">
-            <svg class="animate-spin w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" aria-hidden="true">
-              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            <svg
+              class="animate-spin w-4 h-4 text-white"
+              fill="none"
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+            >
+              <circle
+                class="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                stroke-width="4"></circle>
+              <path
+                class="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+              ></path>
             </svg>
             <span id="register-loading-status">Provisioning workspace...</span>
           </span>
@@ -434,8 +562,15 @@ const initialPlan = plansInfo[defaultPlanId] || plansInfo.growth;
         class="hidden p-3.5 rounded-lg bg-success-bg border border-success text-success text-sm"
       >
         <p class="font-semibold flex items-center gap-2">
-          <svg class="w-4 h-4 text-success shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+          <svg
+            class="w-4 h-4 text-success shrink-0"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            aria-hidden="true"
+          >
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"
+            ></path>
           </svg>
           Workspace ready!
         </p>
@@ -448,8 +583,19 @@ const initialPlan = plansInfo[defaultPlanId] || plansInfo.growth;
         class="hidden p-3.5 rounded-lg bg-error-bg border border-error text-error text-sm"
       >
         <p class="font-semibold flex items-center gap-2">
-          <svg class="w-4 h-4 text-error shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+          <svg
+            class="w-4 h-4 text-error shrink-0"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            aria-hidden="true"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+            ></path>
           </svg>
           Registration failed
         </p>
@@ -505,14 +651,16 @@ const initialPlan = plansInfo[defaultPlanId] || plansInfo.growth;
   if (oauthError) {
     let message = 'Google authentication could not be completed. Please try again.';
     if (oauthError === 'google_not_configured') {
-      message = 'Google Sign-In is not configured on this environment yet. Please register with your details below.';
+      message =
+        'Google Sign-In is not configured on this environment yet. Please register with your details below.';
     } else if (oauthError === 'access_denied') {
       message = 'Google sign-up was canceled.';
     }
     showFormError(message);
     initialParams.delete('oauth_error');
     const cleanSearch = initialParams.toString();
-    const cleanUrl = window.location.pathname + (cleanSearch ? `?${cleanSearch}` : '') + window.location.hash;
+    const cleanUrl =
+      window.location.pathname + (cleanSearch ? `?${cleanSearch}` : '') + window.location.hash;
     window.history.replaceState({}, document.title, cleanUrl);
   }
 
@@ -547,9 +695,11 @@ const initialPlan = plansInfo[defaultPlanId] || plansInfo.growth;
       const isSelected = c.getAttribute('data-plan') === planId;
       c.setAttribute('aria-checked', isSelected ? 'true' : 'false');
       if (isSelected) {
-        c.className = 'plan-card cursor-pointer p-3 rounded-xl border-2 border-primary bg-primary/5 transition-all shadow-xs';
+        c.className =
+          'plan-card cursor-pointer p-3 rounded-xl border-2 border-primary bg-primary/5 transition-all shadow-xs';
       } else {
-        c.className = 'plan-card cursor-pointer p-3 rounded-xl border border-border bg-background hover:bg-surface transition-all';
+        c.className =
+          'plan-card cursor-pointer p-3 rounded-xl border border-border bg-background hover:bg-surface transition-all';
       }
     });
 
@@ -602,7 +752,14 @@ const initialPlan = plansInfo[defaultPlanId] || plansInfo.growth;
   }
 
   // NIST SP 800-63B Entropy Evaluation
-  const commonPasswords = ['password', 'password123', '1234567890', 'qwertyuiop', 'admin12345', 'markchat123'];
+  const commonPasswords = [
+    'password',
+    'password123',
+    '1234567890',
+    'qwertyuiop',
+    'admin12345',
+    'markchat123',
+  ];
 
   function evaluatePasswordEntropy(password: string, email: string): 'weak' | 'fair' | 'strong' {
     if (!password || password.length < 8) return 'weak';
@@ -632,7 +789,8 @@ const initialPlan = plansInfo[defaultPlanId] || plansInfo.growth;
   }
 
   function updateStrengthUI(strength: 'weak' | 'fair' | 'strong') {
-    if (!strengthContainer || !strengthLabel || !strengthBar1 || !strengthBar2 || !strengthBar3) return;
+    if (!strengthContainer || !strengthLabel || !strengthBar1 || !strengthBar2 || !strengthBar3)
+      return;
     strengthContainer.classList.remove('hidden');
 
     if (strength === 'strong') {
@@ -779,14 +937,18 @@ const initialPlan = plansInfo[defaultPlanId] || plansInfo.growth;
       if (mobileStepLabel) mobileStepLabel.textContent = 'Step 2 of 2: Security & plan';
 
       if (step1Badge) {
-        step1Badge.className = 'w-6 h-6 rounded-full bg-success text-white flex items-center justify-center text-xs font-bold shadow-xs';
-        step1Badge.innerHTML = '<svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>';
+        step1Badge.className =
+          'w-6 h-6 rounded-full bg-success text-white flex items-center justify-center text-xs font-bold shadow-xs';
+        step1Badge.innerHTML =
+          '<svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>';
       }
       if (step2Badge) {
-        step2Badge.className = 'w-6 h-6 rounded-full bg-primary text-white flex items-center justify-center text-xs font-bold shadow-xs';
+        step2Badge.className =
+          'w-6 h-6 rounded-full bg-primary text-white flex items-center justify-center text-xs font-bold shadow-xs';
       }
       if (step2Indicator) {
-        step2Indicator.className = 'flex items-center gap-2 text-xs font-semibold text-primary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded px-1.5 py-0.5 cursor-pointer';
+        step2Indicator.className =
+          'flex items-center gap-2 text-xs font-semibold text-primary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded px-1.5 py-0.5 cursor-pointer';
       }
 
       passwordInput?.focus();
@@ -800,15 +962,18 @@ const initialPlan = plansInfo[defaultPlanId] || plansInfo.growth;
       if (mobileStepLabel) mobileStepLabel.textContent = 'Step 1 of 2: Organization details';
 
       if (step1Badge) {
-        step1Badge.className = 'w-6 h-6 rounded-full bg-primary text-white flex items-center justify-center text-xs font-bold shadow-xs';
+        step1Badge.className =
+          'w-6 h-6 rounded-full bg-primary text-white flex items-center justify-center text-xs font-bold shadow-xs';
         step1Badge.textContent = '1';
       }
       if (step2Badge) {
-        step2Badge.className = 'w-6 h-6 rounded-full bg-surface border border-border text-text-muted flex items-center justify-center text-xs font-bold';
+        step2Badge.className =
+          'w-6 h-6 rounded-full bg-surface border border-border text-text-muted flex items-center justify-center text-xs font-bold';
         step2Badge.textContent = '2';
       }
       if (step2Indicator) {
-        step2Indicator.className = 'flex items-center gap-2 text-xs font-medium text-text-muted transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded px-1.5 py-0.5 cursor-pointer';
+        step2Indicator.className =
+          'flex items-center gap-2 text-xs font-medium text-text-muted transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded px-1.5 py-0.5 cursor-pointer';
       }
     }
   }
@@ -824,7 +989,13 @@ const initialPlan = plansInfo[defaultPlanId] || plansInfo.growth;
   });
 
   // Real-time blur & input event bindings: mark touched only on blur
-  const allFieldNames = ['businessName', 'fullName', 'registerEmail', 'registerPassword', 'confirmPassword'];
+  const allFieldNames = [
+    'businessName',
+    'fullName',
+    'registerEmail',
+    'registerPassword',
+    'confirmPassword',
+  ];
   for (const fieldName of allFieldNames) {
     const input = document.getElementById(fieldName);
     input?.addEventListener('blur', () => {
@@ -895,9 +1066,13 @@ const initialPlan = plansInfo[defaultPlanId] || plansInfo.growth;
       buttonLoading?.classList.add('inline-flex');
 
       // 4. Gather Payload
-      const businessName = (document.getElementById('businessName') as HTMLInputElement).value.trim();
+      const businessName = (
+        document.getElementById('businessName') as HTMLInputElement
+      ).value.trim();
       const fullName = (document.getElementById('fullName') as HTMLInputElement).value.trim();
-      const email = (document.getElementById('registerEmail') as HTMLInputElement).value.trim().toLowerCase();
+      const email = (document.getElementById('registerEmail') as HTMLInputElement).value
+        .trim()
+        .toLowerCase();
       const phone = (document.getElementById('registerPhone') as HTMLInputElement).value.trim();
       const password = (document.getElementById('registerPassword') as HTMLInputElement).value;
       const planId = planInput?.value || 'growth';
@@ -919,8 +1094,12 @@ const initialPlan = plansInfo[defaultPlanId] || plansInfo.growth;
       }
 
       const apiUrl = form.dataset.apiUrl || 'http://localhost:5000';
-      const interval = (document.getElementById('billingInterval') as HTMLInputElement)?.value === 'annual' ? 'annual' : 'monthly';
-      const redirectTarget = '/billing?plan=' + encodeURIComponent(planId) + '&interval=' + interval;
+      const interval =
+        (document.getElementById('billingInterval') as HTMLInputElement)?.value === 'annual'
+          ? 'annual'
+          : 'monthly';
+      const redirectTarget =
+        '/billing?plan=' + encodeURIComponent(planId) + '&interval=' + interval;
 
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 15000);
@@ -943,15 +1122,18 @@ const initialPlan = plansInfo[defaultPlanId] || plansInfo.growth;
 
         if (response.status === 429) {
           const retryAfter = response.headers.get('Retry-After') || '60';
-          showFormError(`Too many registration requests. Please wait ${retryAfter} seconds before trying again.`);
+          showFormError(
+            `Too many registration requests. Please wait ${retryAfter} seconds before trying again.`
+          );
           return;
         }
 
         if (!response.ok) {
           const errData = await response.json().catch(() => ({}));
-          const safeMessage = typeof errData.message === 'string' && !errData.message.includes('stack')
-            ? errData.message
-            : 'Workspace registration failed. Please verify your details and try again.';
+          const safeMessage =
+            typeof errData.message === 'string' && !errData.message.includes('stack')
+              ? errData.message
+              : 'Workspace registration failed. Please verify your details and try again.';
           showFormError(safeMessage);
           return;
         }
@@ -970,20 +1152,30 @@ const initialPlan = plansInfo[defaultPlanId] || plansInfo.growth;
         if (registrationId) {
           await pollRegistrationStatus(apiUrl, registrationId, redirectTarget);
         } else {
-          showFormError('The registration service returned no tracking reference. Contact support before retrying.');
+          showFormError(
+            'The registration service returned no tracking reference. Contact support before retrying.'
+          );
         }
       } catch (err: unknown) {
         clearTimeout(timeoutId);
         if (err instanceof Error && err.name === 'AbortError') {
-          showFormError('The registration request timed out. Please check your network connection.');
+          showFormError(
+            'The registration request timed out. Please check your network connection.'
+          );
           return;
         }
-        showFormError('Unable to connect to registration service. Please verify your internet connection and try again.');
+        showFormError(
+          'Unable to connect to registration service. Please verify your internet connection and try again.'
+        );
       }
     });
   }
 
-  async function pollRegistrationStatus(apiUrl: string, registrationId: string, redirectTarget: string) {
+  async function pollRegistrationStatus(
+    apiUrl: string,
+    registrationId: string,
+    redirectTarget: string
+  ) {
     let attempts = 0;
     const maxAttempts = 30; // 60 seconds at 2s interval
     const intervalMs = 2000;
@@ -1009,9 +1201,10 @@ const initialPlan = plansInfo[defaultPlanId] || plansInfo.growth;
           }
           if (statusData.status === 'failed') {
             sessionStorage.removeItem('markchat_reg_idempotency_key');
-            const safeMsg = typeof statusData.error === 'string' && !statusData.error.includes('stack')
-              ? statusData.error
-              : 'Provisioning could not be completed. Our team has been alerted.';
+            const safeMsg =
+              typeof statusData.error === 'string' && !statusData.error.includes('stack')
+                ? statusData.error
+                : 'Provisioning could not be completed. Our team has been alerted.';
             showFormError(safeMsg);
             return;
           }
@@ -1024,7 +1217,9 @@ const initialPlan = plansInfo[defaultPlanId] || plansInfo.growth;
         setTimeout(poll, intervalMs);
       } else {
         sessionStorage.removeItem('markchat_reg_idempotency_key');
-        showFormError('Workspace provisioning is taking longer than usual. Please check your email for access instructions.');
+        showFormError(
+          'Workspace provisioning is taking longer than usual. Please check your email for access instructions.'
+        );
       }
     };
 

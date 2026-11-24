@@ -8,7 +8,10 @@
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import { siteConfig } from '@/config';
 
-const controlPlaneUrl = (typeof import.meta !== 'undefined' && import.meta.env?.PUBLIC_CONTROL_PLANE_API_URL) || 'http://localhost:5000';
+const controlPlaneUrl =
+  import.meta.env.PUBLIC_CONTROL_PLANE_URL ||
+  import.meta.env.PUBLIC_CONTROL_PLANE_API_URL ||
+  'http://localhost:5000';
 ---
 
 <BaseLayout
@@ -28,15 +31,22 @@ const controlPlaneUrl = (typeof import.meta !== 'undefined' && import.meta.env?.
     </div>
 
     <div class="w-full max-w-lg relative z-10">
-      <div class="p-8 rounded-3xl border border-slate-200/80 dark:border-slate-800 bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl shadow-2xl text-center">
+      <div
+        class="p-8 rounded-3xl border border-slate-200/80 dark:border-slate-800 bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl shadow-2xl text-center"
+      >
         <!-- Brand Emblem -->
-        <div class="mx-auto w-12 h-12 rounded-2xl bg-primary flex items-center justify-center text-white font-extrabold text-lg shadow-lg shadow-primary/25 mb-6">
+        <div
+          class="mx-auto w-12 h-12 rounded-2xl bg-primary flex items-center justify-center text-white font-extrabold text-lg shadow-lg shadow-primary/25 mb-6"
+        >
           M
         </div>
 
         <!-- 1. Verification In Progress State -->
         <div id="state-verifying" class="space-y-4">
-          <div class="w-12 h-12 mx-auto border-4 border-primary/20 border-t-primary rounded-full animate-spin"></div>
+          <div
+            class="w-12 h-12 mx-auto border-4 border-primary/20 border-t-primary rounded-full animate-spin"
+          >
+          </div>
           <h1 class="text-2xl font-bold text-slate-900 dark:text-white">
             Verifying Transaction...
           </h1>
@@ -47,25 +57,32 @@ const controlPlaneUrl = (typeof import.meta !== 'undefined' && import.meta.env?.
 
         <!-- 2. Success State -->
         <div id="state-success" class="hidden space-y-6">
-          <div class="w-16 h-16 mx-auto rounded-full bg-emerald-100 dark:bg-emerald-950/60 border border-emerald-300 dark:border-emerald-700 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
+          <div
+            class="w-16 h-16 mx-auto rounded-full bg-emerald-100 dark:bg-emerald-950/60 border border-emerald-300 dark:border-emerald-700 flex items-center justify-center text-emerald-600 dark:text-emerald-400"
+          >
             <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2.5"
+                d="M5 13l4 4L19 7"></path>
             </svg>
           </div>
           <div>
-            <h1 class="text-2xl font-extrabold text-slate-900 dark:text-white">
-              Payment Settled!
-            </h1>
+            <h1 class="text-2xl font-extrabold text-slate-900 dark:text-white">Payment Settled!</h1>
             <p class="text-sm text-slate-600 dark:text-slate-400 mt-1">
               Your MarkChat subscription and channel entitlements have been refreshed.
             </p>
           </div>
 
           <!-- Receipt Details -->
-          <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-left text-xs space-y-2">
+          <div
+            class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-left text-xs space-y-2"
+          >
             <div class="flex justify-between">
               <span class="text-slate-500">Transaction Reference:</span>
-              <span id="receipt-ref" class="font-mono font-bold text-slate-800 dark:text-slate-200"></span>
+              <span id="receipt-ref" class="font-mono font-bold text-slate-800 dark:text-slate-200"
+              ></span>
             </div>
             <div class="flex justify-between">
               <span class="text-slate-500">Amount Paid:</span>
@@ -73,7 +90,9 @@ const controlPlaneUrl = (typeof import.meta !== 'undefined' && import.meta.env?.
             </div>
             <div class="flex justify-between">
               <span class="text-slate-500">Payment Status:</span>
-              <span class="font-bold text-emerald-600 dark:text-emerald-400 uppercase">Settled (Active)</span>
+              <span class="font-bold text-emerald-600 dark:text-emerald-400 uppercase"
+                >Settled (Active)</span
+              >
             </div>
           </div>
 
@@ -88,9 +107,15 @@ const controlPlaneUrl = (typeof import.meta !== 'undefined' && import.meta.env?.
 
         <!-- 3. Failed / Abandoned State -->
         <div id="state-failed" class="hidden space-y-6">
-          <div class="w-16 h-16 mx-auto rounded-full bg-rose-100 dark:bg-rose-950/60 border border-rose-300 dark:border-rose-700 flex items-center justify-center text-rose-600 dark:text-rose-400">
+          <div
+            class="w-16 h-16 mx-auto rounded-full bg-rose-100 dark:bg-rose-950/60 border border-rose-300 dark:border-rose-700 flex items-center justify-center text-rose-600 dark:text-rose-400"
+          >
             <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12" />
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2.5"
+                d="M6 18L18 6M6 6l12 12"></path>
             </svg>
           </div>
           <div>
@@ -167,7 +192,8 @@ const controlPlaneUrl = (typeof import.meta !== 'undefined' && import.meta.env?.
             stateSuccess?.classList.remove('hidden');
 
             if (receiptRef) receiptRef.textContent = tx.reference;
-            if (receiptAmount) receiptAmount.textContent = `KES ${(tx.amountKesCents / 100).toLocaleString()}`;
+            if (receiptAmount)
+              receiptAmount.textContent = `KES ${(tx.amountKesCents / 100).toLocaleString()}`;
             if (launchBtn && tx.ssoUrl) {
               launchBtn.href = tx.ssoUrl;
             } else if (launchBtn) {
@@ -178,7 +204,8 @@ const controlPlaneUrl = (typeof import.meta !== 'undefined' && import.meta.env?.
             clearInterval(poll);
             stateVerifying?.classList.add('hidden');
             stateFailed?.classList.remove('hidden');
-            if (failedReason) failedReason.textContent = `Transaction was ${tx.status}. Please try initiating payment again.`;
+            if (failedReason)
+              failedReason.textContent = `Transaction was ${tx.status}. Please try initiating payment again.`;
             return;
           }
         }

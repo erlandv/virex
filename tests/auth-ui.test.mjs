@@ -72,9 +72,15 @@ describe('MarkChat Authentication & Registration UI (Distraction-Free AuthLayout
     const content = fs.readFileSync(socialPath, 'utf8');
 
     // Google presence and Control Plane start route
-    assert.ok(content.includes('simple-icons:google') || content.includes('Google'), 'must include Google authentication');
+    assert.ok(
+      content.includes('simple-icons:google') || content.includes('Google'),
+      'must include Google authentication'
+    );
     assert.ok(content.includes('googleUrl'), 'must support googleUrl prop');
-    assert.ok(content.includes('/api/v1/auth/google/start'), 'must point to Control Plane Google OAuth start route');
+    assert.ok(
+      content.includes('/api/v1/auth/google/start'),
+      'must point to Control Plane Google OAuth start route'
+    );
 
     // GitHub absence
     assert.ok(!content.includes('simple-icons:github'), 'must NOT include GitHub icon');
@@ -112,7 +118,10 @@ describe('MarkChat Authentication & Registration UI (Distraction-Free AuthLayout
 
     // Anti-bot honeypot & toggle
     assert.ok(content.includes('name="_gotcha"'), 'must include honeypot anti-spam');
-    assert.ok(content.includes('toggle-register-password'), 'must include password visibility toggle');
+    assert.ok(
+      content.includes('toggle-register-password'),
+      'must include password visibility toggle'
+    );
 
     // Step navigation and state retention logic
     assert.ok(content.includes('function goToStep'), 'must define goToStep transition engine');
@@ -141,7 +150,9 @@ describe('MarkChat Authentication & Registration UI (Distraction-Free AuthLayout
 
     assert.ok(content.includes('name="email"'), 'must include email field');
     assert.ok(
-      content.includes("If an account exists with that email, we've sent password reset instructions"),
+      content.includes(
+        "If an account exists with that email, we've sent password reset instructions"
+      ),
       'must provide timing-safe confirmation'
     );
     assert.ok(content.includes('name="_gotcha"'), 'must include honeypot anti-spam');
@@ -165,8 +176,17 @@ describe('MarkChat Authentication & Registration UI (Distraction-Free AuthLayout
     const content = fs.readFileSync(callbackPath, 'utf8');
 
     assert.ok(content.includes('AuthLayout'), 'Callback page must use AuthLayout');
-    assert.ok(content.includes('noindex={true}'), 'Callback page must enforce noindex to prevent indexing');
-    assert.ok(content.includes('replaceState'), 'Callback page must scrub URL fragment via history.replaceState');
-    assert.ok(content.includes('markchat_cp_token'), 'Callback page must store authentication token');
+    assert.ok(
+      content.includes('noindex={true}'),
+      'Callback page must enforce noindex to prevent indexing'
+    );
+    assert.ok(
+      content.includes('replaceState'),
+      'Callback page must scrub URL fragment via history.replaceState'
+    );
+    assert.ok(
+      content.includes('markchat_cp_token'),
+      'Callback page must store authentication token'
+    );
   });
 });

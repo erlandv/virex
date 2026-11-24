@@ -18,7 +18,13 @@ const __dirname = path.dirname(__filename);
 const marketingRoot = path.resolve(__dirname, '..');
 
 describe('Batch 5: Registration and Provisioning Integration', () => {
-  const registerFormPath = path.join(marketingRoot, 'src', 'components', 'forms', 'RegisterForm.astro');
+  const registerFormPath = path.join(
+    marketingRoot,
+    'src',
+    'components',
+    'forms',
+    'RegisterForm.astro'
+  );
   const registerFormSource = fs.readFileSync(registerFormPath, 'utf8');
 
   test('RegisterForm includes API URL data attribute and honeypot field', () => {

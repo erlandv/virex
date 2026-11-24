@@ -8,7 +8,10 @@
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import { siteConfig } from '@/config';
 
-const controlPlaneUrl = (typeof import.meta !== 'undefined' && (import.meta.env?.PUBLIC_CONTROL_PLANE_URL || import.meta.env?.PUBLIC_CONTROL_PLANE_API_URL)) || 'http://localhost:5000';
+const controlPlaneUrl =
+  import.meta.env.PUBLIC_CONTROL_PLANE_URL ||
+  import.meta.env.PUBLIC_CONTROL_PLANE_API_URL ||
+  'http://localhost:5000';
 ---
 
 <BaseLayout
@@ -36,7 +39,9 @@ const controlPlaneUrl = (typeof import.meta !== 'undefined' && (import.meta.env?
       <!-- Top Navigation & Brand -->
       <div class="flex items-center justify-between mb-8">
         <a href="/" class="flex items-center gap-2 group">
-          <div class="w-9 h-9 rounded-xl bg-primary flex items-center justify-center text-white font-bold shadow-md shadow-primary/20">
+          <div
+            class="w-9 h-9 rounded-xl bg-primary flex items-center justify-center text-white font-bold shadow-md shadow-primary/20"
+          >
             M
           </div>
           <span class="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
@@ -54,14 +59,19 @@ const controlPlaneUrl = (typeof import.meta !== 'undefined' && (import.meta.env?
 
       <!-- Main Header -->
       <div class="text-center mb-10">
-        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-primary/10 text-primary border border-primary/20 mb-3">
+        <span
+          class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-primary/10 text-primary border border-primary/20 mb-3"
+        >
           Self-Service Billing
         </span>
-        <h1 class="text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white sm:text-4xl">
+        <h1
+          class="text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white sm:text-4xl"
+        >
           Subscription & Plans
         </h1>
         <p class="mt-2 text-sm text-slate-600 dark:text-slate-400 max-w-xl mx-auto">
-          Upgrade your communication capacity with instant Safaricom M-Pesa STK Push or Card payment.
+          Upgrade your communication capacity with instant Safaricom M-Pesa STK Push or Card
+          payment.
         </p>
       </div>
 
@@ -71,7 +81,9 @@ const controlPlaneUrl = (typeof import.meta !== 'undefined' && (import.meta.env?
         class="mb-8 p-6 rounded-2xl border border-slate-200/80 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4"
       >
         <div>
-          <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Workspace subscription</span>
+          <span class="text-xs font-bold uppercase tracking-wider text-slate-400"
+            >Workspace subscription</span
+          >
           <div class="flex items-center gap-3 mt-1">
             <h2 id="current-plan-name" class="text-xl font-bold text-slate-900 dark:text-white">
               Confirm your subscription
@@ -84,12 +96,15 @@ const controlPlaneUrl = (typeof import.meta !== 'undefined' && (import.meta.env?
             </span>
           </div>
           <p id="current-plan-expiry-text" class="text-xs text-slate-500 dark:text-slate-400 mt-1">
-            Your exact plan and subscription status must be confirmed through the Control Plane. Core channel access depends on provisioning.
+            Your exact plan and subscription status must be confirmed through the Control Plane.
+            Core channel access depends on provisioning.
           </p>
         </div>
         <div class="flex flex-col sm:items-end gap-2 shrink-0">
           <div class="sm:text-right">
-            <span class="text-xs font-medium text-slate-500 dark:text-slate-400">Payment Currency</span>
+            <span class="text-xs font-medium text-slate-500 dark:text-slate-400"
+              >Payment Currency</span
+            >
             <p class="text-base font-bold text-slate-900 dark:text-white">KES (Kenyan Shillings)</p>
           </div>
           <button
@@ -102,7 +117,11 @@ const controlPlaneUrl = (typeof import.meta !== 'undefined' && (import.meta.env?
         </div>
       </div>
 
-      <p class="mb-5 text-sm text-slate-500 dark:text-slate-400">This checkout covers recurring MarkChat Core workspace subscriptions only. Prepaid SMS wallet top-ups and branded Sender IDs are purchased separately in SMS Studio, subject to availability and approval.</p>
+      <p class="mb-5 text-sm text-slate-500 dark:text-slate-400">
+        This checkout covers recurring MarkChat Core workspace subscriptions only. Prepaid SMS
+        wallet top-ups and branded Sender IDs are purchased separately in SMS Studio, subject to
+        availability and approval.
+      </p>
       <!-- 3 Canonical Plans Selection Grid -->
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
         <!-- Starter Plan -->
@@ -114,7 +133,9 @@ const controlPlaneUrl = (typeof import.meta !== 'undefined' && (import.meta.env?
             <span class="text-sm font-bold text-slate-900 dark:text-white">Starter</span>
             <span class="text-xs font-semibold text-slate-500">KES 1,500/mo</span>
           </div>
-          <p class="text-xs text-slate-500 dark:text-slate-400 mb-3">For micro-teams & emerging merchants.</p>
+          <p class="text-xs text-slate-500 dark:text-slate-400 mb-3">
+            For micro-teams & emerging merchants.
+          </p>
           <ul class="text-xs space-y-1.5 text-slate-600 dark:text-slate-300 mt-auto">
             <li class="flex items-center gap-1.5">&check; 3 Agent Seats</li>
             <li class="flex items-center gap-1.5">&check; 2 Connected Inboxes</li>
@@ -127,19 +148,27 @@ const controlPlaneUrl = (typeof import.meta !== 'undefined' && (import.meta.env?
           class="relative flex flex-col p-5 rounded-2xl border-2 border-primary bg-white dark:bg-slate-900 cursor-pointer shadow-md shadow-primary/10 transition-all select-none has-checked:border-primary has-checked:ring-2 has-checked:ring-primary/20"
         >
           <input type="radio" name="planSelect" value="growth" checked class="sr-only" />
-          <div class="absolute -top-3 right-4 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-primary text-white tracking-wide uppercase">
+          <div
+            class="absolute -top-3 right-4 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-primary text-white tracking-wide uppercase"
+          >
             Recommended
           </div>
           <div class="flex items-center justify-between mb-2">
             <span class="text-sm font-bold text-slate-900 dark:text-white">Growth</span>
             <span class="text-xs font-bold text-primary">KES 3,500/mo</span>
           </div>
-          <p class="text-xs text-slate-500 dark:text-slate-400 mb-3">For growing omnichannel businesses.</p>
+          <p class="text-xs text-slate-500 dark:text-slate-400 mb-3">
+            For growing omnichannel businesses.
+          </p>
           <ul class="text-xs space-y-1.5 text-slate-600 dark:text-slate-300 mt-auto">
             <li class="flex items-center gap-1.5">&check; 10 Agent Seats</li>
             <li class="flex items-center gap-1.5">&check; 5 Connected Inboxes</li>
             <li class="flex items-center gap-1.5">&check; BYO SMS Gateway Integration</li>
-            <li class="flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400 font-medium">&check; 72-Hour Free Trial</li>
+            <li
+              class="flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400 font-medium"
+            >
+              &check; 72-Hour Free Trial
+            </li>
           </ul>
         </label>
 
@@ -152,7 +181,9 @@ const controlPlaneUrl = (typeof import.meta !== 'undefined' && (import.meta.env?
             <span class="text-sm font-bold text-slate-900 dark:text-white">Scale</span>
             <span class="text-xs font-semibold text-slate-500">KES 5,000/mo</span>
           </div>
-          <p class="text-xs text-slate-500 dark:text-slate-400 mb-3">High-volume enterprises & agencies.</p>
+          <p class="text-xs text-slate-500 dark:text-slate-400 mb-3">
+            High-volume enterprises & agencies.
+          </p>
           <ul class="text-xs space-y-1.5 text-slate-600 dark:text-slate-300 mt-auto">
             <li class="flex items-center gap-1.5">&check; 25 Agent Seats</li>
             <li class="flex items-center gap-1.5">&check; Unlimited Inboxes</li>
@@ -163,37 +194,63 @@ const controlPlaneUrl = (typeof import.meta !== 'undefined' && (import.meta.env?
       </div>
 
       <!-- Checkout Configuration Card -->
-      <div class="p-6 sm:p-8 rounded-2xl border border-slate-200/80 dark:border-slate-800 bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl shadow-xl">
-        <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-4">
-          Payment Method
-        </h3>
+      <div
+        class="p-6 sm:p-8 rounded-2xl border border-slate-200/80 dark:border-slate-800 bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl shadow-xl"
+      >
+        <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-4">Payment Method</h3>
 
         <!-- Payment Method Toggle -->
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
-          <label class="flex items-center gap-3 p-4 rounded-xl border border-slate-200 dark:border-slate-700 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/50 has-checked:border-primary has-checked:bg-primary/5">
-            <input type="radio" name="paymentMethod" value="mpesa" checked class="text-primary focus:ring-primary" />
+          <label
+            class="flex items-center gap-3 p-4 rounded-xl border border-slate-200 dark:border-slate-700 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/50 has-checked:border-primary has-checked:bg-primary/5"
+          >
+            <input
+              type="radio"
+              name="paymentMethod"
+              value="mpesa"
+              checked
+              class="text-primary focus:ring-primary"
+            />
             <div>
-              <span class="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
+              <span
+                class="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-1.5"
+              >
                 Safaricom M-Pesa
               </span>
-              <p class="text-xs text-slate-500 dark:text-slate-400">Instant STK prompt on your mobile phone</p>
+              <p class="text-xs text-slate-500 dark:text-slate-400">
+                Instant STK prompt on your mobile phone
+              </p>
             </div>
           </label>
 
-          <label class="flex items-center gap-3 p-4 rounded-xl border border-slate-200 dark:border-slate-700 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/50 has-checked:border-primary has-checked:bg-primary/5">
-            <input type="radio" name="paymentMethod" value="card" class="text-primary focus:ring-primary" />
+          <label
+            class="flex items-center gap-3 p-4 rounded-xl border border-slate-200 dark:border-slate-700 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/50 has-checked:border-primary has-checked:bg-primary/5"
+          >
+            <input
+              type="radio"
+              name="paymentMethod"
+              value="card"
+              class="text-primary focus:ring-primary"
+            />
             <div>
-              <span class="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
+              <span
+                class="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-1.5"
+              >
                 Debit / Credit Card
               </span>
-              <p class="text-xs text-slate-500 dark:text-slate-400">Visa, Mastercard, & International Cards</p>
+              <p class="text-xs text-slate-500 dark:text-slate-400">
+                Visa, Mastercard, & International Cards
+              </p>
             </div>
           </label>
         </div>
 
         <!-- Phone number input for M-Pesa STK Push -->
         <div id="mpesa-phone-field" class="mb-6">
-          <label for="billingPhone" class="block text-sm font-medium text-slate-800 dark:text-slate-200 mb-1.5">
+          <label
+            for="billingPhone"
+            class="block text-sm font-medium text-slate-800 dark:text-slate-200 mb-1.5"
+          >
             M-Pesa Phone Number <span class="text-red-500">*</span>
           </label>
           <input
@@ -209,7 +266,10 @@ const controlPlaneUrl = (typeof import.meta !== 'undefined' && (import.meta.env?
         </div>
 
         <!-- Feedback & Error State -->
-        <div id="billing-error-box" class="hidden mb-6 p-4 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-rose-800 dark:text-rose-200 text-sm">
+        <div
+          id="billing-error-box"
+          class="hidden mb-6 p-4 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-rose-800 dark:text-rose-200 text-sm"
+        >
           <p class="font-bold">Checkout Notice</p>
           <p id="billing-error-message" class="text-xs mt-1 text-rose-700 dark:text-rose-300"></p>
         </div>
@@ -223,15 +283,26 @@ const controlPlaneUrl = (typeof import.meta !== 'undefined' && (import.meta.env?
           <span id="btn-label">Proceed to Paystack Checkout &rarr;</span>
           <span id="btn-loading" class="hidden">
             <svg class="animate-spin inline-block w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24">
-              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              <circle
+                class="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                stroke-width="4"></circle>
+              <path
+                class="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+              ></path>
             </svg>
             Initializing secure checkout...
           </span>
         </button>
 
         <p class="text-center text-xs text-slate-400 dark:text-slate-500 mt-4">
-          Payment information is handled by Paystack. Subscription activation requires verified payment confirmation.
+          Payment information is handled by Paystack. Subscription activation requires verified
+          payment confirmation.
         </p>
       </div>
     </div>
@@ -311,7 +382,9 @@ const controlPlaneUrl = (typeof import.meta !== 'undefined' && (import.meta.env?
           }, 1200);
           return;
         }
-        showError(body.message || body.error?.message || 'Unable to launch SMS Studio for this workspace.');
+        showError(
+          body.message || body.error?.message || 'Unable to launch SMS Studio for this workspace.'
+        );
         return;
       }
 
@@ -332,11 +405,16 @@ const controlPlaneUrl = (typeof import.meta !== 'undefined' && (import.meta.env?
   // Honor plan selection; block unsupported annual checkout rather than misbill.
   const intent = new URLSearchParams(window.location.search);
   const chosenPlan = intent.get('plan');
-  if (chosenPlan && ['starter','growth','scale'].includes(chosenPlan)) {
-    const radio = document.querySelector(`input[name="planSelect"][value="${chosenPlan}"]`) as HTMLInputElement | null;
+  if (chosenPlan && ['starter', 'growth', 'scale'].includes(chosenPlan)) {
+    const radio = document.querySelector(
+      `input[name="planSelect"][value="${chosenPlan}"]`
+    ) as HTMLInputElement | null;
     if (radio) radio.checked = true;
   }
-  if (intent.get('interval') === 'annual') showError('Annual billing is not available for online checkout. Choose monthly or contact sales.');
+  if (intent.get('interval') === 'annual')
+    showError(
+      'Annual billing is not available for online checkout. Choose monthly or contact sales.'
+    );
   // Handle Checkout Dispatch
   checkoutBtn?.addEventListener('click', async () => {
     hideError();
@@ -345,8 +423,12 @@ const controlPlaneUrl = (typeof import.meta !== 'undefined' && (import.meta.env?
       return;
     }
 
-    const selectedPlan = (document.querySelector('input[name="planSelect"]:checked') as HTMLInputElement)?.value || 'growth';
-    const paymentMethod = (document.querySelector('input[name="paymentMethod"]:checked') as HTMLInputElement)?.value || 'mpesa';
+    const selectedPlan =
+      (document.querySelector('input[name="planSelect"]:checked') as HTMLInputElement)?.value ||
+      'growth';
+    const paymentMethod =
+      (document.querySelector('input[name="paymentMethod"]:checked') as HTMLInputElement)?.value ||
+      'mpesa';
     const phone = phoneInput?.value.trim();
 
     if (paymentMethod === 'mpesa' && !phone) {
@@ -383,7 +465,8 @@ const controlPlaneUrl = (typeof import.meta !== 'undefined' && (import.meta.env?
 
       if (!res.ok) {
         const errJson = await res.json().catch(() => ({}));
-        let message = errJson.message || 'Unable to initialize checkout. Please ensure you are logged in.';
+        let message =
+          errJson.message || 'Unable to initialize checkout. Please ensure you are logged in.';
         if (res.status === 401) {
           message = 'Please sign in to your workspace before initializing payment.';
           setTimeout(() => {

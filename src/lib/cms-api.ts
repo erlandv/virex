@@ -398,7 +398,8 @@ export interface LeadItem extends LeadPayload {
 // ---------------------------------------------------------------------------
 
 const CONTROL_PLANE_API_URL =
-  (typeof import.meta !== 'undefined' && (import.meta.env?.PUBLIC_CONTROL_PLANE_URL || import.meta.env?.PUBLIC_CONTROL_PLANE_API_URL)) ||
+  (typeof import.meta !== 'undefined' &&
+    (import.meta.env?.PUBLIC_CONTROL_PLANE_URL || import.meta.env?.PUBLIC_CONTROL_PLANE_API_URL)) ||
   'http://localhost:5000';
 const BRIDGE_API_URL =
   (typeof import.meta !== 'undefined' && import.meta.env?.PUBLIC_BRIDGE_API_URL) ||
@@ -455,8 +456,7 @@ const DEFAULT_PRICING_MATRIX: PricingMatrixResponse = {
       monthlyPrice: 5000,
       annualMonthlyPrice: 4000,
       currency: 'KES',
-      description:
-        'High-volume customer support and automated messaging for scaling enterprises.',
+      description: 'High-volume customer support and automated messaging for scaling enterprises.',
       highlighted: false,
       badge: 'High Volume',
       ctaLabel: 'Scale Up',

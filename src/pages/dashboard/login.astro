@@ -8,9 +8,7 @@
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import { Icon } from 'astro-icon/components';
 
-const bridgeApiUrl =
-  (typeof import.meta !== 'undefined' && import.meta.env?.PUBLIC_BRIDGE_API_URL) ||
-  'http://localhost:4000';
+const bridgeApiUrl = import.meta.env.PUBLIC_BRIDGE_API_URL || 'http://localhost:4000';
 ---
 
 <BaseLayout

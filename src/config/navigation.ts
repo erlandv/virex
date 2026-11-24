@@ -7,7 +7,6 @@
 
 import type { Navigation } from '../lib/types';
 
-
 export const navigation: Navigation = {
   header: {
     main: [
