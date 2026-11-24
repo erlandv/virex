@@ -51,7 +51,16 @@ const {
 const fullTitle = title.includes(siteConfig.name) ? title : `${title} | ${siteConfig.name}`;
 
 // Canonical URL resolution (exclude query strings & hashes)
-const canonicalHref = new URL(Astro.url.pathname, siteConfig.url).href;
+let canonicalPath = Astro.url.pathname;
+try {
+  if (canonicalUrl) {
+    const requested = new URL(canonicalUrl, siteConfig.url);
+    if (requested.origin === new URL(siteConfig.url).origin) canonicalPath = requested.pathname;
+  }
+} catch {
+  // Ignore malformed CMS canonical overrides.
+}
+const canonicalHref = new URL(canonicalPath, siteConfig.url).href;
 
 const imageUrl = image || siteConfig.ogImage;
 const ogImage = imageUrl ? new URL(imageUrl, siteConfig.url).href : undefined;
