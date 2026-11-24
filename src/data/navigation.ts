@@ -38,9 +38,6 @@ export interface MegaMenuConfig {
   };
 }
 
-const APP_URL =
-  (typeof import.meta !== 'undefined' && import.meta.env?.PUBLIC_APP_URL) ||
-  'http://localhost:3000';
 
 export const productMegaMenu: MegaMenuConfig = {
   id: 'product',

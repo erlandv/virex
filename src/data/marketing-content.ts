@@ -43,9 +43,6 @@ export interface MarketingPageItem {
   };
 }
 
-const APP_URL =
-  (typeof import.meta !== 'undefined' && import.meta.env?.PUBLIC_APP_URL) ||
-  'http://localhost:3000';
 
 // -----------------------------------------------------------------------------
 // Product Pages (/product/[slug])

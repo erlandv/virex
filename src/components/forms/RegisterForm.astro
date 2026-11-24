@@ -566,15 +566,6 @@ const initialPlan = plansInfo[defaultPlanId] || plansInfo.growth;
     selectPlan(planParam);
   }
 
-  // Open-Redirect Protection Helper (CWE-601)
-  function getSafeRedirect(targetUrl: string | null | undefined, fallback: string = '/billing'): string {
-    if (!targetUrl || typeof targetUrl !== 'string') return fallback;
-    if (/^\/(?![/\\])/.test(targetUrl) && !targetUrl.includes(':')) {
-      return targetUrl;
-    }
-    return fallback;
-  }
-
   // Live Monospace Workspace URL Slug Preview
   if (businessNameInput && workspaceSlugPreview) {
     businessNameInput.addEventListener('input', () => {

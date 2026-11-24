@@ -23,7 +23,6 @@ interface Props {
 
 const { integration, allIntegrations } = Astro.props;
 const otherIntegrations = allIntegrations.filter((i) => i.slug !== integration.slug);
-const APP_URL = import.meta.env.PUBLIC_APP_URL || 'http://localhost:3000';
 ---
 
 <MarketingLayout
