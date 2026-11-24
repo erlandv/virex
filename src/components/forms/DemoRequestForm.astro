@@ -44,6 +44,7 @@ const { action = '', method = 'POST', netlify = false, formName = 'demo-request'
   method={method}
   class="space-y-5"
   data-netlify={netlify ? 'true' : undefined}
+  data-configured-action={action}
   name={netlify ? formName : undefined}
   novalidate
 >
@@ -348,7 +349,7 @@ const { action = '', method = 'POST', netlify = false, formName = 'demo-request'
     buttonLoading?.classList.remove('hidden');
 
     const formData = new FormData(form);
-    const action = form.action;
+    const action = form.dataset.configuredAction || '';
 
     try {
       // If no action URL, persist lead via CMS API
@@ -363,7 +364,7 @@ const { action = '', method = 'POST', netlify = false, formName = 'demo-request'
           const enterpriseScope = parseEnterpriseScope(formData);
           const volume = enterpriseScope.volume;
           const message = (formData.get('message') as string) || '';
-          await submitLead({
+          const leadResult = await submitLead({
             fullName: `${firstName} ${lastName}`.trim(),
             email,
             phone,
@@ -372,8 +373,11 @@ const { action = '', method = 'POST', netlify = false, formName = 'demo-request'
             source: 'Demo Request Page (/demo)',
             message: [message, formatEnterpriseScope(enterpriseScope)].filter(Boolean).join('\n\n'),
           });
+          if (!leadResult.success) throw new Error('Lead submission not accepted');
         } catch (err) {
           console.warn('submitLead error:', err);
+          showErrorState();
+          return;
         }
         showSuccess();
         return;

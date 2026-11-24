@@ -32,6 +32,7 @@ const { action = '', method = 'POST', netlify = false, formName = 'contact' } = 
     method={method}
     class="space-y-5"
     data-netlify={netlify ? 'true' : undefined}
+    data-configured-action={action}
     name={netlify ? formName : undefined}
     novalidate
   >
@@ -516,7 +517,7 @@ const { action = '', method = 'POST', netlify = false, formName = 'contact' } = 
       btnLoading?.classList.add('flex');
 
       const formData = new FormData(form);
-      const action = form.action;
+      const action = form.dataset.configuredAction || '';
 
       const fullName = ((formData.get('fullName') as string) || '').trim();
       const email = ((formData.get('email') as string) || '').trim();
@@ -542,7 +543,7 @@ const { action = '', method = 'POST', netlify = false, formName = 'contact' } = 
 
       try {
         // If an explicit remote action URL is specified, submit via fetch POST
-        if (action && action !== window.location.href) {
+        if (action) {
           const res = await fetch(action, {
             method: form.method || 'POST',
             body: formData,
@@ -562,6 +563,7 @@ const { action = '', method = 'POST', netlify = false, formName = 'contact' } = 
             message: scopedMessage,
           });
 
+          if (!result?.success) throw new Error('Lead submission not accepted');
           if (successRefId && result?.id) {
             successRefId.textContent = result.id.toUpperCase();
           }

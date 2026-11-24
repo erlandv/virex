@@ -69,9 +69,7 @@ const pricingPlans = pricingMatrix.tiers.map((tier) => ({
   badge: tier.badge,
   cta: {
     label: tier.ctaLabel,
-    href: ['starter', 'growth', 'scale'].includes(tier.id)
-      ? `/register?plan=${tier.id}&interval=monthly`
-      : '/contact?topic=enterprise',
+    href: tier.ctaHref,
   },
 }));
 
