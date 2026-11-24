@@ -22,7 +22,7 @@ interface Props {
   noindex?: boolean;
 }
 
-const { title, description, pageType = 'login', noindex = false } = Astro.props;
+const { title, description, pageType = 'login', noindex = true } = Astro.props;
 ---
 
 <BaseLayout title={title} description={description} noindex={noindex}>
