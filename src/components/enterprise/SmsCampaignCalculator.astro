@@ -1,0 +1,125 @@
+---
+import { Icon } from 'astro-icon/components';
+---
+<section id="sms-calculator" aria-labelledby="sms-calculator-title" class="py-16 sm:py-24 border-y border-border bg-background scroll-mt-24">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="max-w-3xl mb-9">
+      <p class="text-xs font-bold uppercase tracking-widest text-primary">SMS Studio · Prepaid credits</p>
+      <h2 id="sms-calculator-title" class="text-3xl sm:text-4xl font-bold text-text tracking-tight mt-3">Know your message before you send it.</h2>
+      <p class="text-base text-text-muted leading-relaxed mt-4">Estimate segments, sender requirements, and a possible KES budget before purchasing prepaid credits. Carrier rates are illustrative—not a live quote or published MarkChat tariff.</p>
+    </div>
+    <div data-sms-calculator class="grid lg:grid-cols-[1.16fr_0.84fr] gap-5">
+      <div class="p-6 sm:p-8 rounded-2xl border border-border bg-surface/50">
+        <div class="flex flex-wrap items-center justify-between gap-3 mb-7"><h3 class="font-bold text-xl text-text">Campaign configuration</h3><span class="text-xs text-text-muted border border-border rounded-lg px-3 py-1.5 bg-background">No network requests</span></div>
+        <div class="space-y-7">
+          <div>
+            <label for="sms-volume" class="block font-semibold text-sm text-text mb-2">Monthly recipients</label>
+            <div class="flex gap-3 items-center">
+              <input id="sms-volume" type="range" min="1000" max="1000000" step="1000" value="10000" class="w-full accent-primary cursor-pointer" aria-describedby="sms-volume-help" />
+              <input id="sms-volume-number" type="number" min="1000" step="1000" value="10000" class="w-32 min-w-0 rounded-lg border border-border px-3 py-2 text-sm bg-background text-text tabular-nums focus:outline-2 focus:outline-primary" aria-label="Monthly recipient count" />
+            </div>
+            <p id="sms-volume-help" class="text-xs text-text-muted mt-2">1,000 to 1,000,000+ recipients; high-volume input supported.</p>
+          </div>
+          <div>
+            <label for="sms-message" class="block font-semibold text-sm text-text mb-2">Message composer</label>
+            <textarea id="sms-message" rows="5" maxlength="5000" class="w-full rounded-xl border border-border bg-background text-text placeholder:text-text-muted p-4 text-sm leading-relaxed focus:outline-2 focus:outline-primary" placeholder="Write your campaign message">Habari! Your order is ready for collection at our Nairobi shop. Reply STOP to opt out.</textarea>
+            <div class="mt-2 flex flex-wrap justify-between gap-2 text-xs text-text-muted"><span id="sms-encoding">GSM-7 detected</span><span><span id="sms-characters">0</span> characters · <span id="sms-segments">0</span> SMS segment(s)</span></div>
+          </div>
+          <fieldset>
+            <legend class="block font-semibold text-sm text-text mb-3">Route classification</legend>
+            <div class="grid sm:grid-cols-2 gap-3">
+              <label class="flex gap-3 p-4 border border-border rounded-xl bg-background cursor-pointer"><input type="radio" name="sms-route" value="transactional" checked class="accent-primary mt-0.5" /><span><strong class="block text-sm text-text">Transactional</strong><span class="text-xs text-text-muted">Eligible 24/7 once approved</span></span></label>
+              <label class="flex gap-3 p-4 border border-border rounded-xl bg-background cursor-pointer"><input type="radio" name="sms-route" value="promotional" class="accent-primary mt-0.5" /><span><strong class="block text-sm text-text">Promotional</strong><span class="text-xs text-text-muted">07:00–19:00 EAT schedule</span></span></label>
+            </div>
+          </fieldset>
+          <div class="p-4 rounded-xl border border-border bg-background">
+            <label for="sms-rate" class="block font-semibold text-sm text-text mb-2">Example KES price per segment</label>
+            <div class="flex items-center gap-3"><span class="text-text-muted font-semibold">KES</span><input type="number" id="sms-rate" min="0.01" max="100" step="0.05" value="0.80" class="rounded-lg bg-surface border border-border text-text w-28 p-2.5 tabular-nums focus:outline-2 focus:outline-primary" /><span class="text-xs text-text-muted">Editable assumption, not an actual volume-based quote</span></div>
+            <p class="text-xs text-text-muted mt-3">The example estimator applies the same editable unit rate at every volume. Any negotiated volume tiers, carrier differences, surcharges, VAT and payment fees must be confirmed from an approved live catalog.</p>
+          </div>
+        </div>
+      </div>
+      <aside class="p-6 sm:p-8 rounded-2xl border border-border bg-surface flex flex-col">
+        <div class="flex justify-between gap-3 items-center"><p class="text-xs text-primary tracking-wider uppercase font-bold">Indicative budget</p><Icon name="lucide:calculator" class="w-5 h-5 text-primary" /></div>
+        <p id="sms-estimate" aria-live="polite" class="text-4xl sm:text-5xl tracking-tight font-bold text-text tabular-nums mt-6">KES 0</p>
+        <p class="text-sm text-text-muted mt-2">Example cost, not a checkout total</p>
+        <dl class="divide-y divide-border mt-7 text-sm">
+          <div class="flex justify-between gap-4 py-3"><dt class="text-text-muted">Recipients</dt><dd id="sms-recipients" class="text-text font-semibold tabular-nums">—</dd></div>
+          <div class="flex justify-between gap-4 py-3"><dt class="text-text-muted">Segments per recipient</dt><dd id="sms-segment-total" class="text-text font-semibold tabular-nums">—</dd></div>
+          <div class="flex justify-between gap-4 py-3"><dt class="text-text-muted">Billable segments</dt><dd id="sms-units" class="text-text font-semibold tabular-nums">—</dd></div>
+          <div class="flex justify-between gap-4 py-3"><dt class="text-text-muted">Sending window</dt><dd id="sms-window" class="text-text font-semibold text-right">24/7 eligible</dd></div>
+        </dl>
+        <div class="mt-7 p-4 bg-background border border-border rounded-xl">
+          <p class="font-bold text-text text-sm mb-3">Sender ID onboarding checklist</p>
+          <ul class="space-y-2.5 text-xs text-text-muted">
+            {['Business registration / CR12 or equivalent proof', 'KRA PIN where requested for verification', 'Signed company or telco authorization letter', 'Proposed sender name: usually 3–11 alphanumeric characters', 'Carrier review, customer consent and STOP suppression'].map((item) => <li class="flex items-start gap-2"><Icon name="lucide:check-circle-2" class="w-4 h-4 text-primary shrink-0" /><span>{item}</span></li>)}
+          </ul>
+          <p class="text-xs text-text-muted mt-3">Requirements vary by provider; submission does not guarantee approval.</p>
+        </div>
+        <a href="/contact?topic=sms-credits" class="mt-6 inline-flex items-center justify-center gap-2 bg-primary text-white font-semibold rounded-lg px-5 py-3 text-sm hover:opacity-90">Request verified SMS pricing <Icon name="lucide:arrow-up-right" class="w-4 h-4" /></a>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<script>
+  // GSM 03.38 basic alphabet and escape-table: 160/153 septets; UCS-2: 70/67 code units.
+  const GSM_BASIC = new Set(Array.from('@£$¥èéùìòÇ\nØø\rÅåΔ_ΦΓΛΩΠΨΣΘΞÆæßÉ !"#¤%&\'()*+,-./0123456789:;<=>?¡ABCDEFGHIJKLMNOPQRSTUVWXYZÄÖÑÜ`¿abcdefghijklmnopqrstuvwxyzäöñüà'));
+  const GSM_EXTENDED = new Set(Array.from('^{}\\[~]|€\f'));
+  function calculateSmsSegments(message: string) {
+    if (!message) return { encoding: 'GSM-7', chars: 0, segments: 0, units: 0 };
+    let septets = 0;
+    let gsm = true;
+    for (const character of message) {
+      if (GSM_BASIC.has(character)) septets += 1;
+      else if (GSM_EXTENDED.has(character)) septets += 2;
+      else { gsm = false; break; }
+    }
+    const units = gsm ? septets : message.length; // UTF-16 code units, including surrogate pairs.
+    const perSingle = gsm ? 160 : 70;
+    const perMultipart = gsm ? 153 : 67;
+    return {
+      encoding: gsm ? 'GSM-7' : 'Unicode (UCS-2)',
+      chars: Array.from(message).length,
+      units,
+      segments: units <= perSingle ? 1 : Math.ceil(units / perMultipart),
+    };
+  }
+  function initSmsCalculator() {
+    document.querySelectorAll<HTMLElement>('[data-sms-calculator]').forEach((root) => {
+      if (root.dataset.initialized === 'true') return;
+      root.dataset.initialized = 'true';
+      const volume = root.querySelector<HTMLInputElement>('#sms-volume');
+      const number = root.querySelector<HTMLInputElement>('#sms-volume-number');
+      const message = root.querySelector<HTMLTextAreaElement>('#sms-message');
+      const rate = root.querySelector<HTMLInputElement>('#sms-rate');
+      const text = (id: string, value: string) => { const target = root.querySelector<HTMLElement>(id); if (target) target.textContent = value; };
+      const fmt = (value: number) => new Intl.NumberFormat('en-KE').format(value);
+      const render = () => {
+        const count = Math.max(1000, Math.min(10000000, Number(number?.value) || 1000));
+        const segments = calculateSmsSegments(message?.value || '');
+        const price = Math.max(0, Math.min(100, Number(rate?.value) || 0));
+        const units = count * segments.segments;
+        const route = root.querySelector<HTMLInputElement>('input[name="sms-route"]:checked')?.value || 'transactional';
+        if (volume) volume.value = String(Math.min(count, 1000000));
+        text('#sms-encoding', segments.encoding + ' · ' + segments.units + ' encoded units');
+        text('#sms-characters', fmt(segments.chars));
+        text('#sms-segments', fmt(segments.segments));
+        text('#sms-estimate', 'KES ' + fmt(Math.round(units * price * 100) / 100));
+        text('#sms-recipients', fmt(count));
+        text('#sms-segment-total', fmt(segments.segments));
+        text('#sms-units', fmt(units));
+        text('#sms-window', route === 'promotional' ? '07:00–19:00 EAT' : '24/7 if approved');
+      };
+      volume?.addEventListener('input', () => { if (number && volume) number.value = volume.value; render(); });
+      number?.addEventListener('input', render);
+      number?.addEventListener('change', () => { if (number) number.value = String(Math.max(1000, Math.min(10000000, Number(number.value) || 1000))); render(); });
+      message?.addEventListener('input', render);
+      rate?.addEventListener('input', render);
+      root.querySelectorAll<HTMLInputElement>('input[name="sms-route"]').forEach((el) => el.addEventListener('change', render));
+      render();
+    });
+  }
+  initSmsCalculator();
+  document.addEventListener('astro:page-load', initSmsCalculator);
+</script>

@@ -1,0 +1,185 @@
+---
+import { Icon } from 'astro-icon/components';
+interface Props { compact?: boolean; }
+const { compact = false } = Astro.props;
+const samples = [
+  { id: 'send', label: 'Send SMS · example contract', method: 'POST', path: '/api/v1/messages/send' },
+  { id: 'quote', label: 'Quote segments · proposed', method: 'POST', path: '/api/sms-quote' },
+  { id: 'verify', label: 'Validate webhook · pattern', method: 'POST', path: '/webhooks/provider' },
+];
+---
+<section id="developer-playground" class:list={['bg-surface/40 border-y border-border scroll-mt-24', compact ? 'py-12' : 'py-16 sm:py-24']} aria-labelledby="playground-title">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex flex-col md:flex-row justify-between items-end gap-5 mb-8">
+      <div class="max-w-3xl"><p class="text-xs uppercase font-bold tracking-widest text-primary">Developer experience</p><h2 id="playground-title" class="mt-3 text-3xl sm:text-4xl font-bold text-text">An API-first workflow, with readable examples.</h2><p class="mt-3 text-text-muted">Select a use case and language, then copy a starter pattern. Examples are non-executable illustrations and are not assertions of live endpoints, credential names or provider callback signatures.</p></div>
+      <a href="/contact?topic=api-contract" class="text-sm text-primary font-semibold hover:underline">Request current API contract</a>
+    </div>
+    <div data-playground class="border border-border rounded-2xl bg-background overflow-hidden">
+      <div class="flex flex-wrap gap-2 p-4 border-b border-border bg-surface/50">
+        <label for="playground-case" class="sr-only">Example workflow</label>
+        <select id="playground-case" class="bg-background text-text text-sm border border-border rounded-lg px-3 py-2.5 flex-1 min-w-44 focus:outline-2 focus:outline-primary">
+          {samples.map((s) => <option value={s.id}>{s.label}</option>)}
+        </select>
+        <label for="playground-language" class="sr-only">Programming language</label>
+        <select id="playground-language" class="bg-background text-text text-sm border border-border rounded-lg px-3 py-2.5 flex-1 min-w-36 focus:outline-2 focus:outline-primary">
+          <option value="curl">cURL</option><option value="node">Node.js</option><option value="php">PHP / Laravel</option><option value="python">Python</option>
+        </select>
+        <button data-playground-copy type="button" class="inline-flex items-center gap-2 text-sm font-semibold bg-primary text-white rounded-lg px-4 py-2.5 hover:opacity-90"><Icon name="lucide:copy" class="w-4 h-4" /><span data-copy-label>Copy snippet</span></button>
+      </div>
+      <div class="grid lg:grid-cols-[0.7fr_1.3fr]">
+        <aside class="p-6 lg:p-8 lg:border-r border-b lg:border-b-0 border-border">
+          <div class="text-xs text-primary uppercase tracking-wide font-bold">Request blueprint</div>
+          <div class="flex gap-2 mt-3 items-center"><span data-playground-method class="text-xs text-primary font-mono bg-primary/10 rounded-md px-2 py-1">POST</span><code data-playground-path class="text-sm text-text font-semibold break-all">/api/v1/messages/send</code></div>
+          <p data-playground-description class="text-sm text-text-muted leading-relaxed mt-5">Preview sending a message through a separately authenticated SMS service.</p>
+          <div class="border-t border-border mt-6 pt-6 text-sm text-text-muted space-y-3">
+            <p class="flex items-start gap-2"><Icon name="lucide:lock-keyhole" class="w-4 h-4 text-primary shrink-0 mt-0.5" /> Use environment secrets on a trusted server, never client-side.</p>
+            <p class="flex items-start gap-2"><Icon name="lucide:shield-check" class="w-4 h-4 text-primary shrink-0 mt-0.5" /> Implement authentication, consent and idempotency according to the signed service contract.</p>
+            <p class="flex items-start gap-2"><Icon name="lucide:code-2" class="w-4 h-4 text-primary shrink-0 mt-0.5" /> Verification example is pseudocode-level guidance; the provider defines its actual signature scheme.</p>
+          </div>
+        </aside>
+        <div class="min-w-0 bg-[#0B1120] text-slate-100">
+          <div class="px-6 py-3 border-b border-slate-700 flex items-center justify-between"><span class="text-xs text-slate-400 font-mono">example.txt / safe placeholder credentials</span><span class="text-xs text-blue-300">Illustration only</span></div>
+          <pre class="px-5 sm:px-7 py-7 text-xs sm:text-sm overflow-x-auto leading-7 min-h-72" tabindex="0"><code data-playground-code>Choose an example to begin.</code></pre>
+          <div class="border-t border-slate-700 px-6 py-3 text-xs text-slate-400">Nothing is transmitted. Copying a snippet does not create a credential, SMS or payment.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  type UseCase = 'send' | 'quote' | 'verify';
+  type Language = 'curl' | 'node' | 'php' | 'python';
+  const examples: Record<UseCase, { path: string; description: string; snippets: Record<Language, string> }> = {
+    send: {
+      path: '/api/v1/messages/send',
+      description: 'Proposed SMS dispatch contract. Requires a verified service URL, sender authorization, sufficient credits, recipient consent and idempotency handling.',
+      snippets: {
+        curl: `# Contract illustration; replace URL after API review
+curl -X POST "$MARKCHAT_SMS_API_URL/api/v1/messages/send" \\
+  -H "Authorization: Bearer $MARKCHAT_SMS_TOKEN" \\
+  -H "Content-Type: application/json" \\
+  -d '{"to":"+2547XXXXXXXX","senderId":"APPROVED_ID","message":"Habari! Your order is ready."}'`,
+        node: `// Example structure only; not a confirmed live API
+const response = await fetch(process.env.MARKCHAT_SMS_API_URL + '/api/v1/messages/send', {
+  method: 'POST',
+  headers: { Authorization: 'Bearer ' + process.env.MARKCHAT_SMS_TOKEN, 'Content-Type': 'application/json' },
+  body: JSON.stringify({ to: '+2547XXXXXXXX', senderId: 'APPROVED_ID', message: 'Habari! Your order is ready.' })
+});
+if (!response.ok) throw new Error('SMS request rejected');`,
+        php: `<?php
+// Laravel illustration; confirm server fields with SMS team.
+$response = Http::withToken(config('services.markchat_sms.token'))
+    ->post(config('services.markchat_sms.url').'/api/v1/messages/send', [
+        'to' => '+2547XXXXXXXX',
+        'senderId' => 'APPROVED_ID',
+        'message' => 'Habari! Your order is ready.'
+    ]);
+$response->throw();`,
+        python: `# Python example; not a verified production contract
+import os, requests
+response = requests.post(
+    os.environ["MARKCHAT_SMS_API_URL"] + "/api/v1/messages/send",
+    headers={"Authorization": "Bearer " + os.environ["MARKCHAT_SMS_TOKEN"]},
+    json={"to": "+2547XXXXXXXX", "senderId": "APPROVED_ID", "message": "Habari! Your order is ready."},
+    timeout=10)
+response.raise_for_status()`,
+      },
+    },
+    quote: {
+      path: '/api/sms-quote',
+      description: 'Proposed server-side segment quote. Message, route, encoding, sender approval and actual negotiated prices must be checked before charging.',
+      snippets: {
+        curl: `# Proposed endpoint, not a deployed contract
+curl -X POST "$MARKCHAT_SMS_API_URL/api/sms-quote" \\
+  -H "Authorization: Bearer $MARKCHAT_SMS_TOKEN" \\
+  -H "Content-Type: application/json" \\
+  -d '{"message":"Habari!","recipients":1000,"route":"promotional"}'`,
+        node: `const request = { message: 'Habari!', recipients: 1000, route: 'promotional' };
+const response = await fetch(process.env.MARKCHAT_SMS_API_URL + '/api/sms-quote', {
+  method: 'POST', headers: { Authorization: 'Bearer ' + process.env.MARKCHAT_SMS_TOKEN, 'Content-Type': 'application/json' },
+  body: JSON.stringify(request)
+});
+if (!response.ok) throw new Error('Quote unavailable');`,
+        php: `<?php
+$quote = Http::withToken(config('services.markchat_sms.token'))
+    ->post(config('services.markchat_sms.url').'/api/sms-quote', [
+        'message' => 'Habari!', 'recipients' => 1000, 'route' => 'promotional',
+    ]);
+$quote->throw();`,
+        python: `import os, requests
+quote = requests.post(
+    os.environ["MARKCHAT_SMS_API_URL"] + "/api/sms-quote",
+    headers={"Authorization": "Bearer " + os.environ["MARKCHAT_SMS_TOKEN"]},
+    json={"message": "Habari!", "recipients": 1000, "route": "promotional"},
+    timeout=10)
+quote.raise_for_status()`,
+      },
+    },
+    verify: {
+      path: '/webhooks/provider',
+      description: 'Illustration of an HMAC-SHA256 comparison for providers that sign raw callback bytes. Confirm the actual signature algorithm, header, replay rules and callback schema.',
+      snippets: {
+        curl: `# Illustrative webhook receive endpoint; no real callback is sent
+curl -X POST "https://your-server.example/webhooks/provider" \\
+  -H "Content-Type: application/json" \\
+  -H "X-Signature: DEMO_SIGNATURE_ONLY" \\
+  -d '{"reference":"SJ84K92LMP","amount":4500}'`,
+        node: `// Illustrative HMAC validation; provider must document its real scheme.
+import { createHmac, timingSafeEqual } from 'node:crypto';
+const digest = createHmac('sha256', process.env.WEBHOOK_SECRET).update(rawBody).digest();
+const provided = Buffer.from(signatureHex, 'hex');
+const valid = digest.length === provided.length && timingSafeEqual(digest, provided);
+if (!valid) throw new Error('Invalid callback signature');`,
+        php: `<?php
+// Illustration; check the real provider's signature header first.
+$expected = hash_hmac('sha256', $rawBody, config('services.webhook.secret'));
+if (!hash_equals($expected, $signatureHex)) abort(401);
+ // Then validate event ID, amount, reference and replay window.`,
+        python: `# Generic HMAC example, not a Safaricom callback guarantee
+import os, hmac, hashlib
+digest = hmac.new(os.environ["WEBHOOK_SECRET"].encode(), raw_body, hashlib.sha256).hexdigest()
+if not hmac.compare_digest(digest, signature_hex):
+    raise PermissionError("Invalid callback signature")`,
+      },
+    },
+  };
+  function initDeveloperPlayground() {
+    document.querySelectorAll<HTMLElement>('[data-playground]').forEach((root) => {
+      if (root.dataset.initialized === 'true') return;
+      root.dataset.initialized = 'true';
+      const task = root.querySelector<HTMLSelectElement>('#playground-case');
+      const language = root.querySelector<HTMLSelectElement>('#playground-language');
+      const code = root.querySelector<HTMLElement>('[data-playground-code]');
+      const render = () => {
+        const selected = examples[(task?.value || 'send') as UseCase] || examples.send;
+        const lang = (language?.value || 'curl') as Language;
+        const path = root.querySelector<HTMLElement>('[data-playground-path]');
+        const desc = root.querySelector<HTMLElement>('[data-playground-description]');
+        if (path) path.textContent = selected.path;
+        if (desc) desc.textContent = selected.description;
+        if (code) code.textContent = selected.snippets[lang];
+      };
+      task?.addEventListener('change', render);
+      language?.addEventListener('change', render);
+      root.querySelector<HTMLButtonElement>('[data-playground-copy]')?.addEventListener('click', async () => {
+        const label = root.querySelector<HTMLElement>('[data-copy-label]');
+        if (!code?.textContent) return;
+        try {
+          await navigator.clipboard.writeText(code.textContent);
+          if (label) label.textContent = 'Copied';
+        } catch {
+          if (label) label.textContent = 'Select code to copy';
+          const selection = window.getSelection();
+          const range = document.createRange();
+          range.selectNodeContents(code);
+          selection?.removeAllRanges();
+          selection?.addRange(range);
+        }
+      });
+      render();
+    });
+  }
+  initDeveloperPlayground();
+  document.addEventListener('astro:page-load', initDeveloperPlayground);
+</script>
