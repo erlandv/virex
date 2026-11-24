@@ -24,12 +24,23 @@ const categoryCounts = new Map<string, number>();
 for (const faq of faqs) {
   categoryCounts.set(faq.category, (categoryCounts.get(faq.category) || 0) + 1);
 }
+const faqPageSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqs.map((faq) => ({
+    '@type': 'Question',
+    name: faq.question,
+    acceptedAnswer: { '@type': 'Answer', text: faq.answer },
+  })),
+};
+const faqPageJson = JSON.stringify(faqPageSchema).replace(/</g, '\\u003c');
 ---
 
 <MarketingLayout
   title="FAQ - MarkChat | In-Chat M-Pesa, SMS & AI Help Center"
   description="Clear, verified answers about in-chat M-Pesa STK push, Africa’s Talking Bulk SMS, Markcopilot bilingual AI, Kenyan business setups, and KDPA compliance."
 >
+  <script type="application/ld+json" is:inline set:html={faqPageJson} />
   <!-- Hero Section -->
   <section
     class="relative pt-12 pb-10 sm:pt-20 sm:pb-14 overflow-hidden border-b border-border/50 bg-gradient-to-b from-surface/40 via-background to-background"
