@@ -77,4 +77,20 @@ test('Virex enterprise interactive components and disclosure exist', async () =>
   const registration = fs.readFileSync(path.resolve('src/components/forms/RegisterForm.astro'), 'utf8');
   assert.doesNotMatch(registration, /completeRegistration\(ssoUrl:/);
   assert.doesNotMatch(registration, /completeRegistration\(data\.ssoUrl/);
+
+  const { parseEnterpriseScope, formatEnterpriseScope } = await import(
+    '../src/lib/enterprise-scope.ts'
+  );
+  const sampleScope = new FormData();
+  sampleScope.set('scopeSmsVolume', '250k-1m');
+  sampleScope.set('scopeMpesaMode', 'paybill');
+  sampleScope.append('scopeChannel', 'whatsapp');
+  sampleScope.append('scopeChannel', 'sms');
+  sampleScope.append('scopeChannel', 'unexpected');
+  const quoteScope = parseEnterpriseScope(sampleScope);
+  assert.equal(quoteScope.volume, '250,001–1,000,000');
+  assert.deepEqual(quoteScope.channels, ['WhatsApp Cloud', 'Bulk SMS']);
+  assert.equal(quoteScope.mpesaMode, 'Daraja Paybill');
+  assert.match(formatEnterpriseScope(quoteScope), /Monthly SMS volume: 250,001/);
+  assert.doesNotMatch(formatEnterpriseScope(quoteScope), /unexpected/);
 });
