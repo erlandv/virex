@@ -132,7 +132,7 @@ const contactPageSchema = {
   description="Connect directly with MarkChat in Nairobi, Kenya. Inquire about Safaricom Daraja M-Pesa STK push, Africa’s Talking Bulk SMS, Meta WhatsApp Cloud API, and platform onboarding."
 >
   <!-- Schema.org Structured Data -->
-  <script type="application/ld+json" is:inline set:html={JSON.stringify(contactPageSchema)} />
+  <script type="application/ld+json" is:inline set:html={JSON.stringify(contactPageSchema).replace(/</g, '\\u003c')} />
 
   <!-- ===================================================================== -->
   <!-- 1. HERO SECTION (VISION & INVITATION)                                 -->
