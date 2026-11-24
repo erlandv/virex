@@ -7,6 +7,7 @@ import { spawn } from 'node:child_process';
 import { readdirSync, existsSync } from 'node:fs';
 import path from 'node:path';
 import { setTimeout as delay } from 'node:timers/promises';
+import { createServer } from 'node:net';
 
 const port = '4321';
 const url = 'http://localhost:' + port + '/';
@@ -15,18 +16,14 @@ if (!existsSync(path.resolve('dist/index.html'))) {
   process.exit(1);
 }
 
-const executable = process.platform === 'win32' ? 'npm.cmd' : 'npm';
-const preview = spawn(executable, [
-  'run', 'preview', '--', '--host', 'localhost', '--port', port, '--strictPort'
-], { cwd: process.cwd(), stdio: ['ignore', 'pipe', 'pipe'] });
+// Run Astro directly instead of spawning npm, so shutdown does not orphan a child.
+let preview;
 
 let previewOutput = '';
-preview.stdout?.on('data', (chunk) => { previewOutput += String(chunk); });
-preview.stderr?.on('data', (chunk) => { previewOutput += String(chunk); });
-
+ 
 async function waitForPreview() {
   for (let attempt = 0; attempt < 60; attempt++) {
-    if (preview.exitCode !== null) break;
+    if (preview?.exitCode !== null) break;
     try {
       const response = await fetch(url, { signal: AbortSignal.timeout(700) });
       if (response.ok) return;
@@ -36,8 +33,25 @@ async function waitForPreview() {
   throw new Error('Astro preview did not become available on port ' + port + '. ' + previewOutput.slice(-1500));
 }
 
+async function assertPortFree() {
+  const probe = createServer();
+  await new Promise((resolve, reject) => {
+    probe.once('error', reject);
+    probe.listen(Number(port), '127.0.0.1', resolve);
+  });
+  await new Promise((resolve) => probe.close(resolve));
+}
+
 async function run() {
   try {
+    // Refuse to run tests against some other existing site on the same port.
+    await assertPortFree();
+    preview = spawn(process.execPath, [
+      path.resolve('node_modules/astro/astro.js'), 'preview',
+      '--host', 'localhost', '--port', port
+    ], { cwd: process.cwd(), stdio: ['ignore', 'pipe', 'pipe'] });
+    preview.stdout?.on('data', (chunk) => { previewOutput += String(chunk); });
+    preview.stderr?.on('data', (chunk) => { previewOutput += String(chunk); });
     await waitForPreview();
     const tests = readdirSync('tests').filter((filename) => filename.endsWith('.test.mjs')).sort();
     const runner = spawn(process.execPath, ['--experimental-strip-types', '--test', ...tests.map((name) => path.join('tests', name))], {
@@ -52,7 +66,7 @@ async function run() {
     console.error(error);
     process.exitCode = 1;
   } finally {
-    preview.kill();
+    preview?.kill();
   }
 }
 
