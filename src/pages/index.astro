@@ -67,7 +67,9 @@ const pricingPlans = pricingMatrix.tiers.map((tier) => ({
   badge: tier.badge,
   cta: {
     label: tier.ctaLabel,
-    href: tier.ctaHref,
+    href: ['starter', 'growth', 'scale'].includes(tier.id)
+      ? `/register?plan=${tier.id}&interval=monthly`
+      : '/contact?topic=enterprise',
   },
 }));
 
@@ -89,7 +91,7 @@ const coreCapabilities = [
     icon: 'lucide:shield-check',
     title: 'Automated Callback Verification',
     description:
-      'Reconcile Safaricom Daraja C2B webhook notifications in real time. Validate payments before releasing goods and eliminate fraudulent SMS screenshot deception.',
+      'Review Safaricom Daraja C2B payment evidence before releasing goods. Merchant credentials and configured payment validation are required.',
   },
   {
     icon: 'lucide:message-square',
@@ -249,7 +251,7 @@ const corePrinciples = [
     id: 'fraud-shield',
     title: 'Real-Time Fraud Prevention',
     description:
-      'Protects merchants from counterfeit M-Pesa SMS screenshots by cryptographically validating every TransID server-side before goods leave your store.',
+      'Helps staff verify payment references through configured provider integrations rather than trusting SMS screenshots.',
     icon: 'lucide:shield-check',
     badge: 'Fraud Shield',
   },
@@ -549,7 +551,7 @@ const homepageFaqs = [
     sections.pricing && (
       <PricingTable
         title="Transparent KES Pricing for Kenyan Merchants"
-        subtitle="Predictable monthly plans designed for growing businesses. Connect your channels, collaborate with your team, and save 20% on annual commitments."
+        subtitle="Predictable monthly plans designed for growing businesses. Connect your channels, collaborate with your team, and SMS credits are prepaid and sold separately. Annual subscription checkout is not yet available."
         plans={pricingPlans}
         annualDiscount={20}
         background="muted"

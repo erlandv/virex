@@ -25,7 +25,9 @@ const plans = matrix.tiers.map((tier) => ({
   badge: tier.badge,
   cta: {
     label: tier.ctaLabel,
-    href: tier.ctaHref,
+    href: ['starter', 'growth', 'scale'].includes(tier.id)
+      ? `/register?plan=${tier.id}&interval=monthly`
+      : '/contact?topic=enterprise',
   },
 }));
 
@@ -44,7 +46,7 @@ const comparisonCategories = [
           featMap.get('whatsapp_api')?.scale ?? true,
           featMap.get('whatsapp_api')?.enterprise ?? true,
         ],
-        tooltip: 'Direct Meta Cloud API integration with zero phone ban risk',
+        tooltip: 'Official WhatsApp Business Cloud API connection, subject to Meta policies',
       },
       {
         name: 'Bulk SMS Gateway (Africa’s Talking)',
@@ -74,7 +76,7 @@ const comparisonCategories = [
       {
         name: 'Daraja C2B Auto-Verification (Stops Fake SMS)',
         values: [true, true, true, 'Dedicated Route'],
-        tooltip: 'Server-side TransID validation that eliminates screenshot fraud',
+        tooltip: 'Payment validation reduces reliance on unverified receipt screenshots',
       },
       {
         name: 'M-Pesa STK Push Integration',
@@ -151,9 +153,9 @@ const pricingFaqs = faqsList
 
   <TrustBadges
     guarantee={{
-      title: '72-Hour Full-Featured Trial on Growth Plan',
+      title: '72-hour Growth trial (subject to workspace provisioning)',
       description:
-        'Try all MarkChat Growth features risk-free for 72 hours. No payment required to start—pay via M-Pesa or card only when satisfied.',
+        'A time-limited trial is created during onboarding. Core-dependent features remain unavailable until provisioning is completed.',
     }}
   />
 

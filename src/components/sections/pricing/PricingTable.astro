@@ -69,7 +69,7 @@ const {
   title,
   subtitle,
   plans,
-  annualDiscount = 20,
+  annualDiscount = 0,
   defaultPeriod = 'monthly',
   footerLink,
   background = 'default',
@@ -123,33 +123,7 @@ function formatPrice(price: number): string {
         >
           Monthly
         </button>
-        <button
-          type="button"
-          data-period="annual"
-          class:list={[
-            'pricing-toggle-btn cursor-pointer px-4 py-2 text-sm font-medium rounded-md transition-all flex items-center gap-2',
-            defaultPeriod === 'annual'
-              ? 'bg-primary text-white shadow-sm'
-              : 'text-text-muted hover:text-text',
-          ]}
-          aria-pressed={defaultPeriod === 'annual'}
-        >
-          Annual
-          {
-            annualDiscount > 0 && (
-              <span
-                class:list={[
-                  'text-xs px-1.5 py-0.5 rounded-full font-semibold',
-                  defaultPeriod === 'annual'
-                    ? 'bg-white/20 text-white'
-                    : 'bg-primary/10 text-primary',
-                ]}
-              >
-                -{annualDiscount}%
-              </span>
-            )
-          }
-        </button>
+        <a href="/contact?topic=annual-billing" class="text-xs font-medium text-text-muted px-3 py-2 rounded-md hover:text-primary">Annual billing: contact sales</a>
       </div>
     </div>
 
