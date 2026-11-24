@@ -54,7 +54,7 @@ const samples = [
         <div class="grid lg:grid-cols-2 gap-4">
           <div>
             <label for="sandbox-payload" class="text-sm font-semibold text-text block mb-2">Sample JSON request body</label>
-            <textarea id="sandbox-payload" data-sandbox-payload spellcheck="false" rows="13" maxlength="3000" class="w-full rounded-xl border border-border bg-background p-4 text-sm leading-6 font-mono text-text focus-visible:outline-2 focus-visible:outline-primary" aria-describedby="sandbox-privacy">{"to":"+254712345678","senderId":"MARKCHAT","message":"Habari! Your order is ready."}</textarea>
+            <textarea id="sandbox-payload" data-sandbox-payload spellcheck="false" rows="13" maxlength="3000" class="w-full rounded-xl border border-border bg-background p-4 text-sm leading-6 font-mono text-text focus-visible:outline-2 focus-visible:outline-primary" aria-describedby="sandbox-privacy">{JSON.stringify({ to: '+254712345678', senderId: 'MARKCHAT', message: 'Habari! Your order is ready.' })}</textarea>
             <p id="sandbox-privacy" class="text-xs text-text-muted mt-2">Use fictional data only. Inputs remain in this browser session; no sending, charging, or verification occurs.</p>
             <button type="button" data-sandbox-run class="mt-4 inline-flex items-center gap-2 rounded-lg px-5 py-3 font-semibold text-sm bg-primary text-white hover:opacity-90"><Icon name="lucide:play" class="w-4 h-4"/> Run Sandbox Simulation</button>
           </div>
