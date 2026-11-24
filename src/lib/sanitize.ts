@@ -133,7 +133,13 @@ export function sanitizeHtml(rawHtml: string): string {
             validatedValue = candidate;
           } else if (/^\/(?!\/)/.test(candidate) && !candidate.includes('\\')) {
             validatedValue = candidate;
-          } else if (/^https?:\/\//i.test(candidate) && !/[\\<>\u0000-\u001f]/.test(candidate)) {
+          } else if (
+            /^https?:\/\//i.test(candidate) &&
+            !candidate.includes('\\') &&
+            !candidate.includes('<') &&
+            !candidate.includes('>') &&
+            !Array.from(candidate).some((char) => char.charCodeAt(0) < 32)
+          ) {
             try {
               const parsedUrl = new URL(candidate);
               validatedValue = ['https:', 'http:'].includes(parsedUrl.protocol) ? parsedUrl.href : '#';
