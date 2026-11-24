@@ -34,8 +34,9 @@ import { Icon } from 'astro-icon/components';
           </fieldset>
           <div class="p-4 rounded-xl border border-border bg-background">
             <label for="sms-rate" class="block font-semibold text-sm text-text mb-2">Example KES price per segment</label>
-            <div class="flex items-center gap-3"><span class="text-text-muted font-semibold">KES</span><input type="number" id="sms-rate" min="0.01" max="100" step="0.05" value="0.80" class="rounded-lg bg-surface border border-border text-text w-28 p-2.5 tabular-nums focus:outline-2 focus:outline-primary" /><span class="text-xs text-text-muted">Editable assumption, not an actual volume-based quote</span></div>
-            <p class="text-xs text-text-muted mt-3">The example estimator applies the same editable unit rate at every volume. Any negotiated volume tiers, carrier differences, surcharges, VAT and payment fees must be confirmed from an approved live catalog.</p>
+            <div class="flex items-center gap-3"><span class="text-text-muted font-semibold">KES</span><input type="number" id="sms-rate" min="0.01" max="100" step="0.05" value="1.05" class="rounded-lg bg-surface border border-border text-text w-28 p-2.5 tabular-nums focus:outline-2 focus:outline-primary" aria-describedby="sms-rate-note" /><span id="sms-rate-tier" class="text-xs text-text-muted">Example tier · 10,000+</span></div>
+            <label class="inline-flex gap-2 items-start text-xs text-text-muted mt-3 cursor-pointer"><input type="checkbox" id="sms-auto-rate" checked class="accent-primary mt-0.5" /> Use illustrative volume-tier rates automatically</label>
+            <p id="sms-rate-note" class="text-xs text-text-muted mt-3">Example bands: 1k–9,999 at KES 1.20; 10k–49,999 at KES 1.05; 50k–249,999 at KES 0.90; 250k+ at KES 0.75 per segment. These are invented planning assumptions, not MarkChat tariffs. Carrier differences, VAT, surcharges and payment fees are excluded.</p>
           </div>
         </div>
       </div>
@@ -93,12 +94,18 @@ import { Icon } from 'astro-icon/components';
       const number = root.querySelector<HTMLInputElement>('#sms-volume-number');
       const message = root.querySelector<HTMLTextAreaElement>('#sms-message');
       const rate = root.querySelector<HTMLInputElement>('#sms-rate');
+      const autoRate = root.querySelector<HTMLInputElement>('#sms-auto-rate');
       const text = (id: string, value: string) => { const target = root.querySelector<HTMLElement>(id); if (target) target.textContent = value; };
       const fmt = (value: number) => new Intl.NumberFormat('en-KE').format(value);
       const render = () => {
         const count = Math.max(1000, Math.min(10000000, Number(number?.value) || 1000));
         const segments = calculateSmsSegments(message?.value || '');
+        const exampleTierRate = count >= 250000 ? 0.75 : count >= 50000 ? 0.90 : count >= 10000 ? 1.05 : 1.20;
+        const exampleTierLabel = count >= 250000 ? '250,000+' : count >= 50000 ? '50,000+' : count >= 10000 ? '10,000+' : '1,000+';
+        const useTier = autoRate?.checked !== false;
+        if (rate) { rate.disabled = useTier; if (useTier) rate.value = exampleTierRate.toFixed(2); }
         const price = Math.max(0, Math.min(100, Number(rate?.value) || 0));
+        text('#sms-rate-tier', useTier ? 'Illustrative tier · ' + exampleTierLabel : 'Custom planning assumption');
         const units = count * segments.segments;
         const route = root.querySelector<HTMLInputElement>('input[name="sms-route"]:checked')?.value || 'transactional';
         if (volume) volume.value = String(Math.min(count, 1000000));
@@ -116,6 +123,7 @@ import { Icon } from 'astro-icon/components';
       number?.addEventListener('change', () => { if (number) number.value = String(Math.max(1000, Math.min(10000000, Number(number.value) || 1000))); render(); });
       message?.addEventListener('input', render);
       rate?.addEventListener('input', render);
+      autoRate?.addEventListener('change', render);
       root.querySelectorAll<HTMLInputElement>('input[name="sms-route"]').forEach((el) => el.addEventListener('change', render));
       render();
     });
