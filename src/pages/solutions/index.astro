@@ -3,6 +3,7 @@
  * MarkChat Solutions Directory
  */
 import MarketingLayout from '@/layouts/MarketingLayout.astro';
+import ServiceBoundaryNotice from '@/components/common/ServiceBoundaryNotice.astro';
 import PageHeader from '@sections/content/PageHeader.astro';
 import { Icon } from 'astro-icon/components';
 import CTA from '@sections/marketing/CTA.astro';
@@ -19,6 +20,7 @@ const byIndustry = solutionsPages.filter(
   title="Industry Solutions - MarkChat Kenya"
   description="Tailored conversational commerce and support solutions for Kenyan businesses, from retail and clinics to logistics and schools."
 >
+  <ServiceBoundaryNotice />
   <PageHeader
     title="Solutions Tailored to Your Industry"
     subtitle="From Instagram retail dukas to national financial institutions, discover how MarkChat powers customer engagement in your sector."

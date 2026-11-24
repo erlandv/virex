@@ -3,6 +3,7 @@
  * MarkChat Product Suite Overview
  */
 import MarketingLayout from '@/layouts/MarketingLayout.astro';
+import ServiceBoundaryNotice from '@/components/common/ServiceBoundaryNotice.astro';
 import PageHeader from '@sections/content/PageHeader.astro';
 import { Icon } from 'astro-icon/components';
 import CTA from '@sections/marketing/CTA.astro';
@@ -13,6 +14,7 @@ import { productPages } from '@/data/marketing-content';
   title="Product Suite - MarkChat Kenya"
   description="Explore MarkChat's products: Markcopilot AI, Shared Inbox, Help Center, CRM Workspace, and Self-Hosted deployments."
 >
+  <ServiceBoundaryNotice />
   <PageHeader
     title="The MarkChat Product Suite"
     subtitle="Everything you need to turn customer conversations into verified revenue across WhatsApp, SMS, and digital channels."

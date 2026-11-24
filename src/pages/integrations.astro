@@ -9,6 +9,7 @@
  * 4. Technical Consultation CTA
  */
 import MarketingLayout from '@/layouts/MarketingLayout.astro';
+import ServiceBoundaryNotice from '@/components/common/ServiceBoundaryNotice.astro';
 import { Icon } from 'astro-icon/components';
 import IntegrationIcon from '@/components/ui/IntegrationIcon.astro';
 import IntegrationsHeroShowcase from '@/components/sections/integrations/IntegrationsHeroShowcase.astro';
@@ -47,6 +48,7 @@ const filterCategories = [
   title={`Integrations - ${siteConfig.name}`}
   description="Connect Safaricom M-Pesa Daraja, Africa’s Talking Bulk SMS, Meta WhatsApp Cloud API, and Markcopilot AI into MarkChat."
 >
+  <ServiceBoundaryNotice />
   <!-- ======================================================== -->
   <!-- 1. HERO SECTION: CONNECTED BUSINESS ECOSYSTEM            -->
   <!-- ======================================================== -->
