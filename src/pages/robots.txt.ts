@@ -15,9 +15,21 @@ Allow: /favicon.svg
 # Disallow internal administrative CMS routes and non-indexable utility endpoints
 Disallow: /dashboard/
 Disallow: /dashboardMain
+Disallow: /auth/
+Disallow: /billing/
+Disallow: /login
+Disallow: /register
+Disallow: /forgot-password
+Disallow: /reset-password
 Disallow: /api/
 Disallow: /403
+Disallow: /404
 Disallow: /500
+Disallow: /faqs
+
+# AI search and general search crawlers share public indexing rules.
+# Googlebot, Bingbot, OAI-SearchBot, ClaudeBot and PerplexityBot
+# inherit this User-agent: * policy.
 
 # Canonical XML Sitemap Index
 Sitemap: ${siteConfig.url}/sitemap-index.xml
