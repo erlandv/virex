@@ -38,6 +38,14 @@ test('1. Security & XSS Sanitation: sanitizeHtml allowlist enforcement', async (
     assert.doesNotMatch(clean, /href="data:/i);
   });
 
+  await t.test('rejects entity-encoded and protocol-relative script links', () => {
+    const malicious = '<a href="jav&#x61;script:alert(1)">Bad</a><a href="//evil.example">Bad</a>';
+    const clean = sanitizeHtml(malicious);
+    assert.doesNotMatch(clean, /href="jav/i);
+    assert.doesNotMatch(clean, /href="\/\/evil/i);
+    assert.match(clean, /href="#"/);
+  });
+
   await t.test('preserves legitimate legal markup (h2, p, table, ul, li, strong)', () => {
     const legalMarkup = `
       <h2>1. Section Title</h2>
@@ -78,6 +86,8 @@ test('2. Slug & Canonical URL Validation', async (t) => {
       'https://markchat.co.ke/privacy'
     );
     assert.strictEqual(validateCanonicalUrl('javascript:alert(1)', 'markchat.co.ke'), null);
+    assert.strictEqual(validateCanonicalUrl('https://evilmarkchat.co.ke', 'markchat.co.ke'), null);
+    assert.strictEqual(validateCanonicalUrl('https://evil.markchat.co.ke', 'markchat.co.ke'), null);
     assert.strictEqual(
       validateCanonicalUrl('https://malicious-site.com/privacy', 'markchat.co.ke'),
       null
