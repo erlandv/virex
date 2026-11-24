@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 
-const ROOT_DIR = 'C:\\Development\\markchat-marketing';
+const ROOT_DIR = process.cwd();
 const INDEX_ASTRO_PATH = path.join(ROOT_DIR, 'src', 'pages', 'index.astro');
 const HERO_ASTRO_PATH = path.join(
   ROOT_DIR,

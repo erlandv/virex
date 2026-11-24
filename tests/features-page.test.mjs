@@ -4,7 +4,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import http from 'node:http';
 
-const ROOT_DIR = 'C:\\Development\\markchat-marketing';
+const ROOT_DIR = process.cwd();
 const FEATURES_ASTRO = path.join(ROOT_DIR, 'src', 'pages', 'features.astro');
 const DASHBOARD_FEATURES_ASTRO = path.join(ROOT_DIR, 'src', 'pages', 'dashboard', 'features.astro');
 const DASHBOARD_FEATURES_MANAGE_ASTRO = path.join(
