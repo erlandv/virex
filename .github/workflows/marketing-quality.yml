@@ -1,0 +1,31 @@
+name: Marketing quality gate
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Virex / Astro / Product QA
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      SITE_URL: https://www.markchat.co.ke
+      PUBLIC_CONTROL_PLANE_URL: http://localhost:5000
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+          cache: npm
+      - run: npm ci
+      - name: Lint, format and Astro diagnostics
+        run: npm run check
+      - name: Generate static site
+        run: npm run build
+      - name: Run built-output and source tests
+        run: npm test
