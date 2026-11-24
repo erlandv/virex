@@ -1,30 +1,110 @@
 ---
 import { Icon } from 'astro-icon/components';
 const layers = [
-  { number: '01', icon: 'lucide:messages-square', name: 'Customer channels', detail: 'WhatsApp Cloud · Instagram · Messenger · Web chat', href: '/product/shared-inbox' },
-  { number: '02', icon: 'lucide:workflow', name: 'Agent workflows + AI', detail: 'Assignment · Markcopilot suggestions · Human escalation', href: '/features' },
-  { number: '03', icon: 'lucide:smartphone', name: 'Payments + Kenyan telcos', detail: 'Configured M-Pesa verification · Separate SMS Studio routing', href: '/integrations' },
-  { number: '04', icon: 'lucide:shield-check', name: 'Governance + webhooks', detail: 'Tenant permissions · Billing entitlements · Audit events', href: '/docs' },
+  {
+    number: '01',
+    icon: 'lucide:messages-square',
+    name: 'Customer channels',
+    detail: 'WhatsApp Cloud · Instagram · Messenger · Web chat',
+    href: '/product/shared-inbox',
+  },
+  {
+    number: '02',
+    icon: 'lucide:workflow',
+    name: 'Agent workflows + AI',
+    detail: 'Assignment · Markcopilot suggestions · Human escalation',
+    href: '/features',
+  },
+  {
+    number: '03',
+    icon: 'lucide:smartphone',
+    name: 'Payments + Kenyan telcos',
+    detail: 'Configured M-Pesa verification · Separate SMS Studio routing',
+    href: '/integrations',
+  },
+  {
+    number: '04',
+    icon: 'lucide:shield-check',
+    name: 'Governance + webhooks',
+    detail: 'Tenant permissions · Billing entitlements · Audit events',
+    href: '/docs',
+  },
 ];
 ---
-<section class="py-16 sm:py-24 border-b border-border bg-surface/40" aria-labelledby="architecture-heading">
+
+<section
+  class="py-16 sm:py-24 border-b border-border bg-surface/40"
+  aria-labelledby="architecture-heading"
+>
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="max-w-2xl mb-10"><span class="text-xs font-bold uppercase tracking-widest text-primary">How the platform fits together</span><h2 id="architecture-heading" class="text-3xl sm:text-4xl font-bold tracking-tight text-text mt-3">Built as connected systems. Managed as clear boundaries.</h2><p class="text-text-muted mt-4">An architectural view of the intended experience. Each carrier, payment and Core integration has its own configuration and approval requirements.</p></div>
-    <div class="mb-8 border-y border-border py-4 flex flex-wrap gap-3 sm:gap-5 justify-between items-center">
-      {['Safaricom M-Pesa', 'Airtel', 'Telkom', "Africa’s Talking", 'Meta Cloud API', 'Paystack'].map((name) => <span class="text-xs sm:text-sm font-bold text-text-muted tracking-tight">{name}</span>)}
-      <p class="basis-full text-xs text-text-muted">Ecosystem technologies referenced for integration architecture; not a claim of provider partnership, certification or live connectivity.</p>
+    <div class="max-w-2xl mb-10">
+      <span class="text-xs font-bold uppercase tracking-widest text-primary"
+        >How the platform fits together</span
+      ><h2
+        id="architecture-heading"
+        class="text-3xl sm:text-4xl font-bold tracking-tight text-text mt-3"
+      >
+        Built as connected systems. Managed as clear boundaries.
+      </h2><p class="text-text-muted mt-4">
+        An architectural view of the intended experience. Each carrier, payment and Core integration
+        has its own configuration and approval requirements.
+      </p>
+    </div>
+    <div
+      class="mb-8 border-y border-border py-4 flex flex-wrap gap-3 sm:gap-5 justify-between items-center"
+    >
+      {
+        [
+          'Safaricom M-Pesa',
+          'Airtel',
+          'Telkom',
+          'Africa’s Talking',
+          'Meta Cloud API',
+          'Paystack',
+        ].map((name) => (
+          <span class="text-xs sm:text-sm font-bold text-text-muted tracking-tight">{name}</span>
+        ))
+      }
+      <p class="basis-full text-xs text-text-muted">
+        Ecosystem technologies referenced for integration architecture; not a claim of provider
+        partnership, certification or live connectivity.
+      </p>
     </div>
     <ol class="grid md:grid-cols-2 xl:grid-cols-4 gap-3">
-      {layers.map((layer, i) => (
-        <li class="relative bg-background rounded-xl border border-border p-6 min-h-[210px]">
-          <div class="flex items-center justify-between mb-7"><span class="w-11 h-11 rounded-lg flex items-center justify-center bg-primary/10 text-primary"><Icon name={layer.icon} class="w-5 h-5" /></span><span class="font-mono text-xs text-text-muted">{layer.number} / 04</span></div>
-          <h3 class="font-bold text-text text-lg">{layer.name}</h3>
-          <p class="mt-2 text-sm text-text-muted leading-relaxed">{layer.detail}</p>
-          <a href={layer.href} class="mt-4 inline-flex gap-1 text-xs font-bold text-primary hover:underline">Explore layer <Icon name="lucide:arrow-up-right" class="w-3.5 h-3.5" /></a>
-          {i < 3 && <span aria-hidden="true" class="hidden xl:flex absolute top-1/2 -right-[13px] z-10 bg-background border border-border w-6 h-6 rounded-full items-center justify-center text-primary"><Icon name="lucide:chevron-right" class="w-3.5 h-3.5" /></span>}
-        </li>
-      ))}
+      {
+        layers.map((layer, i) => (
+          <li class="relative bg-background rounded-xl border border-border p-6 min-h-[210px]">
+            <div class="flex items-center justify-between mb-7">
+              <>
+                <span class="w-11 h-11 rounded-lg flex items-center justify-center bg-primary/10 text-primary">
+                  <Icon name={layer.icon} class="w-5 h-5" />
+                </span>
+                <span class="font-mono text-xs text-text-muted">{layer.number} / 04</span>
+              </>
+            </div>
+            <h3 class="font-bold text-text text-lg">{layer.name}</h3>
+            <p class="mt-2 text-sm text-text-muted leading-relaxed">{layer.detail}</p>
+            <a
+              href={layer.href}
+              class="mt-4 inline-flex gap-1 text-xs font-bold text-primary hover:underline"
+            >
+              Explore layer <Icon name="lucide:arrow-up-right" class="w-3.5 h-3.5" />
+            </a>
+            {i < 3 && (
+              <span
+                aria-hidden="true"
+                class="hidden xl:flex absolute top-1/2 -right-[13px] z-10 bg-background border border-border w-6 h-6 rounded-full items-center justify-center text-primary"
+              >
+                <Icon name="lucide:chevron-right" class="w-3.5 h-3.5" />
+              </span>
+            )}
+          </li>
+        ))
+      }
     </ol>
-    <p class="text-xs text-text-muted mt-5">Core workspace subscriptions and prepaid SMS wallets remain separate billing products. External service activation is subject to technical verification.</p>
+    <p class="text-xs text-text-muted mt-5">
+      Core workspace subscriptions and prepaid SMS wallets remain separate billing products.
+      External service activation is subject to technical verification.
+    </p>
   </div>
 </section>

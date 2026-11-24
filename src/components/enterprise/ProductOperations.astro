@@ -1,37 +1,117 @@
 ---
 import { Icon } from 'astro-icon/components';
-interface Props { kind?: string; title?: string; }
-const { kind = 'product', title = 'An architecture that translates into everyday operations' } = Astro.props;
+interface Props {
+  kind?: string;
+  title?: string;
+}
+const { kind = 'product', title = 'An architecture that translates into everyday operations' } =
+  Astro.props;
 const library: Record<string, { heading: string; text: string; icon: string }[]> = {
   inbox: [
-    { heading: 'Connect authorized channels', text: 'Use official provider credentials and register each supported conversation source.', icon: 'lucide:plug-zap' },
-    { heading: 'Route to the right team', text: 'Use assignments, private notes and role restrictions to manage ownership.', icon: 'lucide:users' },
-    { heading: 'Verify consequential actions', text: 'Check payment callbacks and merchant permissions before marking an order paid.', icon: 'lucide:shield-check' },
+    {
+      heading: 'Connect authorized channels',
+      text: 'Use official provider credentials and register each supported conversation source.',
+      icon: 'lucide:plug-zap',
+    },
+    {
+      heading: 'Route to the right team',
+      text: 'Use assignments, private notes and role restrictions to manage ownership.',
+      icon: 'lucide:users',
+    },
+    {
+      heading: 'Verify consequential actions',
+      text: 'Check payment callbacks and merchant permissions before marking an order paid.',
+      icon: 'lucide:shield-check',
+    },
   ],
   ai: [
-    { heading: 'Prepare trusted knowledge', text: 'Curate approved product answers, business policies and current availability.', icon: 'lucide:book-open' },
-    { heading: 'Review suggested responses', text: 'Show agents context and suggested bilingual responses with source boundaries.', icon: 'lucide:sparkles' },
-    { heading: 'Escalate sensitive decisions', text: 'Keep payment decisions, unusual queries and exception handling with authorized staff.', icon: 'lucide:user-check' },
+    {
+      heading: 'Prepare trusted knowledge',
+      text: 'Curate approved product answers, business policies and current availability.',
+      icon: 'lucide:book-open',
+    },
+    {
+      heading: 'Review suggested responses',
+      text: 'Show agents context and suggested bilingual responses with source boundaries.',
+      icon: 'lucide:sparkles',
+    },
+    {
+      heading: 'Escalate sensitive decisions',
+      text: 'Keep payment decisions, unusual queries and exception handling with authorized staff.',
+      icon: 'lucide:user-check',
+    },
   ],
   sms: [
-    { heading: 'Register sender and route', text: 'Confirm brand ownership and carrier permissions before using a Sender ID.', icon: 'lucide:badge-check' },
-    { heading: 'Segment and schedule', text: 'Estimate GSM-7 / Unicode units; enforce opt-in, suppression and applicable time windows.', icon: 'lucide:calendar-clock' },
-    { heading: 'Reconcile delivery states', text: 'Keep accepted, pending, failed and delivered DLR states distinct and auditable.', icon: 'lucide:git-compare-arrows' },
+    {
+      heading: 'Register sender and route',
+      text: 'Confirm brand ownership and carrier permissions before using a Sender ID.',
+      icon: 'lucide:badge-check',
+    },
+    {
+      heading: 'Segment and schedule',
+      text: 'Estimate GSM-7 / Unicode units; enforce opt-in, suppression and applicable time windows.',
+      icon: 'lucide:calendar-clock',
+    },
+    {
+      heading: 'Reconcile delivery states',
+      text: 'Keep accepted, pending, failed and delivered DLR states distinct and auditable.',
+      icon: 'lucide:git-compare-arrows',
+    },
   ],
   payments: [
-    { heading: 'Configure merchant access', text: 'Validate Paybill, Till or eligible Pochi merchant integration permissions.', icon: 'lucide:settings' },
-    { heading: 'Receive provider evidence', text: 'Process authorized callback references, amounts and identifiers without trusting screenshots.', icon: 'lucide:receipt' },
-    { heading: 'Reconcile before fulfilment', text: 'Match payment evidence to an order and record the audit trail.', icon: 'lucide:clipboard-check' },
+    {
+      heading: 'Configure merchant access',
+      text: 'Validate Paybill, Till or eligible Pochi merchant integration permissions.',
+      icon: 'lucide:settings',
+    },
+    {
+      heading: 'Receive provider evidence',
+      text: 'Process authorized callback references, amounts and identifiers without trusting screenshots.',
+      icon: 'lucide:receipt',
+    },
+    {
+      heading: 'Reconcile before fulfilment',
+      text: 'Match payment evidence to an order and record the audit trail.',
+      icon: 'lucide:clipboard-check',
+    },
   ],
 };
 const steps = library[kind] || library.inbox;
 ---
-<section class="py-16 sm:py-20 bg-surface/40 border-b border-border" aria-labelledby="operational-depth-title">
+
+<section
+  class="py-16 sm:py-20 bg-surface/40 border-b border-border"
+  aria-labelledby="operational-depth-title"
+>
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <p class="text-xs font-bold text-primary uppercase tracking-wider">Product operations / architecture</p>
-    <h2 id="operational-depth-title" class="text-2xl sm:text-3xl font-bold text-text mt-3 max-w-3xl">{title}</h2>
+    <p class="text-xs font-bold text-primary uppercase tracking-wider">
+      Product operations / architecture
+    </p>
+    <h2
+      id="operational-depth-title"
+      class="text-2xl sm:text-3xl font-bold text-text mt-3 max-w-3xl"
+    >
+      {title}
+    </h2>
     <div class="grid md:grid-cols-3 gap-4 mt-8">
-      {steps.map((step, i) => <article class="p-6 border border-border bg-background rounded-xl"><div class="flex justify-between items-center mb-6"><span class="inline-flex bg-primary/10 rounded-lg p-2.5 text-primary"><Icon name={step.icon} class="w-5 h-5" /></span><span class="text-xs text-text-muted font-mono">0{i + 1} / 03</span></div><h3 class="font-bold text-text text-lg">{step.heading}</h3><p class="text-sm text-text-muted mt-3 leading-relaxed">{step.text}</p></article>)}
+      {
+        steps.map((step, i) => (
+          <article class="p-6 border border-border bg-background rounded-xl">
+            <>
+              <div class="flex justify-between items-center mb-6">
+                <>
+                  <span class="inline-flex bg-primary/10 rounded-lg p-2.5 text-primary">
+                    <Icon name={step.icon} class="w-5 h-5" />
+                  </span>
+                  <span class="text-xs text-text-muted font-mono">0{i + 1} / 03</span>
+                </>
+              </div>
+              <h3 class="font-bold text-text text-lg">{step.heading}</h3>
+              <p class="text-sm text-text-muted mt-3 leading-relaxed">{step.text}</p>
+            </>
+          </article>
+        ))
+      }
     </div>
   </div>
 </section>

@@ -2365,7 +2365,8 @@ export async function fetchPricingMatrix(): Promise<PricingMatrixResponse> {
 
   const configuredUrl =
     (typeof import.meta !== 'undefined' &&
-      (import.meta.env?.PUBLIC_CONTROL_PLANE_URL || import.meta.env?.PUBLIC_CONTROL_PLANE_API_URL)) ||
+      (import.meta.env?.PUBLIC_CONTROL_PLANE_URL ||
+        import.meta.env?.PUBLIC_CONTROL_PLANE_API_URL)) ||
     '';
   if (!configuredUrl) return fallback();
 
@@ -2387,11 +2388,7 @@ export async function fetchPricingMatrix(): Promise<PricingMatrixResponse> {
     if (envelope.success === false) return fallback();
     const data = envelope.data && typeof envelope.data === 'object' ? envelope.data : envelope;
     const catalog = data as Record<string, unknown>;
-    const plans = Array.isArray(catalog.plans)
-      ? catalog.plans
-      : Array.isArray(data)
-        ? data
-        : null;
+    const plans = Array.isArray(catalog.plans) ? catalog.plans : Array.isArray(data) ? data : null;
     if (!plans || plans.length === 0) return fallback();
 
     const matrix = fallback();

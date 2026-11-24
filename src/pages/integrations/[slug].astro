@@ -218,6 +218,15 @@ const otherIntegrations = allIntegrations.filter((i) => i.slug !== integration.s
     action={{ label: 'Get Started with MarkChat', href: `/register` }}
     background="muted"
   />
-  <ProductOperations kind={integration.slug.includes('sms') || integration.slug.includes('africas') ? 'sms' : integration.slug.includes('mpesa') || integration.slug.includes('pochi') || integration.slug.includes('paybill') ? 'payments' : 'inbox'} title={`Integration workflow: ${integration.name}`} />
+  <ProductOperations
+    kind={integration.slug.includes('sms') || integration.slug.includes('africas')
+      ? 'sms'
+      : integration.slug.includes('mpesa') ||
+          integration.slug.includes('pochi') ||
+          integration.slug.includes('paybill')
+        ? 'payments'
+        : 'inbox'}
+    title={`Integration workflow: ${integration.name}`}
+  />
   <ComplianceRail condensed />
 </MarketingLayout>

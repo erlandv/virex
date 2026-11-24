@@ -352,7 +352,9 @@ const { action = '', method = 'POST', netlify = false, formName = 'contact' } = 
     const topic = new URLSearchParams(window.location.search).get('topic');
     if (['enterprise', 'sms-credits', 'sender-id', 'api-contract'].includes(topic || '')) {
       const enquiry = form.querySelector<HTMLSelectElement>('[name="enquiryType"]');
-      if (enquiry) enquiry.value = topic === 'api-contract' ? 'partnership' : topic === 'sender-id' ? 'sms' : 'sales';
+      if (enquiry)
+        enquiry.value =
+          topic === 'api-contract' ? 'partnership' : topic === 'sender-id' ? 'sms' : 'sales';
     }
 
     const renderTimeInput = document.getElementById('form-render-time') as HTMLInputElement | null;
@@ -526,7 +528,9 @@ const { action = '', method = 'POST', netlify = false, formName = 'contact' } = 
       const enquiryType = ((formData.get('enquiryType') as string) || '').trim();
       const message = ((formData.get('message') as string) || '').trim();
       const enterpriseScope = parseEnterpriseScope(formData);
-      const scopedMessage = [message, formatEnterpriseScope(enterpriseScope)].filter(Boolean).join('\n\n');
+      const scopedMessage = [message, formatEnterpriseScope(enterpriseScope)]
+        .filter(Boolean)
+        .join('\n\n');
       // External form endpoints also receive a structured scope summary.
       formData.set('message', scopedMessage);
 

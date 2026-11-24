@@ -85,7 +85,12 @@ const { page } = Astro.props;
         </div>
       </div>
 
-      <div class="mt-8 rounded-lg bg-primary/5 border border-primary/15 px-4 py-3 text-xs text-text-muted max-w-3xl">Product flows and outcomes here are illustrative. Verify available integrations, carrier approvals, merchant credentials and actual performance before deployment.</div>
+      <div
+        class="mt-8 rounded-lg bg-primary/5 border border-primary/15 px-4 py-3 text-xs text-text-muted max-w-3xl"
+      >
+        Product flows and outcomes here are illustrative. Verify available integrations, carrier
+        approvals, merchant credentials and actual performance before deployment.
+      </div>
     </div>
   </section>
 
@@ -182,6 +187,13 @@ const { page } = Astro.props;
       : undefined}
     background="muted"
   />
-  <ProductOperations kind={page.slug.includes('sms') || page.slug.includes('campaign') ? 'sms' : page.slug.includes('automat') ? 'ai' : 'inbox'} title={`Operational walkthrough: ${page.title}`} />
+  <ProductOperations
+    kind={page.slug.includes('sms') || page.slug.includes('campaign')
+      ? 'sms'
+      : page.slug.includes('automat')
+        ? 'ai'
+        : 'inbox'}
+    title={`Operational walkthrough: ${page.title}`}
+  />
   <ComplianceRail condensed />
 </MarketingLayout>

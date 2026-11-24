@@ -1,18 +1,71 @@
 ---
 import { Icon } from 'astro-icon/components';
-interface Props { heading?: string; condensed?: boolean; }
-const { heading = 'Kenyan operational controls, designed into the workflow', condensed = false } = Astro.props;
+interface Props {
+  heading?: string;
+  condensed?: boolean;
+}
+const { heading = 'Kenyan operational controls, designed into the workflow', condensed = false } =
+  Astro.props;
 const items = [
-  { icon: 'lucide:clock-3', title: 'Promotional window', description: 'Plan promotional SMS for 07:00–19:00 EAT, with explicit opt-in and suppression checks.' },
-  { icon: 'lucide:badge-check', title: 'Approved sender identity', description: 'Use registered alphanumeric Sender IDs; approval and route permissions depend on each carrier.' },
-  { icon: 'lucide:shield', title: 'Customer data', description: 'Minimize personal data, control access and document processing under Kenya’s Data Protection Act, 2019.' },
-  { icon: 'lucide:message-circle-off', title: 'Opt-out and receipts', description: 'Support STOP/suppression controls; never treat a carrier submission receipt as proof of delivery.' },
+  {
+    icon: 'lucide:clock-3',
+    title: 'Promotional window',
+    description:
+      'Plan promotional SMS for 07:00–19:00 EAT, with explicit opt-in and suppression checks.',
+  },
+  {
+    icon: 'lucide:badge-check',
+    title: 'Approved sender identity',
+    description:
+      'Use registered alphanumeric Sender IDs; approval and route permissions depend on each carrier.',
+  },
+  {
+    icon: 'lucide:shield',
+    title: 'Customer data',
+    description:
+      'Minimize personal data, control access and document processing under Kenya’s Data Protection Act, 2019.',
+  },
+  {
+    icon: 'lucide:message-circle-off',
+    title: 'Opt-out and receipts',
+    description:
+      'Support STOP/suppression controls; never treat a carrier submission receipt as proof of delivery.',
+  },
 ];
 ---
-<section aria-labelledby="compliance-heading" class:list={['border-y border-border bg-background', condensed ? 'py-12' : 'py-16 sm:py-24']}>
+
+<section
+  aria-labelledby="compliance-heading"
+  class:list={['border-y border-border bg-background', condensed ? 'py-12' : 'py-16 sm:py-24']}
+>
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="flex gap-3 items-center mb-8"><span class="w-9 h-9 bg-primary/10 rounded-lg flex items-center justify-center text-primary"><Icon name="lucide:shield-check" class="w-5 h-5" /></span><div><p class="text-xs font-semibold uppercase tracking-widest text-primary">Trust by design</p><h2 id="compliance-heading" class="text-2xl sm:text-3xl font-bold text-text mt-1">{heading}</h2></div></div>
-    <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">{items.map((item) => <div class="rounded-xl border border-border bg-surface/40 p-5"><Icon name={item.icon} class="w-5 h-5 text-primary mb-4" /><h3 class="font-bold text-text text-sm">{item.title}</h3><p class="text-sm text-text-muted mt-2 leading-relaxed">{item.description}</p></div>)}</div>
-    <p class="mt-5 text-xs text-text-muted">Operational commitments and design considerations; not a legal certification, carrier approval or guarantee of universal feature availability.</p>
+    <div class="flex gap-3 items-center mb-8">
+      <span class="w-9 h-9 bg-primary/10 rounded-lg flex items-center justify-center text-primary"
+        ><Icon name="lucide:shield-check" class="w-5 h-5" /></span
+      ><div>
+        <p class="text-xs font-semibold uppercase tracking-widest text-primary">
+          Trust by design
+        </p><h2 id="compliance-heading" class="text-2xl sm:text-3xl font-bold text-text mt-1">
+          {heading}
+        </h2>
+      </div>
+    </div>
+    <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      {
+        items.map((item) => (
+          <div class="rounded-xl border border-border bg-surface/40 p-5">
+            <>
+              <Icon name={item.icon} class="w-5 h-5 text-primary mb-4" />
+              <h3 class="font-bold text-text text-sm">{item.title}</h3>
+              <p class="text-sm text-text-muted mt-2 leading-relaxed">{item.description}</p>
+            </>
+          </div>
+        ))
+      }
+    </div>
+    <p class="mt-5 text-xs text-text-muted">
+      Operational commitments and design considerations; not a legal certification, carrier approval
+      or guarantee of universal feature availability.
+    </p>
   </div>
 </section>

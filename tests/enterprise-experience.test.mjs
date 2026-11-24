@@ -3,7 +3,12 @@ import assert from 'node:assert/strict';
 import { calculateSmsSegments } from '../src/lib/sms-segments.ts';
 
 test('GSM-7 single and concatenated messages', () => {
-  assert.deepEqual(calculateSmsSegments(''), { encoding: 'GSM-7', chars: 0, segments: 0, units: 0 });
+  assert.deepEqual(calculateSmsSegments(''), {
+    encoding: 'GSM-7',
+    chars: 0,
+    segments: 0,
+    units: 0,
+  });
   assert.equal(calculateSmsSegments('a'.repeat(160)).segments, 1);
   assert.equal(calculateSmsSegments('a'.repeat(161)).segments, 2);
   assert.equal(calculateSmsSegments('a'.repeat(306)).segments, 2);
@@ -42,10 +47,16 @@ test('Virex enterprise interactive components and disclosure exist', async () =>
     const content = fs.readFileSync(path.resolve(file), 'utf8');
     assert.match(content, /bg-(background|surface)|text-text/);
   }
-  const calculator = fs.readFileSync(path.resolve('src/components/enterprise/SmsCampaignCalculator.astro'), 'utf8');
+  const calculator = fs.readFileSync(
+    path.resolve('src/components/enterprise/SmsCampaignCalculator.astro'),
+    'utf8'
+  );
   assert.match(calculator, /illustrative volume-tier rates/);
   assert.match(calculator, /SMS Studio/);
-  const playground = fs.readFileSync(path.resolve('src/components/enterprise/DeveloperPlayground.astro'), 'utf8');
+  const playground = fs.readFileSync(
+    path.resolve('src/components/enterprise/DeveloperPlayground.astro'),
+    'utf8'
+  );
   assert.match(playground, /Illustration only/);
   assert.match(playground, /Run Sandbox Simulation/);
   assert.match(playground, /data-sandbox-payload/);
@@ -54,7 +65,8 @@ test('Virex enterprise interactive components and disclosure exist', async () =>
   assert.match(playground, /never contacts an API/);
 
   const readiness = fs.readFileSync(
-    path.resolve('src/components/enterprise/SenderReadinessMatrix.astro'), 'utf8'
+    path.resolve('src/components/enterprise/SenderReadinessMatrix.astro'),
+    'utf8'
   );
   assert.match(readiness, /07:00–19:00 EAT/);
   assert.match(readiness, /24\/7 when approved/);
@@ -66,21 +78,29 @@ test('Virex enterprise interactive components and disclosure exist', async () =>
   const pricing = fs.readFileSync(path.resolve('src/pages/pricing.astro'), 'utf8');
   assert.ok(pricing.indexOf('<SmsCampaignCalculator') < pricing.indexOf('<SenderReadinessMatrix'));
 
-  const leadForm = fs.readFileSync(path.resolve('src/components/forms/DemoRequestForm.astro'), 'utf8');
+  const leadForm = fs.readFileSync(
+    path.resolve('src/components/forms/DemoRequestForm.astro'),
+    'utf8'
+  );
   assert.match(leadForm, /EnterpriseScopeFields/);
   assert.match(leadForm, /formatEnterpriseScope/);
   assert.match(leadForm, /data-configured-action/);
-  const contactForm = fs.readFileSync(path.resolve('src/components/forms/ContactForm.astro'), 'utf8');
+  const contactForm = fs.readFileSync(
+    path.resolve('src/components/forms/ContactForm.astro'),
+    'utf8'
+  );
   assert.match(contactForm, /scopeSmsVolume|EnterpriseScopeFields/);
   assert.match(contactForm, /scopedMessage/);
 
-  const registration = fs.readFileSync(path.resolve('src/components/forms/RegisterForm.astro'), 'utf8');
+  const registration = fs.readFileSync(
+    path.resolve('src/components/forms/RegisterForm.astro'),
+    'utf8'
+  );
   assert.doesNotMatch(registration, /completeRegistration\(ssoUrl:/);
   assert.doesNotMatch(registration, /completeRegistration\(data\.ssoUrl/);
 
-  const { parseEnterpriseScope, formatEnterpriseScope } = await import(
-    '../src/lib/enterprise-scope.ts'
-  );
+  const { parseEnterpriseScope, formatEnterpriseScope } =
+    await import('../src/lib/enterprise-scope.ts');
   const sampleScope = new FormData();
   sampleScope.set('scopeSmsVolume', '250k-1m');
   sampleScope.set('scopeMpesaMode', 'paybill');

@@ -1,70 +1,182 @@
 ---
 import { Icon } from 'astro-icon/components';
-interface Props { compact?: boolean; }
+interface Props {
+  compact?: boolean;
+}
 const { compact = false } = Astro.props;
 const samples = [
-  { id: 'send', label: 'Send SMS · example contract', method: 'POST', path: '/api/v1/messages/send' },
+  {
+    id: 'send',
+    label: 'Send SMS · example contract',
+    method: 'POST',
+    path: '/api/v1/messages/send',
+  },
   { id: 'quote', label: 'Quote segments · proposed', method: 'POST', path: '/api/sms-quote' },
   { id: 'verify', label: 'Validate webhook · pattern', method: 'POST', path: '/webhooks/provider' },
 ];
 ---
-<section id="developer-playground" class:list={['bg-surface/40 border-y border-border scroll-mt-24', compact ? 'py-12' : 'py-16 sm:py-24']} aria-labelledby="playground-title">
+
+<section
+  id="developer-playground"
+  class:list={[
+    'bg-surface/40 border-y border-border scroll-mt-24',
+    compact ? 'py-12' : 'py-16 sm:py-24',
+  ]}
+  aria-labelledby="playground-title"
+>
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="flex flex-col md:flex-row justify-between items-end gap-5 mb-8">
-      <div class="max-w-3xl"><p class="text-xs uppercase font-bold tracking-widest text-primary">Developer experience</p><h2 id="playground-title" class="mt-3 text-3xl sm:text-4xl font-bold text-text">An API-first workflow, with readable examples.</h2><p class="mt-3 text-text-muted">Select a use case and language, then copy a starter pattern. Examples are non-executable illustrations and are not assertions of live endpoints, credential names or provider callback signatures.</p></div>
-      <a href="/contact?topic=api-contract" class="text-sm text-primary font-semibold hover:underline">Request current API contract</a>
+      <div class="max-w-3xl">
+        <p class="text-xs uppercase font-bold tracking-widest text-primary">
+          Developer experience
+        </p><h2 id="playground-title" class="mt-3 text-3xl sm:text-4xl font-bold text-text">
+          An API-first workflow, with readable examples.
+        </h2><p class="mt-3 text-text-muted">
+          Select a use case and language, then copy a starter pattern. Examples are non-executable
+          illustrations and are not assertions of live endpoints, credential names or provider
+          callback signatures.
+        </p>
+      </div>
+      <a
+        href="/contact?topic=api-contract"
+        class="text-sm text-primary font-semibold hover:underline">Request current API contract</a
+      >
     </div>
     <div data-playground class="border border-border rounded-2xl bg-background overflow-hidden">
       <div class="flex flex-wrap gap-2 p-4 border-b border-border bg-surface/50">
         <label for="playground-case" class="sr-only">Example workflow</label>
-        <select id="playground-case" class="bg-background text-text text-sm border border-border rounded-lg px-3 py-2.5 flex-1 min-w-44 focus:outline-2 focus:outline-primary">
+        <select
+          id="playground-case"
+          class="bg-background text-text text-sm border border-border rounded-lg px-3 py-2.5 flex-1 min-w-44 focus:outline-2 focus:outline-primary"
+        >
           {samples.map((s) => <option value={s.id}>{s.label}</option>)}
         </select>
         <label for="playground-language" class="sr-only">Programming language</label>
-        <select id="playground-language" class="bg-background text-text text-sm border border-border rounded-lg px-3 py-2.5 flex-1 min-w-36 focus:outline-2 focus:outline-primary">
-          <option value="curl">cURL</option><option value="node">Node.js</option><option value="php">PHP / Laravel</option><option value="python">Python</option>
+        <select
+          id="playground-language"
+          class="bg-background text-text text-sm border border-border rounded-lg px-3 py-2.5 flex-1 min-w-36 focus:outline-2 focus:outline-primary"
+        >
+          <option value="curl">cURL</option><option value="node">Node.js</option><option value="php"
+            >PHP / Laravel</option
+          ><option value="python">Python</option>
         </select>
-        <button data-playground-copy type="button" class="inline-flex items-center gap-2 text-sm font-semibold bg-primary text-white rounded-lg px-4 py-2.5 hover:opacity-90"><Icon name="lucide:copy" class="w-4 h-4" /><span data-copy-label>Copy snippet</span></button>
+        <button
+          data-playground-copy
+          type="button"
+          class="inline-flex items-center gap-2 text-sm font-semibold bg-primary text-white rounded-lg px-4 py-2.5 hover:opacity-90"
+          ><Icon name="lucide:copy" class="w-4 h-4" /><span data-copy-label>Copy snippet</span
+          ></button
+        >
       </div>
       <div class="grid lg:grid-cols-[0.7fr_1.3fr]">
         <aside class="p-6 lg:p-8 lg:border-r border-b lg:border-b-0 border-border">
-          <div class="text-xs text-primary uppercase tracking-wide font-bold">Request blueprint</div>
-          <div class="flex gap-2 mt-3 items-center"><span data-playground-method class="text-xs text-primary font-mono bg-primary/10 rounded-md px-2 py-1">POST</span><code data-playground-path class="text-sm text-text font-semibold break-all">/api/v1/messages/send</code></div>
-          <p data-playground-description class="text-sm text-text-muted leading-relaxed mt-5">Preview sending a message through a separately authenticated SMS service.</p>
+          <div class="text-xs text-primary uppercase tracking-wide font-bold">
+            Request blueprint
+          </div>
+          <div class="flex gap-2 mt-3 items-center">
+            <span
+              data-playground-method
+              class="text-xs text-primary font-mono bg-primary/10 rounded-md px-2 py-1">POST</span
+            ><code data-playground-path class="text-sm text-text font-semibold break-all"
+              >/api/v1/messages/send</code
+            >
+          </div>
+          <p data-playground-description class="text-sm text-text-muted leading-relaxed mt-5">
+            Preview sending a message through a separately authenticated SMS service.
+          </p>
           <div class="border-t border-border mt-6 pt-6 text-sm text-text-muted space-y-3">
-            <p class="flex items-start gap-2"><Icon name="lucide:lock-keyhole" class="w-4 h-4 text-primary shrink-0 mt-0.5" /> Use environment secrets on a trusted server, never client-side.</p>
-            <p class="flex items-start gap-2"><Icon name="lucide:shield-check" class="w-4 h-4 text-primary shrink-0 mt-0.5" /> Implement authentication, consent and idempotency according to the signed service contract.</p>
-            <p class="flex items-start gap-2"><Icon name="lucide:code-2" class="w-4 h-4 text-primary shrink-0 mt-0.5" /> Verification example is pseudocode-level guidance; the provider defines its actual signature scheme.</p>
+            <p class="flex items-start gap-2">
+              <Icon name="lucide:lock-keyhole" class="w-4 h-4 text-primary shrink-0 mt-0.5" /> Use environment
+              secrets on a trusted server, never client-side.
+            </p>
+            <p class="flex items-start gap-2">
+              <Icon name="lucide:shield-check" class="w-4 h-4 text-primary shrink-0 mt-0.5" /> Implement
+              authentication, consent and idempotency according to the signed service contract.
+            </p>
+            <p class="flex items-start gap-2">
+              <Icon name="lucide:code-2" class="w-4 h-4 text-primary shrink-0 mt-0.5" /> Verification
+              example is pseudocode-level guidance; the provider defines its actual signature scheme.
+            </p>
           </div>
         </aside>
         <div class="min-w-0 bg-[#0B1120] text-slate-100">
-          <div class="px-6 py-3 border-b border-slate-700 flex items-center justify-between"><span class="text-xs text-slate-400 font-mono">example.txt / safe placeholder credentials</span><span class="text-xs text-blue-300">Illustration only</span></div>
-          <pre class="px-5 sm:px-7 py-7 text-xs sm:text-sm overflow-x-auto leading-7 min-h-72" tabindex="0"><code data-playground-code>Choose an example to begin.</code></pre>
-          <div class="border-t border-slate-700 px-6 py-3 text-xs text-slate-400">Nothing is transmitted. Copying a snippet does not create a credential, SMS or payment.</div>
+          <div class="px-6 py-3 border-b border-slate-700 flex items-center justify-between">
+            <span class="text-xs text-slate-400 font-mono"
+              >example.txt / safe placeholder credentials</span
+            ><span class="text-xs text-blue-300">Illustration only</span>
+          </div>
+          <pre
+            class="px-5 sm:px-7 py-7 text-xs sm:text-sm overflow-x-auto leading-7 min-h-72"
+            tabindex="0"><code data-playground-code>Choose an example to begin.</code></pre>
+          <div class="border-t border-slate-700 px-6 py-3 text-xs text-slate-400">
+            Nothing is transmitted. Copying a snippet does not create a credential, SMS or payment.
+          </div>
         </div>
       </div>
       <div data-api-sandbox class="p-5 sm:p-8 border-t border-border bg-surface/40">
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-5">
           <div>
-            <p class="text-xs uppercase tracking-widest font-bold text-primary">Client-side API sandbox</p>
+            <p class="text-xs uppercase tracking-widest font-bold text-primary">
+              Client-side API sandbox
+            </p>
             <h3 class="text-xl font-bold text-text mt-1">Edit a request. Inspect a response.</h3>
           </div>
-          <span class="text-xs font-semibold rounded-lg border border-border bg-background text-text-muted px-3 py-2">Simulation only · never contacts an API</span>
+          <span
+            class="text-xs font-semibold rounded-lg border border-border bg-background text-text-muted px-3 py-2"
+            >Simulation only · never contacts an API</span
+          >
         </div>
         <div class="grid lg:grid-cols-2 gap-4">
           <div>
-            <label for="sandbox-payload" class="text-sm font-semibold text-text block mb-2">Sample JSON request body</label>
-            <textarea id="sandbox-payload" data-sandbox-payload spellcheck="false" rows="13" maxlength="3000" class="w-full rounded-xl border border-border bg-background p-4 text-sm leading-6 font-mono text-text focus-visible:outline-2 focus-visible:outline-primary" aria-describedby="sandbox-privacy">{JSON.stringify({ to: '+254712345678', senderId: 'MARKCHAT', message: 'Habari! Your order is ready.' })}</textarea>
-            <p id="sandbox-privacy" class="text-xs text-text-muted mt-2">Use fictional data only. Inputs remain in this browser session; no sending, charging, or verification occurs.</p>
-            <button type="button" data-sandbox-run class="mt-4 inline-flex items-center gap-2 rounded-lg px-5 py-3 font-semibold text-sm bg-primary text-white hover:opacity-90"><Icon name="lucide:play" class="w-4 h-4"/> Run Sandbox Simulation</button>
+            <label for="sandbox-payload" class="text-sm font-semibold text-text block mb-2"
+              >Sample JSON request body</label
+            >
+            <textarea
+              id="sandbox-payload"
+              data-sandbox-payload
+              spellcheck="false"
+              rows="13"
+              maxlength="3000"
+              class="w-full rounded-xl border border-border bg-background p-4 text-sm leading-6 font-mono text-text focus-visible:outline-2 focus-visible:outline-primary"
+              aria-describedby="sandbox-privacy"
+              >{
+                JSON.stringify({
+                  to: '+254712345678',
+                  senderId: 'MARKCHAT',
+                  message: 'Habari! Your order is ready.',
+                })
+              }</textarea
+            >
+            <p id="sandbox-privacy" class="text-xs text-text-muted mt-2">
+              Use fictional data only. Inputs remain in this browser session; no sending, charging,
+              or verification occurs.
+            </p>
+            <button
+              type="button"
+              data-sandbox-run
+              class="mt-4 inline-flex items-center gap-2 rounded-lg px-5 py-3 font-semibold text-sm bg-primary text-white hover:opacity-90"
+              ><Icon name="lucide:play" class="w-4 h-4" /> Run Sandbox Simulation</button
+            >
           </div>
           <div class="min-w-0">
             <p class="font-semibold text-text text-sm mb-2">Simulated HTTP response</p>
             <div class="rounded-xl overflow-hidden border border-border bg-[#0B1120]">
-              <div class="flex items-center justify-between px-4 py-3 border-b border-slate-700 text-xs"><span data-sandbox-status class="font-bold text-blue-300" aria-live="polite">Ready · 200 OK preview</span><span class="text-slate-400">application/json</span></div>
-              <pre class="overflow-auto p-4 text-xs sm:text-sm leading-6 text-slate-200 min-h-72" tabindex="0"><code data-sandbox-response aria-live="polite">Click Run Sandbox Simulation to see sample output.</code></pre>
+              <div
+                class="flex items-center justify-between px-4 py-3 border-b border-slate-700 text-xs"
+              >
+                <span data-sandbox-status class="font-bold text-blue-300" aria-live="polite"
+                  >Ready · 200 OK preview</span
+                ><span class="text-slate-400">application/json</span>
+              </div>
+              <pre
+                class="overflow-auto p-4 text-xs sm:text-sm leading-6 text-slate-200 min-h-72"
+                tabindex="0"><code data-sandbox-response aria-live="polite">Click Run Sandbox Simulation to see sample output.</code></pre>
             </div>
-            <p class="text-xs text-text-muted mt-3">Carrier inference is based on legacy number-prefix examples only; mobile number portability makes it non-authoritative. HMAC previews use a fixed public demo key, not a merchant secret.</p>
+            <p class="text-xs text-text-muted mt-3">
+              Carrier inference is based on legacy number-prefix examples only; mobile number
+              portability makes it non-authoritative. HMAC previews use a fixed public demo key, not
+              a merchant secret.
+            </p>
           </div>
         </div>
       </div>
@@ -75,10 +187,14 @@ const samples = [
 <script>
   type UseCase = 'send' | 'quote' | 'verify';
   type Language = 'curl' | 'node' | 'php' | 'python';
-  const examples: Record<UseCase, { path: string; description: string; snippets: Record<Language, string> }> = {
+  const examples: Record<
+    UseCase,
+    { path: string; description: string; snippets: Record<Language, string> }
+  > = {
     send: {
       path: '/api/v1/messages/send',
-      description: 'Proposed SMS dispatch contract. Requires a verified service URL, sender authorization, sufficient credits, recipient consent and idempotency handling.',
+      description:
+        'Proposed SMS dispatch contract. Requires a verified service URL, sender authorization, sufficient credits, recipient consent and idempotency handling.',
       snippets: {
         curl: `# Contract illustration; replace URL after API review
 curl -X POST "$MARKCHAT_SMS_API_URL/api/v1/messages/send" \\
@@ -113,7 +229,8 @@ response.raise_for_status()`,
     },
     quote: {
       path: '/api/sms-quote',
-      description: 'Proposed server-side segment quote. Message, route, encoding, sender approval and actual negotiated prices must be checked before charging.',
+      description:
+        'Proposed server-side segment quote. Message, route, encoding, sender approval and actual negotiated prices must be checked before charging.',
       snippets: {
         curl: `# Proposed endpoint, not a deployed contract
 curl -X POST "$MARKCHAT_SMS_API_URL/api/sms-quote" \\
@@ -143,7 +260,8 @@ quote.raise_for_status()`,
     },
     verify: {
       path: '/webhooks/provider',
-      description: 'Illustration of an HMAC-SHA256 comparison for providers that sign raw callback bytes. Confirm the actual signature algorithm, header, replay rules and callback schema.',
+      description:
+        'Illustration of an HMAC-SHA256 comparison for providers that sign raw callback bytes. Confirm the actual signature algorithm, header, replay rules and callback schema.',
       snippets: {
         curl: `# Illustrative webhook receive endpoint; no real callback is sent
 curl -X POST "https://your-server.example/webhooks/provider" \\
@@ -174,8 +292,18 @@ if not hmac.compare_digest(digest, signature_hex):
   type SandboxCase = 'send' | 'quote' | 'verify';
   const samplePayloads: Record<SandboxCase, Record<string, unknown>> = {
     send: { to: '+254712345678', senderId: 'MARKCHAT', message: 'Habari! Your order is ready.' },
-    quote: { to: '+254733456789', senderId: 'MARKCHAT', message: 'Promotion: Visit our Nairobi store.', recipients: 1200 },
-    verify: { TransID: 'SJ84K92LMP', TransAmount: 4500, BillRefNumber: 'ORD-2049', MSISDN: '254712345678' },
+    quote: {
+      to: '+254733456789',
+      senderId: 'MARKCHAT',
+      message: 'Promotion: Visit our Nairobi store.',
+      recipients: 1200,
+    },
+    verify: {
+      TransID: 'SJ84K92LMP',
+      TransAmount: 4500,
+      BillRefNumber: 'ORD-2049',
+      MSISDN: '254712345678',
+    },
   };
   function mockNetwork(phone: string) {
     const normalized = phone.replace(/\s|-/g, '').replace(/^\+?254/, '0');
@@ -187,11 +315,16 @@ if not hmac.compare_digest(digest, signature_hex):
   async function demoHmac(value: unknown) {
     const encoded = new TextEncoder();
     const key = await crypto.subtle.importKey(
-      'raw', encoded.encode('PUBLIC_DEMO_KEY_NOT_FOR_REAL_WEBHOOKS'),
-      { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']
+      'raw',
+      encoded.encode('PUBLIC_DEMO_KEY_NOT_FOR_REAL_WEBHOOKS'),
+      { name: 'HMAC', hash: 'SHA-256' },
+      false,
+      ['sign']
     );
     const digest = await crypto.subtle.sign('HMAC', key, encoded.encode(JSON.stringify(value)));
-    return Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, '0')).join('');
+    return Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, '0')).join(
+      ''
+    );
   }
   function initDeveloperPlayground() {
     document.querySelectorAll<HTMLElement>('[data-playground]').forEach((root) => {
@@ -216,72 +349,133 @@ if not hmac.compare_digest(digest, signature_hex):
         if (!payload) return;
         const useCase = (task?.value || 'send') as SandboxCase;
         payload.value = JSON.stringify(samplePayloads[useCase] || samplePayloads.send, null, 2);
-        if (response) response.textContent = 'Click Run Sandbox Simulation to inspect a sample result.';
+        if (response)
+          response.textContent = 'Click Run Sandbox Simulation to inspect a sample result.';
         if (responseStatus) responseStatus.textContent = 'Ready · simulation only';
       };
-      root.querySelector<HTMLButtonElement>('[data-sandbox-run]')?.addEventListener('click', async () => {
-        if (!payload || !response || !responseStatus) return;
-        try {
-          const request: unknown = JSON.parse(payload.value);
-          if (!request || typeof request !== 'object' || Array.isArray(request)) throw new Error('Payload must be a JSON object.');
-          const data = request as Record<string, unknown>;
-          const useCase = (task?.value || 'send') as SandboxCase;
-          if (useCase === 'verify') {
-            const transId = String(data.TransID || '');
-            const amount = Number(data.TransAmount);
-            if (!/^[A-Z0-9]{5,24}$/.test(transId) || !Number.isFinite(amount) || amount <= 0) throw new Error('Provide a sample TransID and positive TransAmount.');
-            const signature = await demoHmac(data);
-            response.textContent = JSON.stringify({
-              simulation: true, httpStatus: 200, status: 'simulated_callback',
-              transaction: { TransID: transId, TransAmount: amount, orderReference: String(data.BillRefNumber || '') },
-              webhookSignature: { algorithm: 'HMAC-SHA256', preview: signature, demoKeyOnly: true },
-              verifiedBySafaricom: false, paymentSettled: false
-            }, null, 2);
-          } else {
-            const phone = String(data.to || '');
-            const sender = String(data.senderId || '');
-            const message = String(data.message || '');
-            const recipients = useCase === 'quote' ? Number(data.recipients || 1) : 1;
-            if (!/^\+?254[17]\d{8}$/.test(phone) || !/^[A-Za-z0-9]{3,11}$/.test(sender) || message.length < 1 || message.length > 1600 || !Number.isSafeInteger(recipients) || recipients < 1 || recipients > 1000000)
-              throw new Error('Use a sample Kenyan number (+2547… or +2541…), a 3–11 alphanumeric Sender ID, and 1–1600 characters.');
-            const segments = calculateSmsSegments(message);
-            const units = segments.segments * recipients;
-            const signature = await demoHmac({ phone, sender, message, recipients });
-            response.textContent = JSON.stringify({
-              simulation: true, httpStatus: 200,
-              messageId: 'DEMO-' + (await demoHmac({ phone, sender, message })).slice(0, 12).toUpperCase(),
-              networkHint: mockNetwork(phone),
-              senderId: sender, recipients,
-              encoding: segments.encoding, segmentsPerRecipient: segments.segments,
-              billableSegments: units,
-              wallet: { currency: 'KES', exampleRatePerSegment: 1, simulatedDeduction: Number((units * 1).toFixed(2)), actuallyDeducted: 0 },
-              delivery: { state: 'preview_only', carrierAccepted: false },
-              webhookSignature: { algorithm: 'HMAC-SHA256', preview: signature, demoKeyOnly: true }
-            }, null, 2);
+      root
+        .querySelector<HTMLButtonElement>('[data-sandbox-run]')
+        ?.addEventListener('click', async () => {
+          if (!payload || !response || !responseStatus) return;
+          try {
+            const request: unknown = JSON.parse(payload.value);
+            if (!request || typeof request !== 'object' || Array.isArray(request))
+              throw new Error('Payload must be a JSON object.');
+            const data = request as Record<string, unknown>;
+            const useCase = (task?.value || 'send') as SandboxCase;
+            if (useCase === 'verify') {
+              const transId = String(data.TransID || '');
+              const amount = Number(data.TransAmount);
+              if (!/^[A-Z0-9]{5,24}$/.test(transId) || !Number.isFinite(amount) || amount <= 0)
+                throw new Error('Provide a sample TransID and positive TransAmount.');
+              const signature = await demoHmac(data);
+              response.textContent = JSON.stringify(
+                {
+                  simulation: true,
+                  httpStatus: 200,
+                  status: 'simulated_callback',
+                  transaction: {
+                    TransID: transId,
+                    TransAmount: amount,
+                    orderReference: String(data.BillRefNumber || ''),
+                  },
+                  webhookSignature: {
+                    algorithm: 'HMAC-SHA256',
+                    preview: signature,
+                    demoKeyOnly: true,
+                  },
+                  verifiedBySafaricom: false,
+                  paymentSettled: false,
+                },
+                null,
+                2
+              );
+            } else {
+              const phone = String(data.to || '');
+              const sender = String(data.senderId || '');
+              const message = String(data.message || '');
+              const recipients = useCase === 'quote' ? Number(data.recipients || 1) : 1;
+              if (
+                !/^\+?254[17]\d{8}$/.test(phone) ||
+                !/^[A-Za-z0-9]{3,11}$/.test(sender) ||
+                message.length < 1 ||
+                message.length > 1600 ||
+                !Number.isSafeInteger(recipients) ||
+                recipients < 1 ||
+                recipients > 1000000
+              )
+                throw new Error(
+                  'Use a sample Kenyan number (+2547… or +2541…), a 3–11 alphanumeric Sender ID, and 1–1600 characters.'
+                );
+              const segments = calculateSmsSegments(message);
+              const units = segments.segments * recipients;
+              const signature = await demoHmac({ phone, sender, message, recipients });
+              response.textContent = JSON.stringify(
+                {
+                  simulation: true,
+                  httpStatus: 200,
+                  messageId:
+                    'DEMO-' +
+                    (await demoHmac({ phone, sender, message })).slice(0, 12).toUpperCase(),
+                  networkHint: mockNetwork(phone),
+                  senderId: sender,
+                  recipients,
+                  encoding: segments.encoding,
+                  segmentsPerRecipient: segments.segments,
+                  billableSegments: units,
+                  wallet: {
+                    currency: 'KES',
+                    exampleRatePerSegment: 1,
+                    simulatedDeduction: Number((units * 1).toFixed(2)),
+                    actuallyDeducted: 0,
+                  },
+                  delivery: { state: 'preview_only', carrierAccepted: false },
+                  webhookSignature: {
+                    algorithm: 'HMAC-SHA256',
+                    preview: signature,
+                    demoKeyOnly: true,
+                  },
+                },
+                null,
+                2
+              );
+            }
+            responseStatus.textContent = '200 OK · simulated';
+          } catch (error) {
+            responseStatus.textContent = '400 Bad Request · simulated';
+            response.textContent = JSON.stringify(
+              {
+                simulation: true,
+                status: 400,
+                error: error instanceof Error ? error.message : 'Invalid sample',
+              },
+              null,
+              2
+            );
           }
-          responseStatus.textContent = '200 OK · simulated';
-        } catch (error) {
-          responseStatus.textContent = '400 Bad Request · simulated';
-          response.textContent = JSON.stringify({ simulation: true, status: 400, error: error instanceof Error ? error.message : 'Invalid sample' }, null, 2);
-        }
+        });
+      task?.addEventListener('change', () => {
+        render();
+        setSandboxCase();
       });
-      task?.addEventListener('change', () => { render(); setSandboxCase(); });
       language?.addEventListener('change', render);
-      root.querySelector<HTMLButtonElement>('[data-playground-copy]')?.addEventListener('click', async () => {
-        const label = root.querySelector<HTMLElement>('[data-copy-label]');
-        if (!code?.textContent) return;
-        try {
-          await navigator.clipboard.writeText(code.textContent);
-          if (label) label.textContent = 'Copied';
-        } catch {
-          if (label) label.textContent = 'Select code to copy';
-          const selection = window.getSelection();
-          const range = document.createRange();
-          range.selectNodeContents(code);
-          selection?.removeAllRanges();
-          selection?.addRange(range);
-        }
-      });
+      root
+        .querySelector<HTMLButtonElement>('[data-playground-copy]')
+        ?.addEventListener('click', async () => {
+          const label = root.querySelector<HTMLElement>('[data-copy-label]');
+          if (!code?.textContent) return;
+          try {
+            await navigator.clipboard.writeText(code.textContent);
+            if (label) label.textContent = 'Copied';
+          } catch {
+            if (label) label.textContent = 'Select code to copy';
+            const selection = window.getSelection();
+            const range = document.createRange();
+            range.selectNodeContents(code);
+            selection?.removeAllRanges();
+            selection?.addRange(range);
+          }
+        });
       render();
       setSandboxCase();
     });

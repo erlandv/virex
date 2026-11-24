@@ -1,5 +1,7 @@
 ---
-interface Props { variant?: 'demo' | 'contact' }
+interface Props {
+  variant?: 'demo' | 'contact';
+}
 const { variant = 'demo' } = Astro.props;
 const prefix = variant === 'demo' ? 'demo' : 'contact';
 const channels = [
@@ -9,12 +11,25 @@ const channels = [
   ['live-chat', 'Website Live Chat'],
 ];
 ---
-<fieldset class="rounded-xl border border-border bg-surface/40 px-5 py-6 space-y-5" data-enterprise-quote>
+
+<fieldset
+  class="rounded-xl border border-border bg-surface/40 px-5 py-6 space-y-5"
+  data-enterprise-quote
+>
   <legend class="px-2 text-sm font-bold text-text">Enterprise scope & volume</legend>
-  <p class="text-xs leading-relaxed text-text-muted">Optional details help us prepare a relevant discussion. This is not a live quote or an automatic integration order.</p>
+  <p class="text-xs leading-relaxed text-text-muted">
+    Optional details help us prepare a relevant discussion. This is not a live quote or an automatic
+    integration order.
+  </p>
   <div>
-    <label for={prefix + '-scope-volume'} class="text-sm font-semibold text-text block mb-2">Estimated monthly SMS volume</label>
-    <select id={prefix + '-scope-volume'} name="scopeSmsVolume" class="w-full rounded-lg px-3 py-3 bg-background text-text border border-border text-sm focus-visible:outline-2 focus-visible:outline-primary">
+    <label for={prefix + '-scope-volume'} class="text-sm font-semibold text-text block mb-2"
+      >Estimated monthly SMS volume</label
+    >
+    <select
+      id={prefix + '-scope-volume'}
+      name="scopeSmsVolume"
+      class="w-full rounded-lg px-3 py-3 bg-background text-text border border-border text-sm focus-visible:outline-2 focus-visible:outline-primary"
+    >
       <option value="not-sure">Not sure yet</option>
       <option value="1k-10k">1,000–10,000 messages</option>
       <option value="10k-50k">10,001–50,000 messages</option>
@@ -25,11 +40,26 @@ const channels = [
   </div>
   <fieldset class="space-y-3">
     <legend class="font-semibold text-sm text-text">Channels your team needs</legend>
-    <div class="grid sm:grid-cols-2 gap-2">{channels.map(([value,label]) => <label class="flex gap-2 items-start text-sm text-text-muted cursor-pointer"><input type="checkbox" name="scopeChannel" value={value} class="accent-primary mt-1" /> <span>{label}</span></label>)}</div>
+    <div class="grid sm:grid-cols-2 gap-2">
+      {
+        channels.map(([value, label]) => (
+          <label class="flex gap-2 items-start text-sm text-text-muted cursor-pointer">
+            <input type="checkbox" name="scopeChannel" value={value} class="accent-primary mt-1" />{' '}
+            <span>{label}</span>
+          </label>
+        ))
+      }
+    </div>
   </fieldset>
   <div>
-    <label for={prefix + '-scope-mpesa'} class="text-sm font-semibold text-text block mb-2">M-Pesa merchant setup</label>
-    <select name="scopeMpesaMode" id={prefix + '-scope-mpesa'} class="w-full rounded-lg px-3 py-3 bg-background text-text border border-border text-sm focus-visible:outline-2 focus-visible:outline-primary">
+    <label for={prefix + '-scope-mpesa'} class="text-sm font-semibold text-text block mb-2"
+      >M-Pesa merchant setup</label
+    >
+    <select
+      name="scopeMpesaMode"
+      id={prefix + '-scope-mpesa'}
+      class="w-full rounded-lg px-3 py-3 bg-background text-text border border-border text-sm focus-visible:outline-2 focus-visible:outline-primary"
+    >
       <option value="unsure">Still exploring</option>
       <option value="paybill">Safaricom Daraja Paybill</option>
       <option value="till">Buy Goods Till</option>
@@ -37,5 +67,8 @@ const channels = [
       <option value="none">No M-Pesa integration planned</option>
     </select>
   </div>
-  <p class="text-xs text-text-muted">Provider permissions, onboarding and payable fees are confirmed separately. Do not include API credentials or personal payment details.</p>
+  <p class="text-xs text-text-muted">
+    Provider permissions, onboarding and payable fees are confirmed separately. Do not include API
+    credentials or personal payment details.
+  </p>
 </fieldset>

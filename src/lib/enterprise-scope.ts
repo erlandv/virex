@@ -31,7 +31,9 @@ export function parseEnterpriseScope(formData: FormData): EnterpriseScope {
   const selected = new Set(formData.getAll('scopeChannel').map((value) => String(value)));
   return {
     volume: VOLUMES[volumeKey] || VOLUMES['not-sure'],
-    channels: Object.entries(CHANNELS).filter(([key]) => selected.has(key)).map(([, value]) => value),
+    channels: Object.entries(CHANNELS)
+      .filter(([key]) => selected.has(key))
+      .map(([, value]) => value),
     mpesaMode: MPESA[modeKey] || MPESA.unsure,
   };
 }
