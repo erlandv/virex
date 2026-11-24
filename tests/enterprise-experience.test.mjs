@@ -47,4 +47,34 @@ test('Virex enterprise interactive components and disclosure exist', async () =>
   assert.match(calculator, /SMS Studio/);
   const playground = fs.readFileSync(path.resolve('src/components/enterprise/DeveloperPlayground.astro'), 'utf8');
   assert.match(playground, /Illustration only/);
+  assert.match(playground, /Run Sandbox Simulation/);
+  assert.match(playground, /data-sandbox-payload/);
+  assert.match(playground, /demoHmac/);
+  assert.match(playground, /simulatedDeduction/);
+  assert.match(playground, /never contacts an API/);
+
+  const readiness = fs.readFileSync(
+    path.resolve('src/components/enterprise/SenderReadinessMatrix.astro'), 'utf8'
+  );
+  assert.match(readiness, /07:00–19:00 EAT/);
+  assert.match(readiness, /24\/7 when approved/);
+  assert.match(readiness, /CR12/);
+  assert.match(readiness, /KRA PIN Certificate/);
+  assert.match(readiness, /Signed telco authorization letter/);
+  assert.match(readiness, /\[A-Z0-9\]/);
+
+  const pricing = fs.readFileSync(path.resolve('src/pages/pricing.astro'), 'utf8');
+  assert.ok(pricing.indexOf('<SmsCampaignCalculator') < pricing.indexOf('<SenderReadinessMatrix'));
+
+  const leadForm = fs.readFileSync(path.resolve('src/components/forms/DemoRequestForm.astro'), 'utf8');
+  assert.match(leadForm, /EnterpriseScopeFields/);
+  assert.match(leadForm, /formatEnterpriseScope/);
+  assert.match(leadForm, /data-configured-action/);
+  const contactForm = fs.readFileSync(path.resolve('src/components/forms/ContactForm.astro'), 'utf8');
+  assert.match(contactForm, /scopeSmsVolume|EnterpriseScopeFields/);
+  assert.match(contactForm, /scopedMessage/);
+
+  const registration = fs.readFileSync(path.resolve('src/components/forms/RegisterForm.astro'), 'utf8');
+  assert.doesNotMatch(registration, /completeRegistration\(ssoUrl:/);
+  assert.doesNotMatch(registration, /completeRegistration\(data\.ssoUrl/);
 });
