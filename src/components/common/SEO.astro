@@ -51,7 +51,7 @@ const {
 const fullTitle = title.includes(siteConfig.name) ? title : `${title} | ${siteConfig.name}`;
 
 // Canonical URL resolution (exclude query strings & hashes)
-const canonicalHref = canonicalUrl || new URL(Astro.url.pathname, siteConfig.url).href;
+const canonicalHref = new URL(Astro.url.pathname, siteConfig.url).href;
 
 const imageUrl = image || siteConfig.ogImage;
 const ogImage = imageUrl ? new URL(imageUrl, siteConfig.url).href : undefined;
@@ -81,7 +81,6 @@ const organizationSchema = {
   contactPoint: [
     {
       '@type': 'ContactPoint',
-      telephone: '+254700000000',
       contactType: 'customer support',
       areaServed: 'KE',
       availableLanguage: ['en', 'sw'],
@@ -112,7 +111,6 @@ const softwareApplicationSchema = {
   offers: {
     '@type': 'AggregateOffer',
     priceCurrency: 'KES',
-    lowPrice: '0',
     offerCount: '3',
   },
 };
@@ -147,6 +145,8 @@ const articleSchema =
       }
     : null;
 
+const googleSiteVerification = import.meta.env.PUBLIC_GOOGLE_SITE_VERIFICATION;
+
 const breadcrumbSchema = {
   '@context': 'https://schema.org',
   '@type': 'BreadcrumbList',
@@ -177,6 +177,7 @@ const breadcrumbSchema = {
 <meta name="description" content={description} />
 <meta name="author" content={siteConfig.author} />
 <meta name="robots" content={robotsContent} />
+{googleSiteVerification && <meta name="google-site-verification" content={googleSiteVerification} />}
 {tags.length > 0 && <meta name="keywords" content={tags.join(', ')} />}
 
 <!-- Canonical URL -->
