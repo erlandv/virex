@@ -259,7 +259,7 @@ const corePrinciples = [
     id: 'conversational-speed',
     title: 'Conversational Speed',
     description:
-      'Eliminates lost sales caused by slow manual account typing. Prompt instant STK PIN popups in under 10 seconds while buyer intent is peaked.',
+      'Use configured M-Pesa STK workflows to reduce manual payment steps, subject to Safaricom availability and merchant authorization.',
     icon: 'lucide:zap',
     badge: 'Checkout Velocity',
   },
@@ -267,14 +267,14 @@ const corePrinciples = [
     id: 'radical-simplicity',
     title: 'Radical Simplicity',
     description:
-      'No complicated multi-week enterprise installations. Onboard your sales team in minutes, connect your WhatsApp number, and start selling today.',
+      'Use guided workspace setup and configure the channels approved for your business. Provider onboarding time can vary.',
     icon: 'lucide:sparkles',
     badge: 'Zero Friction',
   },
 ];
 
-// Nairobi Leadership Team Snapshot
-const teamMembers = [
+// Former illustrative leadership profiles are not displayed without verification.
+const unusedTeamProfiles = [
   {
     name: 'Kevin Otieno',
     role: 'CEO & Co-founder',
@@ -320,12 +320,12 @@ const homepageFaqs = [
   {
     question: 'Does MarkChat charge a percentage fee on my M-Pesa transactions?',
     answer:
-      'No. MarkChat does not charge percentage transaction fees on your sales. Standard Safaricom Daraja telco tariffs apply directly between you and Safaricom. MarkChat charges a predictable monthly or annual software subscription fee for the communication inbox and automation features.',
+      'MarkChat Core plans are recurring workspace subscriptions. SMS prepaid credits and provider transaction charges are separate; review the current plan and provider tariffs before purchasing.',
   },
   {
     question: 'Can my team respond to WhatsApp and SMS from the same interface?',
     answer:
-      'Yes. MarkChat unifies WhatsApp Business Cloud, Africa’s Talking Bulk SMS, Instagram Direct Messages, Facebook Messenger, and website live chat into a single collaborative inbox. Teammates can be assigned specific conversations, leave private internal notes, and avoid replying to the same customer simultaneously.',
+      'MarkChat Core is designed for teams to manage supported messaging channels in one workspace. SMS Studio is a separate prepaid service and full inbox federation depends on configured integrations.',
   },
   {
     question: 'What is Bring Your Own Credentials (BYOC) for Bulk SMS?',
@@ -427,11 +427,10 @@ const homepageFaqs = [
               <span>Operational Scenarios</span>
             </div>
             <h2 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-text">
-              Real-World Merchant Workflows in Action
+              Illustrative Kenyan Merchant Workflows
             </h2>
             <p class="mt-4 text-base sm:text-lg text-text-muted">
-              See how Kenyan businesses eliminate manual screenshot verification, speed up order
-              settlement, and maintain customer context across channels.
+              Examples illustrating possible customer-support and payment journeys. They are not verified client transactions, live provider receipts or evidence of deployment.
             </p>
           </div>
 
@@ -598,46 +597,7 @@ const homepageFaqs = [
             ))}
           </div>
 
-          {/* Leadership Team Snapshot */}
-          <div class="bg-surface border border-border rounded-2xl p-6 sm:p-8 shadow-xs">
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-6 border-b border-border gap-4">
-              <div>
-                <h3 class="text-lg sm:text-xl font-bold text-text">
-                  Nairobi Engineering & Product Leadership
-                </h3>
-                <p class="text-xs sm:text-sm text-text-muted mt-1">
-                  Led by veteran fintech, telecommunications, and machine learning engineers based
-                  in Nairobi.
-                </p>
-              </div>
-              <a
-                href="/about"
-                class="inline-flex items-center gap-1.5 text-xs sm:text-sm font-semibold text-primary hover:underline whitespace-nowrap"
-              >
-                <span>Meet full team & story</span>
-                <Icon name="lucide:arrow-right" class="w-4 h-4" />
-              </a>
-            </div>
-
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 pt-6">
-              {teamMembers.map((member) => (
-                <div class="flex items-start gap-3.5">
-                  <div
-                    class={`w-11 h-11 rounded-xl bg-gradient-to-br ${member.gradient} flex items-center justify-center text-white font-bold text-sm shadow-xs shrink-0`}
-                  >
-                    {member.initials}
-                  </div>
-                  <div class="min-w-0">
-                    <h4 class="text-sm font-bold text-text truncate">{member.name}</h4>
-                    <p class="text-xs text-primary font-medium">{member.role}</p>
-                    <p class="text-[11px] text-text-muted mt-1 line-clamp-2 leading-relaxed">
-                      {member.bio}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
+          {/* Leadership profiles omitted until real identities and titles are verified. */}
         </div>
       </section>
     )
