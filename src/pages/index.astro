@@ -333,12 +333,14 @@ const homepageFaqs = [
         }}
         stats={[
           { value: '6 Channels', label: 'Single Shared Hub' },
-          { value: '< 10s', label: 'In-Chat /stk Delivery' },
-          { value: 'Bilingual AI', label: 'English, Swahili & Sheng', highlight: true },
+          { value: 'M-Pesa', label: 'Verification workflows' },
+          { value: 'Team', label: 'Assisted conversations', highlight: true },
         ]}
       />
     )
   }
+
+  <LivePlatformWorkbench />
 
   <!-- 2. Omnichannel Vector Pulse Flow Hub -->
   {sections.omnichannelFlow && <OmnichannelFlowHub />}
@@ -374,6 +376,8 @@ const homepageFaqs = [
       />
     )
   }
+
+  <EnterpriseArchitecture />
 
   <!-- 4. Substantive Core Capabilities Breakdown -->
   {
@@ -611,9 +615,6 @@ const homepageFaqs = [
       />
     )
   }
-
-  <LivePlatformWorkbench />
-  <EnterpriseArchitecture />
 
   <!-- 13. Newsletter -->
   {sections.newsletter && <Newsletter />}
