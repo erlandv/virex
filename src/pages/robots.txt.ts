@@ -31,6 +31,29 @@ Disallow: /faqs
 # Googlebot, Bingbot, OAI-SearchBot, ClaudeBot and PerplexityBot
 # inherit this User-agent: * policy.
 
+# Named search crawlers inherit the same public/private boundaries.
+# Multiple User-agent lines form one shared group.
+User-agent: Googlebot
+User-agent: Bingbot
+User-agent: OAI-SearchBot
+User-agent: ClaudeBot
+User-agent: PerplexityBot
+Allow: /
+Allow: /_astro/
+Disallow: /dashboard/
+Disallow: /dashboardMain
+Disallow: /auth/
+Disallow: /billing/
+Disallow: /login
+Disallow: /register
+Disallow: /forgot-password
+Disallow: /reset-password
+Disallow: /api/
+Disallow: /403
+Disallow: /404
+Disallow: /500
+Disallow: /faqs
+
 # Canonical XML Sitemap Index
 Sitemap: ${siteConfig.url}/sitemap-index.xml
 `;
