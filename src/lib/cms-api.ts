@@ -397,10 +397,6 @@ export interface LeadItem extends LeadPayload {
 // Fallback Kenyan Seed Data
 // ---------------------------------------------------------------------------
 
-const CONTROL_PLANE_API_URL =
-  (typeof import.meta !== 'undefined' &&
-    (import.meta.env?.PUBLIC_CONTROL_PLANE_URL || import.meta.env?.PUBLIC_CONTROL_PLANE_API_URL)) ||
-  'http://localhost:5000';
 const BRIDGE_API_URL =
   (typeof import.meta !== 'undefined' && import.meta.env?.PUBLIC_BRIDGE_API_URL) ||
   'http://localhost:4000';
