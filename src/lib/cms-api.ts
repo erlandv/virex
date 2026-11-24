@@ -2352,33 +2352,110 @@ async function apiFetch(url: string, options: ApiRequestOptions = {}): Promise<R
 // ---------------------------------------------------------------------------
 
 /**
- * Fetch Pricing Matrix and binary feature gates
+ * The Control Plane is the authoritative source of recurring Core prices.
+ * This is a static Astro site: "live" means the catalog is fetched at BUILD
+ * time, never that a checkout is priced by this public website.
+ * Never ship Control Plane API credentials to the browser.
  */
 export async function fetchPricingMatrix(): Promise<PricingMatrixResponse> {
+  const fallback = (): PricingMatrixResponse => ({
+    tiers: DEFAULT_PRICING_MATRIX.tiers.map((tier) => ({
+      ...tier,
+      annualMonthlyPrice: null, // Annual checkout is not implemented.
+      features: [...tier.features],
+    })),
+    featureMatrix: DEFAULT_PRICING_MATRIX.featureMatrix.map((feature) => ({ ...feature })),
+  });
+
+  const configuredUrl =
+    (typeof import.meta !== 'undefined' &&
+      (import.meta.env?.PUBLIC_CONTROL_PLANE_URL || import.meta.env?.PUBLIC_CONTROL_PLANE_API_URL)) ||
+    '';
+  if (!configuredUrl) return fallback();
+
   try {
-    const res = await apiFetch(`${CONTROL_PLANE_API_URL}/api/v1/billing/plans`, {
-      method: 'GET',
-      headers: { 'Content-Type': 'application/json' },
+    const baseUrl = new URL(configuredUrl);
+    if (!['http:', 'https:'].includes(baseUrl.protocol)) return fallback();
+    // Only use explicitly configured base URLs; do not silently assume localhost.
+    const catalogUrl = new URL('/api/v1/billing/plans', baseUrl);
+    const response = await fetch(catalogUrl.toString(), {
+      headers: { Accept: 'application/json' },
+      signal: AbortSignal.timeout(1500),
+      cache: 'no-store',
     });
-    if (res.ok) {
-      const data = await res.json();
-      if (data && data.success && Array.isArray(data.plans)) {
-        // Deep clone default matrix and update with canonical prices from Control Plane
-        const matrix = JSON.parse(JSON.stringify(DEFAULT_PRICING_MATRIX)) as PricingMatrixResponse;
-        for (const plan of data.plans) {
-          const tier = matrix.tiers.find((t) => t.id === plan.id);
-          if (tier && typeof plan.priceKes === 'number') {
-            tier.monthlyPrice = plan.priceKes;
-            tier.annualMonthlyPrice = null; // Control Plane currently only bills a 30-day period
+    if (!response.ok) return fallback();
+
+    const result: unknown = await response.json();
+    if (!result || typeof result !== 'object') return fallback();
+    const envelope = result as Record<string, unknown>;
+    if (envelope.success === false) return fallback();
+    const data = envelope.data && typeof envelope.data === 'object' ? envelope.data : envelope;
+    const catalog = data as Record<string, unknown>;
+    const plans = Array.isArray(catalog.plans)
+      ? catalog.plans
+      : Array.isArray(data)
+        ? data
+        : null;
+    if (!plans || plans.length === 0) return fallback();
+
+    const matrix = fallback();
+    let synchronized = 0;
+    for (const entry of plans) {
+      if (!entry || typeof entry !== 'object') continue;
+      const plan = entry as Record<string, unknown>;
+      const id = String(plan.id ?? plan.slug ?? '').toLowerCase();
+      const tier = matrix.tiers.find((item) => item.id === id);
+      if (!tier) continue;
+
+      const kes = typeof plan.priceKes === 'number' ? plan.priceKes : null;
+      const cents = typeof plan.priceKesCents === 'number' ? plan.priceKesCents : null;
+      const rate = kes !== null ? kes : cents !== null ? cents / 100 : null;
+      if (rate === null || !Number.isFinite(rate) || rate < 0) continue;
+
+      tier.monthlyPrice = rate;
+      tier.annualMonthlyPrice = null;
+      if (plan.isActive === false || plan.is_active === false) {
+        tier.ctaLabel = 'Contact sales';
+        tier.ctaHref = '/contact?topic=enterprise';
+      }
+      const maxAgents = plan.maxAgents ?? plan.max_agents;
+      const maxInboxes = plan.maxInboxes ?? plan.max_inboxes;
+      if (typeof maxAgents === 'number' && Number.isInteger(maxAgents) && maxAgents >= 0) {
+        tier.features = [
+          `Up to ${maxAgents} team agent seats`,
+          ...tier.features.filter((item) => !/\b(agents?|seats?)\b/i.test(item)),
+        ];
+      }
+      if (typeof maxInboxes === 'number' && Number.isInteger(maxInboxes) && maxInboxes >= 0) {
+        tier.features = [
+          `Up to ${maxInboxes} connected inboxes`,
+          ...tier.features.filter((item) => !/\binboxes?\b/i.test(item)),
+        ];
+      }
+      // Entitlements must come from the server; never turn on a flag
+      // just because a marketing description says a feature is present.
+      const entitlements =
+        plan.entitlements && typeof plan.entitlements === 'object'
+          ? (plan.entitlements as Record<string, unknown>)
+          : plan.features && !Array.isArray(plan.features) && typeof plan.features === 'object'
+            ? (plan.features as Record<string, unknown>)
+            : null;
+      if (entitlements) {
+        for (const feature of matrix.featureMatrix) {
+          const allowed = entitlements[feature.key];
+          if (typeof allowed === 'boolean') {
+            (feature as unknown as Record<string, unknown>)[id] = allowed;
           }
         }
-        return matrix;
       }
+      synchronized++;
     }
+    return synchronized > 0 ? matrix : fallback();
   } catch {
-    // Graceful fallback on network or offline
+    // Offline during static build, invalid JSON or unreachable CORS endpoint.
+    // Use canonical KES definitions; checkout still validates live server pricing.
+    return fallback();
   }
-  return getLocalItem<PricingMatrixResponse>(STORAGE_KEYS.pricing, DEFAULT_PRICING_MATRIX);
 }
 
 /**

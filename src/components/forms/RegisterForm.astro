@@ -1196,7 +1196,7 @@ const initialPlan = plansInfo[defaultPlanId] || plansInfo.growth;
           const statusData = envelope.data || envelope;
           if (statusData.status === 'completed') {
             sessionStorage.removeItem('markchat_reg_idempotency_key');
-            completeRegistration(statusData.ssoUrl, redirectTarget);
+            completeRegistration(redirectTarget);
             return;
           }
           if (statusData.status === 'failed') {
@@ -1226,7 +1226,7 @@ const initialPlan = plansInfo[defaultPlanId] || plansInfo.growth;
     setTimeout(poll, intervalMs);
   }
 
-  function completeRegistration(ssoUrl: string | null | undefined, redirectTarget: string) {
+  function completeRegistration(redirectTarget: string) {
     formStatus?.classList.remove('hidden');
     formSuccess?.classList.remove('hidden');
     // Registration alone does not establish an authenticated Control Plane session.
