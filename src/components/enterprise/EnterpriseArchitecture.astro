@@ -10,6 +10,10 @@ const layers = [
 <section class="py-16 sm:py-24 border-b border-border bg-surface/40" aria-labelledby="architecture-heading">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="max-w-2xl mb-10"><span class="text-xs font-bold uppercase tracking-widest text-primary">How the platform fits together</span><h2 id="architecture-heading" class="text-3xl sm:text-4xl font-bold tracking-tight text-text mt-3">Built as connected systems. Managed as clear boundaries.</h2><p class="text-text-muted mt-4">An architectural view of the intended experience. Each carrier, payment and Core integration has its own configuration and approval requirements.</p></div>
+    <div class="mb-8 border-y border-border py-4 flex flex-wrap gap-3 sm:gap-5 justify-between items-center">
+      {['Safaricom M-Pesa', 'Airtel', 'Telkom', "Africa’s Talking", 'Meta Cloud API', 'Paystack'].map((name) => <span class="text-xs sm:text-sm font-bold text-text-muted tracking-tight">{name}</span>)}
+      <p class="basis-full text-xs text-text-muted">Ecosystem technologies referenced for integration architecture; not a claim of provider partnership, certification or live connectivity.</p>
+    </div>
     <ol class="grid md:grid-cols-2 xl:grid-cols-4 gap-3">
       {layers.map((layer, i) => (
         <li class="relative bg-background rounded-xl border border-border p-6 min-h-[210px]">
