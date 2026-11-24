@@ -3154,10 +3154,13 @@ export async function submitLead(
     // Fallback
   }
 
-  const leads = getLocalItem<LeadItem[]>(STORAGE_KEYS.leads, DEFAULT_LEADS);
-  leads.unshift(newLead);
-  setLocalItem(STORAGE_KEYS.leads, leads);
-  return { success: true, id: newLead.id, message: 'Thank you! We have received your request.' };
+  // A localStorage write is not a delivered lead. Fail visibly instead of
+  // reporting success when the CMS bridge is unavailable.
+  return {
+    success: false,
+    id: '',
+    message: 'Unable to submit your request. Please contact the MarkChat team directly.',
+  };
 }
 
 /**
