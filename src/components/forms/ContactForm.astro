@@ -7,6 +7,7 @@
  * spam honeypot, anti-bot timing checks, KDPA 2019 consent, and seamless
  * integration into MarkChat's Single-Admin CMS lead pipeline.
  */
+import EnterpriseScopeFields from '@/components/enterprise/EnterpriseScopeFields.astro';
 import { Icon } from 'astro-icon/components';
 
 interface Props {
@@ -186,6 +187,8 @@ const { action = '', method = 'POST', netlify = false, formName = 'contact' } = 
       </p>
     </div>
 
+    <EnterpriseScopeFields variant="contact" />
+
     <!-- 6. Message Body -->
     <div>
       <label
@@ -339,10 +342,17 @@ const { action = '', method = 'POST', netlify = false, formName = 'contact' } = 
 </div>
 
 <script>
+  import { parseEnterpriseScope, formatEnterpriseScope } from '@/lib/enterprise-scope';
+
   // Self-contained client controller
   document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('contact-form') as HTMLFormElement | null;
     if (!form) return;
+    const topic = new URLSearchParams(window.location.search).get('topic');
+    if (['enterprise', 'sms-credits', 'sender-id', 'api-contract'].includes(topic || '')) {
+      const enquiry = form.querySelector<HTMLSelectElement>('[name="enquiryType"]');
+      if (enquiry) enquiry.value = topic === 'api-contract' ? 'partnership' : topic === 'sender-id' ? 'sms' : 'sales';
+    }
 
     const renderTimeInput = document.getElementById('form-render-time') as HTMLInputElement | null;
     if (renderTimeInput) {
@@ -514,6 +524,10 @@ const { action = '', method = 'POST', netlify = false, formName = 'contact' } = 
       const company = ((formData.get('company') as string) || '').trim();
       const enquiryType = ((formData.get('enquiryType') as string) || '').trim();
       const message = ((formData.get('message') as string) || '').trim();
+      const enterpriseScope = parseEnterpriseScope(formData);
+      const scopedMessage = [message, formatEnterpriseScope(enterpriseScope)].filter(Boolean).join('\n\n');
+      // External form endpoints also receive a structured scope summary.
+      formData.set('message', scopedMessage);
 
       const enquiryLabels: Record<string, string> = {
         sales: 'Sales & Pricing',
@@ -543,9 +557,9 @@ const { action = '', method = 'POST', netlify = false, formName = 'contact' } = 
             email,
             phone: phone || '+254 700 000 000',
             company: company || 'Not Specified',
-            monthlyVolume: `Inquiry Category: ${typeLabel}`,
+            monthlyVolume: enterpriseScope.volume,
             source: `Contact Form (/contact): ${typeLabel}`,
-            message,
+            message: scopedMessage,
           });
 
           if (successRefId && result?.id) {

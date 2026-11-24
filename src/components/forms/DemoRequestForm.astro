@@ -34,6 +34,7 @@ interface Props {
   formName?: string;
 }
 
+import EnterpriseScopeFields from '@/components/enterprise/EnterpriseScopeFields.astro';
 const { action = '', method = 'POST', netlify = false, formName = 'demo-request' } = Astro.props;
 ---
 
@@ -160,6 +161,8 @@ const { action = '', method = 'POST', netlify = false, formName = 'demo-request'
       class="w-full px-4 py-3 rounded-lg border border-border bg-background text-text placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary resize-none transition-colors"
       placeholder="Tell us about your deployment challenges..."></textarea>
   </div>
+
+  <EnterpriseScopeFields variant="demo" />
 
   <!-- Form status messages -->
   <div id="demo-form-status" class="hidden">
@@ -320,6 +323,8 @@ const { action = '', method = 'POST', netlify = false, formName = 'demo-request'
     }
   }
 
+  import { parseEnterpriseScope, formatEnterpriseScope } from '@/lib/enterprise-scope';
+
   // Form submission
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -355,7 +360,8 @@ const { action = '', method = 'POST', netlify = false, formName = 'demo-request'
           const email = (formData.get('email') as string) || '';
           const phone = (formData.get('phone') as string) || '+254 700 000 000';
           const company = (formData.get('company') as string) || '';
-          const volume = (formData.get('teamSize') as string) || '5,000 - 20,000 msgs/mo';
+          const enterpriseScope = parseEnterpriseScope(formData);
+          const volume = enterpriseScope.volume;
           const message = (formData.get('message') as string) || '';
           await submitLead({
             fullName: `${firstName} ${lastName}`.trim(),
@@ -364,7 +370,7 @@ const { action = '', method = 'POST', netlify = false, formName = 'demo-request'
             company,
             monthlyVolume: volume,
             source: 'Demo Request Page (/demo)',
-            message,
+            message: [message, formatEnterpriseScope(enterpriseScope)].filter(Boolean).join('\n\n'),
           });
         } catch (err) {
           console.warn('submitLead error:', err);
