@@ -43,6 +43,31 @@ const samples = [
           <div class="border-t border-slate-700 px-6 py-3 text-xs text-slate-400">Nothing is transmitted. Copying a snippet does not create a credential, SMS or payment.</div>
         </div>
       </div>
+      <div data-api-sandbox class="p-5 sm:p-8 border-t border-border bg-surface/40">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-5">
+          <div>
+            <p class="text-xs uppercase tracking-widest font-bold text-primary">Client-side API sandbox</p>
+            <h3 class="text-xl font-bold text-text mt-1">Edit a request. Inspect a response.</h3>
+          </div>
+          <span class="text-xs font-semibold rounded-lg border border-border bg-background text-text-muted px-3 py-2">Simulation only · never contacts an API</span>
+        </div>
+        <div class="grid lg:grid-cols-2 gap-4">
+          <div>
+            <label for="sandbox-payload" class="text-sm font-semibold text-text block mb-2">Sample JSON request body</label>
+            <textarea id="sandbox-payload" data-sandbox-payload spellcheck="false" rows="13" maxlength="3000" class="w-full rounded-xl border border-border bg-background p-4 text-sm leading-6 font-mono text-text focus-visible:outline-2 focus-visible:outline-primary" aria-describedby="sandbox-privacy">{"to":"+254712345678","senderId":"MARKCHAT","message":"Habari! Your order is ready."}</textarea>
+            <p id="sandbox-privacy" class="text-xs text-text-muted mt-2">Use fictional data only. Inputs remain in this browser session; no sending, charging, or verification occurs.</p>
+            <button type="button" data-sandbox-run class="mt-4 inline-flex items-center gap-2 rounded-lg px-5 py-3 font-semibold text-sm bg-primary text-white hover:opacity-90"><Icon name="lucide:play" class="w-4 h-4"/> Run Sandbox Simulation</button>
+          </div>
+          <div class="min-w-0">
+            <p class="font-semibold text-text text-sm mb-2">Simulated HTTP response</p>
+            <div class="rounded-xl overflow-hidden border border-border bg-[#0B1120]">
+              <div class="flex items-center justify-between px-4 py-3 border-b border-slate-700 text-xs"><span data-sandbox-status class="font-bold text-blue-300" aria-live="polite">Ready · 200 OK preview</span><span class="text-slate-400">application/json</span></div>
+              <pre class="overflow-auto p-4 text-xs sm:text-sm leading-6 text-slate-200 min-h-72" tabindex="0"><code data-sandbox-response aria-live="polite">Click Run Sandbox Simulation to see sample output.</code></pre>
+            </div>
+            <p class="text-xs text-text-muted mt-3">Carrier inference is based on legacy number-prefix examples only; mobile number portability makes it non-authoritative. HMAC previews use a fixed public demo key, not a merchant secret.</p>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </section>
@@ -144,6 +169,30 @@ if not hmac.compare_digest(digest, signature_hex):
       },
     },
   };
+  import { calculateSmsSegments } from '@/lib/sms-segments';
+
+  type SandboxCase = 'send' | 'quote' | 'verify';
+  const samplePayloads: Record<SandboxCase, Record<string, unknown>> = {
+    send: { to: '+254712345678', senderId: 'MARKCHAT', message: 'Habari! Your order is ready.' },
+    quote: { to: '+254733456789', senderId: 'MARKCHAT', message: 'Promotion: Visit our Nairobi store.', recipients: 1200 },
+    verify: { TransID: 'SJ84K92LMP', TransAmount: 4500, BillRefNumber: 'ORD-2049', MSISDN: '254712345678' },
+  };
+  function mockNetwork(phone: string) {
+    const normalized = phone.replace(/\\s|-/g, '').replace(/^\\+?254/, '0');
+    if (/^07[01249]/.test(normalized)) return 'Safaricom (illustrative prefix)';
+    if (/^07[3586]/.test(normalized)) return 'Airtel (illustrative prefix)';
+    if (/^077/.test(normalized)) return 'Telkom (illustrative prefix)';
+    return 'Unknown / number portability';
+  }
+  async function demoHmac(value: unknown) {
+    const encoded = new TextEncoder();
+    const key = await crypto.subtle.importKey(
+      'raw', encoded.encode('PUBLIC_DEMO_KEY_NOT_FOR_REAL_WEBHOOKS'),
+      { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']
+    );
+    const digest = await crypto.subtle.sign('HMAC', key, encoded.encode(JSON.stringify(value)));
+    return Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, '0')).join('');
+  }
   function initDeveloperPlayground() {
     document.querySelectorAll<HTMLElement>('[data-playground]').forEach((root) => {
       if (root.dataset.initialized === 'true') return;
@@ -160,7 +209,63 @@ if not hmac.compare_digest(digest, signature_hex):
         if (desc) desc.textContent = selected.description;
         if (code) code.textContent = selected.snippets[lang];
       };
-      task?.addEventListener('change', render);
+      const payload = root.querySelector<HTMLTextAreaElement>('[data-sandbox-payload]');
+      const response = root.querySelector<HTMLElement>('[data-sandbox-response]');
+      const responseStatus = root.querySelector<HTMLElement>('[data-sandbox-status]');
+      const setSandboxCase = () => {
+        if (!payload) return;
+        const useCase = (task?.value || 'send') as SandboxCase;
+        payload.value = JSON.stringify(samplePayloads[useCase] || samplePayloads.send, null, 2);
+        if (response) response.textContent = 'Click Run Sandbox Simulation to inspect a sample result.';
+        if (responseStatus) responseStatus.textContent = 'Ready · simulation only';
+      };
+      root.querySelector<HTMLButtonElement>('[data-sandbox-run]')?.addEventListener('click', async () => {
+        if (!payload || !response || !responseStatus) return;
+        try {
+          const request: unknown = JSON.parse(payload.value);
+          if (!request || typeof request !== 'object' || Array.isArray(request)) throw new Error('Payload must be a JSON object.');
+          const data = request as Record<string, unknown>;
+          const useCase = (task?.value || 'send') as SandboxCase;
+          if (useCase === 'verify') {
+            const transId = String(data.TransID || '');
+            const amount = Number(data.TransAmount);
+            if (!/^[A-Z0-9]{5,24}$/.test(transId) || !Number.isFinite(amount) || amount <= 0) throw new Error('Provide a sample TransID and positive TransAmount.');
+            const signature = await demoHmac(data);
+            response.textContent = JSON.stringify({
+              simulation: true, httpStatus: 200, status: 'simulated_callback',
+              transaction: { TransID: transId, TransAmount: amount, orderReference: String(data.BillRefNumber || '') },
+              webhookSignature: { algorithm: 'HMAC-SHA256', preview: signature, demoKeyOnly: true },
+              verifiedBySafaricom: false, paymentSettled: false
+            }, null, 2);
+          } else {
+            const phone = String(data.to || '');
+            const sender = String(data.senderId || '');
+            const message = String(data.message || '');
+            const recipients = useCase === 'quote' ? Number(data.recipients || 1) : 1;
+            if (!/^\\+?254[17]\\d{8}$/.test(phone) || !/^[A-Za-z0-9]{3,11}$/.test(sender) || message.length < 1 || message.length > 1600 || !Number.isSafeInteger(recipients) || recipients < 1 || recipients > 1000000)
+              throw new Error('Use a sample Kenyan number (+2547… or +2541…), a 3–11 alphanumeric Sender ID, and 1–1600 characters.');
+            const segments = calculateSmsSegments(message);
+            const units = segments.segments * recipients;
+            const signature = await demoHmac({ phone, sender, message, recipients });
+            response.textContent = JSON.stringify({
+              simulation: true, httpStatus: 200,
+              messageId: 'DEMO-' + (await demoHmac({ phone, sender, message })).slice(0, 12).toUpperCase(),
+              networkHint: mockNetwork(phone),
+              senderId: sender, recipients,
+              encoding: segments.encoding, segmentsPerRecipient: segments.segments,
+              billableSegments: units,
+              wallet: { currency: 'KES', exampleRatePerSegment: 1, simulatedDeduction: Number((units * 1).toFixed(2)), actuallyDeducted: 0 },
+              delivery: { state: 'preview_only', carrierAccepted: false },
+              webhookSignature: { algorithm: 'HMAC-SHA256', preview: signature, demoKeyOnly: true }
+            }, null, 2);
+          }
+          responseStatus.textContent = '200 OK · simulated';
+        } catch (error) {
+          responseStatus.textContent = '400 Bad Request · simulated';
+          response.textContent = JSON.stringify({ simulation: true, status: 400, error: error instanceof Error ? error.message : 'Invalid sample' }, null, 2);
+        }
+      });
+      task?.addEventListener('change', () => { render(); setSandboxCase(); });
       language?.addEventListener('change', render);
       root.querySelector<HTMLButtonElement>('[data-playground-copy]')?.addEventListener('click', async () => {
         const label = root.querySelector<HTMLElement>('[data-copy-label]');
@@ -178,6 +283,7 @@ if not hmac.compare_digest(digest, signature_hex):
         }
       });
       render();
+      setSandboxCase();
     });
   }
   initDeveloperPlayground();
