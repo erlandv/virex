@@ -51,27 +51,32 @@ const {
       noindex={noindex}
       robots={robots}
     />
+    <script>
+      import '../lib/ga4-consent';
+    </script>
     <!-- Theme and announcement initialization - runs before page render to prevent flash -->
     <script is:inline>
       (function () {
         // Theme initialization
-        const stored = localStorage.getItem('theme');
+        let stored = null;
+        try { stored = localStorage.getItem('theme'); } catch { /* private mode */ }
         const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        const theme = stored || (prefersDark ? 'dark' : 'light');
-        if (theme === 'dark') {
-          document.documentElement.classList.add('dark');
-        }
+        const theme = stored === 'dark' || stored === 'light' ? stored : (prefersDark ? 'dark' : 'light');
+        document.documentElement.classList.toggle('dark', theme === 'dark');
+        document.documentElement.style.colorScheme = theme;
 
         // Announcement dismissal check - hide if any announcement was dismissed
-        const keys = Object.keys(localStorage).filter((k) =>
-          k.startsWith('announcement-dismissed-')
-        );
-        keys.forEach((key) => {
-          if (localStorage.getItem(key) === 'true') {
-            const id = key.replace('announcement-dismissed-', '');
-            document.documentElement.classList.add(`announcement-${id}-dismissed`);
-          }
-        });
+        try {
+          const keys = Object.keys(localStorage).filter((k) =>
+            k.startsWith('announcement-dismissed-')
+          );
+          keys.forEach((key) => {
+            if (localStorage.getItem(key) === 'true') {
+              const id = key.replace('announcement-dismissed-', '');
+              document.documentElement.classList.add(`announcement-${id}-dismissed`);
+            }
+          });
+        } catch { /* storage can be unavailable */ }
       })();
     </script>
   </head>
