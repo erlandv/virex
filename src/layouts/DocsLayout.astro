@@ -13,6 +13,7 @@
 import { getCollection, type CollectionEntry } from 'astro:content';
 import MarketingLayout from './MarketingLayout.astro';
 import { Icon } from 'astro-icon/components';
+import { siteConfig } from '@/config';
 
 type DocsEntry = CollectionEntry<'docs'>;
 
@@ -112,9 +113,21 @@ const prevDoc = currentIndex > 0 ? sortedDocs[currentIndex - 1] : null;
 const nextDoc = currentIndex < sortedDocs.length - 1 ? sortedDocs[currentIndex + 1] : null;
 
 const displayCategory = category || section || 'Documentation';
+const techArticleSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'TechArticle',
+  headline: title,
+  description,
+  inLanguage: 'en-KE',
+  author: { '@type': 'Organization', name: siteConfig.name },
+  publisher: { '@type': 'Organization', name: siteConfig.name, url: siteConfig.url },
+  mainEntityOfPage: new URL(Astro.url.pathname, siteConfig.url).href,
+};
+const techArticleJson = JSON.stringify(techArticleSchema).replace(/</g, '\\u003c');
 ---
 
 <MarketingLayout title={`${title} — MarkChat Docs`} description={description}>
+  <script type="application/ld+json" is:inline set:html={techArticleJson} />
   <div
     class="py-12 sm:py-16 bg-white dark:bg-[#0B1120] min-h-screen text-slate-800 dark:text-slate-200 transition-colors duration-200"
   >
