@@ -3,6 +3,8 @@
  * Dynamic Product Landing Page
  */
 import MarketingLayout from '@/layouts/MarketingLayout.astro';
+import ProductOperations from '@/components/enterprise/ProductOperations.astro';
+import ComplianceRail from '@/components/enterprise/ComplianceRail.astro';
 import { Icon } from 'astro-icon/components';
 import CTA from '@sections/marketing/CTA.astro';
 import { productPages, type MarketingPageItem } from '@/data/marketing-content';
@@ -192,4 +194,6 @@ const { page } = Astro.props;
       : undefined}
     background="muted"
   />
+  <ProductOperations kind={page.slug === 'markcopilot' ? 'ai' : page.slug === 'shared-inbox' ? 'inbox' : 'payments'} title={`The practical steps behind ${page.title}`} />
+  <ComplianceRail condensed />
 </MarketingLayout>

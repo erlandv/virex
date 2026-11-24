@@ -3,6 +3,8 @@
  * Dynamic Solutions Landing Page
  */
 import MarketingLayout from '@/layouts/MarketingLayout.astro';
+import ProductOperations from '@/components/enterprise/ProductOperations.astro';
+import ComplianceRail from '@/components/enterprise/ComplianceRail.astro';
 import { Icon } from 'astro-icon/components';
 import CTA from '@sections/marketing/CTA.astro';
 import { solutionsPages, type MarketingPageItem } from '@/data/marketing-content';
@@ -192,4 +194,6 @@ const { page } = Astro.props;
       : undefined}
     background="muted"
   />
+  <ProductOperations kind={page.slug.includes('fintech') || page.slug.includes('commerce') ? 'payments' : 'inbox'} title="Implementation steps for this industry" />
+  <ComplianceRail condensed />
 </MarketingLayout>

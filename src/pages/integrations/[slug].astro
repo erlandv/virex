@@ -3,6 +3,8 @@
  * Dynamic Integration Detail Page (CMS-Driven)
  */
 import MarketingLayout from '@/layouts/MarketingLayout.astro';
+import ProductOperations from '@/components/enterprise/ProductOperations.astro';
+import ComplianceRail from '@/components/enterprise/ComplianceRail.astro';
 import { Icon } from 'astro-icon/components';
 import IntegrationIcon from '@/components/ui/IntegrationIcon.astro';
 import { fetchIntegrations, type MarketingIntegration } from '@/lib/cms-api';
@@ -216,4 +218,6 @@ const otherIntegrations = allIntegrations.filter((i) => i.slug !== integration.s
     action={{ label: 'Get Started with MarkChat', href: `/register` }}
     background="muted"
   />
+  <ProductOperations kind={integration.slug.includes('sms') || integration.slug.includes('africas') ? 'sms' : integration.slug.includes('mpesa') || integration.slug.includes('pochi') || integration.slug.includes('paybill') ? 'payments' : 'inbox'} title={`Integration workflow: ${integration.name}`} />
+  <ComplianceRail condensed />
 </MarketingLayout>
