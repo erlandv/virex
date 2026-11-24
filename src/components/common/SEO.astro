@@ -156,6 +156,8 @@ const articleSchema =
 
 const googleSiteVerification = import.meta.env.PUBLIC_GOOGLE_SITE_VERIFICATION;
 
+const safeJsonLd = (value: unknown) => JSON.stringify(value).replace(/</g, '\\u003c');
+
 const breadcrumbSchema = {
   '@context': 'https://schema.org',
   '@type': 'BreadcrumbList',
@@ -215,12 +217,12 @@ const breadcrumbSchema = {
 {ogImage && <meta property="twitter:image" content={ogImage} />}
 
 <!-- JSON-LD Structured Data -->
-<script is:inline type="application/ld+json" set:html={JSON.stringify(websiteSchema)} />
-<script is:inline type="application/ld+json" set:html={JSON.stringify(organizationSchema)} />
-<script is:inline type="application/ld+json" set:html={JSON.stringify(softwareApplicationSchema)} />
-<script is:inline type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} />
+<script is:inline type="application/ld+json" set:html={safeJsonLd(websiteSchema)} />
+<script is:inline type="application/ld+json" set:html={safeJsonLd(organizationSchema)} />
+<script is:inline type="application/ld+json" set:html={safeJsonLd(softwareApplicationSchema)} />
+<script is:inline type="application/ld+json" set:html={safeJsonLd(breadcrumbSchema)} />
 {
   articleSchema && (
-    <script is:inline type="application/ld+json" set:html={JSON.stringify(articleSchema)} />
+    <script is:inline type="application/ld+json" set:html={safeJsonLd(articleSchema)} />
   )
 }
