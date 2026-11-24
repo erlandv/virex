@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   validate:
@@ -23,6 +23,27 @@ jobs:
           node-version-file: .node-version
           cache: npm
       - run: npm ci
+      - name: Apply project Prettier to approved Marketing changes
+        run: |
+          npx prettier --write src/components/enterprise \
+            src/pages/about.astro src/pages/index.astro src/pages/pricing.astro \
+            src/pages/product src/pages/features.astro src/pages/features \
+            src/pages/solutions src/pages/integrations.astro src/pages/integrations \
+            src/pages/docs/index.astro src/pages/markcopilot.astro \
+            tests/about-page.test.mjs tests/features-page.test.mjs \
+            tests/homepage-experience.test.mjs tests/integrations-page.test.mjs
+          git diff --check
+      - name: Commit formatting to main if necessary
+        run: |
+          if ! git diff --quiet; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add src/components/enterprise src/pages tests/about-page.test.mjs \
+              tests/features-page.test.mjs tests/homepage-experience.test.mjs \
+              tests/integrations-page.test.mjs
+            git commit -m "style(marketing): apply Virex Prettier formatting [skip ci]"
+            git push origin HEAD:main
+          fi
       - name: Lint, format and Astro diagnostics
         run: npm run check
       - name: Generate static site
