@@ -65,8 +65,11 @@ const canonicalHref = new URL(canonicalPath, siteConfig.url).href;
 const imageUrl = image || siteConfig.ogImage;
 const ogImage = imageUrl ? new URL(imageUrl, siteConfig.url).href : undefined;
 
+// Authentication, payment and internal pages are never publicly indexable.
+const restrictedPage = /^\/(?:dashboard(?:Main)?|auth|billing|login|register|forgot-password|reset-password|403|404|500)(?:\/|$)/.test(Astro.url.pathname);
+
 // Robots directive
-const robotsContent = noindex
+const robotsContent = noindex || restrictedPage
   ? 'noindex, nofollow'
   : robots || 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1';
 
