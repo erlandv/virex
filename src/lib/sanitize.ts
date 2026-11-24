@@ -124,13 +124,33 @@ export function sanitizeHtml(rawHtml: string): string {
 
       // Check if attribute is allowed
       if (allowedForTag.has(attrName)) {
+        // Restrict link destinations before interpolating any CMS-supplied HTML.
+        // Reject entity-encoded schemes, protocol-relative URLs and backslashes.
+        let validatedValue = attrValue;
+        if (lowerTag === 'a' && attrName === 'href') {
+          const candidate = attrValue.trim();
+          if (candidate === '#' || /^#[a-zA-Z0-9_-]+$/.test(candidate)) {
+            validatedValue = candidate;
+          } else if (/^\/(?!\/)/.test(candidate) && !candidate.includes('\\')) {
+            validatedValue = candidate;
+          } else if (/^https?:\/\//i.test(candidate) && !/[\\<>\u0000-\u001f]/.test(candidate)) {
+            try {
+              const parsedUrl = new URL(candidate);
+              validatedValue = ['https:', 'http:'].includes(parsedUrl.protocol) ? parsedUrl.href : '#';
+            } catch {
+              validatedValue = '#';
+            }
+          } else {
+            validatedValue = '#';
+          }
+        }
         // Additional check for <a> target and rel
         if (lowerTag === 'a' && attrName === 'target' && attrValue === '_blank') {
           cleanAttrs.push('target="_blank"');
           cleanAttrs.push('rel="noopener noreferrer"');
         } else if (attrName !== 'rel' || lowerTag !== 'a') {
           // Escape quotes in attribute value
-          const safeVal = attrValue.replace(/"/g, '&quot;');
+          const safeVal = validatedValue.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
           cleanAttrs.push(`${attrName}="${safeVal}"`);
         }
       }
@@ -172,7 +192,7 @@ export function validateCanonicalUrl(urlStr: string, allowedHost?: string): stri
   try {
     const parsed = new URL(urlStr);
     if (parsed.protocol !== 'https:' && parsed.protocol !== 'http:') return null;
-    if (allowedHost && !parsed.hostname.endsWith(allowedHost)) return null;
+    if (allowedHost && parsed.hostname !== allowedHost && !parsed.hostname.endsWith('.' + allowedHost)) return null;
     return parsed.href;
   } catch {
     return null;
