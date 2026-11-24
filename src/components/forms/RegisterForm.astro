@@ -1145,7 +1145,7 @@ const initialPlan = plansInfo[defaultPlanId] || plansInfo.growth;
         // 6. Fast-path completion or polling
         if (data.status === 'completed' && data.ssoUrl) {
           sessionStorage.removeItem('markchat_reg_idempotency_key');
-          completeRegistration(data.ssoUrl, redirectTarget);
+          completeRegistration(redirectTarget);
           return;
         }
 
