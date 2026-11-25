@@ -92,8 +92,8 @@ const hasCategories = categories.length > 0;
         <div class="space-y-6">
           {variant === 'accordion'
             ? faqs.map((faq) => (
-                <details class="group">
-                  <summary class="flex items-center justify-between cursor-pointer list-none p-4 rounded-lg bg-surface hover:bg-surface/80 transition-colors">
+                <details class="group overflow-hidden rounded-lg border border-border bg-surface-elevated">
+                  <summary class="flex items-center justify-between cursor-pointer list-none p-4 rounded-lg bg-surface-elevated hover:bg-surface transition-colors">
                     <span class="font-medium text-text pr-4">{faq.question}</span>
                     <span class="flex-shrink-0 text-text-muted group-open:rotate-180 transition-transform">
                       <Icon name="lucide:chevron-down" class="w-5 h-5" />
@@ -124,8 +124,8 @@ const hasCategories = categories.length > 0;
               <div class="space-y-6">
                 {variant === 'accordion'
                   ? category.faqs.map((faq) => (
-                      <details class="group">
-                        <summary class="flex items-center justify-between cursor-pointer list-none p-4 rounded-lg bg-surface hover:bg-surface/80 transition-colors">
+                      <details class="group overflow-hidden rounded-lg border border-border bg-surface-elevated">
+                        <summary class="flex items-center justify-between cursor-pointer list-none p-4 rounded-lg bg-surface-elevated hover:bg-surface transition-colors">
                           <span class="font-medium text-text pr-4">{faq.question}</span>
                           <span class="flex-shrink-0 text-text-muted group-open:rotate-180 transition-transform">
                             <Icon name="lucide:chevron-down" class="w-5 h-5" />
