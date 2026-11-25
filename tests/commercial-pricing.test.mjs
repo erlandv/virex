@@ -104,3 +104,16 @@ describe('Batch 2: Commercial Offering & Pricing Alignment', () => {
     assert.equal(enterprise.annualMonthlyPrice, null, 'Enterprise annualMonthlyPrice must be null');
   });
 });
+
+test('Gate 4 public pricing HTML excludes the deferred SMS business', async () => {
+  const { readFileSync, existsSync } = await import('node:fs');
+  const page = 'dist/pricing/index.html';
+  assert.ok(existsSync(page), 'Build the site before validating the public pricing page');
+  const html = readFileSync(page, 'utf8');
+  assert.match(html, /Core workspace pricing/);
+  assert.match(html, /How billing works/);
+  assert.match(html, /M-Pesa/);
+  assert.doesNotMatch(html, /Bulk SMS|SMS Studio|SMS wallet|Sender ID matrix|SMS calculator/i);
+  assert.doesNotMatch(html, /SMS Campaign Calculator|Sender Readiness Matrix/i);
+  assert.match(html, /rel="canonical"/);
+});

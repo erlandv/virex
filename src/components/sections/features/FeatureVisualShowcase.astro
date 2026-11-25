@@ -17,7 +17,7 @@ const { category } = Astro.props;
 ---
 
 <div
-  class="feature-visual-card w-full rounded-2xl border border-slate-200/90 dark:border-slate-800 bg-white/90 dark:bg-slate-900/90 p-5 sm:p-6 shadow-xl backdrop-blur-md"
+  class="feature-visual-card w-full rounded-xl border border-slate-200/90 dark:border-slate-800 bg-white/90 dark:bg-surface p-5 sm:p-6 shadow-none"
 >
   {
     /* INBOX: Collision Detection, Internal Notes, Multi-Agent Assignment */
@@ -59,7 +59,7 @@ const { category } = Astro.props;
           </div>
 
           {/* Private Yellow Internal Team Note */}
-          <div class="p-3 rounded-xl bg-amber-100/70 dark:bg-amber-950/40 border border-amber-300/80 dark:border-amber-800/80 text-slate-900 dark:text-slate-100 max-w-[90%] ml-auto shadow-2xs">
+          <div class="p-3 rounded-xl bg-amber-100/70 dark:bg-amber-950/40 border border-amber-300/80 dark:border-amber-800/80 text-slate-900 dark:text-slate-100 max-w-[90%] ml-auto shadow-none">
             <div class="flex items-center justify-between mb-1 text-[11px] font-semibold text-amber-800 dark:text-amber-300">
               <span class="flex items-center gap-1">
                 <Icon name="lucide:lock" class="w-3.5 h-3.5" /> Private Internal Note

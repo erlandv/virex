@@ -148,3 +148,76 @@ test('Gate 3 homepage continues to use exact Virex brand tokens without decorati
     );
   }
 });
+
+test('Gate 4 preserves core-only pricing and separated SMS implementation', () => {
+  const pricing = read('src/pages/pricing.astro');
+  const marketing = read('src/layouts/MarketingLayout.astro');
+  const header = read('src/components/layout/Header.astro');
+
+  assert.match(pricing, /fetchPricingMatrix/);
+  assert.match(pricing, /flatPreview/);
+  assert.match(pricing, /<MCSection/);
+  assert.match(pricing, /<MCCard/);
+  assert.doesNotMatch(pricing, /<SmsCampaignCalculator|<SenderReadinessMatrix/);
+  assert.doesNotMatch(pricing, /<ServiceBoundaryNotice/);
+  assert.doesNotMatch(header, /SMS Studio|Bulk SMS/);
+  assert.match(marketing, /<MarkcopilotWidget/);
+  assert.match(marketing, /<CookieConsent/);
+  assert.ok(existsSync('src/components/enterprise/SmsCampaignCalculator.astro'));
+  assert.ok(existsSync('src/components/enterprise/SenderReadinessMatrix.astro'));
+});
+
+test('Gate 4 uses MC shared page headings and keeps auth independent', () => {
+  const pageHeader = read('src/components/sections/content/PageHeader.astro');
+  const auth = read('src/layouts/AuthLayout.astro');
+  assert.match(pageHeader, /import MCSection/);
+  assert.match(pageHeader, /<MCSection tone=\{tone\}/);
+  assert.match(auth, /import BaseLayout/);
+  assert.doesNotMatch(auth, /<MarketingLayout|<Header|<MarkcopilotWidget/);
+  assert.doesNotMatch(auth, /backdrop-blur|bg-gradient|blur-3xl/);
+  for (const name of ['login', 'register', 'forgot-password', 'reset-password']) {
+    assert.match(read('src/pages/' + name + '.astro'), /<AuthLayout/);
+  }
+});
+
+test('Gate 4 removes decorative backgrounds from every migrated public route family', () => {
+  const migrated = [
+    'src/pages/about.astro',
+    'src/pages/contact.astro',
+    'src/pages/demo.astro',
+    'src/pages/faq.astro',
+    'src/pages/features.astro',
+    'src/pages/features/[slug].astro',
+    'src/pages/product/index.astro',
+    'src/pages/product/[slug].astro',
+    'src/pages/markcopilot.astro',
+    'src/pages/integrations.astro',
+    'src/pages/integrations/[slug].astro',
+    'src/pages/solutions/index.astro',
+    'src/pages/solutions/[slug].astro',
+    'src/pages/pricing.astro',
+    'src/pages/docs/index.astro',
+    'src/pages/blog/index.astro',
+    'src/pages/blog/page/[page].astro',
+    'src/pages/blog/tag/[tag].astro',
+    'src/pages/careers.astro',
+    'src/pages/careers/[slug].astro',
+    'src/pages/resources/index.astro',
+    'src/pages/resources/[slug].astro',
+    'src/layouts/BlogLayout.astro',
+    'src/layouts/DocsLayout.astro',
+    'src/layouts/AuthLayout.astro',
+    'src/components/sections/content/PageHeader.astro',
+    'src/components/sections/features/FeatureVisualShowcase.astro',
+    'src/components/sections/features/WorkspaceHeroShowcase.astro',
+    'src/components/sections/integrations/IntegrationsHeroShowcase.astro',
+  ];
+  for (const pathname of migrated) {
+    const source = read(pathname);
+    assert.doesNotMatch(
+      source,
+      /bg-gradient-to-|bg-\[(?:radial|linear)-gradient|backdrop-blur|blur-3xl|bg-clip-text/i,
+      pathname
+    );
+  }
+});

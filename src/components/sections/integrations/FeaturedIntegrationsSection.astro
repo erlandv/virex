@@ -148,7 +148,7 @@ const featuredList = [
           return (
             <div
               id={`featured-${item.slug}`}
-              class="rounded-3xl border border-slate-200/90 dark:border-slate-800 bg-white/90 dark:bg-slate-900/90 p-6 sm:p-8 lg:p-10 shadow-xl transition-all hover:border-primary/40 scroll-mt-24"
+              class="rounded-xl border border-slate-200/90 dark:border-slate-800 bg-white/90 dark:bg-surface p-6 sm:p-8 lg:p-10 shadow-none transition-all hover:border-primary/40 scroll-mt-24"
             >
               <div
                 class={`grid grid-cols-1 lg:grid-cols-12 gap-8 items-center ${isReversed ? 'lg:flex-row-reverse' : ''}`}
@@ -207,7 +207,7 @@ const featuredList = [
 
                 {/* Right Requirements & Architecture Frame (5 cols) */}
                 <div class={`lg:col-span-5 ${isReversed ? 'lg:order-1' : 'lg:order-2'}`}>
-                  <div class="rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-950/60 p-5 space-y-4 text-xs">
+                  <div class="rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-950/60 p-5 space-y-4 text-xs">
                     <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
                       <span class="font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
                         <Icon name="lucide:info" class="w-4 h-4 text-primary" />
@@ -227,13 +227,13 @@ const featuredList = [
                         Verified Architecture
                       </span>
                       <div class="flex flex-wrap gap-1.5 text-[11px] font-mono">
-                        <span class="px-2 py-0.5 rounded bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300">
+                        <span class="px-2 py-0.5 rounded bg-white dark:bg-surface border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300">
                           Production Ready
                         </span>
-                        <span class="px-2 py-0.5 rounded bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300">
+                        <span class="px-2 py-0.5 rounded bg-white dark:bg-surface border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300">
                           KDPA 2019 Compliant
                         </span>
-                        <span class="px-2 py-0.5 rounded bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300">
+                        <span class="px-2 py-0.5 rounded bg-white dark:bg-surface border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300">
                           Nairobi Timezone
                         </span>
                       </div>

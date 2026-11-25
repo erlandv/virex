@@ -28,7 +28,7 @@ const byIndustry = solutionsPages.filter(
   />
 
   <!-- By Team & Size -->
-  <section class="py-16 bg-surface/50 border-b border-border">
+  <section class="py-16 bg-surface border-b border-border">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="mb-10">
         <span class="text-xs font-mono font-semibold text-primary uppercase tracking-wider"
@@ -42,7 +42,7 @@ const byIndustry = solutionsPages.filter(
           [...byTeam, ...bySize].map((item) => (
             <a
               href={`/solutions/${item.slug}`}
-              class="group flex flex-col justify-between p-6 rounded-2xl border border-border bg-background hover:border-primary/50 hover:shadow-lg transition-all"
+              class="group flex flex-col justify-between p-6 rounded-xl border border-border bg-background hover:border-primary/50 shadow-none transition-all"
             >
               <div>
                 <div class="flex items-center justify-between mb-4">
@@ -89,7 +89,7 @@ const byIndustry = solutionsPages.filter(
           byIndustry.map((item) => (
             <a
               href={`/solutions/${item.slug}`}
-              class="group flex flex-col justify-between p-6 rounded-2xl border border-border bg-surface/50 hover:border-primary/50 hover:shadow-lg transition-all"
+              class="group flex flex-col justify-between p-6 rounded-xl border border-border bg-surface hover:border-primary/50 shadow-none transition-all"
             >
               <div>
                 <div class="flex items-center justify-between mb-4">

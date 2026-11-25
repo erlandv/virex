@@ -9,7 +9,7 @@ import { Icon } from 'astro-icon/components';
 ---
 
 <div
-  class="workspace-showcase-wrapper w-full max-w-6xl mx-auto rounded-2xl md:rounded-3xl border border-slate-200/80 dark:border-slate-800 bg-white/90 dark:bg-slate-900/90 shadow-2xl backdrop-blur-xl overflow-hidden"
+  class="workspace-showcase-wrapper w-full max-w-6xl mx-auto rounded-xl md:rounded-xl border border-slate-200/80 dark:border-slate-800 bg-white/90 dark:bg-surface shadow-none overflow-hidden"
 >
   <!-- Window Header Bar -->
   <div
@@ -65,17 +65,17 @@ import { Icon } from 'astro-icon/components';
         <!-- Channel Filter Chips -->
         <div class="flex flex-wrap gap-1.5 mb-4 px-1">
           <span
-            class="inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded-md bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-medium text-slate-700 dark:text-slate-200 shadow-xs"
+            class="inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded-md bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-medium text-slate-700 dark:text-slate-200 shadow-none"
           >
             <Icon name="simple-icons:whatsapp" class="w-3 h-3 text-emerald-500" /> WhatsApp
           </span>
           <span
-            class="inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded-md bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-medium text-slate-700 dark:text-slate-200 shadow-xs"
+            class="inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded-md bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-medium text-slate-700 dark:text-slate-200 shadow-none"
           >
             <Icon name="lucide:message-square" class="w-3 h-3 text-blue-500" /> SMS
           </span>
           <span
-            class="inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded-md bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-medium text-slate-700 dark:text-slate-200 shadow-xs"
+            class="inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded-md bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-medium text-slate-700 dark:text-slate-200 shadow-none"
           >
             <Icon name="simple-icons:instagram" class="w-3 h-3 text-rose-500" /> IG
           </span>
@@ -85,7 +85,7 @@ import { Icon } from 'astro-icon/components';
         <div class="space-y-1.5">
           <!-- Active Thread: Wanjiku -->
           <div
-            class="p-2.5 rounded-xl bg-primary/10 border border-primary/20 transition-all cursor-pointer shadow-xs"
+            class="p-2.5 rounded-xl bg-primary/10 border border-primary/20 transition-all cursor-pointer shadow-none"
           >
             <div class="flex items-start justify-between gap-1">
               <div class="flex items-center gap-1.5 min-w-0">
@@ -180,7 +180,7 @@ import { Icon } from 'astro-icon/components';
     </div>
 
     <!-- PANE 2: Active Conversation & In-Chat M-Pesa Flow (6 cols on lg) -->
-    <div class="lg:col-span-6 bg-white dark:bg-slate-900 p-4 sm:p-5 flex flex-col justify-between">
+    <div class="lg:col-span-6 bg-white dark:bg-surface p-4 sm:p-5 flex flex-col justify-between">
       <!-- Chat Header -->
       <div
         class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800/80 mb-4"
@@ -222,7 +222,7 @@ import { Icon } from 'astro-icon/components';
         <!-- Customer Message -->
         <div class="flex flex-col items-start max-w-[85%]">
           <div
-            class="p-3 rounded-2xl rounded-tl-xs bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 shadow-2xs"
+            class="p-3 rounded-xl rounded-tl-xs bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 shadow-none"
           >
             <p>
               Hi, I want to order the Kenyan Leather Weekender Bag (Tan). Can you deliver to
@@ -254,7 +254,7 @@ import { Icon } from 'astro-icon/components';
 
         <!-- Agent Response -->
         <div class="flex flex-col items-end self-end max-w-[85%] ml-auto">
-          <div class="p-3 rounded-2xl rounded-tr-xs bg-primary text-white shadow-xs">
+          <div class="p-3 rounded-xl rounded-tr-xs bg-primary text-white shadow-none">
             <p>
               Hello Wanjiku! Yes, we have 4 units in Tan ready at our hub. We can dispatch via rider
               for arrival by 3:30 PM. Total with delivery is KES 3,500.
@@ -266,7 +266,7 @@ import { Icon } from 'astro-icon/components';
         <!-- Agent In-Chat /stk Command -->
         <div class="flex flex-col items-end self-end max-w-[85%] ml-auto">
           <div
-            class="p-2 px-3 rounded-xl bg-slate-900 text-emerald-400 font-mono text-[11px] border border-slate-800 shadow-xs flex items-center gap-2"
+            class="p-2 px-3 rounded-xl bg-slate-900 text-emerald-400 font-mono text-[11px] border border-slate-800 shadow-none flex items-center gap-2"
           >
             <span class="text-slate-500">$</span>
             <span>/stk 3500 0712345678</span>
@@ -276,7 +276,7 @@ import { Icon } from 'astro-icon/components';
 
         <!-- Verified In-Chat Transaction Card -->
         <div
-          class="w-full p-3.5 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-slate-800 dark:text-slate-200 space-y-2"
+          class="w-full p-3.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-slate-800 dark:text-slate-200 space-y-2"
         >
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-1.5 font-bold text-emerald-700 dark:text-emerald-400">
@@ -361,7 +361,7 @@ import { Icon } from 'astro-icon/components';
         <!-- Customer Profile Card -->
         <div class="text-center pb-3 border-b border-slate-200 dark:border-slate-800">
           <div
-            class="w-12 h-12 rounded-full bg-gradient-to-tr from-primary to-indigo-500 text-white font-bold text-sm mx-auto flex items-center justify-center shadow-md mb-2"
+            class="w-12 h-12 rounded-full bg-surface text-white font-bold text-sm mx-auto flex items-center justify-center shadow-none mb-2"
           >
             WK
           </div>
@@ -377,7 +377,7 @@ import { Icon } from 'astro-icon/components';
         <!-- 360 Stats Grid -->
         <div class="grid grid-cols-2 gap-2 text-center">
           <div
-            class="p-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800"
+            class="p-2 rounded-xl bg-white dark:bg-surface border border-slate-200/80 dark:border-slate-800"
           >
             <span class="text-[10px] text-slate-400 block font-medium">Lifetime Spend</span>
             <span class="text-xs font-bold text-slate-900 dark:text-white font-mono"
@@ -385,7 +385,7 @@ import { Icon } from 'astro-icon/components';
             >
           </div>
           <div
-            class="p-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800"
+            class="p-2 rounded-xl bg-white dark:bg-surface border border-slate-200/80 dark:border-slate-800"
           >
             <span class="text-[10px] text-slate-400 block font-medium">Total Orders</span>
             <span class="text-xs font-bold text-slate-900 dark:text-white font-mono"
@@ -400,7 +400,7 @@ import { Icon } from 'astro-icon/components';
             Customer Attributes
           </span>
           <div
-            class="text-[11px] space-y-1.5 bg-white dark:bg-slate-900 p-2.5 rounded-xl border border-slate-200/80 dark:border-slate-800"
+            class="text-[11px] space-y-1.5 bg-white dark:bg-surface p-2.5 rounded-xl border border-slate-200/80 dark:border-slate-800"
           >
             <div class="flex justify-between">
               <span class="text-slate-400">City / Zone:</span>
@@ -430,13 +430,13 @@ import { Icon } from 'astro-icon/components';
               <span class="font-bold text-emerald-600 dark:text-emerald-400">KES 3,500</span>
             </div>
             <div
-              class="p-1.5 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex justify-between items-center text-slate-600 dark:text-slate-400"
+              class="p-1.5 rounded-lg bg-white dark:bg-surface border border-slate-200 dark:border-slate-800 flex justify-between items-center text-slate-600 dark:text-slate-400"
             >
               <span>14 Oct &bull; QJB49102NK</span>
               <span class="font-bold">KES 7,200</span>
             </div>
             <div
-              class="p-1.5 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex justify-between items-center text-slate-600 dark:text-slate-400"
+              class="p-1.5 rounded-lg bg-white dark:bg-surface border border-slate-200 dark:border-slate-800 flex justify-between items-center text-slate-600 dark:text-slate-400"
             >
               <span>28 Aug &bull; QGS83910TY</span>
               <span class="font-bold">KES 4,100</span>

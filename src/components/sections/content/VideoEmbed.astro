@@ -128,7 +128,7 @@ const uniqueId = `video-${Math.random().toString(36).substring(2, 11)}`;
     <div class:list={[maxWidthClass, 'mx-auto']}>
       <div
         class:list={[
-          'relative rounded-xl overflow-hidden border border-border shadow-lg',
+          'relative rounded-xl overflow-hidden border border-border shadow-none',
           aspectRatioClass,
         ]}
       >
@@ -155,7 +155,7 @@ const uniqueId = `video-${Math.random().toString(36).substring(2, 11)}`;
 
               {/* Play button */}
               <div class="absolute inset-0 flex items-center justify-center">
-                <div class="w-20 h-20 flex items-center justify-center rounded-full bg-primary text-white shadow-lg group-hover:scale-110 transition-transform">
+                <div class="w-20 h-20 flex items-center justify-center rounded-full bg-primary text-white shadow-none group-hover:scale-110 transition-transform">
                   <Icon name="lucide:play" class="w-8 h-8 ml-1" />
                 </div>
               </div>

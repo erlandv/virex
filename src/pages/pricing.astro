@@ -1,189 +1,111 @@
 ---
 /**
- * MarkChat Kenya — Pricing & Plan Feature Matrix
+ * Core-only public pricing. The separate SMS product is not advertised here.
+ * Subscription figures continue to come from the published billing catalog.
  */
 import MarketingLayout from '@/layouts/MarketingLayout.astro';
-import ServiceBoundaryNotice from '@/components/common/ServiceBoundaryNotice.astro';
-import SmsCampaignCalculator from '@/components/enterprise/SmsCampaignCalculator.astro';
-import SenderReadinessMatrix from '@/components/enterprise/SenderReadinessMatrix.astro';
 import PricingTable from '@sections/pricing/PricingTable.astro';
-import ComparisonTable from '@sections/pricing/ComparisonTable.astro';
-import TrustBadges from '@sections/pricing/TrustBadges.astro';
 import FAQSection from '@sections/content/FAQSection.astro';
 import CTA from '@sections/marketing/CTA.astro';
+import MCSection from '@/components/design-system/MCSection.astro';
+import MCSectionHeading from '@/components/design-system/MCSectionHeading.astro';
+import MCCard from '@/components/design-system/MCCard.astro';
+import MCStatusBadge from '@/components/design-system/MCStatusBadge.astro';
 import { siteConfig } from '@/config';
 import { fetchPricingMatrix, fetchFaqs } from '@/lib/cms-api';
 
 const [matrix, faqsList] = await Promise.all([fetchPricingMatrix(), fetchFaqs()]);
-
-const planNames = matrix.tiers.map((t) => t.name);
+const deferred =
+  /\bsms\b|sender\s+id|byoc|\bsla\b|saml|sso|whitelabel|dedicated\s+support|shortcode|audit\s+logs?|agent\s+capacity/i;
 
 const plans = matrix.tiers.map((tier) => ({
   name: tier.name,
   monthlyPrice: tier.monthlyPrice,
   customPrice: tier.monthlyPrice === null ? 'Custom' : undefined,
-  description: tier.description,
-  features: tier.features,
+  description: deferred.test(tier.description)
+    ? 'Customer conversation workspace with features and integrations confirmed during onboarding.'
+    : tier.description,
+  features: tier.features.filter((feature) => !deferred.test(feature)).slice(0, 5),
   highlighted: tier.highlighted,
-  badge: tier.badge,
+  badge: deferred.test(tier.badge || '') ? 'Workspace plan' : tier.badge,
   cta: {
     label: tier.ctaLabel,
-    href: tier.ctaHref,
+    href: /^\/(?!\/)/.test(tier.ctaHref) ? tier.ctaHref : '/contact',
   },
 }));
 
-// Build comparison matrix based on the CMS feature-gating matrix
-const featMap = new Map(matrix.featureMatrix.map((f) => [f.key, f]));
-
-const comparisonCategories = [
-  {
-    name: 'Channels & Inboxes',
-    features: [
-      {
-        name: 'Official WhatsApp Cloud API',
-        values: [
-          featMap.get('whatsapp_api')?.starter ?? true,
-          featMap.get('whatsapp_api')?.growth ?? true,
-          featMap.get('whatsapp_api')?.scale ?? true,
-          featMap.get('whatsapp_api')?.enterprise ?? true,
-        ],
-        tooltip: 'Official WhatsApp Business Cloud API connection, subject to Meta policies',
-      },
-      {
-        name: 'Bulk SMS Gateway (Africa’s Talking)',
-        values: [
-          'Separate SMS wallet',
-          'BYO Gateway',
-          'BYO Gateway',
-          'BYO Gateway & Dedicated Shortcode',
-        ],
-        tooltip:
-          "Connect your own carrier credentials (e.g. Africa's Talking) with zero platform markup",
-      },
-      {
-        name: 'Instagram DMs & Facebook Messenger',
-        values: [false, true, true, true],
-        tooltip: 'Centralize social messages into your shared team inbox',
-      },
-      {
-        name: 'Inboxes Supported',
-        values: ['2 Inboxes', '5 Inboxes', 'Unlimited Inboxes', 'Unlimited Inboxes'],
-        tooltip: 'Total connected communication inboxes per workspace',
-      },
-    ],
-  },
-  {
-    name: 'M-Pesa & Mobile Money Modes',
-    features: [
-      {
-        name: 'Daraja C2B Auto-Verification (Stops Fake SMS)',
-        values: [true, true, true, 'Dedicated Route'],
-        tooltip: 'Payment validation reduces reliance on unverified receipt screenshots',
-      },
-      {
-        name: 'M-Pesa STK Push Integration',
-        values: [
-          featMap.get('mpesa_stk_checkout')?.starter ?? false,
-          featMap.get('mpesa_stk_checkout')?.growth ?? true,
-          featMap.get('mpesa_stk_checkout')?.scale ?? true,
-          featMap.get('mpesa_stk_checkout')?.enterprise ?? true,
-        ],
-        tooltip: 'Server-verified STK checkout and automated payment receipts',
-      },
-      {
-        name: 'Shared Bank Paybill Routing (KCB, Equity, Co-op)',
-        values: [false, true, true, true],
-        tooltip: 'Auto-routes incoming bank payments by customer account reference',
-      },
-    ],
-  },
-  {
-    name: 'Team Scale & Administration',
-    features: [
-      {
-        name: 'Team Agent Seats',
-        values: ['3 Agents', '10 Agents', '25 Agents', 'Custom / Unlimited'],
-        tooltip: 'Configured billable agent seats per workspace',
-      },
-      {
-        name: 'Workspace Performance & SLA Reports',
-        values: [
-          featMap.get('workspace_analytics')?.starter ?? false,
-          featMap.get('workspace_analytics')?.growth ?? true,
-          featMap.get('workspace_analytics')?.scale ?? true,
-          featMap.get('workspace_analytics')?.enterprise ?? true,
-        ],
-      },
-      {
-        name: 'Custom Domain Whitelabeling & Branding',
-        values: [
-          featMap.get('custom_whitelabel')?.starter ?? false,
-          featMap.get('custom_whitelabel')?.growth ?? false,
-          featMap.get('custom_whitelabel')?.scale ?? true,
-          featMap.get('custom_whitelabel')?.enterprise ?? true,
-        ],
-      },
-      {
-        name: 'Customer Support',
-        values: [
-          'Email & Community',
-          'Priority WhatsApp & Email',
-          'Priority SLA & Dedicated Support',
-          '24/7 Dedicated Account Lead',
-        ],
-      },
-    ],
-  },
-];
-
 const pricingFaqs = faqsList
-  .filter((f) => f.category === 'pricing' || f.category === 'mpesa' || f.category === 'general')
-  .slice(0, 6);
+  .filter((faq) => ['pricing', 'mpesa', 'general'].includes(faq.category))
+  .filter((faq) => !deferred.test(faq.question + ' ' + faq.answer))
+  .slice(0, 6)
+  .map((faq) => ({ question: faq.question, answer: faq.answer }));
 ---
 
 <MarketingLayout
-  title={`Pricing & Plans - ${siteConfig.name} Kenya`}
-  description="Transparent KES pricing for MarkChat. Starter KES 1,500/mo, Growth KES 3,500/mo, Scale KES 5,000/mo, Enterprise scale. In-Chat M-Pesa STK, BYO SMS, and multi-channel shared inboxes."
+  title={`Pricing & Plans — ${siteConfig.name} Kenya`}
+  description="Explore current MarkChat Core workspace subscriptions in KES, compare collaboration features, and arrange approved messaging and M-Pesa provider setup."
 >
-  <ServiceBoundaryNotice />
   <PricingTable
-    title="Simple, Transparent KES Pricing"
-    subtitle="Core workspace subscription prices in KES; prepaid SMS credits and branded Sender IDs are purchased separately. Annual checkout is not yet available."
+    flatPreview
+    title="Simple, transparent Core workspace pricing"
+    subtitle="Choose a plan that suits your team. Provider setup, permissions and transaction fees are confirmed separately."
     plans={plans}
-    annualDiscount={0}
     defaultPeriod="monthly"
+    background="muted"
+    footerLink={{ label: 'Discuss business requirements', href: '/contact' }}
   />
 
-  <SmsCampaignCalculator />
-  <SenderReadinessMatrix />
-  <TrustBadges
-    guarantee={{
-      title: '72-hour Growth trial (subject to workspace provisioning)',
-      description:
-        'A time-limited trial is created during onboarding. Core-dependent features remain unavailable until provisioning is completed.',
-    }}
-  />
+  <MCSection tone="default" id="billing-principles">
+    <div class="mb-9">
+      <MCSectionHeading
+        eyebrow="How billing works"
+        title="A clear path from your plan to an active workspace"
+        description="Core subscriptions cover your MarkChat workspace. Channel providers and payment integrations require their own configuration and approval."
+      />
+    </div>
+    <div class="grid gap-4 md:grid-cols-3">
+      <MCCard>
+        <MCStatusBadge status="available" label="Workspace subscription" />
+        <h3 class="mt-4 text-lg font-semibold text-text">Choose a workspace</h3>
+        <p class="mt-3 text-sm leading-relaxed text-text-muted">
+          Compare published monthly subscription prices and included collaboration features.
+        </p>
+      </MCCard>
+      <MCCard>
+        <MCStatusBadge status="integration" label="Provider approval" />
+        <h3 class="mt-4 text-lg font-semibold text-text">Connect eligible channels</h3>
+        <p class="mt-3 text-sm leading-relaxed text-text-muted">
+          WhatsApp and other integrations depend on permissions and your provider account.
+        </p>
+      </MCCard>
+      <MCCard>
+        <MCStatusBadge status="integration" label="Merchant configuration" />
+        <h3 class="mt-4 text-lg font-semibold text-text">Configure M-Pesa</h3>
+        <p class="mt-3 text-sm leading-relaxed text-text-muted">
+          Authorized Daraja payment workflows require merchant credentials and callback
+          verification.
+        </p>
+      </MCCard>
+    </div>
+  </MCSection>
 
-  <ComparisonTable
-    title="Detailed Plan & Feature Gating Matrix"
-    subtitle="Inspect exact channel boundaries, M-Pesa modes, and collaboration capabilities across all tiers."
-    plans={planNames}
-    categories={comparisonCategories}
-    highlightedPlan={1}
-    background="default"
-  />
-
-  <FAQSection
-    title="Frequently Asked Billing & M-Pesa Questions"
-    faqs={pricingFaqs.map((f) => ({ question: f.question, answer: f.answer }))}
-    variant="simple"
-    background="default"
-  />
+  {
+    pricingFaqs.length > 0 && (
+      <FAQSection
+        title="Frequently asked billing questions"
+        subtitle="Current subscription terms and provider readiness."
+        faqs={pricingFaqs}
+        variant="simple"
+        background="muted"
+      />
+    )
+  }
 
   <CTA
-    title="Need custom Paybill routing or high SMS volume?"
-    description="Our Nairobi engineering team will configure dedicated shortcodes and custom ERP webhooks for your enterprise."
-    action={{ label: 'Book Technical Consultation', href: '/demo' }}
-    background="muted"
+    title="Need help choosing the right plan?"
+    description="Talk with our Nairobi team about workspace seats, messaging channels and authorized payment integrations."
+    action={{ label: 'Book a Demo', href: '/demo' }}
+    secondaryAction={{ label: 'Contact Sales', href: '/contact' }}
+    background="default"
   />
 </MarketingLayout>

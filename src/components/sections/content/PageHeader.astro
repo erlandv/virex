@@ -1,42 +1,12 @@
 ---
-/**
- * PageHeader - Reusable page header section with title and subtitle
- *
- * @description
- * A consistent page header component for marketing pages. Supports
- * different alignments, sizes, and optional description text.
- *
- * @example Basic usage
- * ```astro
- * <PageHeader
- *   title="About Us"
- *   subtitle="Learn about our mission and team."
- * />
- * ```
- *
- * @example Left aligned with large title
- * ```astro
- * <PageHeader
- *   title="We're building the future"
- *   subtitle="Our mission is to make deployment effortless."
- *   align="left"
- *   size="large"
- * />
- * ```
- */
+import MCSection from '@/components/design-system/MCSection.astro';
 
 interface Props {
-  /** Page title (h1) */
   title: string;
-  /** Optional subtitle/description */
   subtitle?: string;
-  /** Text alignment */
   align?: 'center' | 'left';
-  /** Title size */
   size?: 'default' | 'large';
-  /** Maximum width for content */
   maxWidth?: 'sm' | 'md' | 'lg' | 'full';
-  /** Section background style */
   background?: 'default' | 'muted' | 'accent';
 }
 
@@ -49,35 +19,24 @@ const {
   background = 'default',
 } = Astro.props;
 
-const bgClass = {
-  default: 'bg-background',
-  muted: 'bg-surface',
-  accent: 'bg-primary/5',
-}[background];
-
 const alignClass = align === 'left' ? 'text-left' : 'text-center';
-
 const titleSizeClass =
   size === 'large' ? 'text-4xl sm:text-5xl lg:text-6xl' : 'text-4xl sm:text-5xl';
-
-const maxWidthClass = {
+const widths = {
   sm: 'max-w-xl',
   md: 'max-w-2xl',
   lg: 'max-w-3xl',
   full: 'max-w-none',
-}[maxWidth];
-
-const containerClass = align === 'center' ? `${maxWidthClass} mx-auto` : maxWidthClass;
+};
+const tone = background === 'default' ? 'default' : 'muted';
 ---
 
-<section class:list={['py-section', bgClass]}>
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class:list={[containerClass, alignClass]}>
-      <h1 class:list={['font-bold text-text leading-tight tracking-tight', titleSizeClass]}>
-        {title}
-      </h1>
-      {subtitle && <p class="mt-6 text-lg text-text-muted leading-relaxed">{subtitle}</p>}
-      <slot />
-    </div>
+<MCSection tone={tone}>
+  <div class:list={[widths[maxWidth], alignClass, align === 'center' && 'mx-auto']}>
+    <h1 class:list={['font-bold leading-tight tracking-tight text-text', titleSizeClass]}>
+      {title}
+    </h1>
+    {subtitle && <p class="mt-6 text-lg leading-relaxed text-text-muted">{subtitle}</p>}
+    <slot />
   </div>
-</section>
+</MCSection>

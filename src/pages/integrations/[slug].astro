@@ -76,7 +76,7 @@ const otherIntegrations = allIntegrations.filter((i) => i.slug !== integration.s
         <div class="flex flex-col sm:flex-row md:flex-col gap-3 shrink-0">
           <a
             href={`/register`}
-            class="inline-flex items-center justify-center px-6 py-3 rounded-xl bg-primary text-white font-semibold text-sm hover:opacity-90 transition-opacity shadow-lg"
+            class="inline-flex items-center justify-center px-6 py-3 rounded-xl bg-primary text-white font-semibold text-sm hover:opacity-90 transition-opacity shadow-none"
           >
             <span>Connect {integration.name}</span>
             <Icon name="lucide:arrow-right" class="w-4 h-4 ml-2" />
@@ -105,7 +105,7 @@ const otherIntegrations = allIntegrations.filter((i) => i.slug !== integration.s
   </section>
 
   <!-- Section 2: How It Works Inside MarkChat (3-Step Breakdown) -->
-  <section class="py-16 sm:py-20 bg-surface/50 border-b border-border">
+  <section class="py-16 sm:py-20 bg-surface border-b border-border">
     <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="mb-10 text-center md:text-left">
         <span class="text-xs font-mono font-semibold text-primary uppercase">Execution Flow</span>
@@ -115,7 +115,7 @@ const otherIntegrations = allIntegrations.filter((i) => i.slug !== integration.s
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
         {
           integration.howItWorksSteps.map((step, idx) => (
-            <div class="flex flex-col p-6 rounded-2xl bg-surface border border-border">
+            <div class="flex flex-col p-6 rounded-xl bg-surface border border-border">
               <div class="w-9 h-9 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-sm shrink-0 border border-primary/20 mb-4">
                 0{idx + 1}
               </div>
@@ -143,7 +143,7 @@ const otherIntegrations = allIntegrations.filter((i) => i.slug !== integration.s
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         {
           integration.businessBenefits.map((benefit) => (
-            <div class="flex items-start gap-4 p-6 rounded-2xl bg-surface border border-border">
+            <div class="flex items-start gap-4 p-6 rounded-xl bg-surface border border-border">
               <div class="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-500/20">
                 <Icon name="lucide:check" class="w-4 h-4" />
               </div>
@@ -158,9 +158,9 @@ const otherIntegrations = allIntegrations.filter((i) => i.slug !== integration.s
   <!-- Section 4: Setup Requirements -->
   {
     integration.setupRequirements && (
-      <section class="py-12 bg-surface/30 border-b border-border">
+      <section class="py-12 bg-surface border-b border-border">
         <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div class="p-6 rounded-2xl border border-border bg-surface flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+          <div class="p-6 rounded-xl border border-border bg-surface flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
             <div>
               <h3 class="text-base font-bold text-text">Setup Prerequisites</h3>
               <p class="text-xs text-text-muted mt-1">{integration.setupRequirements}</p>

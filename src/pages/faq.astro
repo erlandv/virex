@@ -43,7 +43,7 @@ const faqPageJson = JSON.stringify(faqPageSchema).replace(/</g, '\\u003c');
   <script type="application/ld+json" is:inline set:html={faqPageJson} />
   <!-- Hero Section -->
   <section
-    class="relative pt-12 pb-10 sm:pt-20 sm:pb-14 overflow-hidden border-b border-border/50 bg-gradient-to-b from-surface/40 via-background to-background"
+    class="relative pt-12 pb-10 sm:pt-20 sm:pb-14 overflow-hidden border-b border-border/50 bg-background"
   >
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
       <div
@@ -76,7 +76,7 @@ const faqPageJson = JSON.stringify(faqPageSchema).replace(/</g, '\\u003c');
             name="q"
             autocomplete="off"
             placeholder="Search questions (e.g. M-Pesa, STK, Paybill, SMS, pricing, AI)..."
-            class="w-full pl-12 pr-12 py-3.5 sm:py-4 rounded-2xl bg-surface border border-border text-text placeholder:text-text-muted/60 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary text-sm sm:text-base shadow-sm transition-all"
+            class="w-full pl-12 pr-12 py-3.5 sm:py-4 rounded-xl bg-surface border border-border text-text placeholder:text-text-muted/60 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary text-sm sm:text-base shadow-none transition-all"
           />
 
           <button
@@ -101,7 +101,7 @@ const faqPageJson = JSON.stringify(faqPageSchema).replace(/</g, '\\u003c');
   </section>
 
   <!-- Category Filter Pills Bar -->
-  <section class="py-6 border-b border-border/40 bg-surface/30 sticky top-16 z-20 backdrop-blur-md">
+  <section class="py-6 border-b border-border/40 bg-surface sticky top-16 z-20">
     <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
       <div
         class="flex items-center gap-2 overflow-x-auto pb-2 sm:pb-0 scrollbar-none justify-start sm:justify-center"
@@ -109,7 +109,7 @@ const faqPageJson = JSON.stringify(faqPageSchema).replace(/</g, '\\u003c');
         <!-- All Questions Pill -->
         <button
           type="button"
-          class="faq-cat-pill active flex-shrink-0 inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all border shadow-sm"
+          class="faq-cat-pill active flex-shrink-0 inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all border shadow-none"
           data-category="all"
           aria-pressed="true"
         >
@@ -149,10 +149,10 @@ const faqPageJson = JSON.stringify(faqPageSchema).replace(/</g, '\\u003c');
       <!-- Empty State Container -->
       <div
         id="faq-empty-state"
-        class="hidden text-center py-16 px-6 border border-dashed border-border rounded-3xl bg-surface/40 my-4"
+        class="hidden text-center py-16 px-6 border border-dashed border-border rounded-xl bg-surface my-4"
       >
         <div
-          class="w-14 h-14 mx-auto rounded-2xl bg-surface-hover border border-border flex items-center justify-center text-text-muted mb-4"
+          class="w-14 h-14 mx-auto rounded-xl bg-surface-hover border border-border flex items-center justify-center text-text-muted mb-4"
         >
           <Icon name="lucide:help-circle" class="w-7 h-7" />
         </div>
@@ -179,7 +179,7 @@ const faqPageJson = JSON.stringify(faqPageSchema).replace(/</g, '\\u003c');
             const catName = cat ? cat.name : faq.category;
             return (
               <details
-                class="faq-item group bg-surface border border-border rounded-2xl shadow-sm hover:border-primary/30 transition-all duration-200 overflow-hidden"
+                class="faq-item group bg-surface border border-border rounded-xl shadow-none hover:border-primary/30 transition-all duration-200 overflow-hidden"
                 data-category={faq.category}
                 data-question={faq.question.toLowerCase()}
                 data-answer={faq.answer.toLowerCase()}
@@ -214,7 +214,7 @@ const faqPageJson = JSON.stringify(faqPageSchema).replace(/</g, '\\u003c');
   </section>
 
   <!-- Direct Assistance & Support Pathways -->
-  <section class="py-12 border-t border-border/50 bg-surface/20">
+  <section class="py-12 border-t border-border/50 bg-surface">
     <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="text-center mb-8">
         <h2 class="text-xl sm:text-2xl font-bold text-text">
@@ -229,7 +229,7 @@ const faqPageJson = JSON.stringify(faqPageSchema).replace(/</g, '\\u003c');
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
         <!-- Card 1: Technical Setup Support -->
         <div
-          class="p-6 rounded-2xl bg-surface border border-border hover:border-primary/40 transition-all shadow-sm flex flex-col justify-between"
+          class="p-6 rounded-xl bg-surface border border-border hover:border-primary/40 transition-all shadow-none flex flex-col justify-between"
         >
           <div>
             <div
@@ -254,7 +254,7 @@ const faqPageJson = JSON.stringify(faqPageSchema).replace(/</g, '\\u003c');
 
         <!-- Card 2: Live Guided Demo -->
         <div
-          class="p-6 rounded-2xl bg-surface border border-border hover:border-primary/40 transition-all shadow-sm flex flex-col justify-between"
+          class="p-6 rounded-xl bg-surface border border-border hover:border-primary/40 transition-all shadow-none flex flex-col justify-between"
         >
           <div>
             <div
@@ -279,7 +279,7 @@ const faqPageJson = JSON.stringify(faqPageSchema).replace(/</g, '\\u003c');
 
         <!-- Card 3: Deep Dive Features -->
         <div
-          class="p-6 rounded-2xl bg-surface border border-border hover:border-primary/40 transition-all shadow-sm flex flex-col justify-between"
+          class="p-6 rounded-xl bg-surface border border-border hover:border-primary/40 transition-all shadow-none flex flex-col justify-between"
         >
           <div>
             <div
@@ -306,7 +306,7 @@ const faqPageJson = JSON.stringify(faqPageSchema).replace(/</g, '\\u003c');
   </section>
 
   <!-- Closing Call To Action -->
-  <section class="py-14 sm:py-20 border-t border-border/50 bg-surface/40">
+  <section class="py-14 sm:py-20 border-t border-border/50 bg-surface">
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
       <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-text">
         Ready to Transform Your Customer Communications?
@@ -319,7 +319,7 @@ const faqPageJson = JSON.stringify(faqPageSchema).replace(/</g, '\\u003c');
       <div class="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4">
         <a
           href="/demo"
-          class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl text-sm font-semibold bg-primary text-white hover:bg-primary-hover shadow-md transition-all"
+          class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl text-sm font-semibold bg-primary text-white hover:bg-primary-hover shadow-none transition-all"
         >
           <span>Book a Free Live Demo</span>
           <Icon name="lucide:arrow-right" class="w-4 h-4" />
