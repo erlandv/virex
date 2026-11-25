@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     env:
-      SITE_URL: https://www.markchat.co.ke
+      SITE_URL: https://markchat.co.ke
       PUBLIC_CONTROL_PLANE_URL: http://localhost:5000
     steps:
       - uses: actions/checkout@v4

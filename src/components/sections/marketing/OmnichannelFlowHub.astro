@@ -1,51 +1,48 @@
 ---
 import MCContainer from '@/components/design-system/MCContainer.astro';
-import MCSectionHeading from '@/components/design-system/MCSectionHeading.astro';
 import MCIntegrationIcon from '@/components/design-system/MCIntegrationIcon.astro';
-import MCStatusBadge from '@/components/design-system/MCStatusBadge.astro';
 
 const channels = [
-  { id: 'whatsapp', name: 'WhatsApp Business Cloud', status: 'integration' as const },
-  { id: 'instagram', name: 'Instagram DM', status: 'integration' as const },
-  { id: 'messenger', name: 'Facebook Messenger', status: 'integration' as const },
-  { id: 'tiktok', name: 'TikTok Business Messaging', status: 'planned' as const },
-  { id: 'telegram', name: 'Telegram', status: 'integration' as const },
-  { id: 'email', name: 'Email Inbox', status: 'integration' as const },
-  { id: 'mpesa', name: 'M-Pesa Daraja', status: 'integration' as const },
-  { id: 'google', name: 'Google Sign-in', status: 'integration' as const },
-  { id: 'shopify', name: 'Shopify', status: 'integration' as const },
-  { id: 'website', name: 'Website Live Chat', status: 'integration' as const },
+  { id: 'whatsapp', name: 'WhatsApp' },
+  { id: 'mpesa', name: 'M-Pesa' },
+  { id: 'instagram', name: 'Instagram' },
+  { id: 'messenger', name: 'Messenger' },
+  { id: 'tiktok', name: 'TikTok' },
+  { id: 'telegram', name: 'Telegram' },
+  { id: 'shopify', name: 'Shopify' },
+  { id: 'email', name: 'Email' },
 ];
 ---
 
 <section
-  class="border-b border-border bg-background py-12 sm:py-16"
-  aria-label="Supported communication and commerce integration channels"
+  class="border-b border-border bg-surface py-10 sm:py-12"
+  aria-label="Customer channels and business integrations"
 >
-  <MCContainer>
-    <div class="mb-9">
-      <MCSectionHeading
-        eyebrow="Connected customer channels"
-        title="Meet customers where they already communicate"
-        description="Connect eligible channels using the relevant provider setup and approvals. Integration availability and rollout depend on your workspace and provider access."
-      />
+  <MCContainer class="max-w-[1360px]">
+    <div class="mb-6 flex flex-wrap items-end justify-between gap-3">
+      <div>
+        <p class="text-xs font-bold uppercase tracking-widest text-primary">
+          Work with your customers' channels
+        </p>
+        <h2 class="mt-2 text-xl font-bold text-text sm:text-2xl">
+          Conversations and commerce, connected.
+        </h2>
+      </div>
+      <a href="/integrations" class="text-sm font-semibold text-primary hover:underline"
+        >Integration setup and availability →</a
+      >
     </div>
-    <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+    <div class="grid grid-cols-4 items-center gap-3 sm:grid-cols-8">
       {
         channels.map((channel) => (
-          <div class="flex min-h-36 flex-col items-start justify-between gap-3 rounded-xl border border-border bg-surface-elevated p-4">
+          <div class="flex min-w-0 flex-col items-center gap-2.5 py-2 text-center">
             <MCIntegrationIcon iconKey={channel.id} name={channel.name} size="sm" />
-            <div class="space-y-2">
-              <h3 class="text-sm font-semibold leading-snug text-text">{channel.name}</h3>
-              <MCStatusBadge status={channel.status} />
-            </div>
+            <span class="text-[11px] font-medium leading-tight text-text-muted">
+              {channel.name}
+            </span>
           </div>
         ))
       }
     </div>
-    <p class="mt-6 text-xs leading-relaxed text-text-muted">
-      Channel names and logos belong to their respective owners. Provider activation, permissions
-      and integration readiness are verified during onboarding.
-    </p>
   </MCContainer>
 </section>

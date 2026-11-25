@@ -2,7 +2,7 @@
 import MCContainer from '@/components/design-system/MCContainer.astro';
 import MCButton from '@/components/design-system/MCButton.astro';
 import MCProductFrame from '@/components/design-system/MCProductFrame.astro';
-import MCStatusBadge from '@/components/design-system/MCStatusBadge.astro';
+import MCConceptualPreview from '@/components/design-system/MCConceptualPreview.astro';
 import { resolveProductAsset, type CmsProductMediaOverride } from '@/data/product-assets';
 
 interface Props {
@@ -15,9 +15,9 @@ interface Props {
 }
 
 const {
-  title = 'One inbox for customer conversations, AI-assisted responses, and M-Pesa payment workflows.',
-  subtitle = 'Built for Kenyan businesses. Manage supported customer channels, assist your team with Markcopilot, and connect configured M-Pesa payment workflows.',
-  badge = 'MARKCHAT FOR KENYAN BUSINESSES',
+  title = 'Every conversation. One smarter inbox.',
+  subtitle = 'Built for Kenyan businesses. Bring customer conversations, AI-assisted replies, and M-Pesa workflows together in one place.',
+  badge = 'BUILT FOR KENYAN BUSINESSES',
   primaryCTA = { label: 'Get Started', href: '/register' },
   secondaryCTA = { label: 'Book a Demo', href: '/demo' },
   cmsMedia,
@@ -25,6 +25,7 @@ const {
 
 const light = resolveProductAsset('inbox', 'light', cmsMedia);
 const dark = resolveProductAsset('inbox', 'dark', cmsMedia);
+const defaultTitle = title === 'Every conversation. One smarter inbox.';
 ---
 
 <section
@@ -32,58 +33,77 @@ const dark = resolveProductAsset('inbox', 'dark', cmsMedia);
   class="border-b border-border bg-background py-14 sm:py-20 lg:py-24"
   aria-labelledby="hero-heading"
 >
-  <MCContainer>
-    <div class="grid items-center gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:gap-14">
-      <div class="max-w-2xl">
+  <MCContainer class="max-w-[1360px]">
+    <div class="grid items-center gap-12 lg:grid-cols-[0.95fr_1.05fr] lg:gap-16">
+      <div class="max-w-xl">
         <p class="mb-5 text-xs font-bold uppercase tracking-widest text-primary">{badge}</p>
         <h1
           id="hero-heading"
-          class="text-4xl font-extrabold leading-tight tracking-tight text-text sm:text-5xl lg:text-[3.5rem]"
+          class="text-4xl font-bold leading-[1.1] tracking-tight text-text sm:text-5xl lg:text-6xl"
         >
-          {title}
+          {
+            defaultTitle ? (
+              <>
+                Every conversation.
+                <span class="mt-2 block text-primary">One smarter inbox.</span>
+              </>
+            ) : (
+              title
+            )
+          }
         </h1>
-        <p class="mt-6 max-w-xl text-base leading-relaxed text-text-muted sm:text-lg">
+        <p class="mt-6 max-w-lg text-base leading-relaxed text-text-muted sm:text-lg">
           {subtitle}
         </p>
-        <div class="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+        <div class="mt-8 flex flex-wrap gap-3">
           <MCButton href={primaryCTA.href}>{primaryCTA.label}</MCButton>
           <MCButton href={secondaryCTA.href} variant="secondary">{secondaryCTA.label}</MCButton>
         </div>
-        <div class="mt-8 flex flex-wrap items-center gap-3 text-xs text-text-muted">
-          <span class="rounded-md border border-border bg-surface px-3 py-2"
-            >Official channel setup</span
-          >
-          <span class="rounded-md border border-border bg-surface px-3 py-2"
-            >Human-reviewed AI assistance</span
-          >
-          <span class="rounded-md border border-border bg-surface px-3 py-2"
-            >Configured Daraja workflows</span
-          >
+        <div
+          class="mt-10 flex flex-wrap gap-x-6 gap-y-2 border-t border-border pt-5 text-xs font-medium text-text-muted"
+          aria-label="Capabilities"
+        >
+          <span>Shared conversations</span>
+          <span>AI-assisted replies</span>
+          <span>Configured M-Pesa</span>
         </div>
       </div>
-      <div class="min-w-0">
-        <div class="mb-3 flex flex-wrap items-center justify-between gap-2">
-          <span class="text-sm font-semibold text-text">MarkChat Shared Inbox</span>
-          <MCStatusBadge status="preview" label="Synthetic demo / product preview" />
-        </div>
-        <div class="dark:hidden">
-          <MCProductFrame
-            src={light.src}
-            alt={light.alt}
-            label="Unified Inbox demonstration preview"
-          />
-        </div>
-        <div class="hidden dark:block">
-          <MCProductFrame
-            src={dark.src}
-            alt={dark.alt}
-            label="Unified Inbox demonstration preview"
-          />
-        </div>
-        <p class="mt-3 text-xs leading-relaxed text-text-muted">
-          Product images are shown only after approved capture or CMS upload. Illustrative
-          placeholders do not represent live customer data.
-        </p>
+      <div class="relative min-w-0 pb-6 pt-3">
+        {
+          light.src || dark.src ? (
+            <>
+              <div class="dark:hidden">
+                <MCProductFrame
+                  src={light.src}
+                  alt={light.alt}
+                  label="Unified Inbox product demonstration"
+                />
+              </div>
+              <div class="hidden dark:block">
+                <MCProductFrame
+                  src={dark.src}
+                  alt={dark.alt}
+                  label="Unified Inbox product demonstration"
+                />
+              </div>
+            </>
+          ) : (
+            <div class="relative">
+              <div class="relative z-10 w-[92%] overflow-hidden rounded-2xl border border-border shadow-xl shadow-black/10 dark:shadow-black/30">
+                <MCConceptualPreview kind="inbox" class="rounded-2xl border-0" />
+              </div>
+              <div class="relative z-20 -mt-16 ml-auto w-[63%] max-w-sm drop-shadow-xl sm:-mt-20">
+                <MCConceptualPreview kind="mpesa" />
+              </div>
+              <div class="relative z-30 -mt-12 ml-5 w-[55%] max-w-xs drop-shadow-lg sm:-mt-16 sm:ml-10">
+                <MCConceptualPreview kind="markcopilot" />
+              </div>
+              <p class="mt-5 text-right text-xs text-text-muted">
+                Conceptual product preview · synthetic example content
+              </p>
+            </div>
+          )
+        }
       </div>
     </div>
   </MCContainer>

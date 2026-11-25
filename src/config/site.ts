@@ -9,7 +9,7 @@ import type { SocialLinks, LegalConfig } from '../lib/types';
 export const name = 'MarkChat';
 
 export const description =
-  'The omnichannel customer communication, bulk messaging, and in-chat M-Pesa checkout platform for Kenyan businesses.';
+  'One workspace for customer conversations, Markcopilot AI assistance, and configured M-Pesa payment workflows. Built for Kenyan businesses.';
 
 export const url = import.meta.env.SITE_URL || 'https://markchat.co.ke';
 

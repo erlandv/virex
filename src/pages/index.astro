@@ -58,10 +58,9 @@ function safeInternalPath(value: string | undefined, fallback: string): string {
   return fallback;
 }
 
-const heroTitle =
-  'One inbox for customer conversations, AI-assisted responses, and M-Pesa payment workflows.';
+const heroTitle = 'Every conversation. One smarter inbox.';
 const heroSubtitle =
-  'Built for Kenyan businesses. Connect supported messaging channels, collaborate in one workspace, review Markcopilot suggestions, and manage configured M-Pesa checkout workflows.';
+  'Built for Kenyan businesses. Manage conversations, review Markcopilot AI suggestions, and connect authorized M-Pesa payment workflows.';
 const cmsHeroTitle = cleanCoreCopy(homepageSettings.hero?.title, heroTitle);
 const cmsHeroSubtitle = cleanCoreCopy(homepageSettings.hero?.subtitle, heroSubtitle);
 const hasLegacyHeroActions =
@@ -403,15 +402,10 @@ const finalTitle = legacyDefaultCopy.test(closingTitle)
       <CTA
         title={finalTitle}
         description={closingDescription}
-        action={{
-          label: cleanCoreCopy(homepageSettings.closingCta?.primaryCtaLabel, 'Get Started'),
-          href: safeInternalPath(homepageSettings.closingCta?.primaryCtaHref, '/register'),
-        }}
-        secondaryAction={{
-          label: cleanCoreCopy(homepageSettings.closingCta?.secondaryCtaLabel, 'Book a Demo'),
-          href: safeInternalPath(homepageSettings.closingCta?.secondaryCtaHref, '/demo'),
-        }}
+        action={heroPrimaryAction}
+        secondaryAction={heroSecondaryAction}
         background="muted"
+        variant="dark"
       />
     )
   }

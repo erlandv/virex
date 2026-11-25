@@ -108,7 +108,7 @@ export const productMegaMenu: MegaMenuConfig = {
               label: 'WhatsApp Campaigns',
               href: '/features/whatsapp-campaigns',
               description:
-                'Blast bulk promotional messages and automated M-Pesa payment reminders.',
+                'Reach opted-in customers on WhatsApp and manage responses through connected conversations.',
               icon: 'lucide:send',
               badge: 'Meta',
             },

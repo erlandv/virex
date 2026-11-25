@@ -16,35 +16,23 @@ const controlPlaneUrl =
 
 <BaseLayout
   title={`Subscription & Billing — ${siteConfig.name} Kenya`}
-  description="Manage your MarkChat subscription, upgrade agent capacity, and renew via M-Pesa or Card."
+  description="Manage your MarkChat workspace subscription securely with M-Pesa or card."
 >
   <div
-    class="min-h-screen w-full bg-slate-50 dark:bg-[#0B1120] relative overflow-hidden px-4 py-12 transition-colors duration-200"
+    class="min-h-screen w-full bg-surface dark:bg-background relative overflow-hidden px-4 py-12 transition-colors duration-200"
     data-api-url={controlPlaneUrl}
     id="billing-portal-container"
   >
-    <!-- Ambient Background Glowing Orbs -->
-    <div
-      class="pointer-events-none absolute -top-40 left-1/2 -translate-x-1/2 w-[760px] h-[380px] bg-gradient-to-b from-blue-600/15 via-indigo-600/10 to-transparent dark:from-blue-600/25 dark:via-primary/10 dark:to-transparent rounded-full blur-3xl"
-      aria-hidden="true"
-    >
-    </div>
-    <div
-      class="pointer-events-none absolute -bottom-40 -left-20 w-[500px] h-[320px] bg-indigo-500/10 dark:bg-indigo-600/15 rounded-full blur-3xl"
-      aria-hidden="true"
-    >
-    </div>
-
     <div class="max-w-4xl mx-auto relative z-10">
       <!-- Top Navigation & Brand -->
       <div class="flex items-center justify-between mb-8">
         <a href="/" class="flex items-center gap-2 group">
           <div
-            class="w-9 h-9 rounded-xl bg-primary flex items-center justify-center text-white font-bold shadow-md shadow-primary/20"
+            class="w-9 h-9 rounded-xl bg-primary flex items-center justify-center text-white font-bold shadow-none"
           >
             M
           </div>
-          <span class="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
+          <span class="text-xl font-bold tracking-tight text-text">
             Mark<span class="text-primary">Chat</span>
           </span>
         </a>
@@ -64,12 +52,10 @@ const controlPlaneUrl =
         >
           Self-Service Billing
         </span>
-        <h1
-          class="text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white sm:text-4xl"
-        >
+        <h1 class="text-3xl font-extrabold tracking-tight text-text sm:text-4xl">
           Subscription & Plans
         </h1>
-        <p class="mt-2 text-sm text-slate-600 dark:text-slate-400 max-w-xl mx-auto">
+        <p class="mt-2 text-sm text-text-muted max-w-xl mx-auto">
           Upgrade your communication capacity with instant Safaricom M-Pesa STK Push or Card
           payment.
         </p>
@@ -78,14 +64,14 @@ const controlPlaneUrl =
       <!-- Active Subscription Summary Banner -->
       <div
         id="subscription-summary-card"
-        class="mb-8 p-6 rounded-2xl border border-slate-200/80 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4"
+        class="mb-8 p-6 rounded-xl border border-border bg-background dark:bg-surface shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4"
       >
         <div>
           <span class="text-xs font-bold uppercase tracking-wider text-slate-400"
             >Workspace subscription</span
           >
           <div class="flex items-center gap-3 mt-1">
-            <h2 id="current-plan-name" class="text-xl font-bold text-slate-900 dark:text-white">
+            <h2 id="current-plan-name" class="text-xl font-bold text-text">
               Confirm your subscription
             </h2>
             <span
@@ -95,47 +81,35 @@ const controlPlaneUrl =
               Verification required
             </span>
           </div>
-          <p id="current-plan-expiry-text" class="text-xs text-slate-500 dark:text-slate-400 mt-1">
+          <p id="current-plan-expiry-text" class="text-xs text-text-muted mt-1">
             Your exact plan and subscription status must be confirmed through the Control Plane.
             Core channel access depends on provisioning.
           </p>
         </div>
         <div class="flex flex-col sm:items-end gap-2 shrink-0">
           <div class="sm:text-right">
-            <span class="text-xs font-medium text-slate-500 dark:text-slate-400"
-              >Payment Currency</span
-            >
-            <p class="text-base font-bold text-slate-900 dark:text-white">KES (Kenyan Shillings)</p>
+            <span class="text-xs font-medium text-text-muted">Payment Currency</span>
+            <p class="text-base font-bold text-text">KES (Kenyan Shillings)</p>
           </div>
-          <button
-            type="button"
-            id="launch-sms-studio-btn"
-            class="cursor-pointer inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-sm transition-colors disabled:opacity-50"
-          >
-            <span id="sms-studio-btn-label">Launch SMS Studio &nearr;</span>
-          </button>
         </div>
       </div>
 
-      <p class="mb-5 text-sm text-slate-500 dark:text-slate-400">
-        This checkout covers recurring MarkChat Core workspace subscriptions only. Prepaid SMS
-        wallet top-ups and branded Sender IDs are purchased separately in SMS Studio, subject to
-        availability and approval.
+      <p class="mb-5 text-sm text-text-muted">
+        This checkout covers MarkChat Core workspace subscriptions only. Third-party channel and
+        payment provider fees are handled separately.
       </p>
       <!-- 3 Canonical Plans Selection Grid -->
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
         <!-- Starter Plan -->
         <label
-          class="relative flex flex-col p-5 rounded-2xl border-2 border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 cursor-pointer hover:border-primary/50 transition-all select-none has-checked:border-primary has-checked:ring-2 has-checked:ring-primary/20"
+          class="relative flex flex-col p-5 rounded-xl border-2 border-slate-200 dark:border-slate-800 bg-background dark:bg-surface cursor-pointer hover:border-primary/50 transition-all select-none has-checked:border-primary has-checked:ring-2 has-checked:ring-primary/20"
         >
           <input type="radio" name="planSelect" value="starter" class="sr-only" />
           <div class="flex items-center justify-between mb-2">
-            <span class="text-sm font-bold text-slate-900 dark:text-white">Starter</span>
+            <span class="text-sm font-bold text-text">Starter</span>
             <span class="text-xs font-semibold text-slate-500">KES 1,500/mo</span>
           </div>
-          <p class="text-xs text-slate-500 dark:text-slate-400 mb-3">
-            For micro-teams & emerging merchants.
-          </p>
+          <p class="text-xs text-text-muted mb-3">For micro-teams & emerging merchants.</p>
           <ul class="text-xs space-y-1.5 text-slate-600 dark:text-slate-300 mt-auto">
             <li class="flex items-center gap-1.5">&check; 3 Agent Seats</li>
             <li class="flex items-center gap-1.5">&check; 2 Connected Inboxes</li>
@@ -145,7 +119,7 @@ const controlPlaneUrl =
 
         <!-- Growth Plan (Recommended) -->
         <label
-          class="relative flex flex-col p-5 rounded-2xl border-2 border-primary bg-white dark:bg-slate-900 cursor-pointer shadow-md shadow-primary/10 transition-all select-none has-checked:border-primary has-checked:ring-2 has-checked:ring-primary/20"
+          class="relative flex flex-col p-5 rounded-xl border-2 border-primary bg-background dark:bg-surface cursor-pointer shadow-none transition-all select-none has-checked:border-primary has-checked:ring-2 has-checked:ring-primary/20"
         >
           <input type="radio" name="planSelect" value="growth" checked class="sr-only" />
           <div
@@ -154,16 +128,14 @@ const controlPlaneUrl =
             Recommended
           </div>
           <div class="flex items-center justify-between mb-2">
-            <span class="text-sm font-bold text-slate-900 dark:text-white">Growth</span>
+            <span class="text-sm font-bold text-text">Growth</span>
             <span class="text-xs font-bold text-primary">KES 3,500/mo</span>
           </div>
-          <p class="text-xs text-slate-500 dark:text-slate-400 mb-3">
-            For growing omnichannel businesses.
-          </p>
+          <p class="text-xs text-text-muted mb-3">For growing omnichannel businesses.</p>
           <ul class="text-xs space-y-1.5 text-slate-600 dark:text-slate-300 mt-auto">
             <li class="flex items-center gap-1.5">&check; 10 Agent Seats</li>
             <li class="flex items-center gap-1.5">&check; 5 Connected Inboxes</li>
-            <li class="flex items-center gap-1.5">&check; BYO SMS Gateway Integration</li>
+            <li class="flex items-center gap-1.5">&check; Connected customer inbox workflows</li>
             <li
               class="flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400 font-medium"
             >
@@ -174,20 +146,18 @@ const controlPlaneUrl =
 
         <!-- Scale Plan -->
         <label
-          class="relative flex flex-col p-5 rounded-2xl border-2 border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 cursor-pointer hover:border-primary/50 transition-all select-none has-checked:border-primary has-checked:ring-2 has-checked:ring-primary/20"
+          class="relative flex flex-col p-5 rounded-xl border-2 border-slate-200 dark:border-slate-800 bg-background dark:bg-surface cursor-pointer hover:border-primary/50 transition-all select-none has-checked:border-primary has-checked:ring-2 has-checked:ring-primary/20"
         >
           <input type="radio" name="planSelect" value="scale" class="sr-only" />
           <div class="flex items-center justify-between mb-2">
-            <span class="text-sm font-bold text-slate-900 dark:text-white">Scale</span>
+            <span class="text-sm font-bold text-text">Scale</span>
             <span class="text-xs font-semibold text-slate-500">KES 5,000/mo</span>
           </div>
-          <p class="text-xs text-slate-500 dark:text-slate-400 mb-3">
-            High-volume enterprises & agencies.
-          </p>
+          <p class="text-xs text-text-muted mb-3">High-volume enterprises & agencies.</p>
           <ul class="text-xs space-y-1.5 text-slate-600 dark:text-slate-300 mt-auto">
             <li class="flex items-center gap-1.5">&check; 25 Agent Seats</li>
             <li class="flex items-center gap-1.5">&check; Unlimited Inboxes</li>
-            <li class="flex items-center gap-1.5">&check; Custom Domain & Audit Logs</li>
+            <li class="flex items-center gap-1.5">&check; Team collaboration and routing</li>
             <li class="flex items-center gap-1.5">&check; High-Priority Queueing</li>
           </ul>
         </label>
@@ -195,9 +165,9 @@ const controlPlaneUrl =
 
       <!-- Checkout Configuration Card -->
       <div
-        class="p-6 sm:p-8 rounded-2xl border border-slate-200/80 dark:border-slate-800 bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl shadow-xl"
+        class="p-6 sm:p-8 rounded-xl border border-border bg-background dark:bg-surface shadow-none"
       >
-        <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-4">Payment Method</h3>
+        <h3 class="text-lg font-bold text-text mb-4">Payment Method</h3>
 
         <!-- Payment Method Toggle -->
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
@@ -212,14 +182,10 @@ const controlPlaneUrl =
               class="text-primary focus:ring-primary"
             />
             <div>
-              <span
-                class="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-1.5"
-              >
+              <span class="text-sm font-bold text-text flex items-center gap-1.5">
                 Safaricom M-Pesa
               </span>
-              <p class="text-xs text-slate-500 dark:text-slate-400">
-                Instant STK prompt on your mobile phone
-              </p>
+              <p class="text-xs text-text-muted">Instant STK prompt on your mobile phone</p>
             </div>
           </label>
 
@@ -233,14 +199,10 @@ const controlPlaneUrl =
               class="text-primary focus:ring-primary"
             />
             <div>
-              <span
-                class="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-1.5"
-              >
+              <span class="text-sm font-bold text-text flex items-center gap-1.5">
                 Debit / Credit Card
               </span>
-              <p class="text-xs text-slate-500 dark:text-slate-400">
-                Visa, Mastercard, & International Cards
-              </p>
+              <p class="text-xs text-text-muted">Visa, Mastercard, & International Cards</p>
             </div>
           </label>
         </div>
@@ -257,10 +219,10 @@ const controlPlaneUrl =
             type="tel"
             id="billingPhone"
             name="billingPhone"
-            class="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+            class="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-text text-sm focus:outline-none focus:ring-2 focus:ring-primary"
             placeholder="+254 712 345 678"
           />
-          <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">
+          <p class="text-xs text-text-muted mt-1">
             Enter the Safaricom phone number that should receive the STK PIN prompt.
           </p>
         </div>
@@ -278,7 +240,7 @@ const controlPlaneUrl =
         <button
           type="button"
           id="billing-checkout-btn"
-          class="w-full cursor-pointer px-6 py-4 rounded-xl bg-primary text-white font-bold hover:bg-primary-hover transition-colors shadow-lg shadow-primary/25 text-sm flex items-center justify-center gap-2 disabled:opacity-50"
+          class="w-full cursor-pointer px-6 py-4 rounded-xl bg-primary text-white font-bold hover:bg-primary-hover transition-colors shadow-none text-sm flex items-center justify-center gap-2 disabled:opacity-50"
         >
           <span id="btn-label">Proceed to Paystack Checkout &rarr;</span>
           <span id="btn-loading" class="hidden">
@@ -343,64 +305,6 @@ const controlPlaneUrl =
       // ignore parse
     }
   }
-
-  // Launch SMS Studio via single-use Control Plane SSO handoff
-  const smsStudioBtn = document.getElementById('launch-sms-studio-btn') as HTMLButtonElement | null;
-  const smsStudioLabel = document.getElementById('sms-studio-btn-label');
-
-  smsStudioBtn?.addEventListener('click', async () => {
-    hideError();
-    const token = localStorage.getItem('markchat_cp_token');
-    if (!token) {
-      showError('Please sign in to your workspace before launching SMS Studio.');
-      setTimeout(() => {
-        window.location.href = '/login?redirect=/billing';
-      }, 1200);
-      return;
-    }
-
-    smsStudioBtn.disabled = true;
-    if (smsStudioLabel) smsStudioLabel.textContent = 'Connecting SMS Studio...';
-
-    try {
-      const res = await fetch(`${apiUrl}/api/v1/auth/sms-studio-sso`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Accept: 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({}),
-      });
-
-      const body = await res.json().catch(() => ({}));
-      if (!res.ok) {
-        if (res.status === 401) {
-          showError('Session expired. Redirecting to workspace sign-in...');
-          setTimeout(() => {
-            window.location.href = '/login?redirect=/billing';
-          }, 1200);
-          return;
-        }
-        showError(
-          body.message || body.error?.message || 'Unable to launch SMS Studio for this workspace.'
-        );
-        return;
-      }
-
-      const ssoUrl = body.data?.url || body.url;
-      if (ssoUrl) {
-        window.open(ssoUrl, '_blank', 'noopener,noreferrer');
-      } else {
-        showError('No SMS Studio SSO URL returned from Control Plane.');
-      }
-    } catch {
-      showError('Unable to reach Control Plane server to initialize SMS Studio SSO.');
-    } finally {
-      smsStudioBtn.disabled = false;
-      if (smsStudioLabel) smsStudioLabel.textContent = 'Launch SMS Studio ↗';
-    }
-  });
 
   // Honor plan selection; block unsupported annual checkout rather than misbill.
   const intent = new URLSearchParams(window.location.search);

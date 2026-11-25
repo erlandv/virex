@@ -19,24 +19,17 @@ const controlPlaneUrl =
   description="Verification and settlement status for your MarkChat subscription payment."
 >
   <div
-    class="min-h-screen w-full flex items-center justify-center bg-slate-50 dark:bg-[#0B1120] relative overflow-hidden px-4 py-12 transition-colors duration-200"
+    class="min-h-screen w-full flex items-center justify-center bg-surface dark:bg-background relative overflow-hidden px-4 py-12 transition-colors duration-200"
     data-api-url={controlPlaneUrl}
     id="return-container"
   >
-    <!-- Ambient Background Glowing Orbs -->
-    <div
-      class="pointer-events-none absolute -top-40 left-1/2 -translate-x-1/2 w-[760px] h-[380px] bg-gradient-to-b from-blue-600/15 via-indigo-600/10 to-transparent dark:from-blue-600/25 dark:via-primary/10 dark:to-transparent rounded-full blur-3xl"
-      aria-hidden="true"
-    >
-    </div>
-
     <div class="w-full max-w-lg relative z-10">
       <div
-        class="p-8 rounded-3xl border border-slate-200/80 dark:border-slate-800 bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl shadow-2xl text-center"
+        class="p-8 rounded-xl border border-border bg-background dark:bg-surface shadow-none text-center"
       >
         <!-- Brand Emblem -->
         <div
-          class="mx-auto w-12 h-12 rounded-2xl bg-primary flex items-center justify-center text-white font-extrabold text-lg shadow-lg shadow-primary/25 mb-6"
+          class="mx-auto w-12 h-12 rounded-xl bg-primary flex items-center justify-center text-white font-extrabold text-lg shadow-none mb-6"
         >
           M
         </div>
@@ -47,10 +40,8 @@ const controlPlaneUrl =
             class="w-12 h-12 mx-auto border-4 border-primary/20 border-t-primary rounded-full animate-spin"
           >
           </div>
-          <h1 class="text-2xl font-bold text-slate-900 dark:text-white">
-            Verifying Transaction...
-          </h1>
-          <p class="text-sm text-slate-600 dark:text-slate-400">
+          <h1 class="text-2xl font-bold text-text">Verifying Transaction...</h1>
+          <p class="text-sm text-text-muted">
             Reconciling your payment with Paystack & Safaricom M-Pesa. Please keep this window open.
           </p>
         </div>
@@ -69,8 +60,8 @@ const controlPlaneUrl =
             </svg>
           </div>
           <div>
-            <h1 class="text-2xl font-extrabold text-slate-900 dark:text-white">Payment Settled!</h1>
-            <p class="text-sm text-slate-600 dark:text-slate-400 mt-1">
+            <h1 class="text-2xl font-extrabold text-text">Payment Settled!</h1>
+            <p class="text-sm text-text-muted mt-1">
               Your MarkChat subscription and channel entitlements have been refreshed.
             </p>
           </div>
@@ -99,7 +90,7 @@ const controlPlaneUrl =
           <a
             href="/"
             id="launch-workspace-btn"
-            class="block w-full py-3.5 px-6 rounded-xl bg-primary text-white font-bold hover:bg-primary-hover transition-colors shadow-lg shadow-primary/20 text-sm"
+            class="block w-full py-3.5 px-6 rounded-xl bg-primary text-white font-bold hover:bg-primary-hover transition-colors shadow-none text-sm"
           >
             Launch MarkChat Workspace &rarr;
           </a>
@@ -119,10 +110,8 @@ const controlPlaneUrl =
             </svg>
           </div>
           <div>
-            <h1 class="text-2xl font-extrabold text-slate-900 dark:text-white">
-              Payment Incomplete
-            </h1>
-            <p id="failed-reason" class="text-sm text-slate-600 dark:text-slate-400 mt-1">
+            <h1 class="text-2xl font-extrabold text-text">Payment Incomplete</h1>
+            <p id="failed-reason" class="text-sm text-text-muted mt-1">
               Your payment could not be confirmed or was cancelled.
             </p>
           </div>

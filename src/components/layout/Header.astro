@@ -22,9 +22,15 @@ const ghostCTAs = headerCtas.filter((cta) => cta.variant === 'ghost');
 const primaryCTA = headerCtas.find((cta) => cta.variant === 'primary');
 ---
 
-<header id="site-header" class="sticky top-0 z-50 p-1.5 bg-background border-b border-border">
-  <nav class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" aria-label="Main navigation">
-    <div class="flex items-center justify-between h-16">
+<header
+  id="site-header"
+  class="sticky top-0 z-50 mx-auto mt-4 w-full max-w-[85rem] px-4 sm:px-6 lg:px-8"
+>
+  <nav
+    class="relative mx-auto max-w-[85rem] rounded-2xl border border-border bg-surface/95 px-5 py-2 shadow-xs dark:bg-surface/95"
+    aria-label="Main navigation"
+  >
+    <div class="flex items-center justify-between min-h-12">
       <!-- Logo / Site Name -->
       <a href="/" class="flex items-center gap-2 font-semibold text-lg text-text shrink-0">
         {
@@ -40,7 +46,7 @@ const primaryCTA = headerCtas.find((cta) => cta.variant === 'primary');
       <div class="hidden lg:flex items-center gap-1 xl:gap-2">
         <!-- 1. Product Mega-Menu Trigger & Container -->
         <div
-          class="h-16 flex items-center relative mega-menu-container group"
+          class="min-h-12 flex items-center relative mega-menu-container group"
           data-menu="product"
           data-state="closed"
         >
@@ -222,7 +228,7 @@ const primaryCTA = headerCtas.find((cta) => cta.variant === 'primary');
 
         <!-- 2. Solutions Mega-Menu Trigger & Container -->
         <div
-          class="h-16 flex items-center relative mega-menu-container group"
+          class="min-h-12 flex items-center relative mega-menu-container group"
           data-menu="solutions"
           data-state="closed"
         >
@@ -404,7 +410,7 @@ const primaryCTA = headerCtas.find((cta) => cta.variant === 'primary');
 
         <!-- 3. Resources Mega-Menu Trigger & Container -->
         <div
-          class="h-16 flex items-center relative mega-menu-container group"
+          class="min-h-12 flex items-center relative mega-menu-container group"
           data-menu="resources"
           data-state="closed"
         >
@@ -643,7 +649,7 @@ const primaryCTA = headerCtas.find((cta) => cta.variant === 'primary');
   <div id="mobile-menu-backdrop" class="absolute inset-0 bg-black/60"></div>
   <nav
     id="mobile-menu-panel"
-    class="absolute left-0 right-0 bg-background border-b border-border max-h-[calc(100vh-4.5rem)] overflow-y-auto"
+    class="absolute top-20 left-4 right-4 max-h-[calc(100vh-6rem)] overflow-y-auto rounded-2xl border border-border bg-surface shadow-lg"
     aria-label="Mobile navigation"
   >
     <div class="px-4 py-6 space-y-4">

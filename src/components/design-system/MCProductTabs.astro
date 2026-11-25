@@ -4,20 +4,21 @@ interface Props {
 }
 const { class: className = '' } = Astro.props;
 const tabs = [
-  { id: 'inbox', label: 'Unified Inbox' },
-  { id: 'mpesa', label: 'M-Pesa /stk' },
-  { id: 'markcopilot', label: 'Markcopilot AI' },
+  { id: 'inbox', label: 'Unified Inbox', description: 'Bring connected conversations together.' },
+  { id: 'mpesa', label: 'M-Pesa Checkout', description: 'Follow configured checkout workflows.' },
+  { id: 'markcopilot', label: 'Markcopilot AI', description: 'Review helpful reply suggestions.' },
 ];
 ---
 
 <div
   data-mc-product-tabs
-  class:list={['rounded-xl border border-border bg-surface-elevated', className]}
+  class:list={['grid gap-6 lg:grid-cols-[320px_minmax(0,1fr)] lg:gap-10', className]}
 >
   <div
     role="tablist"
     aria-label="MarkChat product workflows"
-    class="flex flex-wrap gap-1 border-b border-border p-2"
+    aria-orientation="vertical"
+    class="flex gap-2 overflow-x-auto pb-1 lg:flex-col lg:overflow-visible"
   >
     {
       tabs.map((tab, index) => (
@@ -30,47 +31,45 @@ const tabs = [
           aria-selected={index === 0 ? 'true' : 'false'}
           tabindex={index === 0 ? 0 : -1}
           class:list={[
-            'min-h-11 flex-1 rounded-lg border px-3 text-sm font-semibold focus-visible:outline-2 focus-visible:outline-primary',
+            'min-w-48 shrink-0 rounded-xl border px-5 py-4 text-left focus-visible:outline-2 focus-visible:outline-primary lg:w-full',
             index === 0
-              ? 'border-primary bg-surface text-text'
-              : 'border-transparent text-text-muted',
+              ? 'border-primary bg-surface-elevated text-text'
+              : 'border-transparent bg-transparent text-text-muted',
           ]}
         >
-          {tab.label}
+          <span class="block text-base font-semibold">{tab.label}</span>
+          <span class="mt-2 hidden text-xs leading-relaxed text-text-muted lg:block">
+            {tab.description}
+          </span>
         </button>
       ))
     }
   </div>
-  <div
-    id="mc-panel-inbox"
-    data-mc-panel="inbox"
-    role="tabpanel"
-    aria-labelledby="mc-tab-inbox"
-    class="p-3 sm:p-5"
-  >
-    <slot name="inbox" />
-  </div>
-  <div
-    id="mc-panel-mpesa"
-    data-mc-panel="mpesa"
-    role="tabpanel"
-    aria-labelledby="mc-tab-mpesa"
-    class="p-3 sm:p-5"
-    hidden
-  >
-    <slot name="mpesa" />
-  </div>
-  <div
-    id="mc-panel-markcopilot"
-    data-mc-panel="markcopilot"
-    role="tabpanel"
-    aria-labelledby="mc-tab-markcopilot"
-    class="p-3 sm:p-5"
-    hidden
-  >
-    <slot name="markcopilot" />
+  <div class="min-w-0 rounded-2xl border border-border bg-surface-elevated p-3 sm:p-5">
+    <div id="mc-panel-inbox" data-mc-panel="inbox" role="tabpanel" aria-labelledby="mc-tab-inbox">
+      <slot name="inbox" />
+    </div>
+    <div
+      id="mc-panel-mpesa"
+      data-mc-panel="mpesa"
+      role="tabpanel"
+      aria-labelledby="mc-tab-mpesa"
+      hidden
+    >
+      <slot name="mpesa" />
+    </div>
+    <div
+      id="mc-panel-markcopilot"
+      data-mc-panel="markcopilot"
+      role="tabpanel"
+      aria-labelledby="mc-tab-markcopilot"
+      hidden
+    >
+      <slot name="markcopilot" />
+    </div>
   </div>
 </div>
+
 <script>
   function initMCProductTabs() {
     document.querySelectorAll<HTMLElement>('[data-mc-product-tabs]').forEach((root) => {
@@ -83,9 +82,10 @@ const tabs = [
           tab.setAttribute('aria-selected', String(active));
           tab.tabIndex = active ? 0 : -1;
           tab.classList.toggle('border-primary', active);
-          tab.classList.toggle('bg-surface', active);
+          tab.classList.toggle('bg-surface-elevated', active);
           tab.classList.toggle('text-text', active);
           tab.classList.toggle('border-transparent', !active);
+          tab.classList.toggle('bg-transparent', !active);
           tab.classList.toggle('text-text-muted', !active);
         });
         root.querySelectorAll<HTMLElement>('[data-mc-panel]').forEach((panel) => {
@@ -95,20 +95,25 @@ const tabs = [
       tabs.forEach((tab, index) => {
         tab.addEventListener('click', () => activate(index));
         tab.addEventListener('keydown', (event) => {
-          if (!['ArrowRight', 'ArrowLeft', 'Home', 'End'].includes(event.key)) return;
+          if (
+            !['ArrowRight', 'ArrowLeft', 'ArrowUp', 'ArrowDown', 'Home', 'End'].includes(event.key)
+          )
+            return;
           event.preventDefault();
+          const forward = event.key === 'ArrowRight' || event.key === 'ArrowDown';
           const next =
             event.key === 'Home'
               ? 0
               : event.key === 'End'
                 ? tabs.length - 1
-                : (index + (event.key === 'ArrowRight' ? 1 : -1) + tabs.length) % tabs.length;
+                : (index + (forward ? 1 : -1) + tabs.length) % tabs.length;
           activate(next);
           tabs[next]?.focus();
         });
       });
     });
   }
+
   initMCProductTabs();
   document.addEventListener('astro:page-load', initMCProductTabs);
 </script>

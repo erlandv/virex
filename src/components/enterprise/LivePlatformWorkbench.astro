@@ -2,14 +2,12 @@
 import MCContainer from '@/components/design-system/MCContainer.astro';
 import MCProductTabs from '@/components/design-system/MCProductTabs.astro';
 import MCSectionHeading from '@/components/design-system/MCSectionHeading.astro';
-import MCStatusBadge from '@/components/design-system/MCStatusBadge.astro';
 import MCWorkflowPreview from '@/components/design-system/MCWorkflowPreview.astro';
 import type { ProductWorkflow, CmsProductMediaOverride } from '@/data/product-assets';
 
 interface Props {
   cmsMedia?: Partial<Record<ProductWorkflow, CmsProductMediaOverride | null>>;
 }
-
 const { cmsMedia = {} } = Astro.props;
 ---
 
@@ -18,33 +16,32 @@ const { cmsMedia = {} } = Astro.props;
   aria-label="Explore three MarkChat product workflows"
   class="border-b border-border bg-surface py-12 sm:py-16 lg:py-24"
 >
-  <MCContainer>
-    <div class="mb-10 flex flex-col justify-between gap-4 lg:flex-row lg:items-end">
+  <MCContainer class="max-w-[1360px]">
+    <div class="mb-10 max-w-3xl">
       <MCSectionHeading
         eyebrow="Explore MarkChat"
-        title="See your customer workflows in one place"
-        description="Three product views for Kenyan teams. Verified images will use synthetic demonstration data."
+        title="See the workflows behind better customer conversations"
+        description="Explore three connected product experiences designed for Kenyan teams."
       />
-      <MCStatusBadge status="preview" label="Illustrative demonstrations" />
     </div>
     <MCProductTabs>
       <MCWorkflowPreview
         slot="inbox"
         workflow="inbox"
         cmsMedia={cmsMedia.inbox}
-        description="Manage connected conversations in one workspace, with team assignment and customer context."
+        description="Manage eligible customer channels, shared context, and team assignments in one place."
       />
       <MCWorkflowPreview
         slot="mpesa"
         workflow="mpesa"
         cmsMedia={cmsMedia.mpesa}
-        description="Preview an M-Pesa /stk checkout workflow. Live transactions require configured merchant credentials and provider approval."
+        description="Explore configured Daraja checkout requests and provider-verified payment outcomes."
       />
       <MCWorkflowPreview
         slot="markcopilot"
         workflow="markcopilot"
         cmsMedia={cmsMedia.markcopilot}
-        description="Review Markcopilot's AI-assisted replies before an authorized agent chooses to send."
+        description="Draft contextual replies and let an authorized agent review them before sending."
       />
     </MCProductTabs>
   </MCContainer>

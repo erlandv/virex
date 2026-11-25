@@ -33,12 +33,9 @@ test('Gate 3 homepage source composition and CMS compatibility', async (t) => {
   const dashboard = read('src/pages/dashboard/homepage.astro');
 
   await t.test('ScrewFast-inspired hero has correct product-first message and CTAs', () => {
-    assert.match(
-      hero,
-      /One inbox for customer conversations, AI-assisted responses, and M-Pesa payment workflows/
-    );
+    assert.match(hero, /Every conversation\. One smarter inbox\./);
     assert.match(index, /Built for Kenyan businesses/);
-    assert.match(hero, /lg:grid-cols-\[1\.1fr_0\.9fr\]/);
+    assert.match(hero, /lg:grid-cols-\[0\.95fr_1\.05fr\]/);
     assert.match(hero, /label: 'Get Started', href: '\/register'/);
     assert.match(hero, /label: 'Book a Demo', href: '\/demo'/);
     assert.doesNotMatch(index, /SupportHero3D/);
@@ -168,7 +165,7 @@ test('Gate 3 built homepage renders safely without verified screenshots', async 
 
   await t.test('document has metadata, new hero and lead conversion actions', () => {
     assert.match(html, /<!doctype html>/i);
-    assert.match(html, /One inbox for customer conversations/i);
+    assert.match(html, /Every conversation/i);
     assert.match(html, /Built for Kenyan businesses/i);
     assert.match(html, /Get Started/i);
     assert.match(html, /Book a Demo/i);
@@ -179,7 +176,7 @@ test('Gate 3 built homepage renders safely without verified screenshots', async 
     assert.match(html, /Unified Inbox/);
     assert.match(html, /M-Pesa \/stk/);
     assert.match(html, /Markcopilot AI/);
-    assert.match(html, /data-screenshot-fallback/);
+    assert.match(html, /data-mc-conceptual-product/);
     assert.doesNotMatch(html, /<img[^>]+src="(?:undefined|null|)"/i);
   });
 

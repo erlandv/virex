@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync, existsSync } from 'node:fs';
+import { spawnSync } from 'node:child_process';
 
 const read = (path) => readFileSync(path, 'utf8');
 
@@ -8,7 +9,7 @@ test('Gate 1 retains the Virex palette and introduces flat solid surfaces', () =
   const css = read('src/styles/global.css');
   assert.match(css, /--color-primary:\s*oklch\(0\.55 0\.2 265\)/);
   assert.match(css, /--color-secondary:\s*oklch\(0\.65 0\.25 350\)/);
-  for (const neutral of ['#ffffff', '#f8fafc', '#171717', '#262626', '#e2e8f0', '#334155']) {
+  for (const neutral of ['#f5f5f4', '#ffffff', '#171717', '#262626', '#e5e5e5', '#404040']) {
     assert.ok(css.toLowerCase().includes(neutral), 'Missing neutral ' + neutral);
   }
   assert.match(css, /@custom-variant dark/);
@@ -27,7 +28,7 @@ test('Gate 1 keeps marketing navigation free of SMS promotions', () => {
   assert.match(header, /data-menu="product"/);
   assert.match(header, /data-menu="solutions"/);
   assert.match(header, /data-menu="resources"/);
-  assert.match(header, /bg-background border-b border-border/);
+  assert.match(header, /rounded-2xl border border-border bg-surface\/95/);
 });
 
 test('Gate 1 provides every planned reusable MC component', () => {
@@ -67,6 +68,84 @@ test('Gate 2 includes seven solid-color Virex SVG concepts without gradients', (
     assert.doesNotMatch(svg, /<linearGradient|<radialGradient|filter="url\(/i);
     assert.match(svg, /oklch\(0\.55 0\.2 265\)|#f8fafc/i);
   }
+});
+
+test('P0 all seven SVG illustrations are strict well-formed XML', () => {
+  const ids = [
+    'unified-inbox',
+    'mpesa-stk',
+    'markcopilot',
+    'automation-routing',
+    'contact-crm',
+    'help-center',
+    'analytics-webhooks',
+  ];
+  const python = process.platform === 'win32' ? 'py' : 'python3';
+  for (const id of ids) {
+    const pathname = 'public/media/illustrations/' + id + '.svg';
+    const result = spawnSync(
+      python,
+      [
+        ...(process.platform === 'win32' ? ['-3'] : []),
+        '-c',
+        'import sys, xml.etree.ElementTree as ET; root=ET.parse(sys.argv[1]).getroot(); assert root.tag == "{http://www.w3.org/2000/svg}svg"',
+        pathname,
+      ],
+      { encoding: 'utf8' }
+    );
+    assert.equal(
+      result.status,
+      0,
+      'Invalid SVG XML or missing Python 3: ' +
+        pathname +
+        '\\n' +
+        (result.stderr || result.error || '')
+    );
+  }
+});
+
+test('P0 all seven public SVG assets load from the built preview', async () => {
+  for (const id of [
+    'unified-inbox',
+    'mpesa-stk',
+    'markcopilot',
+    'automation-routing',
+    'contact-crm',
+    'help-center',
+    'analytics-webhooks',
+  ]) {
+    const response = await fetch('http://localhost:4321/media/illustrations/' + id + '.svg', {
+      signal: AbortSignal.timeout(6000),
+    });
+    assert.equal(response.status, 200, id + ' must load');
+    assert.match(response.headers.get('content-type') || '', /image\/svg\+xml/i);
+    const content = await response.text();
+    assert.match(content, /<svg/);
+  }
+});
+
+test('P0 canonical CI hostname and Core-only registration copy', () => {
+  const workflow = read('.github/workflows/marketing-quality.yml');
+  assert.match(workflow, /SITE_URL:\s*https:\/\/markchat\.co\.ke/);
+  assert.doesNotMatch(workflow, /www\.markchat\.co\.ke/);
+  assert.doesNotMatch(read('src/config/site.ts'), /bulk messaging/i);
+  assert.doesNotMatch(read('src/components/forms/RegisterForm.astro'), /SMS alerts/i);
+  assert.doesNotMatch(read('src/data/navigation.ts'), /Blast bulk promotional/i);
+});
+
+test('P1 two-tone hero, vertical accessible tabs and asymmetrical capability hierarchy', () => {
+  const hero = read('src/components/sections/marketing/Hero.astro');
+  const tabs = read('src/components/design-system/MCProductTabs.astro');
+  const bento = read('src/components/design-system/MCFeatureBento.astro');
+  const pricing = read('src/components/sections/pricing/PricingTable.astro');
+  assert.match(hero, /One smarter inbox/);
+  assert.match(hero, /lg:text-6xl/);
+  assert.match(hero, /MCConceptualPreview/);
+  assert.match(hero, /MCProductFrame/);
+  assert.match(tabs, /aria-orientation="vertical"/);
+  assert.match(tabs, /ArrowDown/);
+  assert.match(bento, /features\.slice\(3\)/);
+  assert.match(pricing, /ring-primary\/20/);
 });
 
 test('Gate 2 capture defaults to unverified and CMS-overrides precede bundled captures', () => {

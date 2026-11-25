@@ -37,9 +37,17 @@ interface Props {
   secondaryAction?: { label: string; href: string };
   /** Section background style */
   background?: 'default' | 'muted' | 'accent';
+  variant?: 'standard' | 'dark';
 }
 
-const { title, description, action, secondaryAction, background = 'default' } = Astro.props;
+const {
+  title,
+  description,
+  action,
+  secondaryAction,
+  background = 'default',
+  variant = 'standard',
+} = Astro.props;
 
 const bgClass = {
   default: 'bg-background',
@@ -51,12 +59,27 @@ const bgClass = {
 <section class:list={['border-b border-border py-12 sm:py-16 lg:py-24', bgClass]}>
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div
-      class="rounded-xl border border-border bg-surface-elevated px-6 py-12 text-center sm:px-10 sm:py-16"
+      class:list={[
+        'rounded-2xl border px-6 py-12 text-center sm:px-10 sm:py-16',
+        variant === 'dark'
+          ? 'border-[#404040] bg-[#171717] text-white'
+          : 'border-border bg-surface-elevated text-text',
+      ]}
     >
-      <h2 class="text-3xl font-bold text-text sm:text-4xl">
+      <h2
+        class:list={[
+          'text-3xl font-bold sm:text-4xl',
+          variant === 'dark' ? 'text-white' : 'text-text',
+        ]}
+      >
         {title}
       </h2>
-      <p class="mx-auto mt-4 max-w-2xl text-base leading-relaxed text-text-muted sm:text-lg">
+      <p
+        class:list={[
+          'mx-auto mt-4 max-w-2xl text-base leading-relaxed sm:text-lg',
+          variant === 'dark' ? 'text-neutral-300' : 'text-text-muted',
+        ]}
+      >
         {description}
       </p>
       <div class="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
@@ -70,7 +93,12 @@ const bgClass = {
           secondaryAction && (
             <a
               href={secondaryAction.href}
-              class="inline-flex min-h-11 items-center justify-center rounded-lg border border-border bg-background px-6 py-3 text-sm font-semibold text-text transition-colors hover:border-primary/50"
+              class:list={[
+                'inline-flex min-h-11 items-center justify-center rounded-lg border px-6 py-3 text-sm font-semibold transition-colors',
+                variant === 'dark'
+                  ? 'border-neutral-500 bg-[#262626] text-white hover:border-primary'
+                  : 'border-border bg-background text-text hover:border-primary/50',
+              ]}
             >
               {secondaryAction.label}
             </a>
