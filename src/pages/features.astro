@@ -454,7 +454,7 @@ const markcopilotCapabilities = [
   <!-- ======================================================== -->
   <!-- SECTION K: CLOSING CTA                                   -->
   <!-- ======================================================== -->
-  <section class="py-20 sm:py-28 relative overflow-hidden bg-slate-900 text-white">
+  <section class="border-y border-border bg-surface py-16 sm:py-24 text-text">
     <!-- Background Ambient Glow -->
     <div
       class="absolute inset-0 bg-background   hidden pointer-events-none"
@@ -463,7 +463,7 @@ const markcopilotCapabilities = [
 
     <div class="relative max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-6">
       <div
-        class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-background text-slate-200 text-xs font-bold tracking-wide uppercase"
+        class="inline-flex items-center gap-2 px-3 py-1 rounded-md border border-border bg-background text-primary text-xs font-bold tracking-wide uppercase"
       >
         <Icon name="lucide:shield-check" class="w-3.5 h-3.5 text-emerald-400" />
         <span>Kenyan Conversational Commerce</span>
@@ -473,7 +473,7 @@ const markcopilotCapabilities = [
         {settings.closingCta.heading}
       </h2>
 
-      <p class="text-base sm:text-lg text-slate-300 max-w-2xl mx-auto leading-relaxed">
+      <p class="text-base sm:text-lg text-text-muted max-w-2xl mx-auto leading-relaxed">
         {settings.closingCta.description}
       </p>
 
@@ -487,18 +487,18 @@ const markcopilotCapabilities = [
         </a>
         <a
           href={settings.closingCta.secondaryCtaHref || '/pricing'}
-          class="w-full sm:w-auto inline-flex items-center justify-center px-8 py-4 rounded-xl font-bold text-sm text-slate-200 bg-background hover:bg-background border border-white/20 transition-all"
+          class="w-full sm:w-auto inline-flex items-center justify-center px-8 py-4 rounded-xl font-bold text-sm text-text bg-background hover:bg-surface border border-border transition-colors"
         >
           <Icon name="lucide:credit-card" class="w-4 h-4 mr-2" />
           {settings.closingCta.secondaryCtaLabel || 'Explore Plans & Pricing'}
         </a>
       </div>
 
-      <div class="pt-6 flex flex-wrap items-center justify-center gap-6 text-xs text-slate-400">
+      <div class="pt-6 flex flex-wrap items-center justify-center gap-6 text-xs text-text-muted">
         <span>&bull; Nairobi GMT+03:00 Support</span>
         <span>&bull; Safaricom Daraja Ready</span>
-        <span>&bull; Africa's Talking BYOC</span>
-        <span>&bull; No Per-Message Markup</span>
+        <span>&bull; Agent-assisted conversations</span>
+        <span>&bull; Provider configuration required</span>
       </div>
     </div>
   </section>
