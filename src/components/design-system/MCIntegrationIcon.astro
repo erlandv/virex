@@ -1,6 +1,24 @@
 ---
-import IntegrationIcon from '@/components/ui/IntegrationIcon.astro';
+import { Icon } from 'astro-icon/components';
 interface Props { iconKey: string; name: string; logoUrl?: string; size?: 'sm'|'md'|'lg'|'xl'; }
 const { iconKey, name, logoUrl, size = 'md' } = Astro.props;
+const brands: Record<string, { symbol: string; color: string }> = {
+  whatsapp: { symbol: 'simple-icons:whatsapp', color: '#25D366' },
+  instagram: { symbol: 'simple-icons:instagram', color: '#E4405F' },
+  messenger: { symbol: 'simple-icons:messenger', color: '#0099FF' },
+  'facebook-messenger': { symbol: 'simple-icons:messenger', color: '#0099FF' },
+  tiktok: { symbol: 'simple-icons:tiktok', color: 'currentColor' },
+  telegram: { symbol: 'simple-icons:telegram', color: '#26A5E4' },
+  google: { symbol: 'simple-icons:google', color: '#4285F4' },
+  shopify: { symbol: 'simple-icons:shopify', color: '#7AB55C' },
+  email: { symbol: 'lucide:mail', color: 'currentColor' },
+  mpesa: { symbol: 'lucide:wallet-cards', color: 'currentColor' },
+};
+const selected = brands[iconKey.toLowerCase()] || { symbol: 'lucide:blocks', color: 'currentColor' };
+const widths = { sm: 'h-9 w-9', md: 'h-12 w-12', lg: 'h-14 w-14', xl: 'h-16 w-16' };
+const iconWidths = { sm: 'h-5 w-5', md: 'h-6 w-6', lg: 'h-8 w-8', xl: 'h-9 w-9' };
+const safeLocalLogo = logoUrl?.startsWith('/') && !logoUrl.startsWith('//') && !logoUrl.includes('\\') ? logoUrl : null;
 ---
-<IntegrationIcon iconKey={iconKey} logoUrl={logoUrl} name={name} size={size} />
+<span role="img" aria-label={name} class:list={['inline-flex shrink-0 items-center justify-center rounded-lg border border-border bg-surface-elevated text-text', widths[size]]}>
+  {safeLocalLogo ? <img src={safeLocalLogo} alt="" class:list={['object-contain', iconWidths[size]]} loading="lazy" /> : <Icon name={selected.symbol} class:list={[iconWidths[size]]} style={'color: ' + selected.color} aria-hidden="true" />}
+</span>
