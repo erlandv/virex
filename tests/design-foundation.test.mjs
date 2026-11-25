@@ -103,7 +103,16 @@ test('Gate 3 keeps clean fallback media behavior until approved Core captures ex
   const frame = read('src/components/design-system/MCProductFrame.astro');
   const preview = read('src/components/design-system/MCWorkflowPreview.astro');
   const workbench = read('src/components/enterprise/LivePlatformWorkbench.astro');
-  assert.equal(manifest.verified, false);
+  assert.equal(typeof manifest.verified, 'boolean');
+  if (manifest.verified) {
+    for (const workflow of ['inbox', 'mpesa', 'markcopilot']) {
+      for (const theme of ['light', 'dark']) {
+        const url = manifest[workflow]?.[theme];
+        assert.ok(url?.startsWith('/media/product/'), 'Missing verified screenshot ' + workflow + '/' + theme);
+        assert.ok(existsSync('public' + url), 'Screenshot file missing: ' + url);
+      }
+    }
+  }
   assert.match(frame, /data-mc-media-fallback/);
   assert.match(frame, /addEventListener\('error', showFallback\)/);
   assert.match(frame, /MCScreenshotFallback/);
