@@ -63,6 +63,7 @@ interface Props {
   footerLink?: { label: string; href: string };
   /** Section background style */
   background?: 'default' | 'muted' | 'accent';
+  flatPreview?: boolean;
 }
 
 const {
@@ -73,6 +74,7 @@ const {
   defaultPeriod = 'monthly',
   footerLink,
   background = 'default',
+  flatPreview = false,
 } = Astro.props;
 
 const hasHeading = title || subtitle;
@@ -95,6 +97,70 @@ function formatPrice(price: number): string {
 }
 ---
 
+{flatPreview && (
+  <section class="border-b border-border bg-surface py-12 sm:py-16 lg:py-24" aria-label="MarkChat Core subscription pricing">
+    <div class="mx-auto max-w-[1200px] px-5 sm:px-8 lg:px-10">
+      <div class="mb-10 max-w-3xl">
+        {title && <h2 class="text-3xl font-bold tracking-tight text-text sm:text-4xl">{title}</h2>}
+        {subtitle && <p class="mt-4 text-base leading-relaxed text-text-muted">{subtitle}</p>}
+      </div>
+      <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+        {plans.map((plan) => (
+          <article
+            class:list={[
+              'flex flex-col rounded-xl border bg-surface-elevated p-6',
+              plan.highlighted ? 'border-primary' : 'border-border',
+            ]}
+          >
+            <div>
+              <p class="text-xs font-semibold uppercase tracking-wider text-primary">
+                {plan.badge || (plan.highlighted ? 'Popular plan' : 'Workspace subscription')}
+              </p>
+              <h3 class="mt-3 text-xl font-bold text-text">{plan.name}</h3>
+              <p class="mt-2 min-h-16 text-sm leading-relaxed text-text-muted">{plan.description}</p>
+              <p class="mt-5 text-3xl font-extrabold text-text">
+                {plan.monthlyPrice === null ? plan.customPrice || 'Custom' : formatPrice(plan.monthlyPrice)}
+                {plan.monthlyPrice !== null && <span class="text-sm font-normal text-text-muted"> / month</span>}
+              </p>
+            </div>
+            <ul class="mt-6 flex-1 space-y-3 border-t border-border pt-5">
+              {plan.features.map((feature) => (
+                <li class="flex items-start gap-2 text-sm leading-relaxed text-text-muted">
+                  <Icon name="lucide:check" class="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+                  <span>{feature}</span>
+                </li>
+              ))}
+            </ul>
+            <a
+              href={plan.cta.href}
+              class:list={[
+                'mt-7 inline-flex min-h-11 items-center justify-center rounded-lg border px-4 py-3 text-sm font-semibold transition-colors',
+                plan.highlighted
+                  ? 'border-primary bg-primary text-white hover:bg-primary-dark'
+                  : 'border-border bg-background text-text hover:border-primary/50',
+              ]}
+            >
+              {plan.cta.label}
+            </a>
+          </article>
+        ))}
+      </div>
+      {footerLink && (
+        <div class="mt-9">
+          <a href={footerLink.href} class="text-sm font-semibold text-primary hover:underline">
+            {footerLink.label}
+          </a>
+        </div>
+      )}
+      <p class="mt-5 text-xs text-text-muted">
+        Prices and availability follow the current subscription catalog. Provider charges and
+        integrations may require separate agreements. Annual checkout is not shown.
+      </p>
+    </div>
+  </section>
+)}
+)}
+{!flatPreview && (
 <section class:list={['py-section', bgClass]}>
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     {/* Section Header */}
