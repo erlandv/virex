@@ -1,0 +1,33 @@
+---
+import MCProductFrame from '@/components/design-system/MCProductFrame.astro';
+import type { ProductWorkflow, CmsProductMediaOverride } from '@/data/product-assets';
+import { resolveProductAsset, productWorkflows } from '@/data/product-assets';
+
+interface Props {
+  workflow: ProductWorkflow;
+  description: string;
+  cmsMedia?: CmsProductMediaOverride | null;
+}
+const { workflow, description, cmsMedia } = Astro.props;
+const name = productWorkflows[workflow].title;
+const light = resolveProductAsset(workflow, 'light', cmsMedia);
+const dark = resolveProductAsset(workflow, 'dark', cmsMedia);
+---
+
+<div class="grid gap-6 lg:grid-cols-[1fr_300px] lg:items-center">
+  <div class="min-w-0">
+    <div class="dark:hidden">
+      <MCProductFrame src={light.src} alt={light.alt} label={name + ' preview pending'} />
+    </div>
+    <div class="hidden dark:block">
+      <MCProductFrame src={dark.src} alt={dark.alt} label={name + ' preview pending'} />
+    </div>
+  </div>
+  <div class="space-y-3">
+    <h3 class="text-xl font-bold text-text">{name}</h3>
+    <p class="text-sm leading-relaxed text-text-muted">{description}</p>
+    <p class="rounded-lg border border-border bg-surface p-3 text-xs leading-relaxed text-text-muted">
+      Verified Core screenshots are not yet available. Any future screenshot will use synthetic data with no real customer or payment activity.
+    </p>
+  </div>
+</div>
