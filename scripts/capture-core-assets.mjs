@@ -50,7 +50,9 @@ let successful = 0;
 try {
   for (const workflow of workflowIds) {
     for (const theme of ['light', 'dark']) {
+      const demoStorageState = arg('storage-state', '');
       const context = await browser.newContext({
+        ...(demoStorageState ? { storageState: path.resolve(root, demoStorageState) } : {}),
         viewport: { width: 1600, height: 1000 },
         colorScheme: theme,
         serviceWorkers: 'block',
