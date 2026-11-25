@@ -24,7 +24,7 @@ const primaryCTA = headerCtas.find((cta) => cta.variant === 'primary');
 
 <header
   id="site-header"
-  class="sticky top-0 z-50 p-1.5 bg-background/80 backdrop-blur-md border-b border-surface"
+  class="sticky top-0 z-50 p-1.5 bg-background border-b border-border"
 >
   <nav class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" aria-label="Main navigation">
     <div class="flex items-center justify-between h-16">
@@ -49,7 +49,7 @@ const primaryCTA = headerCtas.find((cta) => cta.variant === 'primary');
         >
           <button
             type="button"
-            class="mega-menu-trigger flex items-center gap-1.5 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-colors text-sm font-medium rounded-lg px-3 py-2 focus-visible:ring-2 focus-visible:ring-primary focus:outline-none cursor-pointer"
+            class="mega-menu-trigger flex items-center gap-1.5 text-text-muted hover:text-text transition-colors text-sm font-medium rounded-lg px-3 py-2 focus-visible:ring-2 focus-visible:ring-primary focus:outline-none cursor-pointer"
             aria-expanded="false"
             aria-haspopup="true"
             aria-controls="mega-panel-product"
@@ -69,7 +69,7 @@ const primaryCTA = headerCtas.find((cta) => cta.variant === 'primary');
             aria-label="Product navigation menu"
           >
             <div
-              class="w-full bg-white dark:bg-[#0B1120] border border-slate-200/90 dark:border-slate-800 shadow-2xl shadow-slate-900/10 dark:shadow-black/60 rounded-2xl overflow-hidden flex flex-col max-h-[calc(100vh-5.5rem)]"
+              class="w-full bg-background border border-border rounded-xl overflow-hidden flex flex-col max-h-[calc(100vh-5.5rem)]"
             >
               <div
                 class="p-6 grid grid-cols-3 divide-x divide-slate-100 dark:divide-slate-800/80 overflow-y-auto"
@@ -90,7 +90,7 @@ const primaryCTA = headerCtas.find((cta) => cta.variant === 'primary');
                               href={item.href}
                               class="group/item flex items-start gap-3 p-2 -mx-2 rounded-xl transition-all duration-150 hover:bg-slate-50 dark:hover:bg-slate-800/60 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                             >
-                              <div class="shrink-0 w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-800/80 border border-slate-200/80 dark:border-slate-700/80 flex items-center justify-center text-slate-600 dark:text-slate-300 group-hover/item:text-blue-600 dark:group-hover/item:text-blue-400 group-hover/item:border-blue-500/30 group-hover/item:bg-blue-50/60 dark:group-hover/item:bg-blue-950/40 transition-colors mt-0.5 shadow-2xs">
+                              <div class="shrink-0 w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-800/80 border border-slate-200/80 dark:border-slate-700/80 flex items-center justify-center text-text-muted group-hover/item:text-blue-600 dark:group-hover/item:text-blue-400 group-hover/item:border-blue-500/30 group-hover/item:bg-blue-50/60 dark:group-hover/item:bg-blue-950/40 transition-colors mt-0.5 shadow-2xs">
                                 <Icon name={item.icon} class="w-4 h-4" />
                               </div>
                               <div class="flex-1 min-w-0">
@@ -130,7 +130,7 @@ const primaryCTA = headerCtas.find((cta) => cta.variant === 'primary');
                           href={item.href}
                           class="group/item flex items-start gap-3 p-2 -mx-2 rounded-xl transition-all duration-150 hover:bg-slate-50 dark:hover:bg-slate-800/60 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                         >
-                          <div class="shrink-0 w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-800/80 border border-slate-200/80 dark:border-slate-700/80 flex items-center justify-center text-slate-600 dark:text-slate-300 group-hover/item:text-blue-600 dark:group-hover/item:text-blue-400 group-hover/item:border-blue-500/30 group-hover/item:bg-blue-50/60 dark:group-hover/item:bg-blue-950/40 transition-colors mt-0.5 shadow-2xs">
+                          <div class="shrink-0 w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-800/80 border border-slate-200/80 dark:border-slate-700/80 flex items-center justify-center text-text-muted group-hover/item:text-blue-600 dark:group-hover/item:text-blue-400 group-hover/item:border-blue-500/30 group-hover/item:bg-blue-50/60 dark:group-hover/item:bg-blue-950/40 transition-colors mt-0.5 shadow-2xs">
                             <Icon name={item.icon} class="w-4 h-4" />
                           </div>
                           <div class="flex-1 min-w-0">
@@ -168,7 +168,7 @@ const primaryCTA = headerCtas.find((cta) => cta.variant === 'primary');
                           href={item.href}
                           class="group/item flex items-start gap-3 p-2 -mx-2 rounded-xl transition-all duration-150 hover:bg-slate-50 dark:hover:bg-slate-800/60 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                         >
-                          <div class="shrink-0 w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-800/80 border border-slate-200/80 dark:border-slate-700/80 flex items-center justify-center text-slate-600 dark:text-slate-300 group-hover/item:text-blue-600 dark:group-hover/item:text-blue-400 group-hover/item:border-blue-500/30 group-hover/item:bg-blue-50/60 dark:group-hover/item:bg-blue-950/40 transition-colors mt-0.5 shadow-2xs">
+                          <div class="shrink-0 w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-800/80 border border-slate-200/80 dark:border-slate-700/80 flex items-center justify-center text-text-muted group-hover/item:text-blue-600 dark:group-hover/item:text-blue-400 group-hover/item:border-blue-500/30 group-hover/item:bg-blue-50/60 dark:group-hover/item:bg-blue-950/40 transition-colors mt-0.5 shadow-2xs">
                             <Icon name={item.icon} class="w-4 h-4" />
                           </div>
                           <div class="flex-1 min-w-0">
@@ -195,7 +195,7 @@ const primaryCTA = headerCtas.find((cta) => cta.variant === 'primary');
 
               <!-- Bottom Action Footer -->
               <div
-                class="bg-slate-50/90 dark:bg-slate-900/70 border-t border-slate-100 dark:border-slate-800/80 px-6 py-3.5 flex items-center justify-between"
+                class="bg-surface border-t border-border px-6 py-3.5 flex items-center justify-between"
               >
                 <div class="flex items-center gap-6">
                   <a
@@ -231,7 +231,7 @@ const primaryCTA = headerCtas.find((cta) => cta.variant === 'primary');
         >
           <button
             type="button"
-            class="mega-menu-trigger flex items-center gap-1.5 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-colors text-sm font-medium rounded-lg px-3 py-2 focus-visible:ring-2 focus-visible:ring-primary focus:outline-none cursor-pointer"
+            class="mega-menu-trigger flex items-center gap-1.5 text-text-muted hover:text-text transition-colors text-sm font-medium rounded-lg px-3 py-2 focus-visible:ring-2 focus-visible:ring-primary focus:outline-none cursor-pointer"
             aria-expanded="false"
             aria-haspopup="true"
             aria-controls="mega-panel-solutions"
@@ -251,7 +251,7 @@ const primaryCTA = headerCtas.find((cta) => cta.variant === 'primary');
             aria-label="Solutions navigation menu"
           >
             <div
-              class="w-full bg-white dark:bg-[#0B1120] border border-slate-200/90 dark:border-slate-800 shadow-2xl shadow-slate-900/10 dark:shadow-black/60 rounded-2xl overflow-hidden flex flex-col max-h-[calc(100vh-5.5rem)]"
+              class="w-full bg-background border border-border rounded-xl overflow-hidden flex flex-col max-h-[calc(100vh-5.5rem)]"
             >
               <div
                 class="p-6 grid grid-cols-3 divide-x divide-slate-100 dark:divide-slate-800/80 overflow-y-auto"
@@ -272,7 +272,7 @@ const primaryCTA = headerCtas.find((cta) => cta.variant === 'primary');
                               href={item.href}
                               class="group/item flex items-start gap-3 p-2 -mx-2 rounded-xl transition-all duration-150 hover:bg-slate-50 dark:hover:bg-slate-800/60 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                             >
-                              <div class="shrink-0 w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-800/80 border border-slate-200/80 dark:border-slate-700/80 flex items-center justify-center text-slate-600 dark:text-slate-300 group-hover/item:text-blue-600 dark:group-hover/item:text-blue-400 group-hover/item:border-blue-500/30 group-hover/item:bg-blue-50/60 dark:group-hover/item:bg-blue-950/40 transition-colors mt-0.5 shadow-2xs">
+                              <div class="shrink-0 w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-800/80 border border-slate-200/80 dark:border-slate-700/80 flex items-center justify-center text-text-muted group-hover/item:text-blue-600 dark:group-hover/item:text-blue-400 group-hover/item:border-blue-500/30 group-hover/item:bg-blue-50/60 dark:group-hover/item:bg-blue-950/40 transition-colors mt-0.5 shadow-2xs">
                                 <Icon name={item.icon} class="w-4 h-4" />
                               </div>
                               <div class="flex-1 min-w-0">
@@ -312,7 +312,7 @@ const primaryCTA = headerCtas.find((cta) => cta.variant === 'primary');
                           href={item.href}
                           class="group/item flex items-start gap-3 p-2 -mx-2 rounded-xl transition-all duration-150 hover:bg-slate-50 dark:hover:bg-slate-800/60 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                         >
-                          <div class="shrink-0 w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-800/80 border border-slate-200/80 dark:border-slate-700/80 flex items-center justify-center text-slate-600 dark:text-slate-300 group-hover/item:text-blue-600 dark:group-hover/item:text-blue-400 group-hover/item:border-blue-500/30 group-hover/item:bg-blue-50/60 dark:group-hover/item:bg-blue-950/40 transition-colors mt-0.5 shadow-2xs">
+                          <div class="shrink-0 w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-800/80 border border-slate-200/80 dark:border-slate-700/80 flex items-center justify-center text-text-muted group-hover/item:text-blue-600 dark:group-hover/item:text-blue-400 group-hover/item:border-blue-500/30 group-hover/item:bg-blue-50/60 dark:group-hover/item:bg-blue-950/40 transition-colors mt-0.5 shadow-2xs">
                             <Icon name={item.icon} class="w-4 h-4" />
                           </div>
                           <div class="flex-1 min-w-0">
@@ -350,7 +350,7 @@ const primaryCTA = headerCtas.find((cta) => cta.variant === 'primary');
                           href={item.href}
                           class="group/item flex items-start gap-3 p-2 -mx-2 rounded-xl transition-all duration-150 hover:bg-slate-50 dark:hover:bg-slate-800/60 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                         >
-                          <div class="shrink-0 w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-800/80 border border-slate-200/80 dark:border-slate-700/80 flex items-center justify-center text-slate-600 dark:text-slate-300 group-hover/item:text-blue-600 dark:group-hover/item:text-blue-400 group-hover/item:border-blue-500/30 group-hover/item:bg-blue-50/60 dark:group-hover/item:bg-blue-950/40 transition-colors mt-0.5 shadow-2xs">
+                          <div class="shrink-0 w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-800/80 border border-slate-200/80 dark:border-slate-700/80 flex items-center justify-center text-text-muted group-hover/item:text-blue-600 dark:group-hover/item:text-blue-400 group-hover/item:border-blue-500/30 group-hover/item:bg-blue-50/60 dark:group-hover/item:bg-blue-950/40 transition-colors mt-0.5 shadow-2xs">
                             <Icon name={item.icon} class="w-4 h-4" />
                           </div>
                           <div class="flex-1 min-w-0">
@@ -377,7 +377,7 @@ const primaryCTA = headerCtas.find((cta) => cta.variant === 'primary');
 
               <!-- Bottom Action Footer -->
               <div
-                class="bg-slate-50/90 dark:bg-slate-900/70 border-t border-slate-100 dark:border-slate-800/80 px-6 py-3.5 flex items-center justify-between"
+                class="bg-surface border-t border-border px-6 py-3.5 flex items-center justify-between"
               >
                 <div class="flex items-center gap-6">
                   <a
@@ -413,7 +413,7 @@ const primaryCTA = headerCtas.find((cta) => cta.variant === 'primary');
         >
           <button
             type="button"
-            class="mega-menu-trigger flex items-center gap-1.5 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-colors text-sm font-medium rounded-lg px-3 py-2 focus-visible:ring-2 focus-visible:ring-primary focus:outline-none cursor-pointer"
+            class="mega-menu-trigger flex items-center gap-1.5 text-text-muted hover:text-text transition-colors text-sm font-medium rounded-lg px-3 py-2 focus-visible:ring-2 focus-visible:ring-primary focus:outline-none cursor-pointer"
             aria-expanded="false"
             aria-haspopup="true"
             aria-controls="mega-panel-resources"
@@ -433,7 +433,7 @@ const primaryCTA = headerCtas.find((cta) => cta.variant === 'primary');
             aria-label="Resources navigation menu"
           >
             <div
-              class="w-full bg-white dark:bg-[#0B1120] border border-slate-200/90 dark:border-slate-800 shadow-2xl shadow-slate-900/10 dark:shadow-black/60 rounded-2xl overflow-hidden flex flex-col max-h-[calc(100vh-5.5rem)]"
+              class="w-full bg-background border border-border rounded-xl overflow-hidden flex flex-col max-h-[calc(100vh-5.5rem)]"
             >
               <div
                 class="p-6 grid grid-cols-3 divide-x divide-slate-100 dark:divide-slate-800/80 overflow-y-auto"
@@ -452,7 +452,7 @@ const primaryCTA = headerCtas.find((cta) => cta.variant === 'primary');
                           href={item.href}
                           class="group/item flex items-start gap-3 p-2 -mx-2 rounded-xl transition-all duration-150 hover:bg-slate-50 dark:hover:bg-slate-800/60 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                         >
-                          <div class="shrink-0 w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-800/80 border border-slate-200/80 dark:border-slate-700/80 flex items-center justify-center text-slate-600 dark:text-slate-300 group-hover/item:text-blue-600 dark:group-hover/item:text-blue-400 group-hover/item:border-blue-500/30 group-hover/item:bg-blue-50/60 dark:group-hover/item:bg-blue-950/40 transition-colors mt-0.5 shadow-2xs">
+                          <div class="shrink-0 w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-800/80 border border-slate-200/80 dark:border-slate-700/80 flex items-center justify-center text-text-muted group-hover/item:text-blue-600 dark:group-hover/item:text-blue-400 group-hover/item:border-blue-500/30 group-hover/item:bg-blue-50/60 dark:group-hover/item:bg-blue-950/40 transition-colors mt-0.5 shadow-2xs">
                             <Icon name={item.icon} class="w-4 h-4" />
                           </div>
                           <div class="flex-1 min-w-0">
@@ -485,7 +485,7 @@ const primaryCTA = headerCtas.find((cta) => cta.variant === 'primary');
                           href={item.href}
                           class="group/item flex items-start gap-3 p-2 -mx-2 rounded-xl transition-all duration-150 hover:bg-slate-50 dark:hover:bg-slate-800/60 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                         >
-                          <div class="shrink-0 w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-800/80 border border-slate-200/80 dark:border-slate-700/80 flex items-center justify-center text-slate-600 dark:text-slate-300 group-hover/item:text-blue-600 dark:group-hover/item:text-blue-400 group-hover/item:border-blue-500/30 group-hover/item:bg-blue-50/60 dark:group-hover/item:bg-blue-950/40 transition-colors mt-0.5 shadow-2xs">
+                          <div class="shrink-0 w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-800/80 border border-slate-200/80 dark:border-slate-700/80 flex items-center justify-center text-text-muted group-hover/item:text-blue-600 dark:group-hover/item:text-blue-400 group-hover/item:border-blue-500/30 group-hover/item:bg-blue-50/60 dark:group-hover/item:bg-blue-950/40 transition-colors mt-0.5 shadow-2xs">
                             <Icon name={item.icon} class="w-4 h-4" />
                           </div>
                           <div class="flex-1 min-w-0">
@@ -520,7 +520,7 @@ const primaryCTA = headerCtas.find((cta) => cta.variant === 'primary');
                           rel={item.external ? 'noopener noreferrer' : undefined}
                           class="group/item flex items-start gap-3 p-2 -mx-2 rounded-xl transition-all duration-150 hover:bg-slate-50 dark:hover:bg-slate-800/60 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                         >
-                          <div class="shrink-0 w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-800/80 border border-slate-200/80 dark:border-slate-700/80 flex items-center justify-center text-slate-600 dark:text-slate-300 group-hover/item:text-blue-600 dark:group-hover/item:text-blue-400 group-hover/item:border-blue-500/30 group-hover/item:bg-blue-50/60 dark:group-hover/item:bg-blue-950/40 transition-colors mt-0.5 shadow-2xs">
+                          <div class="shrink-0 w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-800/80 border border-slate-200/80 dark:border-slate-700/80 flex items-center justify-center text-text-muted group-hover/item:text-blue-600 dark:group-hover/item:text-blue-400 group-hover/item:border-blue-500/30 group-hover/item:bg-blue-50/60 dark:group-hover/item:bg-blue-950/40 transition-colors mt-0.5 shadow-2xs">
                             <Icon name={item.icon} class="w-4 h-4" />
                           </div>
                           <div class="flex-1 min-w-0">
@@ -545,7 +545,7 @@ const primaryCTA = headerCtas.find((cta) => cta.variant === 'primary');
 
               <!-- Bottom Action Footer -->
               <div
-                class="bg-slate-50/90 dark:bg-slate-900/70 border-t border-slate-100 dark:border-slate-800/80 px-6 py-3.5 flex items-center justify-between"
+                class="bg-surface border-t border-border px-6 py-3.5 flex items-center justify-between"
               >
                 <div class="flex items-center gap-6">
                   <a
@@ -578,7 +578,7 @@ const primaryCTA = headerCtas.find((cta) => cta.variant === 'primary');
           directNavLinks.map((link) => (
             <a
               href={link.href}
-              class="inline-flex items-center gap-1.5 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-colors text-sm font-medium rounded-lg px-3 py-2 focus-visible:ring-2 focus-visible:ring-primary focus:outline-none"
+              class="inline-flex items-center gap-1.5 text-text-muted hover:text-text transition-colors text-sm font-medium rounded-lg px-3 py-2 focus-visible:ring-2 focus-visible:ring-primary focus:outline-none"
             >
               <span>{link.label}</span>
               {link.badge && (
@@ -598,7 +598,7 @@ const primaryCTA = headerCtas.find((cta) => cta.variant === 'primary');
           ghostCTAs.map((cta) => (
             <a
               href={cta.href}
-              class="text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-colors text-sm font-medium rounded-lg px-3 py-2 focus-visible:ring-2 focus-visible:ring-primary focus:outline-none"
+              class="text-text-muted hover:text-text transition-colors text-sm font-medium rounded-lg px-3 py-2 focus-visible:ring-2 focus-visible:ring-primary focus:outline-none"
             >
               {cta.label}
             </a>
@@ -608,7 +608,7 @@ const primaryCTA = headerCtas.find((cta) => cta.variant === 'primary');
           primaryCTA && (
             <a
               href={primaryCTA.href}
-              class="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold transition-all duration-200 hover:-translate-y-0.5 shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+              class="px-4 py-2 rounded-xl bg-primary hover:bg-primary-dark text-white text-sm font-semibold transition-all duration-200   focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
             >
               {primaryCTA.label}
             </a>
@@ -643,10 +643,10 @@ const primaryCTA = headerCtas.find((cta) => cta.variant === 'primary');
   aria-modal="true"
   aria-label="Mobile navigation menu"
 >
-  <div id="mobile-menu-backdrop" class="absolute inset-0 bg-black/60 backdrop-blur-xs"></div>
+  <div id="mobile-menu-backdrop" class="absolute inset-0 bg-black/60"></div>
   <nav
     id="mobile-menu-panel"
-    class="absolute left-0 right-0 bg-white dark:bg-[#0B1120] border-b border-slate-200 dark:border-slate-800 shadow-2xl max-h-[calc(100vh-4.5rem)] overflow-y-auto"
+    class="absolute left-0 right-0 bg-background border-b border-border max-h-[calc(100vh-4.5rem)] overflow-y-auto"
     aria-label="Mobile navigation"
   >
     <div class="px-4 py-6 space-y-4">
@@ -847,7 +847,7 @@ const primaryCTA = headerCtas.find((cta) => cta.variant === 'primary');
           primaryCTA && (
             <a
               href={primaryCTA.href}
-              class="block w-full py-2.5 text-center text-sm font-semibold rounded-xl bg-blue-600 hover:bg-blue-700 text-white transition-colors shadow-xs"
+              class="block w-full py-2.5 text-center text-sm font-semibold rounded-xl bg-primary hover:bg-primary-dark text-white transition-colors shadow-xs"
             >
               {primaryCTA.label}
             </a>

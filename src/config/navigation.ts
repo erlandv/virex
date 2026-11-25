@@ -33,7 +33,6 @@ export const navigation: Navigation = {
     solutions: [
       { label: 'All Integrations', href: '/integrations' },
       { label: 'Safaricom M-Pesa Daraja', href: '/integrations/safaricom-mpesa-daraja' },
-      { label: 'Africa’s Talking Bulk SMS', href: '/integrations/africas-talking-bulk-sms' },
       { label: 'WhatsApp Cloud API', href: '/integrations/whatsapp-cloud-api' },
       { label: 'Pochi la Biashara Sync', href: '/integrations/pochi-la-biashara-sync' },
     ],

@@ -60,7 +60,7 @@ export const productMegaMenu: MegaMenuConfig = {
               label: 'Shared Inbox',
               href: '/product/shared-inbox',
               description:
-                'Unify WhatsApp, Instagram, SMS, and emails into one collaborative team workspace.',
+                'Unify WhatsApp, Instagram, Messenger and email conversations in one team workspace.',
               icon: 'lucide:inbox',
             },
             {
@@ -113,14 +113,6 @@ export const productMegaMenu: MegaMenuConfig = {
               badge: 'Meta',
             },
             {
-              label: 'Android SMS Bridge',
-              href: '/features/android-sms-bridge',
-              description:
-                'Sync Pochi la Biashara and Till SMS in real-time using our dedicated Android forwarder.',
-              icon: 'lucide:smartphone',
-              badge: 'Bridge',
-            },
-            {
               label: 'Website Live Chat',
               href: '/features/website-live-chat',
               description:
@@ -131,7 +123,7 @@ export const productMegaMenu: MegaMenuConfig = {
               label: 'Channels',
               href: '/features/channels',
               description:
-                "Native connections for WhatsApp, Africa's Talking SMS, Instagram, and Facebook.",
+                "Connect WhatsApp, Instagram, Facebook Messenger and web chat.",
               icon: 'lucide:layers',
             },
             {
@@ -249,7 +241,7 @@ export const solutionsMegaMenu: MegaMenuConfig = {
             {
               label: 'Marketing',
               href: '/solutions/marketing',
-              description: 'Personalized WhatsApp broadcasts & Bulk SMS blasts',
+              description: 'Personalized customer engagement across supported social channels',
               icon: 'lucide:megaphone',
             },
           ],
@@ -315,7 +307,7 @@ export const solutionsMegaMenu: MegaMenuConfig = {
               label: 'Local Businesses',
               href: '/solutions/local-businesses',
               description:
-                'Keep neighborhood customers loyal with quick WhatsApp replies and SMS updates.',
+                'Support repeat customers with organized WhatsApp replies and follow-ups.',
               icon: 'lucide:store',
             },
             {
@@ -355,7 +347,7 @@ export const solutionsMegaMenu: MegaMenuConfig = {
             {
               label: 'Public Sector',
               href: '/solutions/public-sector',
-              description: 'County fee inquiries, SMS updates & e-Citizen help',
+              description: 'County fee inquiries, digital support and e-Citizen guidance',
               icon: 'lucide:landmark',
             },
             {
@@ -416,7 +408,7 @@ export const resourcesMegaMenu: MegaMenuConfig = {
             {
               label: 'Blog & Insights',
               href: '/blog',
-              description: 'Fintech strategies, Bulk SMS playbooks & growth guides',
+              description: 'Fintech strategies, customer support playbooks & growth guides',
               icon: 'lucide:newspaper',
             },
             {
@@ -455,13 +447,13 @@ export const resourcesMegaMenu: MegaMenuConfig = {
             {
               label: 'Templates',
               href: '/resources/templates',
-              description: 'High-converting WhatsApp & SMS message copy',
+              description: 'Helpful WhatsApp and customer service reply templates',
               icon: 'lucide:file-text',
             },
             {
               label: 'Tools',
               href: '/resources/tools',
-              description: 'Free M-Pesa fee calculator & SMS segment tool',
+              description: 'M-Pesa resources and practical business tools',
               icon: 'lucide:calculator',
             },
             {
@@ -501,7 +493,7 @@ export const resourcesMegaMenu: MegaMenuConfig = {
               label: 'Developer Documentation',
               href: '/docs',
               description:
-                'Integrate Safaricom Daraja STK push and Africa’s Talking Bulk SMS in minutes.',
+                'Explore Safaricom Daraja STK and customer messaging integration guidance.',
               icon: 'lucide:code-2',
             },
             {
