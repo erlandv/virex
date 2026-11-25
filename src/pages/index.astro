@@ -43,7 +43,7 @@ const verifiedNewsletterAction =
     : '';
 
 const deferredTerms =
-  /(?:bulk\s+)?sms|sender\s+id|byoc|saml|sso|audit\s+logs?|custom\s+roles?|captain\s+ai|agent\s+capacity|sla\s+polic(?:y|ies)|dedicated\s+sla/i;
+  /(?:bulk\s+)?sms|sender\s+id|byoc|saml|sso|audit\s+logs?|custom\s+roles?|captain\s+ai|agent\s+capacity|\bsla\b/i;
 const legacyHeroTitle = /Bring Customer Conversations, Engagement & Sales Together/i;
 const legacyDefaultCopy = /bring customer conversations, engagement and sales together/i;
 
