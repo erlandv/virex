@@ -142,11 +142,11 @@ const contactPageSchema = {
   <!-- 1. HERO SECTION (VISION & INVITATION)                                 -->
   <!-- ===================================================================== -->
   <section
-    class="relative pt-20 pb-16 sm:pt-28 sm:pb-20 overflow-hidden bg-gradient-to-b from-blue-50/40 via-background to-background dark:from-slate-900/50 dark:via-[#0B1120] dark:to-[#0B1120] border-b border-slate-200 dark:border-slate-800/80 transition-colors duration-200"
+    class="relative pt-20 pb-16 sm:pt-28 sm:pb-20 overflow-hidden bg-background       border-b border-border dark:border-border transition-colors duration-200"
   >
     <!-- Ambient Glow Orbs -->
     <div
-      class="pointer-events-none absolute -top-40 left-1/2 -translate-x-1/2 w-[760px] h-[380px] bg-gradient-to-b from-blue-600/10 via-primary/5 to-transparent dark:from-blue-600/15 dark:via-primary/10 dark:to-transparent rounded-full blur-3xl"
+      class="pointer-events-none absolute -top-40 left-1/2 -translate-x-1/2 w-[760px] h-[380px] bg-background       rounded-full hidden"
       aria-hidden="true"
     >
     </div>
@@ -155,7 +155,7 @@ const contactPageSchema = {
       <div class="text-center max-w-3xl mx-auto">
         <!-- Direct Channel Badge -->
         <div
-          class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200/80 dark:border-blue-800/80 mb-6 shadow-2xs"
+          class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200/80 dark:border-blue-800/80 mb-6 shadow-none"
         >
           <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
           <span>Direct Merchant &amp; Partner Channels</span>
@@ -166,7 +166,7 @@ const contactPageSchema = {
           class="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-[1.15]"
         >
           Let’s start a <span
-            class="bg-gradient-to-r from-blue-600 via-indigo-600 to-primary bg-clip-text text-transparent"
+            class="     text-primary"
             >conversation.</span
           >
         </h1>
@@ -186,7 +186,7 @@ const contactPageSchema = {
   <!-- ===================================================================== -->
   <!-- 2. MAIN 2-COLUMN SECTION: DIRECT CHANNELS & MODERN CONTACT FORM       -->
   <!-- ===================================================================== -->
-  <section class="py-16 sm:py-24 bg-surface/50 dark:bg-[#0B1120]">
+  <section class="py-16 sm:py-24 bg-surface dark:bg-background">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">
         <!-- LEFT COLUMN: Direct Communication Hub (5 Columns) -->
@@ -208,11 +208,11 @@ const contactPageSchema = {
                 const style = channelStyles[ch.accent] || channelStyles.blue;
                 return (
                   <div
-                    class={`bg-white dark:bg-slate-900/60 border border-slate-200/90 dark:border-slate-800 rounded-2xl p-5 sm:p-6 shadow-xs hover:shadow-md transition-all duration-200 border-t-2 ${style.borderTop} flex flex-col justify-between group`}
+                    class={`bg-white dark:bg-surface border border-border dark:border-border rounded-xl p-5 sm:p-6 shadow-none shadow-none transition-all duration-200 border-t-2 ${style.borderTop} flex flex-col justify-between group`}
                   >
                     <div class="flex items-start gap-4">
                       <div
-                        class={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 border shadow-2xs ${style.iconBox}`}
+                        class={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 border shadow-none ${style.iconBox}`}
                       >
                         <Icon name={ch.icon} class="w-5 h-5" />
                       </div>
@@ -250,7 +250,7 @@ const contactPageSchema = {
 
           <!-- Operations & Working Hours Card -->
           <div
-            class="bg-slate-50 dark:bg-slate-900/40 border border-slate-200/80 dark:border-slate-800/80 rounded-2xl p-5 sm:p-6 space-y-4"
+            class="bg-slate-50 dark:bg-surface border border-border dark:border-border rounded-xl p-5 sm:p-6 space-y-4"
           >
             <div class="flex items-start gap-3">
               <div
@@ -274,7 +274,7 @@ const contactPageSchema = {
             </div>
 
             <div
-              class="pt-3 border-t border-slate-200/60 dark:border-slate-800 flex items-start gap-3"
+              class="pt-3 border-t border-border dark:border-border flex items-start gap-3"
             >
               <div
                 class="w-9 h-9 rounded-xl bg-slate-200/70 dark:bg-slate-800 text-slate-700 dark:text-slate-300 flex items-center justify-center shrink-0"
@@ -299,7 +299,7 @@ const contactPageSchema = {
 
           <!-- Quick Live Demo Banner -->
           <div
-            class="p-5 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-700 text-white shadow-md relative overflow-hidden group"
+            class="p-5 rounded-xl bg-primary   text-white shadow-none relative overflow-hidden group"
           >
             <div
               class="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4"
@@ -312,7 +312,7 @@ const contactPageSchema = {
               </div>
               <a
                 href="/demo"
-                class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white text-blue-700 font-bold text-xs hover:bg-blue-50 transition-colors shrink-0 shadow-2xs"
+                class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white text-blue-700 font-bold text-xs hover:bg-blue-50 transition-colors shrink-0 shadow-none"
               >
                 <span>Book Demo</span>
                 <Icon name="lucide:arrow-right" class="w-3.5 h-3.5" />
@@ -324,7 +324,7 @@ const contactPageSchema = {
         <!-- RIGHT COLUMN: Modernized Contact Form Card (7 Columns) -->
         <div class="lg:col-span-7">
           <div
-            class="bg-white dark:bg-slate-900/70 border border-slate-200/90 dark:border-slate-800 rounded-2xl p-6 sm:p-8 lg:p-10 shadow-sm relative"
+            class="bg-white dark:bg-surface border border-border dark:border-border rounded-xl p-6 sm:p-8 lg:p-10 shadow-none relative"
           >
             <div class="mb-6">
               <h2
@@ -352,12 +352,12 @@ const contactPageSchema = {
   <!-- 3. SUPPORTING SECTION: FREQUENTLY ASKED INQUIRY QUESTIONS            -->
   <!-- ===================================================================== -->
   <section
-    class="py-16 sm:py-20 border-t border-slate-200 dark:border-slate-800/80 bg-background transition-colors duration-200"
+    class="py-16 sm:py-20 border-t border-border dark:border-border bg-background transition-colors duration-200"
   >
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="text-center max-w-2xl mx-auto mb-12 sm:mb-16">
         <div
-          class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 mb-3"
+          class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-border dark:border-border mb-3"
         >
           <Icon name="lucide:help-circle" class="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
           <span>Need Answers Fast?</span>
@@ -376,7 +376,7 @@ const contactPageSchema = {
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-5xl mx-auto">
         {
           contactFAQs.map((faq) => (
-            <div class="bg-white dark:bg-slate-900/60 border border-slate-200/90 dark:border-slate-800 rounded-2xl p-6 shadow-2xs hover:shadow-md transition-all duration-200">
+            <div class="bg-white dark:bg-surface border border-border dark:border-border rounded-xl p-6 shadow-none shadow-none transition-all duration-200">
               <h3 class="text-base font-bold text-slate-900 dark:text-white leading-snug">
                 {faq.question}
               </h3>
@@ -404,7 +404,7 @@ const contactPageSchema = {
   <!-- 4. SELF-SERVICE & DEVELOPER RESOURCES STRIP                          -->
   <!-- ===================================================================== -->
   <section
-    class="py-12 bg-slate-50 dark:bg-slate-900/40 border-t border-slate-200 dark:border-slate-800/80"
+    class="py-12 bg-slate-50 dark:bg-surface border-t border-border dark:border-border"
   >
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex flex-col md:flex-row items-center justify-between gap-6">
@@ -420,14 +420,14 @@ const contactPageSchema = {
         <div class="flex flex-wrap items-center gap-3">
           <a
             href="/docs"
-            class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-700/80 transition-colors shadow-2xs"
+            class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 border border-border dark:border-border hover:bg-slate-100 dark:hover:bg-slate-700/80 transition-colors shadow-none"
           >
             <Icon name="lucide:book-open" class="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
             <span>Developer Center</span>
           </a>
           <a
             href="/resources/status"
-            class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-700/80 transition-colors shadow-2xs"
+            class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 border border-border dark:border-border hover:bg-slate-100 dark:hover:bg-slate-700/80 transition-colors shadow-none"
           >
             <Icon
               name="lucide:activity"
@@ -437,7 +437,7 @@ const contactPageSchema = {
           </a>
           <a
             href="/resources/security"
-            class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-700/80 transition-colors shadow-2xs"
+            class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 border border-border dark:border-border hover:bg-slate-100 dark:hover:bg-slate-700/80 transition-colors shadow-none"
           >
             <Icon name="lucide:shield" class="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
             <span>Security &amp; KDPA</span>

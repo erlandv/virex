@@ -21,14 +21,14 @@ import { productPages } from '@/data/marketing-content';
     subtitle="Everything you need to turn customer conversations into verified revenue across WhatsApp, SMS, and digital channels."
   />
 
-  <section class="py-16 sm:py-24 bg-surface/50 border-b border-border">
+  <section class="py-16 sm:py-24 bg-surface border-b border-border">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {
           productPages.map((item) => (
             <a
               href={`/product/${item.slug}`}
-              class="group flex flex-col justify-between p-8 rounded-2xl border border-border bg-background hover:border-primary/50 hover:shadow-lg transition-all"
+              class="group flex flex-col justify-between p-8 rounded-xl border border-border bg-background hover:border-primary/50 shadow-none transition-all"
             >
               <div>
                 <div class="flex items-center justify-between mb-6">

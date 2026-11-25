@@ -46,7 +46,7 @@ const badgeColorMap: Record<string, string> = {
   <section class="relative pt-24 pb-20 sm:pt-28 sm:pb-24 overflow-hidden bg-background">
     <!-- Subtle Ambient Glow -->
     <div
-      class="absolute top-1/4 left-1/2 -translate-x-1/2 w-[700px] h-[350px] bg-primary/10 dark:bg-primary/15 rounded-full blur-3xl pointer-events-none -z-10"
+      class="absolute top-1/4 left-1/2 -translate-x-1/2 w-[700px] h-[350px] bg-primary/10 dark:bg-primary/15 rounded-full hidden pointer-events-none -z-10"
     >
     </div>
 
@@ -54,7 +54,7 @@ const badgeColorMap: Record<string, string> = {
       <div class="max-w-3xl mx-auto text-center">
         <!-- Eyebrow Badge -->
         <div
-          class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-primary/25 bg-primary/5 text-primary text-xs font-semibold uppercase tracking-wider mb-6 shadow-xs"
+          class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-primary/25 bg-primary/5 text-primary text-xs font-semibold uppercase tracking-wider mb-6 shadow-none"
         >
           <Icon name="lucide:sparkles" class="w-4 h-4 text-primary" />
           <span>{settings.hero.badge || 'Markcopilot AI Intelligence'}</span>
@@ -82,14 +82,14 @@ const badgeColorMap: Record<string, string> = {
         <div class="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
           <a
             href={settings.hero.primaryCtaHref || '/demo'}
-            class="inline-flex items-center justify-center px-6 py-3.5 rounded-xl bg-primary text-white font-semibold hover:bg-primary-dark transition-all shadow-sm hover:shadow-md w-full sm:w-auto"
+            class="inline-flex items-center justify-center px-6 py-3.5 rounded-xl bg-primary text-white font-semibold hover:bg-primary-dark transition-all shadow-none shadow-none w-full sm:w-auto"
           >
             <span>{settings.hero.primaryCtaLabel || 'Book Live Demo'}</span>
             <Icon name="lucide:arrow-right" class="w-4 h-4 ml-2" />
           </a>
           <a
             href={settings.hero.secondaryCtaHref || '#capabilities'}
-            class="inline-flex items-center justify-center px-6 py-3.5 rounded-xl border border-border bg-surface text-text hover:bg-surface-hover font-semibold transition-all shadow-xs w-full sm:w-auto"
+            class="inline-flex items-center justify-center px-6 py-3.5 rounded-xl border border-border bg-surface text-text hover:bg-surface-hover font-semibold transition-all shadow-none w-full sm:w-auto"
           >
             <span>{settings.hero.secondaryCtaLabel || 'Explore Capabilities'}</span>
           </a>
@@ -133,17 +133,17 @@ const badgeColorMap: Record<string, string> = {
 
       <!-- Hero Visual / Live Dual-Mode Interface Showcase -->
       <div
-        class="mt-14 sm:mt-18 relative mx-auto max-w-5xl rounded-3xl border border-border bg-surface/70 p-6 sm:p-12 overflow-hidden shadow-2xl"
+        class="mt-14 sm:mt-18 relative mx-auto max-w-5xl rounded-xl border border-border bg-surface p-6 sm:p-12 overflow-hidden shadow-none"
       >
         <!-- Radial Dot Grid Pattern -->
         <div
-          class="absolute inset-0 bg-[radial-gradient(#94a3b8_1px,transparent_1px)] dark:bg-[radial-gradient(#334155_1px,transparent_1px)] [background-size:24px_24px] opacity-40 pointer-events-none"
+          class="absolute inset-0 hidden hidden [background-size:24px_24px] opacity-40 pointer-events-none"
         >
         </div>
 
         <!-- Floating Chat Bubble (WhatsApp Customer) -->
         <div
-          class="hidden md:block absolute left-8 top-10 max-w-xs p-4 rounded-2xl rounded-tl-sm bg-background border border-border shadow-xl pointer-events-none transform -rotate-1"
+          class="hidden md:block absolute left-8 top-10 max-w-xs p-4 rounded-xl rounded-tl-sm bg-background border border-border shadow-none pointer-events-none transform -rotate-1"
         >
           <div class="flex items-center gap-2 mb-2">
             <div
@@ -161,7 +161,7 @@ const badgeColorMap: Record<string, string> = {
 
         <!-- Floating Chat Bubble (Markcopilot Grounded Response) -->
         <div
-          class="hidden md:block absolute right-8 bottom-10 max-w-sm p-4 rounded-2xl rounded-br-sm bg-background border border-primary/30 shadow-xl pointer-events-none transform rotate-1"
+          class="hidden md:block absolute right-8 bottom-10 max-w-sm p-4 rounded-xl rounded-br-sm bg-background border border-primary/30 shadow-none pointer-events-none transform rotate-1"
         >
           <div class="flex items-center gap-2 mb-2">
             <div
@@ -187,7 +187,7 @@ const badgeColorMap: Record<string, string> = {
           class="relative z-10 flex flex-col items-center justify-center py-10 sm:py-16 text-center"
         >
           <div
-            class="w-16 h-16 rounded-2xl bg-primary/10 text-primary flex items-center justify-center mb-4 border border-primary/20 shadow-sm"
+            class="w-16 h-16 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-4 border border-primary/20 shadow-none"
           >
             <Icon name="lucide:cpu" class="w-8 h-8" />
           </div>
@@ -241,7 +241,7 @@ const badgeColorMap: Record<string, string> = {
       <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
         {
           (settings.introduction?.pillars || []).map((pillar) => (
-            <div class="bg-background border border-border rounded-2xl p-6 sm:p-8 shadow-xs hover:border-primary/40 transition-all flex flex-col justify-between">
+            <div class="bg-background border border-border rounded-xl p-6 sm:p-8 shadow-none hover:border-primary/40 transition-all flex flex-col justify-between">
               <div>
                 <div class="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-5 border border-primary/20">
                   <Icon name={pillar.icon || 'lucide:sparkles'} class="w-6 h-6" />
@@ -277,10 +277,10 @@ const badgeColorMap: Record<string, string> = {
       <div class="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
         {
           (settings.howItWorks?.steps || []).map((step, index) => (
-            <div class="relative bg-surface border border-border rounded-2xl p-6 sm:p-8 shadow-xs flex flex-col justify-between">
+            <div class="relative bg-surface border border-border rounded-xl p-6 sm:p-8 shadow-none flex flex-col justify-between">
               <div>
                 <div class="flex items-center justify-between mb-5">
-                  <div class="w-10 h-10 rounded-xl bg-primary text-white font-bold text-sm flex items-center justify-center shadow-xs">
+                  <div class="w-10 h-10 rounded-xl bg-primary text-white font-bold text-sm flex items-center justify-center shadow-none">
                     0{step.stepNumber || index + 1}
                   </div>
                   <div class="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center border border-primary/20">
@@ -323,7 +323,7 @@ const badgeColorMap: Record<string, string> = {
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {
           capabilities.map((cap) => (
-            <div class="bg-background border border-border rounded-2xl p-6 sm:p-8 shadow-xs hover:shadow-md transition-all flex flex-col justify-between">
+            <div class="bg-background border border-border rounded-xl p-6 sm:p-8 shadow-none shadow-none transition-all flex flex-col justify-between">
               <div>
                 <div class="flex items-center justify-between mb-4">
                   <div class="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center border border-primary/20">
@@ -390,7 +390,7 @@ const badgeColorMap: Record<string, string> = {
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {
           (settings.businessValue?.metrics || []).map((m) => (
-            <div class="bg-surface border border-border rounded-2xl p-6 shadow-xs flex flex-col justify-between">
+            <div class="bg-surface border border-border rounded-xl p-6 shadow-none flex flex-col justify-between">
               <div>
                 <div class="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-4 border border-primary/20">
                   <Icon name={m.icon || 'lucide:zap'} class="w-5 h-5" />
@@ -433,7 +433,7 @@ const badgeColorMap: Record<string, string> = {
           (settings.ecosystem?.cards || []).map((card) => (
             <a
               href={card.href}
-              class="group bg-background border border-border hover:border-primary/50 rounded-2xl p-6 shadow-xs hover:shadow-md transition-all flex flex-col justify-between block"
+              class="group bg-background border border-border hover:border-primary/50 rounded-xl p-6 shadow-none shadow-none transition-all flex flex-col justify-between block"
             >
               <div>
                 <div class="flex items-center justify-between mb-4">

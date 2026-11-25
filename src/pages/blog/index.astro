@@ -122,7 +122,7 @@ const allCategories = ['All', ...new Set(sortedPosts.map((p) => p.category))];
   description="Guides, benchmarks, and architectural insights for WhatsApp Cloud API, Africa’s Talking Bulk SMS, and Safaricom M-Pesa automated reconciliation."
 >
   <div
-    class="py-16 sm:py-24 bg-slate-50 dark:bg-[#0B1120] min-h-screen transition-colors duration-200"
+    class="py-16 sm:py-24 bg-slate-50 dark:bg-background min-h-screen transition-colors duration-200"
   >
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       {/* =============================================================== */}
@@ -139,7 +139,7 @@ const allCategories = ['All', ...new Set(sortedPosts.map((p) => p.category))];
           class="text-4xl sm:text-5xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-tight"
         >
           Insights for African <span
-            class="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-emerald-600 dark:from-blue-400 dark:to-emerald-400"
+            class="text-primary      "
             >Conversational Commerce</span
           >
         </h1>
@@ -156,7 +156,7 @@ const allCategories = ['All', ...new Set(sortedPosts.map((p) => p.category))];
         featuredPost && (
           <section class="mb-16 sm:mb-20">
             <a href={featuredPost.href} class="group block">
-              <div class="relative w-full aspect-video md:aspect-[21/9] rounded-3xl overflow-hidden border border-slate-200 dark:border-slate-800 shadow-2xl bg-slate-950">
+              <div class="relative w-full aspect-video md:aspect-[21/9] rounded-xl overflow-hidden border border-border dark:border-border shadow-none bg-slate-950">
                 {/* Cover Image with subtle zoom */}
                 <img
                   src={featuredPost.coverImage}
@@ -166,13 +166,13 @@ const allCategories = ['All', ...new Set(sortedPosts.map((p) => p.category))];
                 />
 
                 {/* Gradient Scrim Overlay for contrast */}
-                <div class="absolute inset-0 bg-gradient-to-t from-slate-950/95 via-slate-950/65 to-transparent md:bg-gradient-to-r md:from-slate-950/95 md:via-slate-950/70 md:to-transparent" />
+                <div class="absolute inset-0 bg-[#171717]/85       " />
 
                 {/* Overlay Content */}
                 <div class="absolute inset-0 p-6 sm:p-10 lg:p-14 flex flex-col justify-end max-w-3xl">
                   {/* Category Pill */}
                   <div class="flex items-center gap-3 mb-3">
-                    <span class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-blue-600 text-white shadow-md">
+                    <span class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-blue-600 text-white shadow-none">
                       Featured • {featuredPost.category}
                     </span>
                     <span class="text-xs text-slate-300 font-medium">
@@ -234,8 +234,8 @@ const allCategories = ['All', ...new Set(sortedPosts.map((p) => p.category))];
                 class:list={[
                   'px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold whitespace-nowrap transition-all duration-200',
                   idx === 0
-                    ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20'
-                    : 'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:border-blue-400 hover:text-blue-600 dark:hover:text-blue-400',
+                    ? 'bg-blue-600 text-white shadow-none '
+                    : 'bg-white dark:bg-surface border border-border dark:border-border text-slate-700 dark:text-slate-300 hover:border-blue-400 hover:text-blue-600 dark:hover:text-blue-400',
                 ]}
               >
                 {cat}
@@ -252,7 +252,7 @@ const allCategories = ['All', ...new Set(sortedPosts.map((p) => p.category))];
         gridPosts.length > 0 ? (
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {gridPosts.map((post) => (
-              <article class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1 flex flex-col group">
+              <article class="bg-white dark:bg-surface border border-border dark:border-border rounded-xl overflow-hidden shadow-none transition-all duration-300 hover:-translate-y-1 flex flex-col group">
                 <a
                   href={post.href}
                   class="block relative overflow-hidden bg-slate-100 dark:bg-slate-800"
@@ -266,7 +266,7 @@ const allCategories = ['All', ...new Set(sortedPosts.map((p) => p.category))];
                   />
                   {/* Floating Category Pill */}
                   <div class="absolute top-3 left-3">
-                    <span class="px-2.5 py-1 rounded-full bg-slate-950/80 backdrop-blur-md text-white text-[10px] font-bold uppercase tracking-wider border border-white/20 shadow-xs">
+                    <span class="px-2.5 py-1 rounded-full bg-slate-950/80  text-white text-[10px] font-bold uppercase tracking-wider border border-white/20 shadow-none">
                       {post.category}
                     </span>
                   </div>
@@ -294,7 +294,7 @@ const allCategories = ['All', ...new Set(sortedPosts.map((p) => p.category))];
                   </div>
 
                   {/* Footer Row */}
-                  <div class="mt-6 pt-4 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between">
+                  <div class="mt-6 pt-4 border-t border-border dark:border-border flex items-center justify-between">
                     <div class="flex items-center gap-2">
                       {post.author.avatar ? (
                         <img
@@ -326,7 +326,7 @@ const allCategories = ['All', ...new Set(sortedPosts.map((p) => p.category))];
             ))}
           </div>
         ) : (
-          <div class="text-center py-20 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-8">
+          <div class="text-center py-20 bg-white dark:bg-surface rounded-xl border border-border dark:border-border p-8">
             <Icon name="lucide:book-open" class="w-12 h-12 text-slate-400 mx-auto mb-3" />
             <h3 class="text-lg font-bold text-slate-900 dark:text-white">
               No articles published yet
