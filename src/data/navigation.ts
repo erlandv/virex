@@ -122,8 +122,7 @@ export const productMegaMenu: MegaMenuConfig = {
             {
               label: 'Channels',
               href: '/features/channels',
-              description:
-                "Connect WhatsApp, Instagram, Facebook Messenger and web chat.",
+              description: 'Connect WhatsApp, Instagram, Facebook Messenger and web chat.',
               icon: 'lucide:layers',
             },
             {

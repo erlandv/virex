@@ -1,7 +1,41 @@
 ---
-interface Props { href?: string; variant?: 'primary'|'secondary'|'ghost'; size?: 'sm'|'md'; type?: 'button'|'submit'; disabled?: boolean; class?: string; }
-const { href, variant = 'primary', size = 'md', type = 'button', disabled = false, class: className = '' } = Astro.props;
-const variants = { primary: 'bg-primary text-white hover:bg-primary-dark border border-primary', secondary: 'bg-background text-text border border-border hover:bg-surface', ghost: 'text-text border border-transparent hover:bg-surface' };
-const classes = ['inline-flex items-center justify-center gap-2 rounded-lg font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary disabled:opacity-50', size === 'sm' ? 'px-3 py-2 text-sm' : 'px-5 py-3 text-sm min-h-11', variants[variant], className];
+interface Props {
+  href?: string;
+  variant?: 'primary' | 'secondary' | 'ghost';
+  size?: 'sm' | 'md';
+  type?: 'button' | 'submit';
+  disabled?: boolean;
+  class?: string;
+}
+const {
+  href,
+  variant = 'primary',
+  size = 'md',
+  type = 'button',
+  disabled = false,
+  class: className = '',
+} = Astro.props;
+const variants = {
+  primary: 'bg-primary text-white hover:bg-primary-dark border border-primary',
+  secondary: 'bg-background text-text border border-border hover:bg-surface',
+  ghost: 'text-text border border-transparent hover:bg-surface',
+};
+const classes = [
+  'inline-flex items-center justify-center gap-2 rounded-lg font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary disabled:opacity-50',
+  size === 'sm' ? 'px-3 py-2 text-sm' : 'px-5 py-3 text-sm min-h-11',
+  variants[variant],
+  className,
+];
 ---
-{href ? <a href={href} class:list={classes}><slot /></a> : <button type={type} disabled={disabled} class:list={classes}><slot /></button>}
+
+{
+  href ? (
+    <a href={href} class:list={classes}>
+      <slot />
+    </a>
+  ) : (
+    <button type={type} disabled={disabled} class:list={classes}>
+      <slot />
+    </button>
+  )
+}

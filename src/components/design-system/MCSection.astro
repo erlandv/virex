@@ -1,7 +1,17 @@
 ---
 import MCContainer from './MCContainer.astro';
-interface Props { tone?: 'default' | 'muted' | 'elevated'; id?: string; class?: string; }
+interface Props {
+  tone?: 'default' | 'muted' | 'elevated';
+  id?: string;
+  class?: string;
+}
 const { tone = 'default', id, class: className = '' } = Astro.props;
 const tones = { default: 'bg-background', muted: 'bg-surface', elevated: 'bg-surface-elevated' };
 ---
-<section id={id} class:list={['border-b border-border py-12 sm:py-16 lg:py-24', tones[tone], className]}><MCContainer><slot /></MCContainer></section>
+
+<section
+  id={id}
+  class:list={['border-b border-border py-12 sm:py-16 lg:py-24', tones[tone], className]}
+>
+  <MCContainer><slot /></MCContainer>
+</section>

@@ -66,12 +66,16 @@ const imageUrl = image || siteConfig.ogImage;
 const ogImage = imageUrl ? new URL(imageUrl, siteConfig.url).href : undefined;
 
 // Authentication, payment and internal pages are never publicly indexable.
-const restrictedPage = /^\/(?:dashboard(?:Main)?|auth|billing|login|register|forgot-password|reset-password|403|404|500)(?:\/|$)/.test(Astro.url.pathname);
+const restrictedPage =
+  /^\/(?:dashboard(?:Main)?|auth|billing|login|register|forgot-password|reset-password|403|404|500)(?:\/|$)/.test(
+    Astro.url.pathname
+  );
 
 // Robots directive
-const robotsContent = noindex || restrictedPage
-  ? 'noindex, nofollow'
-  : robots || 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1';
+const robotsContent =
+  noindex || restrictedPage
+    ? 'noindex, nofollow'
+    : robots || 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1';
 
 // JSON-LD Structured Data
 const websiteSchema = {
@@ -191,7 +195,11 @@ const breadcrumbSchema = {
 <meta name="description" content={description} />
 <meta name="author" content={siteConfig.author} />
 <meta name="robots" content={robotsContent} />
-{googleSiteVerification && <meta name="google-site-verification" content={googleSiteVerification} />}
+{
+  googleSiteVerification && (
+    <meta name="google-site-verification" content={googleSiteVerification} />
+  )
+}
 {tags.length > 0 && <meta name="keywords" content={tags.join(', ')} />}
 
 <!-- Canonical URL -->

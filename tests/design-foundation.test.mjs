@@ -32,9 +32,17 @@ test('Gate 1 keeps marketing navigation free of SMS promotions', () => {
 
 test('Gate 1 provides every planned reusable MC component', () => {
   for (const name of [
-    'MCContainer', 'MCSection', 'MCButton', 'MCCard', 'MCSectionHeading',
-    'MCProductTabs', 'MCProductFrame', 'MCFeatureBento', 'MCIntegrationIcon',
-    'MCStatusBadge', 'MCScreenshotFallback',
+    'MCContainer',
+    'MCSection',
+    'MCButton',
+    'MCCard',
+    'MCSectionHeading',
+    'MCProductTabs',
+    'MCProductFrame',
+    'MCFeatureBento',
+    'MCIntegrationIcon',
+    'MCStatusBadge',
+    'MCScreenshotFallback',
   ]) {
     assert.ok(existsSync('src/components/design-system/' + name + '.astro'), name + ' missing');
   }
@@ -44,8 +52,13 @@ test('Gate 1 provides every planned reusable MC component', () => {
 
 test('Gate 2 includes seven solid-color Virex SVG concepts without gradients', () => {
   const ids = [
-    'unified-inbox', 'mpesa-stk', 'markcopilot', 'automation-routing',
-    'contact-crm', 'help-center', 'analytics-webhooks',
+    'unified-inbox',
+    'mpesa-stk',
+    'markcopilot',
+    'automation-routing',
+    'contact-crm',
+    'help-center',
+    'analytics-webhooks',
   ];
   for (const id of ids) {
     const svg = read('public/media/illustrations/' + id + '.svg');
@@ -73,7 +86,13 @@ test('Gate 2 capture tool fails closed and fixtures are synthetic', () => {
   assert.match(script, /route\.abort\('blockedbyclient'\)/);
   assert.match(script, /serviceWorkers: 'block'/);
   assert.match(script, /mockedResponses < 1/);
-  for (const file of ['inbox.json', 'contacts.json', 'mpesa-stk.json', 'markcopilot.json', 'profile.json']) {
+  for (const file of [
+    'inbox.json',
+    'contacts.json',
+    'mpesa-stk.json',
+    'markcopilot.json',
+    'profile.json',
+  ]) {
     const fixture = JSON.parse(read('tests/fixtures/core-demo/' + file));
     assert.equal(fixture.demo, true);
   }

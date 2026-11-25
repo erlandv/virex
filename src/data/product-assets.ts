@@ -50,10 +50,18 @@ export const communityIllustrations = [
   { id: 'unified-inbox', title: 'Unified Inbox', path: '/media/illustrations/unified-inbox.svg' },
   { id: 'mpesa-stk', title: 'In-Chat M-Pesa', path: '/media/illustrations/mpesa-stk.svg' },
   { id: 'markcopilot', title: 'Markcopilot AI', path: '/media/illustrations/markcopilot.svg' },
-  { id: 'automation-routing', title: 'Automation & Routing', path: '/media/illustrations/automation-routing.svg' },
+  {
+    id: 'automation-routing',
+    title: 'Automation & Routing',
+    path: '/media/illustrations/automation-routing.svg',
+  },
   { id: 'contact-crm', title: 'Contact CRM', path: '/media/illustrations/contact-crm.svg' },
   { id: 'help-center', title: 'Help Center', path: '/media/illustrations/help-center.svg' },
-  { id: 'analytics-webhooks', title: 'Analytics & Webhooks', path: '/media/illustrations/analytics-webhooks.svg' },
+  {
+    id: 'analytics-webhooks',
+    title: 'Analytics & Webhooks',
+    path: '/media/illustrations/analytics-webhooks.svg',
+  },
 ] as const;
 
 /**
@@ -62,7 +70,12 @@ export const communityIllustrations = [
  */
 function safeMediaUrl(candidate: string | null | undefined): string | null {
   if (!candidate || typeof candidate !== 'string') return null;
-  if (candidate.startsWith('/') && !candidate.startsWith('//') && !candidate.includes('\\') && !candidate.includes('?')) {
+  if (
+    candidate.startsWith('/') &&
+    !candidate.startsWith('//') &&
+    !candidate.includes('\\') &&
+    !candidate.includes('?')
+  ) {
     return candidate;
   }
   try {
@@ -71,7 +84,11 @@ function safeMediaUrl(candidate: string | null | undefined): string | null {
     const approved = [new URL(import.meta.env.SITE_URL || 'https://markchat.co.ke').hostname];
     const mediaHost = import.meta.env.PUBLIC_CMS_MEDIA_HOST;
     if (mediaHost) {
-      try { approved.push(new URL(mediaHost).hostname); } catch { /* ignore invalid host */ }
+      try {
+        approved.push(new URL(mediaHost).hostname);
+      } catch {
+        /* ignore invalid host */
+      }
     }
     return approved.includes(url.hostname) ? url.href : null;
   } catch {
@@ -84,16 +101,29 @@ export function resolveProductAsset(
   theme: ProductTheme,
   cmsOverride?: CmsProductMediaOverride | null
 ): ProductMedia {
-  const fallbackAlt = productWorkflows[workflow].title + ': product screenshot pending verification';
+  const fallbackAlt =
+    productWorkflows[workflow].title + ': product screenshot pending verification';
   if (cmsOverride?.status === 'published' && (!cmsOverride.theme || cmsOverride.theme === theme)) {
     const src = safeMediaUrl(cmsOverride.mediaUrl);
     if (src) {
-      return { workflow, theme, src, source: 'cms', alt: cmsOverride.mediaAlt?.trim() || productWorkflows[workflow].title };
+      return {
+        workflow,
+        theme,
+        src,
+        source: 'cms',
+        alt: cmsOverride.mediaAlt?.trim() || productWorkflows[workflow].title,
+      };
     }
   }
   const bundle = captured[workflow][theme];
   if (captured.verified && bundle && safeMediaUrl(bundle)) {
-    return { workflow, theme, src: bundle, source: 'captured', alt: productWorkflows[workflow].title + ' in ' + theme + ' mode (synthetic demo data)' };
+    return {
+      workflow,
+      theme,
+      src: bundle,
+      source: 'captured',
+      alt: productWorkflows[workflow].title + ' in ' + theme + ' mode (synthetic demo data)',
+    };
   }
   return { workflow, theme, src: null, source: 'fallback', alt: fallbackAlt };
 }

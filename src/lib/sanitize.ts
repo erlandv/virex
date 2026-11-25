@@ -142,7 +142,9 @@ export function sanitizeHtml(rawHtml: string): string {
           ) {
             try {
               const parsedUrl = new URL(candidate);
-              validatedValue = ['https:', 'http:'].includes(parsedUrl.protocol) ? parsedUrl.href : '#';
+              validatedValue = ['https:', 'http:'].includes(parsedUrl.protocol)
+                ? parsedUrl.href
+                : '#';
             } catch {
               validatedValue = '#';
             }
@@ -156,7 +158,11 @@ export function sanitizeHtml(rawHtml: string): string {
           cleanAttrs.push('rel="noopener noreferrer"');
         } else if (attrName !== 'rel' || lowerTag !== 'a') {
           // Escape quotes in attribute value
-          const safeVal = validatedValue.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+          const safeVal = validatedValue
+            .replace(/&/g, '&amp;')
+            .replace(/"/g, '&quot;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;');
           cleanAttrs.push(`${attrName}="${safeVal}"`);
         }
       }

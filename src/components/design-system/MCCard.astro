@@ -1,5 +1,16 @@
 ---
-interface Props { as?: 'div' | 'article' | 'aside'; class?: string; padded?: boolean; }
+interface Props {
+  as?: 'div' | 'article' | 'aside';
+  class?: string;
+  padded?: boolean;
+}
 const { as: Tag = 'article', class: className = '', padded = true } = Astro.props;
 ---
-<Tag class:list={['rounded-xl border border-border bg-surface-elevated', padded && 'p-5 sm:p-7', className]}><slot /></Tag>
+
+<Tag
+  class:list={[
+    'rounded-xl border border-border bg-surface-elevated',
+    padded && 'p-5 sm:p-7',
+    className,
+  ]}><slot /></Tag
+>

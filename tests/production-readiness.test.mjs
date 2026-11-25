@@ -24,15 +24,34 @@ test('production canonical and crawler outputs do not contain localhost', () => 
 test('sitemap excludes account, administration and redirect routes', () => {
   const sitemap = read('dist/sitemap-0.xml');
   for (const prefix of [
-    '/dashboard/', '/dashboardMain/', '/auth/', '/billing/',
-    '/login/', '/register/', '/forgot-password/', '/reset-password/',
-    '/faqs/', '/403/', '/404/', '/500/',
+    '/dashboard/',
+    '/dashboardMain/',
+    '/auth/',
+    '/billing/',
+    '/login/',
+    '/register/',
+    '/forgot-password/',
+    '/reset-password/',
+    '/faqs/',
+    '/403/',
+    '/404/',
+    '/500/',
   ]) {
-    assert.ok(!sitemap.includes('https://markchat.co.ke' + prefix), prefix + ' should not be indexed');
+    assert.ok(
+      !sitemap.includes('https://markchat.co.ke' + prefix),
+      prefix + ' should not be indexed'
+    );
   }
   for (const route of [
-    '/pricing/', '/markcopilot/', '/docs/', '/about/', '/contact/',
-    '/demo/', '/privacy/', '/terms/', '/dpa/',
+    '/pricing/',
+    '/markcopilot/',
+    '/docs/',
+    '/about/',
+    '/contact/',
+    '/demo/',
+    '/privacy/',
+    '/terms/',
+    '/dpa/',
   ]) {
     assert.ok(sitemap.includes('https://markchat.co.ke' + route), route + ' missing');
   }
@@ -72,15 +91,20 @@ test('theme begins in head and synchronizes accessibility state', () => {
   const toggle = read('src/components/ui/ThemeToggle.astro');
   assert.match(layout, /document\.documentElement\.style\.colorScheme = theme/);
   assert.match(layout, /localStorage\.getItem\('theme'\)/);
-  assert.ok(layout.indexOf('document.documentElement.classList.toggle') < layout.indexOf('</head>'));
+  assert.ok(
+    layout.indexOf('document.documentElement.classList.toggle') < layout.indexOf('</head>')
+  );
   assert.match(toggle, /aria-pressed/);
   assert.match(toggle, /theme-change/);
 });
 
 test('production pages have canonical links and SEO descriptions', () => {
   for (const file of [
-    'dist/index.html', 'dist/pricing/index.html', 'dist/about/index.html',
-    'dist/docs/index.html', 'dist/contact/index.html',
+    'dist/index.html',
+    'dist/pricing/index.html',
+    'dist/about/index.html',
+    'dist/docs/index.html',
+    'dist/contact/index.html',
   ]) {
     const html = read(file);
     assert.match(html, /<link rel="canonical" href="https:\/\/markchat\.co\.ke\//);

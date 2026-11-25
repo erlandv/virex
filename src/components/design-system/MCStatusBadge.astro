@@ -1,6 +1,18 @@
 ---
-interface Props { status?: 'available'|'integration'|'preview'|'planned'; label?: string; }
+interface Props {
+  status?: 'available' | 'integration' | 'preview' | 'planned';
+  label?: string;
+}
 const { status = 'preview', label } = Astro.props;
-const labels = { available: 'Available', integration: 'Requires setup', preview: 'Demo preview', planned: 'Planned' };
+const labels = {
+  available: 'Available',
+  integration: 'Requires setup',
+  preview: 'Demo preview',
+  planned: 'Planned',
+};
 ---
-<span class="inline-flex items-center rounded-md border border-border bg-surface px-2.5 py-1 text-xs font-semibold text-text-muted">{label || labels[status]}</span>
+
+<span
+  class="inline-flex items-center rounded-md border border-border bg-surface px-2.5 py-1 text-xs font-semibold text-text-muted"
+  >{label || labels[status]}</span
+>

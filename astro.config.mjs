@@ -22,7 +22,12 @@ export default defineConfig({
         // Strictly exclude internal administration, error, and preview routes
         if (page.includes('/dashboard') || page.includes('/dashboardMain')) return false;
         if (/\/(auth|billing)(\/|$)/.test(new URL(page).pathname)) return false;
-        if (/\/(login|register|forgot-password|reset-password|faqs|dashboardMain)(\/|$)/.test(new URL(page).pathname)) return false;
+        if (
+          /\/(login|register|forgot-password|reset-password|faqs|dashboardMain)(\/|$)/.test(
+            new URL(page).pathname
+          )
+        )
+          return false;
         if (page.includes('/403') || page.includes('/404') || page.includes('/500')) return false;
         if (page.includes('/api/')) return false;
 
