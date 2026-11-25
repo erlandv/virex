@@ -76,7 +76,10 @@ test('Virex enterprise interactive components and disclosure exist', async () =>
   assert.match(readiness, /\[A-Z0-9\]/);
 
   const pricing = fs.readFileSync(path.resolve('src/pages/pricing.astro'), 'utf8');
-  assert.ok(pricing.indexOf('<SmsCampaignCalculator') < pricing.indexOf('<SenderReadinessMatrix'));
+  assert.doesNotMatch(pricing, /<SmsCampaignCalculator|<SenderReadinessMatrix/);
+  assert.match(pricing, /flatPreview/);
+  assert.match(pricing, /fetchPricingMatrix/);
+  assert.match(pricing, /fetchFaqs/);
 
   const leadForm = fs.readFileSync(
     path.resolve('src/components/forms/DemoRequestForm.astro'),
