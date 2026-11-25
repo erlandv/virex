@@ -3018,7 +3018,8 @@ export async function uploadHeroMediaAsset(
   form.append('file', file, file.name);
   form.append('page', page);
   form.append('variant', variant);
-  const response = await apiFetch(`${BRIDGE_API_URL}/api/admin/cms/media`, {
+  const response = await fetch(`${BRIDGE_API_URL}/api/admin/cms/media`, {
+    signal: AbortSignal.timeout(30000),
     method: 'POST',
     headers: { Authorization: `Bearer ${getAdminToken()}` },
     body: form,
