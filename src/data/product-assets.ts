@@ -2,7 +2,16 @@
  * Marketing asset manifest. Verified CMS media overrides bundled screenshots.
  * Never label conceptual fallbacks as actual Core captures.
  */
-import captured from './captured-product-assets.json';
+import capturedJson from './captured-product-assets.json';
+
+interface CapturedManifest {
+  verified: boolean;
+  captureVersion: number;
+  inbox: Record<'light' | 'dark', string | null>;
+  mpesa: Record<'light' | 'dark', string | null>;
+  markcopilot: Record<'light' | 'dark', string | null>;
+}
+const captured = capturedJson as CapturedManifest;
 
 export type ProductWorkflow = 'inbox' | 'mpesa' | 'markcopilot';
 export type ProductTheme = 'light' | 'dark';
