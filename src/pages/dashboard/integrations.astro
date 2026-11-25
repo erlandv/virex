@@ -345,15 +345,14 @@ const [integrationsHeroMedia, solutionsHeroMedia, aboutHeroMedia] = await Promis
       </form>
     </Modal>
   </div>
+  <section class="mx-auto mt-8 max-w-7xl space-y-5 px-4 pb-8" aria-label="Editorial hero media settings">
+    <h2 class="text-xl font-bold text-text">Page Hero &amp; Editorial Media</h2>
+    <p class="text-sm text-text-muted">Integrations, Solutions and About have independent media controls. Publishing requires the CMS bridge.</p>
+    <MCHeroMediaEditor page="integrations" settings={integrationsHeroMedia} standalone />
+    <MCHeroMediaEditor page="solutions" settings={solutionsHeroMedia} standalone />
+    <MCHeroMediaEditor page="about" settings={aboutHeroMedia} standalone />
+  </section>
 </DashboardLayout>
-
-<section class="mt-8 space-y-5" aria-label="Editorial hero media settings">
-  <h2 class="text-xl font-bold text-text">Page Hero &amp; Editorial Media</h2>
-  <p class="text-sm text-text-muted">Integrations, Solutions and About have independent media controls. Publishing requires the CMS bridge.</p>
-  <MCHeroMediaEditor page="integrations" settings={integrationsHeroMedia} standalone />
-  <MCHeroMediaEditor page="solutions" settings={solutionsHeroMedia} standalone />
-  <MCHeroMediaEditor page="about" settings={aboutHeroMedia} standalone />
-</section>
 
 <script>
   import {
