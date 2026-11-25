@@ -50,9 +50,15 @@ const dark = resolveProductAsset('inbox', 'dark', cmsMedia);
           <MCButton href={secondaryCTA.href} variant="secondary">{secondaryCTA.label}</MCButton>
         </div>
         <div class="mt-8 flex flex-wrap items-center gap-3 text-xs text-text-muted">
-          <span class="rounded-md border border-border bg-surface px-3 py-2">Official channel setup</span>
-          <span class="rounded-md border border-border bg-surface px-3 py-2">Human-reviewed AI assistance</span>
-          <span class="rounded-md border border-border bg-surface px-3 py-2">Configured Daraja workflows</span>
+          <span class="rounded-md border border-border bg-surface px-3 py-2"
+            >Official channel setup</span
+          >
+          <span class="rounded-md border border-border bg-surface px-3 py-2"
+            >Human-reviewed AI assistance</span
+          >
+          <span class="rounded-md border border-border bg-surface px-3 py-2"
+            >Configured Daraja workflows</span
+          >
         </div>
       </div>
       <div class="min-w-0">
@@ -61,13 +67,22 @@ const dark = resolveProductAsset('inbox', 'dark', cmsMedia);
           <MCStatusBadge status="preview" label="Synthetic demo / product preview" />
         </div>
         <div class="dark:hidden">
-          <MCProductFrame src={light.src} alt={light.alt} label="Unified Inbox demonstration preview" />
+          <MCProductFrame
+            src={light.src}
+            alt={light.alt}
+            label="Unified Inbox demonstration preview"
+          />
         </div>
         <div class="hidden dark:block">
-          <MCProductFrame src={dark.src} alt={dark.alt} label="Unified Inbox demonstration preview" />
+          <MCProductFrame
+            src={dark.src}
+            alt={dark.alt}
+            label="Unified Inbox demonstration preview"
+          />
         </div>
         <p class="mt-3 text-xs leading-relaxed text-text-muted">
-          Product images are shown only after approved capture or CMS upload. Illustrative placeholders do not represent live customer data.
+          Product images are shown only after approved capture or CMS upload. Illustrative
+          placeholders do not represent live customer data.
         </p>
       </div>
     </div>

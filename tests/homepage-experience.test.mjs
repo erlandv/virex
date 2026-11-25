@@ -33,7 +33,10 @@ test('Gate 3 homepage source composition and CMS compatibility', async (t) => {
   const dashboard = read('src/pages/dashboard/homepage.astro');
 
   await t.test('ScrewFast-inspired hero has correct product-first message and CTAs', () => {
-    assert.match(hero, /One inbox for customer conversations, AI-assisted responses, and M-Pesa payment workflows/);
+    assert.match(
+      hero,
+      /One inbox for customer conversations, AI-assisted responses, and M-Pesa payment workflows/
+    );
     assert.match(index, /Built for Kenyan businesses/);
     assert.match(hero, /lg:grid-cols-\[1\.1fr_0\.9fr\]/);
     assert.match(hero, /label: 'Get Started', href: '\/register'/);
@@ -41,47 +44,74 @@ test('Gate 3 homepage source composition and CMS compatibility', async (t) => {
     assert.doesNotMatch(index, /SupportHero3D/);
   });
 
-  await t.test('homepage binds CMS settings, pricing and published feature media without changing admin contracts', () => {
-    assert.match(index, /fetchHomepageSettings/);
-    assert.match(index, /fetchPricingMatrix/);
-    assert.match(index, /fetchFeatures/);
-    assert.match(index, /fetchFaqs/);
-    assert.match(index, /homepageSettings\.sections/);
-    assert.match(index, /mediaType !== 'screenshot'/);
-    assert.match(index, /cmsMedia=\{cmsMedia\.inbox\}/);
-    assert.match(index, /cmsMedia=\{cmsMedia\}/);
-    for (const name of ['HomepageSettings', 'HomepageHeroSettings', 'HomepageSectionVisibility']) {
-      assert.match(cmsApi, new RegExp('export interface ' + name));
+  await t.test(
+    'homepage binds CMS settings, pricing and published feature media without changing admin contracts',
+    () => {
+      assert.match(index, /fetchHomepageSettings/);
+      assert.match(index, /fetchPricingMatrix/);
+      assert.match(index, /fetchFeatures/);
+      assert.match(index, /fetchFaqs/);
+      assert.match(index, /homepageSettings\.sections/);
+      assert.match(index, /mediaType !== 'screenshot'/);
+      assert.match(index, /cmsMedia=\{cmsMedia\.inbox\}/);
+      assert.match(index, /cmsMedia=\{cmsMedia\}/);
+      for (const name of [
+        'HomepageSettings',
+        'HomepageHeroSettings',
+        'HomepageSectionVisibility',
+      ]) {
+        assert.match(cmsApi, new RegExp('export interface ' + name));
+      }
+      assert.match(cmsApi, /export async function updateHomepageSettings\(/);
+      assert.match(dashboard, /Hero Experience Settings/);
+      assert.match(dashboard, /Homepage Section Visibility Matrix/);
+      assert.match(dashboard, /updateHomepageSettings/);
     }
-    assert.match(cmsApi, /export async function updateHomepageSettings\(/);
-    assert.match(dashboard, /Hero Experience Settings/);
-    assert.match(dashboard, /Homepage Section Visibility Matrix/);
-    assert.match(dashboard, /updateHomepageSettings/);
-  });
+  );
 
-  await t.test('exactly three product tabs use accessible semantics and synthetic frame fallbacks', () => {
-    assert.match(workbench, /<MCProductTabs>/);
-    assert.match(tabs, /id: 'inbox'/);
-    assert.match(tabs, /id: 'mpesa'/);
-    assert.match(tabs, /id: 'markcopilot'/);
-    assert.equal((tabs.match(/id: '/g) || []).length, 3);
-    assert.match(tabs, /role="tablist"/);
-    assert.match(tabs, /aria-selected/);
-    assert.match(tabs, /ArrowRight/);
-    assert.match(workbench, /<MCWorkflowPreview/);
-    assert.match(read('src/components/design-system/MCProductFrame.astro'), /data-mc-media-fallback/);
-    assert.match(read('src/components/design-system/MCProductFrame.astro'), /image\.addEventListener\('error', showFallback\)/);
-  });
-
-  await t.test('homepage removes deferred SMS marketing, decorative gradients and premium-only positioning', () => {
-    for (const file of sections) {
-      const source = read(file);
-      assert.doesNotMatch(source, /bg-gradient|radial-gradient|linear-gradient|blur-3xl|backdrop-blur|SupportHero3D|glassmorph/i, file);
-      assert.doesNotMatch(source, /Bulk SMS|SMS Studio|SMS wallet|SMS calculator|Captain AI|SAML\/SSO|Audit Logs|Custom Roles|Agent Capacity|SLA Policies/i, file);
+  await t.test(
+    'exactly three product tabs use accessible semantics and synthetic frame fallbacks',
+    () => {
+      assert.match(workbench, /<MCProductTabs>/);
+      assert.match(tabs, /id: 'inbox'/);
+      assert.match(tabs, /id: 'mpesa'/);
+      assert.match(tabs, /id: 'markcopilot'/);
+      assert.equal((tabs.match(/id: '/g) || []).length, 3);
+      assert.match(tabs, /role="tablist"/);
+      assert.match(tabs, /aria-selected/);
+      assert.match(tabs, /ArrowRight/);
+      assert.match(workbench, /<MCWorkflowPreview/);
+      assert.match(
+        read('src/components/design-system/MCProductFrame.astro'),
+        /data-mc-media-fallback/
+      );
+      assert.match(
+        read('src/components/design-system/MCProductFrame.astro'),
+        /image\.addEventListener\('error', showFallback\)/
+      );
     }
-    assert.match(index, /flatPreview/);
-    assert.match(index, /deferredTerms/);
-  });
+  );
+
+  await t.test(
+    'homepage removes deferred SMS marketing, decorative gradients and premium-only positioning',
+    () => {
+      for (const file of sections) {
+        const source = read(file);
+        assert.doesNotMatch(
+          source,
+          /bg-gradient|radial-gradient|linear-gradient|blur-3xl|backdrop-blur|SupportHero3D|glassmorph/i,
+          file
+        );
+        assert.doesNotMatch(
+          source,
+          /Bulk SMS|SMS Studio|SMS wallet|SMS calculator|Captain AI|SAML\/SSO|Audit Logs|Custom Roles|Agent Capacity|SLA Policies/i,
+          file
+        );
+      }
+      assert.match(index, /flatPreview/);
+      assert.match(index, /deferredTerms/);
+    }
+  );
 
   await t.test('seven Community-safe capabilities use the existing isometric SVG manifest', () => {
     const illustrations = read('src/data/product-assets.ts');
@@ -90,8 +120,13 @@ test('Gate 3 homepage source composition and CMS compatibility', async (t) => {
     assert.match(index, /<MCFeatureBento features=\{capabilities\}/);
     assert.match(bento, /feature\.illustration/);
     for (const id of [
-      'unified-inbox', 'mpesa-stk', 'markcopilot',
-      'automation-routing', 'contact-crm', 'help-center', 'analytics-webhooks',
+      'unified-inbox',
+      'mpesa-stk',
+      'markcopilot',
+      'automation-routing',
+      'contact-crm',
+      'help-center',
+      'analytics-webhooks',
     ]) {
       assert.ok(illustrations.includes("id: '" + id + "'"), 'Missing illustration ' + id);
     }
@@ -100,9 +135,15 @@ test('Gate 3 homepage source composition and CMS compatibility', async (t) => {
   await t.test('Kenyan industry routes remain available', () => {
     const useCases = read('src/components/sections/marketing/SolutionsPreview.astro');
     for (const slug of [
-      'ecommerce', 'healthcare', 'pharmacies', 'education', 'support', 'fintech', 'travel',
+      'ecommerce',
+      'healthcare',
+      'pharmacies',
+      'education',
+      'support',
+      'fintech',
+      'travel',
     ]) {
-      assert.ok(useCases.includes("/solutions/" + slug), 'Missing industry ' + slug);
+      assert.ok(useCases.includes('/solutions/' + slug), 'Missing industry ' + slug);
     }
     assert.match(useCases, /Tailored Industry Solutions/);
   });
@@ -144,7 +185,10 @@ test('Gate 3 built homepage renders safely without verified screenshots', async 
 
   await t.test('homepage has no deferred SMS product promotional sections', () => {
     assert.doesNotMatch(html, /Bulk SMS|SMS Studio|SMS wallet|SMS calculator/i);
-    assert.doesNotMatch(html, /Captain AI|SAML\/SSO|SLA Policies|Audit Logs|Custom Roles|Agent Capacity/i);
+    assert.doesNotMatch(
+      html,
+      /Captain AI|SAML\/SSO|SLA Policies|Audit Logs|Custom Roles|Agent Capacity/i
+    );
   });
 
   await t.test('seven features, pricing, FAQ and industry pathways render', () => {

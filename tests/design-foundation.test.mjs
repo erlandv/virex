@@ -108,7 +108,10 @@ test('Gate 3 keeps clean fallback media behavior until approved Core captures ex
     for (const workflow of ['inbox', 'mpesa', 'markcopilot']) {
       for (const theme of ['light', 'dark']) {
         const url = manifest[workflow]?.[theme];
-        assert.ok(url?.startsWith('/media/product/'), 'Missing verified screenshot ' + workflow + '/' + theme);
+        assert.ok(
+          url?.startsWith('/media/product/'),
+          'Missing verified screenshot ' + workflow + '/' + theme
+        );
         assert.ok(existsSync('public' + url), 'Screenshot file missing: ' + url);
       }
     }
@@ -138,6 +141,10 @@ test('Gate 3 homepage continues to use exact Virex brand tokens without decorati
     'src/components/sections/marketing/CTA.astro',
   ];
   for (const file of files) {
-    assert.doesNotMatch(read(file), /bg-gradient|radial-gradient|linear-gradient|blur-3xl|backdrop-blur|SupportHero3D/i, file);
+    assert.doesNotMatch(
+      read(file),
+      /bg-gradient|radial-gradient|linear-gradient|blur-3xl|backdrop-blur|SupportHero3D/i,
+      file
+    );
   }
 });

@@ -21,12 +21,7 @@ import MCButton from '@/components/design-system/MCButton.astro';
 import { communityIllustrations } from '@/data/product-assets';
 import type { ProductWorkflow, CmsProductMediaOverride } from '@/data/product-assets';
 import { siteConfig } from '@/config';
-import {
-  fetchHomepageSettings,
-  fetchPricingMatrix,
-  fetchFeatures,
-  fetchFaqs,
-} from '@/lib/cms-api';
+import { fetchHomepageSettings, fetchPricingMatrix, fetchFeatures, fetchFaqs } from '@/lib/cms-api';
 
 const [homepageSettings, pricingMatrix, publishedFeatures, publishedFaqs] = await Promise.all([
   fetchHomepageSettings(),
@@ -38,9 +33,7 @@ const [homepageSettings, pricingMatrix, publishedFeatures, publishedFaqs] = awai
 const sections = homepageSettings.sections;
 const newsletterAction = import.meta.env.PUBLIC_NEWSLETTER_ACTION_URL || '';
 const verifiedNewsletterAction =
-  newsletterAction.startsWith('/') && !newsletterAction.startsWith('//')
-    ? newsletterAction
-    : '';
+  newsletterAction.startsWith('/') && !newsletterAction.startsWith('//') ? newsletterAction : '';
 
 const deferredTerms =
   /(?:bulk\s+)?sms|sender\s+id|byoc|saml|sso|audit\s+logs?|custom\s+roles?|captain\s+ai|agent\s+capacity|\bsla\b/i;
@@ -114,21 +107,24 @@ const capabilities = [
   {
     id: 'unified-inbox',
     title: 'Unified Inbox',
-    description: 'Manage connected conversations, assignments, and customer context in one workspace.',
+    description:
+      'Manage connected conversations, assignments, and customer context in one workspace.',
     icon: 'lucide:inbox',
     href: '/product/shared-inbox',
   },
   {
     id: 'mpesa-stk',
     title: 'M-Pesa Checkout',
-    description: 'Coordinate approved Daraja /stk payment requests and review callback status in context.',
+    description:
+      'Coordinate approved Daraja /stk payment requests and review callback status in context.',
     icon: 'lucide:wallet-cards',
     href: '/integrations/safaricom-mpesa-daraja',
   },
   {
     id: 'markcopilot',
     title: 'Markcopilot AI',
-    description: 'Get contextual reply suggestions for human review before responding to customers.',
+    description:
+      'Get contextual reply suggestions for human review before responding to customers.',
     icon: 'lucide:sparkles',
     href: '/markcopilot',
   },
@@ -156,7 +152,8 @@ const capabilities = [
   {
     id: 'analytics-webhooks',
     title: 'Analytics & Webhooks',
-    description: 'Understand supported conversation activity and connect documented event workflows.',
+    description:
+      'Understand supported conversation activity and connect documented event workflows.',
     icon: 'lucide:chart-no-axes-combined',
     href: '/integrations/developer-api-webhooks',
   },
@@ -167,7 +164,9 @@ const capabilities = [
 
 const pricingPlans = pricingMatrix.tiers.map((tier) => {
   const features = tier.features
-    .filter((feature) => !deferredTerms.test(feature) && !/guaranteed|unlimited channels/i.test(feature))
+    .filter(
+      (feature) => !deferredTerms.test(feature) && !/guaranteed|unlimited channels/i.test(feature)
+    )
     .slice(0, 5);
   return {
     name: tier.name,
@@ -263,7 +262,9 @@ const finalTitle = legacyDefaultCopy.test(closingTitle)
         </div>
         <MCFeatureBento features={capabilities} />
         <div class="mt-9">
-          <MCButton href="/features" variant="secondary">Explore all features</MCButton>
+          <MCButton href="/features" variant="secondary">
+            Explore all features
+          </MCButton>
         </div>
       </MCSection>
     )
@@ -313,7 +314,9 @@ const finalTitle = legacyDefaultCopy.test(closingTitle)
               description="Help your agents draft contextual responses in English and Kiswahili, with human review before sending."
             />
             <div class="mt-7">
-              <MCButton href="/markcopilot" variant="secondary">Explore Markcopilot</MCButton>
+              <MCButton href="/markcopilot" variant="secondary">
+                Explore Markcopilot
+              </MCButton>
             </div>
           </div>
           <div class="rounded-xl border border-border bg-surface p-6">
@@ -324,7 +327,8 @@ const finalTitle = legacyDefaultCopy.test(closingTitle)
               class="mx-auto aspect-[5/4] max-h-64 w-full object-contain"
             />
             <p class="mt-3 text-xs text-text-muted">
-              Conceptual illustration. AI assistance and language coverage depend on workspace configuration.
+              Conceptual illustration. AI assistance and language coverage depend on workspace
+              configuration.
             </p>
           </div>
         </div>
@@ -355,9 +359,18 @@ const finalTitle = legacyDefaultCopy.test(closingTitle)
         />
         <div class="mt-8 grid gap-4 md:grid-cols-3">
           {[
-            ['Local customer context', 'Built for customer journeys across Kenyan retail and service businesses.'],
-            ['Verified payment status', 'Use configured provider responses rather than relying on payment screenshots.'],
-            ['Human-led workflows', 'Keep agents in control of customer service and AI-assisted replies.'],
+            [
+              'Local customer context',
+              'Built for customer journeys across Kenyan retail and service businesses.',
+            ],
+            [
+              'Verified payment status',
+              'Use configured provider responses rather than relying on payment screenshots.',
+            ],
+            [
+              'Human-led workflows',
+              'Keep agents in control of customer service and AI-assisted replies.',
+            ],
           ].map(([title, description]) => (
             <article class="rounded-xl border border-border bg-surface-elevated p-6">
               <h3 class="font-semibold text-text">{title}</h3>
@@ -379,7 +392,11 @@ const finalTitle = legacyDefaultCopy.test(closingTitle)
     )
   }
 
-  {sections.newsletter && verifiedNewsletterAction && <Newsletter action={verifiedNewsletterAction} />}
+  {
+    sections.newsletter && verifiedNewsletterAction && (
+      <Newsletter action={verifiedNewsletterAction} />
+    )
+  }
 
   {
     sections.closingCta && (
