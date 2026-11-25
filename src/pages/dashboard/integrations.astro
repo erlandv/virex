@@ -3,13 +3,19 @@
  * MarkChat CMS — Integrations Manager
  */
 import DashboardLayout from '@/layouts/DashboardLayout.astro';
+import MCHeroMediaEditor from '@/components/dashboard/MCHeroMediaEditor.astro';
 import Card from '@dashboard-ui/Card.astro';
 import Modal from '@dashboard-ui/Modal.astro';
 import { Icon } from 'astro-icon/components';
 import IntegrationIcon from '@/components/ui/IntegrationIcon.astro';
-import { fetchIntegrations } from '@/lib/cms-api';
+import { fetchIntegrations, fetchHeroMediaSettings } from '@/lib/cms-api';
 
 const integrations = await fetchIntegrations();
+const [integrationsHeroMedia, solutionsHeroMedia, aboutHeroMedia] = await Promise.all([
+  fetchHeroMediaSettings('integrations'),
+  fetchHeroMediaSettings('solutions'),
+  fetchHeroMediaSettings('about'),
+]);
 ---
 
 <DashboardLayout
@@ -340,6 +346,14 @@ const integrations = await fetchIntegrations();
     </Modal>
   </div>
 </DashboardLayout>
+
+<section class="mt-8 space-y-5" aria-label="Editorial hero media settings">
+  <h2 class="text-xl font-bold text-text">Page Hero &amp; Editorial Media</h2>
+  <p class="text-sm text-text-muted">Integrations, Solutions and About have independent media controls. Publishing requires the CMS bridge.</p>
+  <MCHeroMediaEditor page="integrations" settings={integrationsHeroMedia} standalone />
+  <MCHeroMediaEditor page="solutions" settings={solutionsHeroMedia} standalone />
+  <MCHeroMediaEditor page="about" settings={aboutHeroMedia} standalone />
+</section>
 
 <script>
   import {

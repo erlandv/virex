@@ -3,6 +3,7 @@
  * MarkChat CMS — Markcopilot AI Intelligence Manager
  */
 import DashboardLayout from '@/layouts/DashboardLayout.astro';
+import MCHeroMediaEditor from '@/components/dashboard/MCHeroMediaEditor.astro';
 import Card from '@dashboard-ui/Card.astro';
 import Modal from '@dashboard-ui/Modal.astro';
 import StatCard from '@dashboard-ui/StatCard.astro';
@@ -427,6 +428,7 @@ Automatic agent escalation"
   <!-- Page Settings Modal -->
   <Modal id="settings-modal" title="Markcopilot Page Global Settings" size="lg">
     <form id="settings-form" class="space-y-4">
+      <MCHeroMediaEditor page="markcopilot" settings={settings.hero.heroMedia} />
       <div class="border-b border-border pb-3 mb-2 font-bold text-sm text-text">
         Hero Section Configuration
       </div>
@@ -712,6 +714,7 @@ Automatic agent escalation"
             badge: heroBadge,
             title: heroTitle,
             subtitle: heroSubtitle,
+            heroMedia: window.markchatReadHeroMedia?.('markcopilot'),
             primaryCtaLabel,
             primaryCtaHref,
             secondaryCtaLabel: 'Explore Capabilities',

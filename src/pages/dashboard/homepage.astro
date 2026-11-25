@@ -3,6 +3,7 @@
  * MarkChat CMS — Homepage Experience Editor
  */
 import DashboardLayout from '@/layouts/DashboardLayout.astro';
+import MCHeroMediaEditor from '@/components/dashboard/MCHeroMediaEditor.astro';
 import Card from '@dashboard-ui/Card.astro';
 import StatCard from '@dashboard-ui/StatCard.astro';
 import { Icon } from 'astro-icon/components';
@@ -249,6 +250,8 @@ const activeSectionsCount = Object.values(settings.sections || {}).filter(Boolea
               />
             </div>
           </div>
+
+          <MCHeroMediaEditor page="homepage" settings={settings.hero.heroMedia} />
 
           {/* Micro-Metrics Editor */}
           <div class="pt-4 border-t border-border">
@@ -516,6 +519,7 @@ const activeSectionsCount = Object.values(settings.sections || {}).filter(Boolea
           secondaryCtaLabel: heroSecondaryLabel,
           secondaryCtaHref: heroSecondaryHref,
           stats,
+          heroMedia: window.markchatReadHeroMedia?.('homepage'),
         },
         sections,
         closingCta: {

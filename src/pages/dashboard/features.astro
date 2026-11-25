@@ -3,6 +3,7 @@
  * MarkChat CMS — Features & Capabilities Showcase Manager
  */
 import DashboardLayout from '@/layouts/DashboardLayout.astro';
+import MCHeroMediaEditor from '@/components/dashboard/MCHeroMediaEditor.astro';
 import Card from '@dashboard-ui/Card.astro';
 import Modal from '@dashboard-ui/Modal.astro';
 import StatCard from '@dashboard-ui/StatCard.astro';
@@ -393,6 +394,8 @@ Database unique TransID constraint"></textarea>
           >
         </div>
       </div>
+
+      <MCHeroMediaEditor page="features" settings={settings.hero.heroMedia} />
 
       <!-- Developer Section Settings -->
       <div class="p-4 rounded-xl border border-border bg-surface/50 space-y-4">
@@ -866,6 +869,7 @@ Database unique TransID constraint"></textarea>
             eyebrow: heroEyebrow,
             heading: heroHeading,
             description: heroDescription,
+            heroMedia: window.markchatReadHeroMedia?.('features'),
             primaryCtaLabel: 'Book a Live Demo',
             primaryCtaHref: '/demo',
             secondaryCtaLabel: 'Explore Plans & Pricing',
