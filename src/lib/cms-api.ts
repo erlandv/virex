@@ -3009,15 +3009,13 @@ export async function fetchFeaturesSettings(): Promise<FeaturesPageSettings> {
     });
     if (res.ok) {
       const data: FeaturesPageSettings = await res.json();
-      return data;
+      return { ...data, hero: { ...data.hero, heroMedia: normalizeHeroMedia('features', data.hero?.heroMedia) } };
     }
   } catch {
     // Fallback
   }
-  return getLocalItem<FeaturesPageSettings>(
-    STORAGE_KEYS.features_settings,
-    DEFAULT_FEATURES_SETTINGS
-  );
+  const local = getLocalItem<FeaturesPageSettings>(STORAGE_KEYS.features_settings, DEFAULT_FEATURES_SETTINGS);
+  return { ...local, hero: { ...local.hero, heroMedia: normalizeHeroMedia('features', local.hero?.heroMedia) } };
 }
 
 /**
@@ -3054,12 +3052,13 @@ export async function fetchHomepageSettings(): Promise<HomepageSettings> {
     });
     if (res.ok) {
       const data: HomepageSettings = await res.json();
-      return data;
+      return { ...data, hero: { ...data.hero, heroMedia: normalizeHeroMedia('homepage', data.hero?.heroMedia) } };
     }
   } catch {
     // Fallback
   }
-  return getLocalItem<HomepageSettings>(STORAGE_KEYS.homepage_settings, DEFAULT_HOMEPAGE_SETTINGS);
+  const local = getLocalItem<HomepageSettings>(STORAGE_KEYS.homepage_settings, DEFAULT_HOMEPAGE_SETTINGS);
+  return { ...local, hero: { ...local.hero, heroMedia: normalizeHeroMedia('homepage', local.hero?.heroMedia) } };
 }
 
 /**
@@ -3076,12 +3075,13 @@ export async function adminFetchHomepageSettings(): Promise<HomepageSettings> {
     });
     if (res.ok) {
       const data: HomepageSettings = await res.json();
-      return data;
+      return { ...data, hero: { ...data.hero, heroMedia: normalizeHeroMedia('homepage', data.hero?.heroMedia) } };
     }
   } catch {
     // Fallback
   }
-  return getLocalItem<HomepageSettings>(STORAGE_KEYS.homepage_settings, DEFAULT_HOMEPAGE_SETTINGS);
+  const local = getLocalItem<HomepageSettings>(STORAGE_KEYS.homepage_settings, DEFAULT_HOMEPAGE_SETTINGS);
+  return { ...local, hero: { ...local.hero, heroMedia: normalizeHeroMedia('homepage', local.hero?.heroMedia) } };
 }
 
 /**
@@ -3095,15 +3095,13 @@ export async function fetchMarkcopilotSettings(): Promise<MarkcopilotPageSetting
     });
     if (res.ok) {
       const data: MarkcopilotPageSettings = await res.json();
-      return { ...DEFAULT_MARKCOPILOT_SETTINGS, ...data };
+      return { ...DEFAULT_MARKCOPILOT_SETTINGS, ...data, hero: { ...DEFAULT_MARKCOPILOT_SETTINGS.hero, ...data.hero, heroMedia: normalizeHeroMedia('markcopilot', data.hero?.heroMedia) } };
     }
   } catch {
     // Fallback
   }
-  return getLocalItem<MarkcopilotPageSettings>(
-    STORAGE_KEYS.markcopilot_settings,
-    DEFAULT_MARKCOPILOT_SETTINGS
-  );
+  const local = getLocalItem<MarkcopilotPageSettings>(STORAGE_KEYS.markcopilot_settings, DEFAULT_MARKCOPILOT_SETTINGS);
+  return { ...local, hero: { ...local.hero, heroMedia: normalizeHeroMedia('markcopilot', local.hero?.heroMedia) } };
 }
 
 /**
@@ -3120,15 +3118,13 @@ export async function adminFetchMarkcopilotSettings(): Promise<MarkcopilotPageSe
     });
     if (res.ok) {
       const data: MarkcopilotPageSettings = await res.json();
-      return { ...DEFAULT_MARKCOPILOT_SETTINGS, ...data };
+      return { ...DEFAULT_MARKCOPILOT_SETTINGS, ...data, hero: { ...DEFAULT_MARKCOPILOT_SETTINGS.hero, ...data.hero, heroMedia: normalizeHeroMedia('markcopilot', data.hero?.heroMedia) } };
     }
   } catch {
     // Fallback
   }
-  return getLocalItem<MarkcopilotPageSettings>(
-    STORAGE_KEYS.markcopilot_settings,
-    DEFAULT_MARKCOPILOT_SETTINGS
-  );
+  const local = getLocalItem<MarkcopilotPageSettings>(STORAGE_KEYS.markcopilot_settings, DEFAULT_MARKCOPILOT_SETTINGS);
+  return { ...local, hero: { ...local.hero, heroMedia: normalizeHeroMedia('markcopilot', local.hero?.heroMedia) } };
 }
 
 /**
@@ -4012,7 +4008,7 @@ export async function updateFeaturesSettings(
   const updated: FeaturesPageSettings = {
     ...current,
     ...settings,
-    hero: { ...current.hero, ...(settings.hero || {}) },
+    hero: { ...current.hero, ...(settings.hero || {}), heroMedia: normalizeHeroMedia('features', settings.hero?.heroMedia ?? current.hero.heroMedia) },
     developerSection: { ...current.developerSection, ...(settings.developerSection || {}) },
     markcopilotSection: { ...current.markcopilotSection, ...(settings.markcopilotSection || {}) },
     closingCta: { ...current.closingCta, ...(settings.closingCta || {}) },
@@ -4050,7 +4046,7 @@ export async function updateHomepageSettings(
   const updated: HomepageSettings = {
     ...current,
     ...settings,
-    hero: { ...current.hero, ...(settings.hero || {}) },
+    hero: { ...current.hero, ...(settings.hero || {}), heroMedia: normalizeHeroMedia('homepage', settings.hero?.heroMedia ?? current.hero.heroMedia) },
     sections: { ...current.sections, ...(settings.sections || {}) },
     closingCta: { ...current.closingCta, ...(settings.closingCta || {}) },
     updatedAt: new Date().toISOString(),
@@ -4087,7 +4083,7 @@ export async function updateMarkcopilotSettings(
   const updated: MarkcopilotPageSettings = {
     ...current,
     ...settings,
-    hero: { ...current.hero, ...(settings.hero || {}) },
+    hero: { ...current.hero, ...(settings.hero || {}), heroMedia: normalizeHeroMedia('markcopilot', settings.hero?.heroMedia ?? current.hero.heroMedia) },
     introduction: { ...current.introduction, ...(settings.introduction || {}) },
     howItWorks: { ...current.howItWorks, ...(settings.howItWorks || {}) },
     video: { ...current.video, ...(settings.video || {}) },
