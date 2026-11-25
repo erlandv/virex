@@ -5,6 +5,9 @@
  * with fallback Kenyan seed data and local state management for the Single-Admin CMS.
  */
 
+import type { HeroMediaPage, HeroMediaSettings } from './types';
+import { normalizeHeroMedia } from './hero-media';
+
 export type CmsLifecycleStatus = 'published' | 'draft' | 'paused' | 'archived';
 
 export type MarketingIntegrationCategory =
@@ -66,6 +69,8 @@ export interface MarketingFeature {
 export interface FeaturesPageSettings {
   hero: {
     eyebrow: string;
+    /** Responsive editorial media overrides, independently optional for old API clients. */
+    heroMedia?: Partial<HeroMediaSettings>;
     heading: string;
     description: string;
     primaryCtaLabel: string;
@@ -102,6 +107,8 @@ export interface FeaturesPageSettings {
 
 export interface HomepageHeroSettings {
   badge: string;
+    /** Responsive editorial media overrides, independently optional for old API clients. */
+    heroMedia?: Partial<HeroMediaSettings>;
   title: string;
   subtitle: string;
   primaryCtaLabel: string;
@@ -175,6 +182,8 @@ export interface MarkcopilotVideoSettings {
 export interface MarkcopilotPageSettings {
   hero: {
     badge: string;
+    /** Responsive editorial media overrides, independently optional for old API clients. */
+    heroMedia?: Partial<HeroMediaSettings>;
     title: string;
     subtitle: string;
     primaryCtaLabel: string;
@@ -2294,6 +2303,7 @@ const STORAGE_KEYS = {
   features: 'markchat_cms_features',
   features_settings: 'markchat_cms_features_settings',
   homepage_settings: 'markchat_cms_homepage_settings',
+  editorial_hero_settings: 'markchat_cms_editorial_hero_media',
   markcopilot_capabilities: 'markchat_cms_markcopilot_capabilities',
   markcopilot_settings: 'markchat_cms_markcopilot_settings',
 };
@@ -2931,6 +2941,61 @@ export async function fetchFeatureBySlug(slug: string): Promise<MarketingFeature
   }
   const allFeatures = getLocalItem<MarketingFeature[]>(STORAGE_KEYS.features, DEFAULT_FEATURES);
   return allFeatures.find((f) => f.slug === slug && f.status === 'published') || null;
+}
+
+
+/** Existing CMS bridge can optionally implement /api/public/hero-media/:page
+ * and /api/admin/cms/hero-media/:page without changing existing endpoints.
+ * Until then, the bundled default is safe for static builds and browser-local
+ * edits are a best-effort preview (not a site-wide publish).
+ */
+export async function fetchHeroMediaSettings(page: HeroMediaPage): Promise<HeroMediaSettings> {
+  try {
+    const res = await apiFetch(`${BRIDGE_API_URL}/api/public/hero-media/${page}`, {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' },
+    });
+    if (res.ok) {
+      const json = (await res.json()) as Partial<HeroMediaSettings>;
+      return normalizeHeroMedia(page, json, import.meta.env.PUBLIC_CMS_MEDIA_HOST || '');
+    }
+  } catch {
+    // Existing CMS bridge may not yet expose the optional endpoint.
+  }
+  const local = getLocalItem<Record<HeroMediaPage, Partial<HeroMediaSettings>>>(
+    STORAGE_KEYS.editorial_hero_settings,
+    {} as Record<HeroMediaPage, Partial<HeroMediaSettings>>
+  );
+  return normalizeHeroMedia(page, local[page], import.meta.env.PUBLIC_CMS_MEDIA_HOST || '');
+}
+
+export async function updateHeroMediaSettings(
+  page: HeroMediaPage,
+  provided: Partial<HeroMediaSettings>
+): Promise<HeroMediaSettings> {
+  const normalized = normalizeHeroMedia(page, provided, import.meta.env.PUBLIC_CMS_MEDIA_HOST || '');
+  const current = getLocalItem<Partial<Record<HeroMediaPage, HeroMediaSettings>>>(
+    STORAGE_KEYS.editorial_hero_settings,
+    {}
+  );
+  setLocalItem(STORAGE_KEYS.editorial_hero_settings, { ...current, [page]: normalized });
+  try {
+    const response = await apiFetch(`${BRIDGE_API_URL}/api/admin/cms/hero-media/${page}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${getAdminToken()}`,
+      },
+      body: JSON.stringify(normalized),
+    });
+    if (!response.ok) {
+      // Local-only editor fallback is intentionally not described as a published save.
+      console.warn('[MarkChat CMS] Hero media saved only in this browser; publishing requires a compatible CMS bridge.');
+    }
+  } catch {
+    // Preserve existing localStorage fallback behavior. No false publish confirmation.
+  }
+  return normalized;
 }
 
 /**
