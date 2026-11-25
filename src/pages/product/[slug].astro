@@ -25,7 +25,7 @@ const { page } = Astro.props;
 
 <MarketingLayout title={`${page.title} - MarkChat Kenya`} description={page.subtitle}>
   <!-- Hero Section -->
-  <section class="py-16 sm:py-24 bg-surface/50 border-b border-border">
+  <section class="py-16 sm:py-24 bg-surface border-b border-border">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <!-- Breadcrumb -->
       <nav class="flex items-center gap-2 text-xs text-text-muted mb-8" aria-label="Breadcrumb">
@@ -68,7 +68,7 @@ const { page } = Astro.props;
         <div class="mt-8 flex flex-wrap gap-4">
           <a
             href={page.cta.primaryHref}
-            class="px-6 py-3 rounded-xl bg-primary text-white font-semibold text-sm hover:bg-primary-dark transition-colors shadow-xs"
+            class="px-6 py-3 rounded-xl bg-primary text-white font-semibold text-sm hover:bg-primary-dark transition-colors shadow-none"
           >
             {page.cta.primaryLabel}
           </a>
@@ -76,7 +76,7 @@ const { page } = Astro.props;
             page.cta.secondaryLabel && page.cta.secondaryHref && (
               <a
                 href={page.cta.secondaryHref}
-                class="px-6 py-3 rounded-xl border border-border bg-background text-text font-semibold text-sm hover:border-primary hover:text-primary transition-colors shadow-xs"
+                class="px-6 py-3 rounded-xl border border-border bg-background text-text font-semibold text-sm hover:border-primary hover:text-primary transition-colors shadow-none"
               >
                 {page.cta.secondaryLabel}
               </a>
@@ -126,9 +126,9 @@ const { page } = Astro.props;
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
           {
             page.howToConnect.map((step) => (
-              <div class="p-8 rounded-2xl border border-border bg-surface/50 relative flex flex-col justify-between hover:border-primary/40 hover:shadow-lg transition-all">
+              <div class="p-8 rounded-xl border border-border bg-surface relative flex flex-col justify-between hover:border-primary/40 shadow-none transition-all">
                 <div>
-                  <div class="w-12 h-12 rounded-xl bg-primary text-white font-extrabold flex items-center justify-center text-lg mb-6 shadow-xs">
+                  <div class="w-12 h-12 rounded-xl bg-primary text-white font-extrabold flex items-center justify-center text-lg mb-6 shadow-none">
                     0{step.step}
                   </div>
                   <h3 class="text-lg font-bold text-text mb-3">{step.title}</h3>
@@ -147,7 +147,7 @@ const { page } = Astro.props;
   </section>
 
   <!-- Kenyan Business Benefits -->
-  <section class="py-16 sm:py-20 bg-surface/30 border-b border-border">
+  <section class="py-16 sm:py-20 bg-surface border-b border-border">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="max-w-3xl mb-12">
         <span class="text-xs font-mono font-semibold text-primary uppercase tracking-wider"
@@ -164,7 +164,7 @@ const { page } = Astro.props;
       <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
         {
           page.benefits.map((benefit) => (
-            <div class="p-6 rounded-2xl border border-border bg-background hover:border-primary/40 transition-all">
+            <div class="p-6 rounded-xl border border-border bg-background hover:border-primary/40 transition-all">
               <div class="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-4">
                 <Icon name="lucide:check" class="w-5 h-5" />
               </div>

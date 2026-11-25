@@ -6,7 +6,7 @@
  * - max-w-4xl reading column
  * - Tailwind typography (prose prose-lg dark:prose-invert prose-blue)
  * - Automatic responsive scaling for all images, videos, iframes, and code blocks
- * - Flawless dark mode inversion (dark:bg-[#0B1120])
+ * - Flawless dark mode inversion (dark:bg-background)
  * - Sequential category sorting in sidebar navigation
  * - Metadata row: Difficulty badge, reading time, last updated
  */
@@ -129,13 +129,13 @@ const techArticleJson = JSON.stringify(techArticleSchema).replace(/</g, '\\u003c
 <MarketingLayout title={`${title} — MarkChat Docs`} description={description}>
   <script type="application/ld+json" is:inline set:html={techArticleJson} />
   <div
-    class="py-12 sm:py-16 bg-white dark:bg-[#0B1120] min-h-screen text-slate-800 dark:text-slate-200 transition-colors duration-200"
+    class="py-12 sm:py-16 bg-white dark:bg-background min-h-screen text-slate-800 dark:text-slate-200 transition-colors duration-200"
   >
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       {/* Top Breadcrumb Header */}
       <nav
         aria-label="Breadcrumb"
-        class="mb-8 flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-4"
+        class="mb-8 flex items-center justify-between border-b border-border dark:border-border pb-4"
       >
         <ol class="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
           <li>
@@ -176,7 +176,7 @@ const techArticleJson = JSON.stringify(techArticleSchema).replace(/</g, '\\u003c
             <button
               id="docs-sidebar-toggle"
               type="button"
-              class="lg:hidden w-full flex items-center justify-between p-3.5 bg-slate-100 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white font-semibold text-sm cursor-pointer"
+              class="lg:hidden w-full flex items-center justify-between p-3.5 bg-slate-100 dark:bg-surface rounded-xl border border-border dark:border-border text-slate-900 dark:text-white font-semibold text-sm cursor-pointer"
             >
               <span class="flex items-center gap-2">
                 <Icon name="lucide:menu" class="w-4 h-4 text-blue-600 dark:text-blue-400" />
@@ -206,7 +206,7 @@ const techArticleJson = JSON.stringify(techArticleSchema).replace(/</g, '\\u003c
                               class:list={[
                                 'flex items-center gap-2.5 px-3 py-2 text-sm rounded-xl transition-all duration-150',
                                 isActive
-                                  ? 'bg-blue-600 text-white font-semibold shadow-xs shadow-blue-500/20'
+                                  ? 'bg-blue-600 text-white font-semibold shadow-none '
                                   : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60 font-medium',
                               ]}
                             >
@@ -236,7 +236,7 @@ const techArticleJson = JSON.stringify(techArticleSchema).replace(/</g, '\\u003c
         <main class="flex-1 min-w-0 max-w-4xl mx-auto">
           <article>
             {/* Document Header */}
-            <header class="mb-10 pb-8 border-b border-slate-200 dark:border-slate-800">
+            <header class="mb-10 pb-8 border-b border-border dark:border-border">
               <div class="flex flex-wrap items-center gap-2 mb-4">
                 <div
                   class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-blue-50 dark:bg-blue-950/70 text-blue-700 dark:text-blue-300 border border-blue-200/80 dark:border-blue-800/80"
@@ -245,7 +245,7 @@ const techArticleJson = JSON.stringify(techArticleSchema).replace(/</g, '\\u003c
                   <span>{displayCategory}</span>
                 </div>
                 <span
-                  class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700"
+                  class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-border dark:border-border"
                 >
                   {difficulty}
                 </span>
@@ -278,7 +278,7 @@ const techArticleJson = JSON.stringify(techArticleSchema).replace(/</g, '\\u003c
             {/* Prose Reader Content */}
             <div class="docs-prose-wrapper">
               <div
-                class="prose prose-lg dark:prose-invert prose-blue max-w-none text-slate-700 dark:text-slate-300 leading-relaxed prose-headings:font-bold prose-headings:tracking-tight prose-headings:text-slate-900 dark:prose-headings:text-white prose-a:text-blue-600 dark:prose-a:text-blue-400 prose-a:no-underline hover:prose-a:underline prose-code:text-blue-600 dark:prose-code:text-blue-400 prose-pre:bg-slate-900 dark:prose-pre:bg-slate-950 prose-pre:border prose-pre:border-slate-800 prose-pre:rounded-2xl prose-pre:shadow-lg"
+                class="prose prose-lg dark:prose-invert prose-blue max-w-none text-slate-700 dark:text-slate-300 leading-relaxed prose-headings:font-bold prose-headings:tracking-tight prose-headings:text-slate-900 dark:prose-headings:text-white prose-a:text-blue-600 dark:prose-a:text-blue-400 prose-a:no-underline hover:prose-a:underline prose-code:text-blue-600 dark:prose-code:text-blue-400 prose-pre:bg-slate-900 dark:prose-pre:bg-slate-950 prose-pre:border prose-pre:border-slate-800 prose-pre:rounded-xl prose-pre:shadow-none"
               >
                 <slot />
               </div>
@@ -286,13 +286,13 @@ const techArticleJson = JSON.stringify(techArticleSchema).replace(/</g, '\\u003c
 
             {/* Document Pagination (Prev / Next) */}
             <div
-              class="mt-14 pt-8 border-t border-slate-200 dark:border-slate-800 grid grid-cols-1 sm:grid-cols-2 gap-4"
+              class="mt-14 pt-8 border-t border-border dark:border-border grid grid-cols-1 sm:grid-cols-2 gap-4"
             >
               {
                 prevDoc ? (
                   <a
                     href={`/docs/${prevDoc.id}`}
-                    class="p-4 rounded-xl border border-slate-200 dark:border-slate-800 hover:border-blue-500/50 dark:hover:border-blue-500/50 bg-slate-50 dark:bg-slate-900/50 hover:shadow-md transition-all group flex flex-col"
+                    class="p-4 rounded-xl border border-border dark:border-border hover:border-blue-500/50 dark:hover:border-blue-500/50 bg-slate-50 dark:bg-surface shadow-none transition-all group flex flex-col"
                   >
                     <span class="text-xs font-medium text-slate-400 dark:text-slate-500 mb-1 flex items-center gap-1 group-hover:-translate-x-0.5 transition-transform">
                       &larr; Previous Guide
@@ -310,7 +310,7 @@ const techArticleJson = JSON.stringify(techArticleSchema).replace(/</g, '\\u003c
                 nextDoc && (
                   <a
                     href={`/docs/${nextDoc.id}`}
-                    class="p-4 rounded-xl border border-slate-200 dark:border-slate-800 hover:border-blue-500/50 dark:hover:border-blue-500/50 bg-slate-50 dark:bg-slate-900/50 hover:shadow-md transition-all group flex flex-col items-end text-right"
+                    class="p-4 rounded-xl border border-border dark:border-border hover:border-blue-500/50 dark:hover:border-blue-500/50 bg-slate-50 dark:bg-surface shadow-none transition-all group flex flex-col items-end text-right"
                   >
                     <span class="text-xs font-medium text-slate-400 dark:text-slate-500 mb-1 flex items-center gap-1 group-hover:translate-x-0.5 transition-transform">
                       Next Guide &rarr;

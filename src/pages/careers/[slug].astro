@@ -8,7 +8,7 @@
  * - Comprehensive role specifications (Responsibilities, Requirements, Benefits)
  * - Interactive application modal with Kenya DPA 2019 consent
  * - Related open positions
- * - Full dark mode parity (dark:bg-[#0B1120])
+ * - Full dark mode parity (dark:bg-background)
  */
 import MarketingLayout from '@/layouts/MarketingLayout.astro';
 import { Icon } from 'astro-icon/components';
@@ -126,13 +126,13 @@ const jobPostingSchema = {
   />
 
   <div
-    class="py-12 sm:py-16 bg-slate-50 dark:bg-[#0B1120] min-h-screen text-slate-800 dark:text-slate-200 transition-colors duration-200"
+    class="py-12 sm:py-16 bg-slate-50 dark:bg-background min-h-screen text-slate-800 dark:text-slate-200 transition-colors duration-200"
   >
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       {/* Top Breadcrumb Navigation */}
       <nav
         aria-label="Breadcrumb"
-        class="mb-8 flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-4"
+        class="mb-8 flex items-center justify-between border-b border-border dark:border-border pb-4"
       >
         <ol class="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
           <li>
@@ -165,7 +165,7 @@ const jobPostingSchema = {
       </nav>
 
       {/* Hero Header */}
-      <header class="mb-12 pb-8 border-b border-slate-200 dark:border-slate-800">
+      <header class="mb-12 pb-8 border-b border-border dark:border-border">
         <div class="flex flex-wrap items-center gap-2 mb-4">
           <span
             class:list={[
@@ -302,7 +302,7 @@ const jobPostingSchema = {
           {/* Benefits */}
           {
             job.benefits && job.benefits.length > 0 && (
-              <section class="p-6 sm:p-8 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm">
+              <section class="p-6 sm:p-8 rounded-xl bg-white dark:bg-surface border border-border dark:border-border shadow-none">
                 <h2 class="text-xl font-bold text-slate-900 dark:text-white mb-4">What We Offer</h2>
                 <ul class="space-y-3">
                   {job.benefits.map((b) => (
@@ -320,7 +320,7 @@ const jobPostingSchema = {
           }
 
           {/* How to Apply Section */}
-          <section class="pt-6 border-t border-slate-200 dark:border-slate-800">
+          <section class="pt-6 border-t border-border dark:border-border">
             <h2 class="text-xl font-bold text-slate-900 dark:text-white mb-3">
               Application &amp; Interview Process
             </h2>
@@ -365,7 +365,7 @@ const jobPostingSchema = {
         <aside class="lg:col-span-1">
           <div class="sticky top-24 space-y-6">
             <div
-              class="p-6 sm:p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xl"
+              class="p-6 sm:p-8 rounded-xl bg-white dark:bg-surface border border-border dark:border-border shadow-none"
             >
               <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-2">
                 Apply for this Position
@@ -377,14 +377,14 @@ const jobPostingSchema = {
               <button
                 type="button"
                 id="open-apply-modal-btn"
-                class="w-full inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm shadow-md transition-colors cursor-pointer"
+                class="w-full inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm shadow-none transition-colors cursor-pointer"
               >
                 <Icon name="lucide:send" class="w-4 h-4" />
                 <span>Apply for this Role</span>
               </button>
 
               <div
-                class="mt-6 pt-6 border-t border-slate-100 dark:border-slate-800 space-y-3 text-xs text-slate-600 dark:text-slate-400"
+                class="mt-6 pt-6 border-t border-border dark:border-border space-y-3 text-xs text-slate-600 dark:text-slate-400"
               >
                 <div class="flex items-center justify-between">
                   <span class="text-slate-400">Department:</span>
@@ -412,7 +412,7 @@ const jobPostingSchema = {
                 }
               </div>
 
-              <div class="mt-6 pt-6 border-t border-slate-100 dark:border-slate-800">
+              <div class="mt-6 pt-6 border-t border-border dark:border-border">
                 <span class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">
                   Share this Opening
                 </span>
@@ -420,7 +420,7 @@ const jobPostingSchema = {
                   <button
                     type="button"
                     id="copy-job-link-btn"
-                    class="px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-800 text-xs font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 flex items-center gap-1.5 cursor-pointer"
+                    class="px-3 py-1.5 rounded-lg border border-border dark:border-border text-xs font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 flex items-center gap-1.5 cursor-pointer"
                   >
                     <Icon name="lucide:copy" class="w-3.5 h-3.5" />
                     <span id="copy-text">Copy Link</span>
@@ -430,7 +430,7 @@ const jobPostingSchema = {
             </div>
 
             <div
-              class="p-5 rounded-2xl bg-blue-50/50 dark:bg-blue-950/30 border border-blue-200/60 dark:border-blue-900/40 text-xs text-slate-600 dark:text-slate-400 leading-relaxed"
+              class="p-5 rounded-xl bg-blue-50/50 dark:bg-blue-950/30 border border-blue-200/60 dark:border-blue-900/40 text-xs text-slate-600 dark:text-slate-400 leading-relaxed"
             >
               <strong class="text-blue-700 dark:text-blue-300 block mb-1"
                 >Equal Opportunity Employer:</strong
@@ -445,7 +445,7 @@ const jobPostingSchema = {
       {/* Related Positions Footer */}
       {
         relatedJobs.length > 0 && (
-          <section class="mt-20 pt-12 border-t border-slate-200 dark:border-slate-800">
+          <section class="mt-20 pt-12 border-t border-border dark:border-border">
             <div class="flex items-center justify-between mb-8">
               <h2 class="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">
                 Other Open Positions at MarkChat
@@ -462,7 +462,7 @@ const jobPostingSchema = {
               {relatedJobs.map((rJob) => (
                 <a
                   href={`/careers/${rJob.slug || rJob.id}`}
-                  class="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-blue-500/50 dark:hover:border-blue-500/50 transition-all group flex flex-col justify-between"
+                  class="p-6 rounded-xl bg-white dark:bg-surface border border-border dark:border-border hover:border-blue-500/50 dark:hover:border-blue-500/50 transition-all group flex flex-col justify-between"
                 >
                   <div>
                     <span class="inline-block px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 mb-2">
@@ -475,7 +475,7 @@ const jobPostingSchema = {
                       {rJob.shortDescription || rJob.description}
                     </p>
                   </div>
-                  <div class="pt-4 border-t border-slate-100 dark:border-slate-800/80 mt-4 flex items-center justify-between text-xs font-semibold text-blue-600 dark:text-blue-400">
+                  <div class="pt-4 border-t border-border dark:border-border mt-4 flex items-center justify-between text-xs font-semibold text-blue-600 dark:text-blue-400">
                     <span>View Role</span>
                     <span>&rarr;</span>
                   </div>
@@ -493,10 +493,10 @@ const jobPostingSchema = {
   {/* =================================================================== */}
   <div
     id="apply-modal"
-    class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-xs hidden"
+    class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70  hidden"
   >
     <div
-      class="relative w-full max-w-2xl bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-6 sm:p-8 shadow-2xl max-h-[90vh] overflow-y-auto"
+      class="relative w-full max-w-2xl bg-white dark:bg-surface rounded-xl border border-border dark:border-border p-6 sm:p-8 shadow-none max-h-[90vh] overflow-y-auto"
     >
       <div class="flex items-start justify-between mb-6">
         <div>
@@ -536,7 +536,7 @@ const jobPostingSchema = {
               id="apply-name"
               required
               placeholder="e.g. Achieng Odhiambo"
-              class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-border dark:border-border text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
           <div>
@@ -551,7 +551,7 @@ const jobPostingSchema = {
               id="apply-email"
               required
               placeholder="name@domain.com"
-              class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-border dark:border-border text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
         </div>
@@ -569,7 +569,7 @@ const jobPostingSchema = {
               id="apply-phone"
               required
               placeholder="+254 7XX XXX XXX"
-              class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-border dark:border-border text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
           <div>
@@ -583,7 +583,7 @@ const jobPostingSchema = {
               type="url"
               id="apply-linkedin"
               placeholder="https://linkedin.com/in/..."
-              class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-border dark:border-border text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
         </div>
@@ -600,7 +600,7 @@ const jobPostingSchema = {
             id="apply-resume"
             required
             placeholder="Public link: Google Drive, Dropbox, Notion, or personal site"
-            class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+            class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-border dark:border-border text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
 
@@ -616,7 +616,7 @@ const jobPostingSchema = {
             rows="4"
             required
             placeholder="Tell us what excites you about this role, and share 1-2 examples of relevant challenges you've solved..."
-            class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+            class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-border dark:border-border text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
           ></textarea>
         </div>
 
@@ -629,7 +629,7 @@ const jobPostingSchema = {
               type="checkbox"
               id="apply-consent"
               required
-              class="mt-0.5 rounded bg-slate-100 dark:bg-slate-800 border-slate-300 dark:border-slate-700 text-blue-600 focus:ring-blue-500"
+              class="mt-0.5 rounded bg-slate-100 dark:bg-slate-800 border-border dark:border-border text-blue-600 focus:ring-blue-500"
             />
             <span>
               I confirm that my submitted details are accurate and consent to MarkChat processing my
@@ -646,14 +646,14 @@ const jobPostingSchema = {
           <button
             type="button"
             id="cancel-modal-btn"
-            class="px-5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+            class="px-5 py-2.5 rounded-xl border border-border dark:border-border text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
           >
             Cancel
           </button>
           <button
             type="submit"
             id="modal-submit-btn"
-            class="px-6 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs transition-colors shadow-sm cursor-pointer"
+            class="px-6 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs transition-colors shadow-none cursor-pointer"
           >
             Submit Application
           </button>
