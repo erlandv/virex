@@ -36,6 +36,12 @@ const [homepageSettings, pricingMatrix, publishedFeatures, publishedFaqs] = awai
 ]);
 
 const sections = homepageSettings.sections;
+const newsletterAction = import.meta.env.PUBLIC_NEWSLETTER_ACTION_URL || '';
+const verifiedNewsletterAction =
+  newsletterAction.startsWith('/') && !newsletterAction.startsWith('//')
+    ? newsletterAction
+    : '';
+
 const deferredTerms =
   /(?:bulk\s+)?sms|sender\s+id|byoc|saml|sso|audit\s+logs?|custom\s+roles?|captain\s+ai|agent\s+capacity|sla\s+polic(?:y|ies)|dedicated\s+sla/i;
 const legacyHeroTitle = /Bring Customer Conversations, Engagement & Sales Together/i;
@@ -354,7 +360,7 @@ const finalTitle = legacyDefaultCopy.test(closingTitle)
     )
   }
 
-  {sections.newsletter && <Newsletter />}
+  {sections.newsletter && verifiedNewsletterAction && <Newsletter action={verifiedNewsletterAction} />}
 
   {
     sections.closingCta && (
