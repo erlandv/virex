@@ -80,7 +80,7 @@ test('Gate 2 capture defaults to unverified and CMS-overrides precede bundled ca
 
 test('Gate 2 capture tool fails closed and fixtures are synthetic', () => {
   const script = read('scripts/capture-core-assets.mjs');
-  assert.match(script, /page\.getByText\(task\.expectedText/);
+  assert.match(script, /page\s*\.getByText\(\s*task\.expectedText/);
   assert.match(script, /context\.route\('\*\*\/\*'/);
   assert.match(script, /blockedApi\.push/);
   assert.match(script, /route\.abort\('blockedbyclient'\)/);
