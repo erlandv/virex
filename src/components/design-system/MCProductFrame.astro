@@ -1,0 +1,9 @@
+---
+import MCScreenshotFallback from './MCScreenshotFallback.astro';
+interface Props { src?: string | null; alt: string; label?: string; class?: string; }
+const { src, alt, label, class: className = '' } = Astro.props;
+---
+<figure class:list={['overflow-hidden rounded-xl border border-border bg-surface-elevated p-2 sm:p-3', className]}>
+  {src ? <img src={src} alt={alt} loading="lazy" decoding="async" class="block h-auto w-full rounded-md border border-border object-contain" /> : <MCScreenshotFallback label={label || alt} />}
+  <slot name="caption" />
+</figure>

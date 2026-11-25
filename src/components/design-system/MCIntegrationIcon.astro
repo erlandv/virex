@@ -1,0 +1,6 @@
+---
+import IntegrationIcon from '@/components/ui/IntegrationIcon.astro';
+interface Props { iconKey: string; name: string; logoUrl?: string; size?: 'sm'|'md'|'lg'|'xl'; }
+const { iconKey, name, logoUrl, size = 'md' } = Astro.props;
+---
+<IntegrationIcon iconKey={iconKey} logoUrl={logoUrl} name={name} size={size} />

@@ -1,0 +1,16 @@
+---
+import MCCard from './MCCard.astro';
+import { Icon } from 'astro-icon/components';
+interface Feature { id: string; title: string; description: string; icon: string; href?: string; illustration?: string; }
+interface Props { features: Feature[]; }
+const { features } = Astro.props;
+---
+<div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3" data-mc-feature-bento>
+  {features.map((feature) => (
+    <MCCard class="flex flex-col gap-4">
+      {feature.illustration ? <img src={feature.illustration} alt="" aria-hidden="true" loading="lazy" class="aspect-[16/9] w-full rounded-lg border border-border bg-surface object-contain" /> : <span class="inline-flex h-11 w-11 items-center justify-center rounded-lg border border-border bg-surface text-primary"><Icon name={feature.icon} class="h-5 w-5" /></span>}
+      <div><h3 class="text-lg font-semibold text-text">{feature.title}</h3><p class="mt-2 text-sm leading-relaxed text-text-muted">{feature.description}</p></div>
+      {feature.href && <a href={feature.href} class="mt-auto text-sm font-semibold text-primary hover:underline">Explore feature <span aria-hidden="true">→</span></a>}
+    </MCCard>
+  ))}
+</div>
