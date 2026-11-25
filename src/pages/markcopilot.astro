@@ -6,6 +6,7 @@
  * Covers 24/7 autonomous deflection, 1-click agent copilot, Knowledge Vault RAG grounding,
  * trilingual Sheng/Swahili/English NLP, CMS-managed video presentation, and ecosystem synergy.
  */
+import MCResponsiveHeroMedia from '@/components/design-system/MCResponsiveHeroMedia.astro';
 import MarketingLayout from '@/layouts/MarketingLayout.astro';
 import ServiceBoundaryNotice from '@/components/common/ServiceBoundaryNotice.astro';
 import ProductOperations from '@/components/enterprise/ProductOperations.astro';
@@ -131,7 +132,9 @@ const badgeColorMap: Record<string, string> = {
         </div>
       </div>
 
-      <!-- Hero Visual / Live Dual-Mode Interface Showcase -->
+      <MCResponsiveHeroMedia page="markcopilot" settings={settings.hero.heroMedia} class="mx-auto mt-10 max-w-5xl" />
+
+        <!-- Hero Visual / Live Dual-Mode Interface Showcase -->
       <div
         class="mt-14 sm:mt-18 relative mx-auto max-w-5xl rounded-xl border border-border bg-surface p-6 sm:p-12 overflow-hidden shadow-none"
       >

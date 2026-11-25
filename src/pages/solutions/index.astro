@@ -2,10 +2,12 @@
 /**
  * MarkChat Solutions Directory
  */
+import MCResponsiveHeroMedia from '@/components/design-system/MCResponsiveHeroMedia.astro';
 import MarketingLayout from '@/layouts/MarketingLayout.astro';
 import IndustryBlueprints from '@/components/enterprise/IndustryBlueprints.astro';
 import ServiceBoundaryNotice from '@/components/common/ServiceBoundaryNotice.astro';
 import PageHeader from '@sections/content/PageHeader.astro';
+import { fetchHeroMediaSettings } from '@/lib/cms-api';
 import { Icon } from 'astro-icon/components';
 import CTA from '@sections/marketing/CTA.astro';
 import { solutionsPages } from '@/data/marketing-content';
@@ -15,6 +17,7 @@ const bySize = solutionsPages.filter((p) => ['startups', 'growth', 'enterprise']
 const byIndustry = solutionsPages.filter(
   (p) => !['support', 'sales', 'marketing', 'startups', 'growth', 'enterprise'].includes(p.slug)
 );
+const editorialHero = await fetchHeroMediaSettings('solutions');
 ---
 
 <MarketingLayout
@@ -26,6 +29,10 @@ const byIndustry = solutionsPages.filter(
     title="Solutions Tailored to Your Industry"
     subtitle="From Instagram retail dukas to national financial institutions, discover how MarkChat powers customer engagement in your sector."
   />
+
+  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    <MCResponsiveHeroMedia page="solutions" settings={editorialHero} class="mb-10" />
+  </div>
 
   <!-- By Team & Size -->
   <section class="py-16 bg-surface border-b border-border">

@@ -8,6 +8,7 @@
  * 3. Searchable, Filterable Integration Discovery Directory with authentic brand icons and requirements
  * 4. Technical Consultation CTA
  */
+import MCResponsiveHeroMedia from '@/components/design-system/MCResponsiveHeroMedia.astro';
 import MarketingLayout from '@/layouts/MarketingLayout.astro';
 import DeveloperPlayground from '@/components/enterprise/DeveloperPlayground.astro';
 import ServiceBoundaryNotice from '@/components/common/ServiceBoundaryNotice.astro';
@@ -17,9 +18,10 @@ import IntegrationsHeroShowcase from '@/components/sections/integrations/Integra
 import FeaturedIntegrationsSection from '@/components/sections/integrations/FeaturedIntegrationsSection.astro';
 import CTA from '@sections/marketing/CTA.astro';
 import { siteConfig } from '@/config';
-import { fetchIntegrations } from '@/lib/cms-api';
+import { fetchIntegrations, fetchHeroMediaSettings } from '@/lib/cms-api';
 
 const integrations = await fetchIntegrations();
+const editorialHero = await fetchHeroMediaSettings('integrations');
 
 // Grouping helper for category filter tabs
 function getIntegrationGroup(category: string, slug: string): string {
@@ -111,6 +113,7 @@ const filterCategories = [
 
       <!-- Interactive Ecosystem Network Showcase -->
       <div class="mt-14 sm:mt-16">
+        <MCResponsiveHeroMedia page="integrations" settings={editorialHero} class="mx-auto mb-8 max-w-5xl" />
         <IntegrationsHeroShowcase />
       </div>
     </div>

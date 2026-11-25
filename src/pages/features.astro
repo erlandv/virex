@@ -10,6 +10,7 @@
  * - Section J: Frequently Asked Questions
  * - Section K: Closing CTA
  */
+import MCResponsiveHeroMedia from '@/components/design-system/MCResponsiveHeroMedia.astro';
 import MarketingLayout from '@/layouts/MarketingLayout.astro';
 import ProductOperations from '@/components/enterprise/ProductOperations.astro';
 import { Icon } from 'astro-icon/components';
@@ -156,6 +157,8 @@ const markcopilotCapabilities = [
           {settings.hero.secondaryCtaLabel || 'Explore Plans & Pricing'}
         </a>
       </div>
+
+      <MCResponsiveHeroMedia page="features" settings={settings.hero.heroMedia} class="mx-auto mt-10 max-w-5xl" />
 
       <!-- Verified Architecture Badges -->
       <div
