@@ -26,7 +26,7 @@ const desktop = media.heroBackgroundImageUrl && isBundled(media.heroBackgroundIm
   ? media.heroBackgroundImageUrl : '';
 const mobile = media.heroBackgroundMobileImageUrl && isBundled(media.heroBackgroundMobileImageUrl)
   ? media.heroBackgroundMobileImageUrl : '';
-const image = desktop || mobile;
+const image = media.heroMediaMode === 'layered-preview' ? '' : desktop || mobile;
 const scrims = {
   subtle: 'bg-stone-100/55 dark:bg-neutral-900/60',
   medium: 'bg-stone-100/88 dark:bg-neutral-900/85',
@@ -65,7 +65,7 @@ const focalClass = focalPoint === 'right' ? 'object-right' : 'object-center';
           data-editorial-picture
         />
       </picture>
-      {presentation === 'backdrop' && <div class:list={['absolute inset-0', scrims[media.heroScrimStrength]]} aria-hidden="true" />}
+      {(presentation === 'backdrop' || media.heroMediaMode === 'editorial-backdrop') && <div class:list={['absolute inset-0', scrims[media.heroScrimStrength]]} aria-hidden="true" />}
       {framed && (
         <figcaption class="relative border-t border-border bg-background px-4 py-2 text-xs text-text-muted">
           Editorial illustration · not a screenshot of MarkChat software
