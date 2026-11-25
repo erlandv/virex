@@ -1,0 +1,57 @@
+{
+  "workflows": {
+    "inbox": {
+      "path": "/app/accounts/1/conversations",
+      "selector": "#app",
+      "expectedText": "Amina Wanjiku"
+    },
+    "mpesa": {
+      "path": "/app/accounts/1/conversations/101",
+      "selector": "#app",
+      "expectedText": "DEMO-STK-0001"
+    },
+    "markcopilot": {
+      "path": "/app/accounts/1/conversations/101",
+      "selector": "#app",
+      "expectedText": "Habari Amina"
+    }
+  },
+  "routes": [
+    {
+      "method": "GET",
+      "pathIncludes": "/api/v1/profile",
+      "fixture": "profile.json"
+    },
+    {
+      "method": "GET",
+      "pathIncludes": "/api/v1/accounts/1/conversations",
+      "fixture": "inbox.json"
+    },
+    {
+      "method": "GET",
+      "pathIncludes": "/api/v1/accounts/1/contacts",
+      "fixture": "contacts.json"
+    },
+    {
+      "method": "POST",
+      "pathIncludes": "/api/v1/mpesa",
+      "fixture": "mpesa-stk.json"
+    },
+    {
+      "method": "GET",
+      "pathIncludes": "/api/v1/mpesa",
+      "fixture": "mpesa-stk.json"
+    },
+    {
+      "method": "POST",
+      "pathIncludes": "/api/v1/markcopilot",
+      "fixture": "markcopilot.json"
+    },
+    {
+      "method": "GET",
+      "pathIncludes": "/api/v1/markcopilot",
+      "fixture": "markcopilot.json"
+    }
+  ],
+  "note": "Adjust route patterns, selectors and expectedText to match the locally running Core. All unknown backend requests are blocked."
+}

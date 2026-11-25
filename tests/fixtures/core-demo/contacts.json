@@ -1,0 +1,16 @@
+{
+  "data": {
+    "payload": [
+      {
+        "id": 201,
+        "name": "Amina Wanjiku",
+        "email": "amina@example.invalid",
+        "phone_number": "+254700000001",
+        "additional_attributes": {
+          "company": "Nairobi Retail Demo"
+        }
+      }
+    ]
+  },
+  "demo": true
+}
