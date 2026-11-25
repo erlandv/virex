@@ -22,7 +22,8 @@ const baseOrigin = base.origin;
 const configPath = path.resolve(root, arg('config', 'tests/fixtures/core-demo/capture-config.json'));
 const config = JSON.parse(await readFile(configPath, 'utf8'));
 const outDir = path.resolve(root, arg('out-dir', 'public/media/product'));
-if (!outDir.startsWith(path.join(root, 'public/media/product'))) {
+const approvedOutDir = path.join(root, 'public/media/product');
+if (outDir !== approvedOutDir && !outDir.startsWith(approvedOutDir + path.sep)) {
   throw new Error('Output directory must remain within public/media/product.');
 }
 const workflowIds = ['inbox', 'mpesa', 'markcopilot'];
@@ -62,9 +63,10 @@ try {
           document.documentElement.style.colorScheme = value;
         } catch { /* browser storage unavailable */ }
       }, theme);
-      if (typeof context.routeWebSocket === 'function') {
-        await context.routeWebSocket('**/*', (socket) => socket.close());
+      if (typeof context.routeWebSocket !== 'function') {
+        throw new Error('Playwright must support routeWebSocket: update Playwright before capturing.');
       }
+      await context.routeWebSocket('**/*', (socket) => socket.close());
       let mockedResponses = 0;
       const blockedApi = [];
       await context.route('**/*', async (route) => {
@@ -72,10 +74,13 @@ try {
         const url = new URL(req.url());
         // No third-party resources or provider calls are allowed during capture.
         if (url.origin !== baseOrigin) return route.abort('blockedbyclient');
+        // Never forward XHR/fetch, GraphQL or provider requests to a real backend.
         const apiRequest = url.pathname.startsWith('/api/') || url.pathname.startsWith('/api-v1/') ||
-          url.pathname.startsWith('/auth/') || url.pathname.startsWith('/webhooks/');
+          url.pathname.startsWith('/auth/') || url.pathname.startsWith('/webhooks/') ||
+          ['fetch', 'xhr', 'eventsource'].includes(req.resourceType());
         if (!apiRequest) {
-          if (req.method() !== 'GET') return route.abort('blockedbyclient');
+          const staticTypes = ['document', 'script', 'stylesheet', 'image', 'font', 'media'];
+          if (req.method() !== 'GET' || !staticTypes.includes(req.resourceType())) return route.abort('blockedbyclient');
           return route.continue();
         }
         const match = config.routes.find((entry) => entry.method === req.method() &&
