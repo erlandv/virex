@@ -2999,6 +2999,44 @@ export async function updateHeroMediaSettings(
 }
 
 /**
+ * Optional secure CMS asset upload contract. The marketing repository does not
+ * itself provide a file-storage backend. A configured CMS bridge must implement
+ * POST /api/admin/cms/media with multipart file, page, and variant fields,
+ * and return a { url: "/media/..." } object. Never claim upload success
+ * without a confirmed HTTP response and approved media URL.
+ */
+export async function uploadHeroMediaAsset(
+  page: HeroMediaPage,
+  variant: 'desktop' | 'mobile',
+  file: File
+): Promise<string> {
+  const allowed = ['image/webp', 'image/jpeg', 'image/png', 'image/avif'];
+  if (!allowed.includes(file.type) || file.size <= 0 || file.size > 5 * 1024 * 1024) {
+    throw new Error('Choose a WebP, JPEG, PNG, or AVIF image under 5 MB.');
+  }
+  const form = new FormData();
+  form.append('file', file, file.name);
+  form.append('page', page);
+  form.append('variant', variant);
+  const response = await apiFetch(`${BRIDGE_API_URL}/api/admin/cms/media`, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${getAdminToken()}` },
+    body: form,
+  });
+  if (!response.ok) {
+    throw new Error('CMS media upload unavailable. Please configure the authorized CMS bridge.');
+  }
+  const result = await response.json();
+  const approved = normalizeHeroMedia(
+    page,
+    { heroBackgroundImageUrl: result?.url || result?.data?.url || '' },
+    import.meta.env.PUBLIC_CMS_MEDIA_HOST || ''
+  ).heroBackgroundImageUrl;
+  if (!approved) throw new Error('CMS upload returned an untrusted or invalid media URL.');
+  return approved;
+}
+
+/**
  * Fetch Features page settings (Hero, Markcopilot, Developer, Closing CTA, FAQs)
  */
 export async function fetchFeaturesSettings(): Promise<FeaturesPageSettings> {
