@@ -7,11 +7,22 @@ const blog = defineCollection({
   schema: z.object({
     title: z.string(),
     description: z.string(),
+    excerpt: z.string().optional(),
     publishedDate: z.coerce.date(),
-    author: z.string(),
+    author: z.union([
+      z.string(),
+      z.object({
+        name: z.string(),
+        role: z.string().optional(),
+        avatar: z.string().optional(),
+      }),
+    ]),
     image: z.string().optional(),
+    coverImage: z.string().optional(),
+    category: z.string().optional(),
     tags: z.array(z.string()).default([]),
     draft: z.boolean().default(false),
+    featured: z.boolean().default(false),
   }),
 });
 
@@ -20,20 +31,14 @@ const docs = defineCollection({
   schema: z.object({
     title: z.string(),
     description: z.string(),
+    category: z.string().optional(),
+    section: z.string().optional(),
+    icon: z.string().default('lucide:book-open'),
     order: z.number().default(0),
-    section: z.string(),
     draft: z.boolean().default(false),
-  }),
-});
-
-const changelog = defineCollection({
-  loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/changelog' }),
-  schema: z.object({
-    version: z.string(),
-    date: z.coerce.date(),
-    title: z.string(),
-    type: z.enum(['major', 'minor', 'patch']),
-    draft: z.boolean().default(false),
+    tags: z.array(z.string()).default([]),
+    lastUpdated: z.string().optional(),
+    difficulty: z.enum(['Beginner', 'Intermediate', 'Advanced']).default('Beginner'),
   }),
 });
 
@@ -51,4 +56,4 @@ const testimonials = defineCollection({
   }),
 });
 
-export const collections = { blog, docs, changelog, testimonials };
+export const collections = { blog, docs, testimonials };

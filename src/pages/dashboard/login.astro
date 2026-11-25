@@ -1,0 +1,237 @@
+---
+/**
+ * MarkChat CMS Admin Login Gate — Modern Enterprise Authentication
+ *
+ * Implements a premium glassmorphic authentication screen reflecting
+ * the MarkChat brand, full dark mode parity, and central API token verification.
+ */
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { Icon } from 'astro-icon/components';
+
+const bridgeApiUrl = import.meta.env.PUBLIC_BRIDGE_API_URL || 'http://localhost:4000';
+---
+
+<BaseLayout
+  title="MarkChat CMS Admin Login"
+  description="Single-Admin Website Content Management System for MarkChat Kenya"
+  noindex={true}
+>
+  <div
+    class="min-h-screen w-full flex items-center justify-center bg-slate-50 dark:bg-[#0B1120] relative overflow-hidden px-4 py-12 transition-colors duration-200"
+  >
+    <!-- Subtle Ambient Glowing Orbs -->
+    <div
+      class="pointer-events-none absolute -top-40 left-1/2 -translate-x-1/2 w-[760px] h-[380px] bg-gradient-to-b from-blue-600/15 via-indigo-600/10 to-transparent dark:from-blue-600/25 dark:via-primary/10 dark:to-transparent rounded-full blur-3xl"
+      aria-hidden="true"
+    >
+    </div>
+    <div
+      class="pointer-events-none absolute -bottom-40 -left-20 w-[500px] h-[320px] bg-indigo-500/10 dark:bg-indigo-600/15 rounded-full blur-3xl"
+      aria-hidden="true"
+    >
+    </div>
+    <div
+      class="pointer-events-none absolute top-1/3 -right-20 w-[450px] h-[300px] bg-blue-500/10 dark:bg-blue-600/15 rounded-full blur-3xl"
+      aria-hidden="true"
+    >
+    </div>
+
+    <!-- The Glassmorphic Security Panel -->
+    <div
+      class="w-full max-w-md bg-white/80 dark:bg-slate-900/80 backdrop-blur-2xl border border-slate-200/50 dark:border-slate-700/50 shadow-2xl rounded-3xl p-8 sm:p-10 z-10 relative"
+    >
+      <!-- Brand Header -->
+      <div class="text-center mb-8">
+        <!-- MarkChat Illuminated Emblem -->
+        <div class="flex justify-center mb-4">
+          <div
+            class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white shadow-xl shadow-blue-500/25 ring-4 ring-blue-500/10 dark:ring-blue-500/20 hover:scale-105 transition-transform duration-200 select-none"
+          >
+            <svg class="w-10 h-10" viewBox="0 0 54 54" fill="none">
+              <path
+                d="M12 16C12 13.7909 13.7909 12 16 12H38C40.2091 12 42 13.7909 42 16V32C42 34.2091 40.2091 36 38 36H30L22 43V36H16C13.7909 36 12 34.2091 12 32V16Z"
+                fill="white"
+                fill-opacity="0.18"></path>
+              <path
+                d="M18 32V18L24.5 26L31 18V32"
+                stroke="white"
+                stroke-width="2.8"
+                stroke-linecap="round"
+                stroke-linejoin="round"></path>
+              <circle cx="37" cy="25" r="2.5" fill="#4ADE80"></circle>
+            </svg>
+          </div>
+        </div>
+
+        <h1 class="text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">
+          MarkChat CMS
+        </h1>
+        <p class="text-sm text-slate-500 dark:text-slate-400 mt-2">
+          Single-Admin Portal &amp; Plan Matrix Engine
+        </p>
+      </div>
+
+      <!-- Sign-out Confirmation Alert -->
+      <div
+        id="logout-alert"
+        class="mb-6 p-4 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/80 text-emerald-800 dark:text-emerald-300 text-xs flex items-center gap-2.5 shadow-2xs"
+        style="display: none;"
+      >
+        <Icon
+          name="lucide:check-circle"
+          class="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0"
+        />
+        <span>You have been safely signed out.</span>
+      </div>
+
+      <!-- Authentication Error Alert -->
+      <div
+        id="error-alert"
+        class="mb-6 p-4 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800/80 text-rose-800 dark:text-rose-300 text-xs flex items-start gap-2.5 shadow-2xs"
+        style="display: none;"
+      >
+        <Icon
+          name="lucide:alert-triangle"
+          class="w-4 h-4 text-rose-600 dark:text-rose-400 shrink-0 mt-0.5"
+        />
+        <span id="error-text">Authentication failed. Please verify your passkey.</span>
+      </div>
+
+      <!-- Interactive Passkey Form -->
+      <form id="cms-login-form" class="space-y-4">
+        <div>
+          <label
+            for="admin-passkey"
+            class="block text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-2"
+          >
+            Admin Passkey <span class="text-rose-500">*</span>
+          </label>
+          <div class="relative">
+            <input
+              type="password"
+              id="admin-passkey"
+              name="passkey"
+              class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl px-4 py-3.5 pr-12 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all text-slate-900 dark:text-white text-sm placeholder:text-slate-400 dark:placeholder:text-slate-600 shadow-2xs"
+              placeholder="Enter your administrative passkey"
+              required
+              autocomplete="current-password"
+            />
+            <button
+              type="button"
+              id="toggle-visibility"
+              class="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1 rounded-lg transition-colors cursor-pointer"
+              aria-label="Toggle password visibility"
+            >
+              <Icon name="lucide:eye" class="w-4 h-4" />
+            </button>
+          </div>
+          <p class="text-xs text-slate-500 dark:text-slate-400 mt-2 flex items-center gap-1.5">
+            <Icon
+              name="lucide:shield-check"
+              class="w-3.5 h-3.5 text-blue-600 dark:text-blue-400 shrink-0"
+            />
+            <span>Single-admin authentication verified by central CMS API.</span>
+          </p>
+        </div>
+
+        <button
+          type="submit"
+          id="submit-btn"
+          class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3.5 px-6 rounded-xl shadow-lg shadow-blue-500/30 hover:shadow-blue-500/40 transition-all hover:-translate-y-0.5 active:translate-y-0 mt-6 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+        >
+          <Icon name="lucide:lock" class="w-4 h-4" />
+          <span id="submit-btn-text">Access CMS Dashboard</span>
+        </button>
+      </form>
+
+      <!-- Return to Public Site -->
+      <div class="mt-8 pt-6 border-t border-slate-200/60 dark:border-slate-800 text-center">
+        <a
+          href="/"
+          class="inline-flex items-center gap-2 text-xs font-medium text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white transition-colors group"
+        >
+          <Icon
+            name="lucide:arrow-left"
+            class="w-3.5 h-3.5 group-hover:-translate-x-0.5 transition-transform"
+          />
+          <span>Return to public website</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</BaseLayout>
+
+<script is:inline define:vars={{ bridgeApiUrl }}>
+  document.addEventListener('DOMContentLoaded', () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const logoutAlert = document.getElementById('logout-alert');
+    const errorAlert = document.getElementById('error-alert');
+    const errorText = document.getElementById('error-text');
+    const form = document.getElementById('cms-login-form');
+    const passkeyInput = document.getElementById('admin-passkey');
+    const toggleBtn = document.getElementById('toggle-visibility');
+    const submitBtn = document.getElementById('submit-btn');
+    const submitBtnText = document.getElementById('submit-btn-text');
+
+    if (urlParams.get('logout') === '1') {
+      sessionStorage.removeItem('markchat_admin_token');
+      document.cookie = 'markchat_admin_token=; path=/; max-age=0; SameSite=Strict';
+      if (logoutAlert) logoutAlert.style.display = 'flex';
+    }
+
+    if (toggleBtn && passkeyInput) {
+      toggleBtn.addEventListener('click', () => {
+        const isPassword = passkeyInput.type === 'password';
+        passkeyInput.type = isPassword ? 'text' : 'password';
+      });
+    }
+
+    function showError(msg) {
+      if (errorText) errorText.textContent = msg;
+      if (errorAlert) errorAlert.style.display = 'flex';
+      if (passkeyInput) passkeyInput.select();
+    }
+
+    if (form) {
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const entered = passkeyInput.value.trim();
+        if (!entered) return;
+
+        if (errorAlert) errorAlert.style.display = 'none';
+        if (logoutAlert) logoutAlert.style.display = 'none';
+
+        if (submitBtn) submitBtn.disabled = true;
+        if (submitBtnText) submitBtnText.textContent = 'Verifying with CMS API...';
+
+        try {
+          const authEndpoint = `${bridgeApiUrl}/api/admin/cms/auth`;
+          const response = await fetch(authEndpoint, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ passkey: entered }),
+          });
+
+          if (response.ok) {
+            const data = await response.json();
+            const token = data.token || entered;
+            sessionStorage.setItem('markchat_admin_token', token);
+            document.cookie = `markchat_admin_token=${encodeURIComponent(token)}; path=/; max-age=86400; SameSite=Strict`;
+            const redirect = urlParams.get('redirect') || '/dashboard';
+            window.location.href = redirect;
+          } else {
+            const errData = await response.json().catch(() => ({}));
+            showError(errData.message || 'Authentication failed: Invalid admin passkey.');
+          }
+        } catch {
+          showError(
+            `Central CMS authentication service is currently unreachable (${bridgeApiUrl}). Ensure central API service is active.`
+          );
+        } finally {
+          if (submitBtn) submitBtn.disabled = false;
+          if (submitBtnText) submitBtnText.textContent = 'Access CMS Dashboard';
+        }
+      });
+    }
+  });
+</script>

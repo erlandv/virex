@@ -30,6 +30,7 @@ import { Icon } from 'astro-icon/components';
 <button
   type="button"
   aria-label="Toggle dark mode"
+  aria-pressed="false"
   class="theme-toggle cursor-pointer p-2 rounded-md hover:bg-surface transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
 >
   <!-- Sun icon (shown in dark mode) -->
@@ -39,39 +40,41 @@ import { Icon } from 'astro-icon/components';
 </button>
 
 <script>
-  const themeToggles = document.querySelectorAll('.theme-toggle');
-  const sunIcons = document.querySelectorAll('.sun-icon');
-  const moonIcons = document.querySelectorAll('.moon-icon');
-
-  function updateIcons(isDark: boolean) {
-    sunIcons.forEach((icon) => icon.classList.toggle('hidden', !isDark));
-    moonIcons.forEach((icon) => icon.classList.toggle('hidden', isDark));
-  }
-
-  function getThemePreference(): 'dark' | 'light' {
-    const stored = localStorage.getItem('theme');
-    if (stored === 'dark' || stored === 'light') {
-      return stored;
-    }
-    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  function syncThemeToggles() {
+    const isDark = document.documentElement.classList.contains('dark');
+    document.querySelectorAll<HTMLButtonElement>('.theme-toggle').forEach((button) => {
+      button.setAttribute('aria-pressed', String(isDark));
+      button.setAttribute('aria-label', isDark ? 'Switch to light mode' : 'Switch to dark mode');
+      button.querySelector('.sun-icon')?.classList.toggle('hidden', !isDark);
+      button.querySelector('.moon-icon')?.classList.toggle('hidden', isDark);
+    });
   }
 
   function setTheme(theme: 'dark' | 'light') {
     const isDark = theme === 'dark';
     document.documentElement.classList.toggle('dark', isDark);
-    localStorage.setItem('theme', theme);
-    updateIcons(isDark);
+    document.documentElement.style.colorScheme = theme;
+    try {
+      localStorage.setItem('theme', theme);
+    } catch {
+      // Private browsing may prevent storage; the visual toggle still works.
+    }
+    syncThemeToggles();
+    window.dispatchEvent(new CustomEvent('theme-change', { detail: { theme } }));
   }
 
-  // Initialize theme on load
-  const initialTheme = getThemePreference();
-  setTheme(initialTheme);
-
-  // Toggle theme on button click - attach to all toggle buttons
-  themeToggles.forEach((toggle) => {
-    toggle.addEventListener('click', () => {
-      const isDark = document.documentElement.classList.contains('dark');
-      setTheme(isDark ? 'light' : 'dark');
+  function initThemeToggles() {
+    syncThemeToggles();
+    document.querySelectorAll<HTMLButtonElement>('.theme-toggle').forEach((toggle) => {
+      if (toggle.dataset.themeBound === 'true') return;
+      toggle.dataset.themeBound = 'true';
+      toggle.addEventListener('click', () => {
+        setTheme(document.documentElement.classList.contains('dark') ? 'light' : 'dark');
+      });
     });
-  });
+  }
+
+  document.addEventListener('astro:page-load', initThemeToggles);
+  window.addEventListener('theme-change', syncThemeToggles);
+  initThemeToggles();
 </script>

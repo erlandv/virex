@@ -1,0 +1,492 @@
+---
+/**
+ * Markcopilot AI Product Page (/markcopilot)
+ *
+ * Fully CMS-driven product showcase presenting MarkChat's dual-mode AI engine.
+ * Covers 24/7 autonomous deflection, 1-click agent copilot, Knowledge Vault RAG grounding,
+ * trilingual Sheng/Swahili/English NLP, CMS-managed video presentation, and ecosystem synergy.
+ */
+import MCResponsiveHeroMedia from '@/components/design-system/MCResponsiveHeroMedia.astro';
+import MarketingLayout from '@/layouts/MarketingLayout.astro';
+import ServiceBoundaryNotice from '@/components/common/ServiceBoundaryNotice.astro';
+import ProductOperations from '@/components/enterprise/ProductOperations.astro';
+import { Icon } from 'astro-icon/components';
+import { siteConfig } from '@/config';
+import FAQSection from '@sections/content/FAQSection.astro';
+import CTA from '@sections/marketing/CTA.astro';
+import MarkcopilotVideoSection from '@sections/marketing/MarkcopilotVideoSection.astro';
+import {
+  fetchMarkcopilotSettings,
+  fetchMarkcopilotCapabilities,
+  type MarkcopilotCapability,
+  type MarkcopilotPageSettings,
+} from '@/lib/cms-api';
+
+// Parallel data retrieval from authoritative CMS API
+const [settings, capabilities]: [MarkcopilotPageSettings, MarkcopilotCapability[]] =
+  await Promise.all([fetchMarkcopilotSettings(), fetchMarkcopilotCapabilities()]);
+
+// Color map for capability cards
+const badgeColorMap: Record<string, string> = {
+  autonomous:
+    'bg-primary/10 text-primary border-primary/20 dark:bg-primary/20 dark:text-primary-light',
+  copilot:
+    'bg-purple-500/10 text-purple-600 border-purple-500/20 dark:bg-purple-500/20 dark:text-purple-300',
+  shared:
+    'bg-emerald-500/10 text-emerald-600 border-emerald-500/20 dark:bg-emerald-500/20 dark:text-emerald-300',
+};
+---
+
+<MarketingLayout
+  title={`Markcopilot AI Assistant — ${siteConfig.name}`}
+  description={settings.hero.subtitle ||
+    'Markcopilot is the AI copilot for customer conversations and M-Pesa sales. Automate routine questions 24/7, assist support agents with 1-click draft replies, and communicate naturally in English, Swahili, and Sheng.'}
+>
+  <ServiceBoundaryNotice />
+  <!-- 1. HERO SECTION -->
+  <section class="relative pt-24 pb-20 sm:pt-28 sm:pb-24 overflow-hidden bg-background">
+    <!-- Subtle Ambient Glow -->
+    <div
+      class="absolute top-1/4 left-1/2 -translate-x-1/2 w-[700px] h-[350px] bg-primary/10 dark:bg-primary/15 rounded-full hidden pointer-events-none -z-10"
+    >
+    </div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="max-w-3xl mx-auto text-center">
+        <!-- Eyebrow Badge -->
+        <div
+          class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-primary/25 bg-primary/5 text-primary text-xs font-semibold uppercase tracking-wider mb-6 shadow-none"
+        >
+          <Icon name="lucide:sparkles" class="w-4 h-4 text-primary" />
+          <span>{settings.hero.badge || 'Markcopilot AI Intelligence'}</span>
+        </div>
+
+        <!-- Headline -->
+        <h1
+          class="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight tracking-tight text-text"
+        >
+          {
+            settings.hero.title ||
+              'The AI Copilot for Customer Conversations & East African Commerce'
+          }
+        </h1>
+
+        <!-- Supporting Narrative -->
+        <p class="mt-6 text-lg sm:text-xl leading-relaxed text-text-muted max-w-2xl mx-auto">
+          {
+            settings.hero.subtitle ||
+              'Empower your team with dual-mode AI that resolves routine inquiries 24/7 in English, Swahili, and Sheng—grounded strictly in your shop catalog and policies.'
+          }
+        </p>
+
+        <!-- Conversion CTAs -->
+        <div class="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
+          <a
+            href={settings.hero.primaryCtaHref || '/demo'}
+            class="inline-flex items-center justify-center px-6 py-3.5 rounded-xl bg-primary text-white font-semibold hover:bg-primary-dark transition-all shadow-none shadow-none w-full sm:w-auto"
+          >
+            <span>{settings.hero.primaryCtaLabel || 'Book Live Demo'}</span>
+            <Icon name="lucide:arrow-right" class="w-4 h-4 ml-2" />
+          </a>
+          <a
+            href={settings.hero.secondaryCtaHref || '#capabilities'}
+            class="inline-flex items-center justify-center px-6 py-3.5 rounded-xl border border-border bg-surface text-text hover:bg-surface-hover font-semibold transition-all shadow-none w-full sm:w-auto"
+          >
+            <span>{settings.hero.secondaryCtaLabel || 'Explore Capabilities'}</span>
+          </a>
+        </div>
+
+        <!-- Trust Badges -->
+        <div
+          class="mt-10 pt-6 border-t border-border/80 flex flex-wrap items-center justify-center gap-6 text-xs text-text-muted"
+        >
+          {
+            settings.hero.trustBadges && settings.hero.trustBadges.length > 0 ? (
+              settings.hero.trustBadges.map((badge) => (
+                <div class="flex items-center gap-2">
+                  <Icon name={badge.icon || 'lucide:check-circle-2'} class="w-4 h-4 text-primary" />
+                  <span class="font-medium">{badge.text}</span>
+                </div>
+              ))
+            ) : (
+              <>
+                <div class="flex items-center gap-2">
+                  <Icon name="lucide:book-open" class="w-4 h-4 text-primary" />
+                  <span class="font-medium">Grounded in Knowledge Vault</span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <Icon name="lucide:languages" class="w-4 h-4 text-primary" />
+                  <span class="font-medium">English, Swahili &amp; Sheng</span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <Icon name="lucide:shield-check" class="w-4 h-4 text-primary" />
+                  <span class="font-medium">Human Escalation Safeguards</span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <Icon name="lucide:lock" class="w-4 h-4 text-primary" />
+                  <span class="font-medium">KDPA 2019 Compliant</span>
+                </div>
+              </>
+            )
+          }
+        </div>
+      </div>
+
+      <MCResponsiveHeroMedia page="markcopilot" settings={settings.hero.heroMedia} class="mx-auto mt-10 max-w-5xl" />
+
+        <!-- Hero Visual / Live Dual-Mode Interface Showcase -->
+      <div
+        class="mt-14 sm:mt-18 relative mx-auto max-w-5xl rounded-xl border border-border bg-surface p-6 sm:p-12 overflow-hidden shadow-none"
+      >
+        <!-- Radial Dot Grid Pattern -->
+        <div
+          class="absolute inset-0 hidden hidden [background-size:24px_24px] opacity-40 pointer-events-none"
+        >
+        </div>
+
+        <!-- Floating Chat Bubble (WhatsApp Customer) -->
+        <div
+          class="hidden md:block absolute left-8 top-10 max-w-xs p-4 rounded-xl rounded-tl-sm bg-background border border-border shadow-none pointer-events-none transform -rotate-1"
+        >
+          <div class="flex items-center gap-2 mb-2">
+            <div
+              class="w-6 h-6 rounded-full bg-emerald-100 dark:bg-emerald-950/80 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-xs font-bold"
+            >
+              W
+            </div>
+            <span class="text-xs font-semibold text-text">Customer (WhatsApp)</span>
+            <span class="text-[10px] text-text-muted ml-auto">10:32 AM</span>
+          </div>
+          <p class="text-xs text-text leading-snug">
+            "Niaje, nataka kuorder hizi viatu size 42. Mnaweza deliver Kilimani na lipa na Paybill?"
+          </p>
+        </div>
+
+        <!-- Floating Chat Bubble (Markcopilot Grounded Response) -->
+        <div
+          class="hidden md:block absolute right-8 bottom-10 max-w-sm p-4 rounded-xl rounded-br-sm bg-background border border-primary/30 shadow-none pointer-events-none transform rotate-1"
+        >
+          <div class="flex items-center gap-2 mb-2">
+            <div
+              class="w-6 h-6 rounded-full bg-primary/10 text-primary flex items-center justify-center"
+            >
+              <Icon name="lucide:sparkles" class="w-3.5 h-3.5" />
+            </div>
+            <span class="text-xs font-semibold text-primary">Markcopilot AI</span>
+            <span
+              class="text-[10px] px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 font-semibold ml-auto"
+            >
+              Knowledge Vault Grounded
+            </span>
+          </div>
+          <p class="text-xs text-text leading-snug">
+            "Habari! Ndiyo, size 42 zipo kwa stock. Delivery hadi Kilimani ni KES 250 kwa boda.
+            Jumla ni KES 3,450. Nitumie nambari yako ya M-Pesa nikurushie STK prompt sasa hivi?"
+          </p>
+        </div>
+
+        <!-- Center Interactive Callout -->
+        <div
+          class="relative z-10 flex flex-col items-center justify-center py-10 sm:py-16 text-center"
+        >
+          <div
+            class="w-16 h-16 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-4 border border-primary/20 shadow-none"
+          >
+            <Icon name="lucide:cpu" class="w-8 h-8" />
+          </div>
+          <h3 class="text-xl sm:text-2xl font-bold text-text">
+            Dual-Mode Intelligence: Autonomous Bot &amp; Agent Co-Pilot
+          </h3>
+          <p class="text-xs sm:text-sm text-text-muted mt-2 max-w-lg leading-relaxed">
+            Configure Markcopilot to handle customer inquiries 24/7 or work quietly as a 1-click
+            drafting assistant for your human agents during rush hours.
+          </p>
+          <div class="mt-6 flex flex-wrap items-center justify-center gap-2">
+            <span
+              class="px-3 py-1 rounded-full bg-surface border border-border text-xs text-text-muted"
+            >
+              RAG Vector Grounding
+            </span>
+            <span
+              class="px-3 py-1 rounded-full bg-surface border border-border text-xs text-text-muted"
+            >
+              Swahili &amp; Sheng NLP
+            </span>
+            <span
+              class="px-3 py-1 rounded-full bg-surface border border-border text-xs text-text-muted"
+            >
+              1-Click Human Handoff
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. WHAT IS MARKCOPILOT? (PURPOSE & ROLE) -->
+  <section class="py-20 sm:py-28 bg-surface border-t border-border">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="max-w-3xl mx-auto text-center mb-14">
+        <span class="text-xs font-mono font-semibold uppercase tracking-wider text-primary">
+          {settings.introduction?.eyebrow || 'Purpose & Role'}
+        </span>
+        <h2 class="text-3xl sm:text-4xl font-bold tracking-tight text-text mt-2">
+          {settings.introduction?.heading || 'Why Markcopilot Exists Within MarkChat'}
+        </h2>
+        <p class="mt-4 text-base sm:text-lg text-text-muted leading-relaxed">
+          {
+            settings.introduction?.description ||
+              'Customer messaging in East Africa is fast-paced, multi-lingual, and commerce-driven. Markcopilot was engineered to eliminate ticket backlogs and empower agents without sacrificing local conversational nuance or financial safety.'
+          }
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        {
+          (settings.introduction?.pillars || []).map((pillar) => (
+            <div class="bg-background border border-border rounded-xl p-6 sm:p-8 shadow-none hover:border-primary/40 transition-all flex flex-col justify-between">
+              <div>
+                <div class="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-5 border border-primary/20">
+                  <Icon name={pillar.icon || 'lucide:sparkles'} class="w-6 h-6" />
+                </div>
+                <h3 class="text-lg font-bold text-text mb-2">{pillar.title}</h3>
+                <p class="text-sm text-text-muted leading-relaxed">{pillar.description}</p>
+              </div>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. HOW MARKCOPILOT WORKS (OPERATIONAL ARCHITECTURE) -->
+  <section class="py-20 sm:py-28 bg-background">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="max-w-3xl mx-auto text-center mb-16">
+        <span class="text-xs font-mono font-semibold uppercase tracking-wider text-primary">
+          {settings.howItWorks?.eyebrow || 'Operational Architecture'}
+        </span>
+        <h2 class="text-3xl sm:text-4xl font-bold tracking-tight text-text mt-2">
+          {settings.howItWorks?.heading || 'How Markcopilot Works in Your Workspace'}
+        </h2>
+        <p class="mt-4 text-base sm:text-lg text-text-muted leading-relaxed">
+          {
+            settings.howItWorks?.description ||
+              'A structured, transparent workflow designed for reliability, compliance, and effortless team adoption.'
+          }
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
+        {
+          (settings.howItWorks?.steps || []).map((step, index) => (
+            <div class="relative bg-surface border border-border rounded-xl p-6 sm:p-8 shadow-none flex flex-col justify-between">
+              <div>
+                <div class="flex items-center justify-between mb-5">
+                  <div class="w-10 h-10 rounded-xl bg-primary text-white font-bold text-sm flex items-center justify-center shadow-none">
+                    0{step.stepNumber || index + 1}
+                  </div>
+                  <div class="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center border border-primary/20">
+                    <Icon name={step.icon || 'lucide:check-circle-2'} class="w-5 h-5" />
+                  </div>
+                </div>
+                <h3 class="text-lg font-bold text-text mb-2">{step.title}</h3>
+                <p class="text-xs sm:text-sm text-text-muted leading-relaxed mb-4">
+                  {step.description}
+                </p>
+              </div>
+              <div class="pt-4 border-t border-border">
+                <span class="text-[11px] font-mono text-primary font-semibold">
+                  &bull; {step.highlight}
+                </span>
+              </div>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. CORE CAPABILITIES SHOWCASE -->
+  <section id="capabilities" class="py-20 sm:py-28 bg-surface border-t border-border">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="max-w-3xl mx-auto text-center mb-16">
+        <span class="text-xs font-mono font-semibold uppercase tracking-wider text-primary">
+          Verified Capabilities
+        </span>
+        <h2 class="text-3xl sm:text-4xl font-bold tracking-tight text-text mt-2">
+          Engineered for Real Support &amp; Commerce Teams
+        </h2>
+        <p class="mt-4 text-base sm:text-lg text-text-muted leading-relaxed">
+          Six foundational capabilities designed around local commercial conversation flows,
+          financial safety, and operational reliability.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {
+          capabilities.map((cap) => (
+            <div class="bg-background border border-border rounded-xl p-6 sm:p-8 shadow-none shadow-none transition-all flex flex-col justify-between">
+              <div>
+                <div class="flex items-center justify-between mb-4">
+                  <div class="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center border border-primary/20">
+                    <Icon name={cap.icon || 'lucide:sparkles'} class="w-5 h-5" />
+                  </div>
+                  <span
+                    class={`text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full border ${badgeColorMap[cap.mode] || badgeColorMap.shared}`}
+                  >
+                    {cap.badge}
+                  </span>
+                </div>
+                {cap.eyebrow && (
+                  <span class="text-[10px] font-mono uppercase text-text-muted block mb-1">
+                    {cap.eyebrow}
+                  </span>
+                )}
+                <h3 class="text-lg font-bold text-text mb-2">{cap.title}</h3>
+                <p class="text-xs sm:text-sm text-text-muted leading-relaxed mb-5">
+                  {cap.description}
+                </p>
+              </div>
+
+              {cap.highlights && cap.highlights.length > 0 && (
+                <ul class="space-y-2 pt-4 border-t border-border text-xs text-text-muted">
+                  {cap.highlights.map((item) => (
+                    <li class="flex items-start gap-2">
+                      <Icon
+                        name="lucide:check-circle-2"
+                        class="w-3.5 h-3.5 text-primary shrink-0 mt-0.5"
+                      />
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. EXPLANATORY VIDEO & INTERACTIVE TOUR SECTION (CMS-MANAGED) -->
+  <MarkcopilotVideoSection video={settings.video} />
+
+  <!-- 6. BUSINESS VALUE (SUBSTANTIATED PRACTICAL ADVANTAGES) -->
+  <section class="py-20 sm:py-28 bg-background">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="max-w-3xl mx-auto text-center mb-16">
+        <span class="text-xs font-mono font-semibold uppercase tracking-wider text-primary">
+          {settings.businessValue?.eyebrow || 'Measurable Value'}
+        </span>
+        <h2 class="text-3xl sm:text-4xl font-bold tracking-tight text-text mt-2">
+          {settings.businessValue?.heading || 'Substantiated Benefits for Support & Commerce Teams'}
+        </h2>
+        <p class="mt-4 text-base sm:text-lg text-text-muted leading-relaxed">
+          {
+            settings.businessValue?.description ||
+              'Markcopilot delivers practical operational improvements for businesses managing high-volume customer communication across East Africa.'
+          }
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        {
+          (settings.businessValue?.metrics || []).map((m) => (
+            <div class="bg-surface border border-border rounded-xl p-6 shadow-none flex flex-col justify-between">
+              <div>
+                <div class="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-4 border border-primary/20">
+                  <Icon name={m.icon || 'lucide:zap'} class="w-5 h-5" />
+                </div>
+                <h3 class="text-base font-bold text-text mb-2">{m.title}</h3>
+                <p class="text-xs text-text-muted leading-relaxed">{m.description}</p>
+              </div>
+              <div class="pt-4 mt-4 border-t border-border">
+                <span class="text-[11px] font-semibold text-emerald-600 dark:text-emerald-400">
+                  &check; {m.impact}
+                </span>
+              </div>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- 7. MARKCOPILOT WITHIN THE MARKCHAT ECOSYSTEM -->
+  <section class="py-20 sm:py-28 bg-surface border-t border-border">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="max-w-3xl mx-auto text-center mb-16">
+        <span class="text-xs font-mono font-semibold uppercase tracking-wider text-primary">
+          {settings.ecosystem?.eyebrow || 'Platform Synergy'}
+        </span>
+        <h2 class="text-3xl sm:text-4xl font-bold tracking-tight text-text mt-2">
+          {settings.ecosystem?.heading || 'Markcopilot Within the MarkChat Ecosystem'}
+        </h2>
+        <p class="mt-4 text-base sm:text-lg text-text-muted leading-relaxed">
+          {
+            settings.ecosystem?.description ||
+              'Markcopilot does not live in an isolated silo. It works synchronously with MarkChat’s omnichannel inbox, in-chat payments, and team collaboration tools.'
+          }
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {
+          (settings.ecosystem?.cards || []).map((card) => (
+            <a
+              href={card.href}
+              class="group bg-background border border-border hover:border-primary/50 rounded-xl p-6 shadow-none shadow-none transition-all flex flex-col justify-between block"
+            >
+              <div>
+                <div class="flex items-center justify-between mb-4">
+                  <div class="w-10 h-10 rounded-xl bg-primary/10 text-primary group-hover:bg-primary group-hover:text-white transition-colors flex items-center justify-center border border-primary/20">
+                    <Icon name={card.icon || 'lucide:link'} class="w-5 h-5" />
+                  </div>
+                  <span class="text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded bg-surface border border-border text-text-muted">
+                    {card.badge}
+                  </span>
+                </div>
+                <h3 class="text-base font-bold text-text group-hover:text-primary transition-colors mb-2">
+                  {card.title}
+                </h3>
+                <p class="text-xs text-text-muted leading-relaxed mb-4">{card.description}</p>
+              </div>
+              <div class="inline-flex items-center gap-1 text-xs font-semibold text-primary pt-3 border-t border-border">
+                <span>Explore connection</span>
+                <Icon
+                  name="lucide:arrow-right"
+                  class="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform"
+                />
+              </div>
+            </a>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- 8. FREQUENTLY ASKED QUESTIONS -->
+  <ProductOperations kind="ai" title="From reviewed knowledge to a human-approved response" />
+  <FAQSection
+    title="Markcopilot Intelligence FAQ"
+    subtitle="Clear, factual answers regarding RAG grounding, Kenyan linguistic nuances, M-Pesa safety, and data privacy."
+    faqs={settings.faqs || []}
+  />
+
+  <!-- 9. BOTTOM ACTION CTA -->
+  <CTA
+    title={settings.closingCta?.heading || 'Ready to bring Markcopilot intelligence to your team?'}
+    description={settings.closingCta?.description ||
+      'Automate routine first-line customer questions 24/7 and give your support agents a 1-click draft copilot. Set up your workspace in minutes.'}
+    action={{
+      label: settings.closingCta?.primaryCtaLabel || 'Book Live Demo',
+      href: settings.closingCta?.primaryCtaHref || '/demo',
+    }}
+    secondaryAction={{
+      label: settings.closingCta?.secondaryCtaLabel || 'Explore All Features',
+      href: settings.closingCta?.secondaryCtaHref || '/features',
+    }}
+    background="default"
+  />
+</MarketingLayout>

@@ -41,11 +41,41 @@ interface Props {
 const { title, description, breadcrumbs } = Astro.props;
 ---
 
-<BaseLayout title={title} description={description}>
+<BaseLayout title={title} description={description} noindex={true}>
   <DashboardShell breadcrumbs={breadcrumbs}>
     <slot />
   </DashboardShell>
 
   <!-- Toast Notification Container -->
   <Toast />
+
+  <script is:inline>
+    (function () {
+      if (typeof window !== 'undefined') {
+        var path = window.location.pathname;
+        var isProtectedAdminRoute =
+          (path.startsWith('/dashboard') || path.startsWith('/dashboardMain')) &&
+          path !== '/dashboard/login' &&
+          path !== '/dashboard/login/';
+
+        if (isProtectedAdminRoute) {
+          // Client-side UX navigation guard.
+          // Note: True security enforcement occurs at the central CMS API layer
+          // via Bearer token verification on all protected administrative operations.
+          var token =
+            sessionStorage.getItem('markchat_admin_token') ||
+            document.cookie
+              .split('; ')
+              .find(function (row) {
+                return row.startsWith('markchat_admin_token=');
+              })
+              ?.split('=')[1];
+
+          if (!token) {
+            window.location.href = '/dashboard/login?redirect=' + encodeURIComponent(path);
+          }
+        }
+      }
+    })();
+  </script>
 </BaseLayout>

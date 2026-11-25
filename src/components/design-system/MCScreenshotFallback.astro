@@ -1,0 +1,35 @@
+---
+interface Props {
+  label?: string;
+  description?: string;
+}
+const {
+  label = 'Product screenshot pending',
+  description = 'Verified product imagery will appear after an approved local capture.',
+} = Astro.props;
+---
+
+<div
+  role="img"
+  aria-label={label + '. ' + description}
+  class="flex min-h-64 flex-col justify-center gap-5 rounded-lg border border-dashed border-border bg-surface p-6"
+  data-screenshot-fallback
+>
+  <div class="flex gap-2">
+    <span class="h-3 w-3 rounded-full bg-border"></span><span class="h-3 w-3 rounded-full bg-border"
+    ></span><span class="h-3 w-3 rounded-full bg-border"></span>
+  </div>
+  <div class="grid grid-cols-[1fr_2fr] gap-3">
+    <div class="h-32 rounded-md border border-border bg-background"></div><div
+      class="space-y-3 rounded-md border border-border bg-background p-4"
+    >
+      <div class="h-3 w-2/3 rounded bg-border"></div><div class="h-3 w-full rounded bg-border">
+      </div><div class="h-3 w-5/6 rounded bg-border"></div>
+    </div>
+  </div>
+  <div>
+    <p class="text-sm font-semibold text-text">{label}</p><p class="mt-1 text-xs text-text-muted">
+      {description}
+    </p>
+  </div>
+</div>

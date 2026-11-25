@@ -1,50 +1,32 @@
 ---
 /**
- * Login Page
+ * MarkChat Customer Login Page
  *
- * @description
- * User login page with email/password form and social authentication options.
- * Uses demo mode by default - configure action prop on LoginForm for real backend.
+ * Implements the minimal, distraction-free AuthLayout built directly on BaseLayout.
+ * Centered Virex card UI with native semantic OKLCH tokens.
  */
-import MarketingLayout from '@/layouts/MarketingLayout.astro';
-import LoginForm from '@forms/LoginForm.astro';
-import SocialAuthButtons from '@forms/SocialAuthButtons.astro';
+import AuthLayout from '@/layouts/AuthLayout.astro';
+import LoginForm from '@/components/forms/LoginForm.astro';
 import { siteConfig } from '@/config';
 ---
 
-<MarketingLayout
-  title={`Login - ${siteConfig.name}`}
-  description="Sign in to your account to access your dashboard and manage your projects."
+<AuthLayout
+  title={`Sign In — ${siteConfig.name} Kenya`}
+  description="Sign in to your MarkChat workspace to manage customer conversations, orders, and M-Pesa payments."
+  pageType="login"
 >
-  <section class="py-section">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="max-w-md mx-auto">
-        <!-- Card container -->
-        <div class="bg-surface rounded-lg border border-border p-8 shadow-sm">
-          <!-- Header -->
-          <div class="text-center mb-8">
-            <h1 class="text-2xl font-bold text-text">Welcome back</h1>
-            <p class="mt-2 text-text-muted">Sign in to your account to continue</p>
-          </div>
-
-          <!-- Login Form -->
-          <LoginForm />
-
-          <!-- Social Auth -->
-          <SocialAuthButtons dividerText="Or continue with" variant="login" />
-
-          <!-- Register link -->
-          <p class="mt-6 text-center text-sm text-text-muted">
-            Don't have an account?{' '}
-            <a
-              href="/register"
-              class="font-medium text-primary hover:text-primary-dark transition-colors"
-            >
-              Sign up
-            </a>
-          </p>
-        </div>
-      </div>
+  <div class="max-w-md mx-auto w-full">
+    <!-- Centered Header with Title & Subheadline -->
+    <div class="text-center mb-8">
+      <h1 class="text-2xl sm:text-3xl font-bold text-text tracking-tight">Sign in to MarkChat</h1>
+      <p class="mt-2 text-sm text-text-muted">
+        Sign in to access your unified team inbox and customer conversations.
+      </p>
     </div>
-  </section>
-</MarketingLayout>
+
+    <!-- Virex Card Container -->
+    <div class="bg-surface border border-border rounded-2xl shadow-sm p-6 sm:p-8">
+      <LoginForm redirectUrl="/billing" />
+    </div>
+  </div>
+</AuthLayout>

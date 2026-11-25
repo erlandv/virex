@@ -1,0 +1,12 @@
+{
+  "data": {
+    "conversationId": 101,
+    "mode": "assist",
+    "suggestion": "Habari Amina, your order is ready for collection. Would you like the shop location?",
+    "language": "sw-KE",
+    "requiresHumanApproval": true,
+    "generatedBy": "synthetic_fixture",
+    "status": "preview"
+  },
+  "demo": true
+}

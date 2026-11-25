@@ -1,200 +1,833 @@
 ---
 /**
- * RegisterForm - Registration form with validation and multiple backend support
+ * RegisterForm - Guided Two-Step Registration Wizard for MarkChat SaaS
  *
- * @description
- * A fully-featured registration form with client-side validation, loading states,
- * and success/error feedback. Supports Netlify Identity, custom endpoints,
- * and runs in demo mode (simulates success) when no action URL is provided.
- *
- * @example Demo mode (no backend)
- * ```astro
- * <RegisterForm />
- * ```
- *
- * @example Netlify Identity
- * ```astro
- * <RegisterForm netlify />
- * ```
- *
- * @example Custom endpoint
- * ```astro
- * <RegisterForm action="https://api.example.com/register" method="POST" />
- * ```
+ * Implemented using native Virex semantic design tokens and layout conventions.
+ * Features:
+ * - Step 1: Google OAuth option + Organization details with live workspace slug preview (<slug>.markchat.co.ke)
+ * - Step 2: Account security & Plan selection with NIST SP 800-63B password entropy and tabular-nums KES pricing
+ * - Step navigation with complete state preservation
+ * - Bounded async saga polling with durable idempotency key in sessionStorage
+ * - Open-redirect protection (CWE-601), rate-limit handling (HTTP 429), and honeypot anti-spam defense
+ * - Zero premature validation errors on initial load
  */
+import SocialAuthButtons from './SocialAuthButtons.astro';
 
 interface Props {
-  /** Form action URL - leave empty for demo mode */
   action?: string;
-  /** HTTP method for form submission */
   method?: 'POST' | 'GET';
-  /** Enable Netlify Identity integration */
-  netlify?: boolean;
-  /** Redirect URL after successful registration */
+  defaultPlanId?: string;
+  billingInterval?: 'monthly' | 'annual';
   redirectUrl?: string;
 }
 
-const { action = '', method = 'POST', netlify = false, redirectUrl = '/dashboard' } = Astro.props;
+const {
+  action = '',
+  method = 'POST',
+  defaultPlanId = 'growth',
+  billingInterval = 'monthly',
+  redirectUrl = '/billing',
+} = Astro.props;
+
+const controlPlaneUrl =
+  import.meta.env.PUBLIC_CONTROL_PLANE_URL ||
+  import.meta.env.PUBLIC_CONTROL_PLANE_API_URL ||
+  'http://localhost:5000';
+
+const plansInfo: Record<
+  string,
+  { name: string; price: string; badge: string; isTrial: boolean; agents: string; inboxes: string }
+> = {
+  starter: {
+    name: 'Starter',
+    price: 'KES 1,500/mo',
+    badge: '3 Agents, 2 Inboxes',
+    isTrial: false,
+    agents: '3 Agents included',
+    inboxes: '2 Inboxes',
+  },
+  growth: {
+    name: 'Growth',
+    price: 'KES 3,500/mo',
+    badge: '72-Hour Full Trial Included',
+    isTrial: true,
+    agents: '10 Agents included',
+    inboxes: '5 Inboxes',
+  },
+  scale: {
+    name: 'Scale',
+    price: 'KES 5,000/mo',
+    badge: '25 Agents, High Volume',
+    isTrial: false,
+    agents: '25 Agents included',
+    inboxes: 'Unlimited Inboxes',
+  },
+  enterprise: {
+    name: 'Enterprise',
+    price: 'Custom',
+    badge: 'Dedicated SLA',
+    isTrial: false,
+    agents: 'Custom capacity',
+    inboxes: 'Dedicated SLA',
+  },
+};
+
+const initialPlan = plansInfo[defaultPlanId] || plansInfo.growth;
 ---
 
-<form
-  id="register-form"
-  action={action}
-  method={method}
-  class="space-y-6"
-  data-netlify={netlify ? 'true' : undefined}
-  data-redirect={redirectUrl}
-  novalidate
->
-  <!-- Honeypot field for spam protection -->
-  <div class="hidden" aria-hidden="true">
-    <label>
-      Don't fill this out if you're human:
-      <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" />
-    </label>
+<div class="w-full">
+  <!-- ===================================================================== -->
+  <!-- STEP PROGRESS INDICATOR                                               -->
+  <!-- ===================================================================== -->
+  <div class="mb-6" aria-label="Registration Progress">
+    <div class="flex items-center justify-between mb-2">
+      <!-- Step 1 Pill -->
+      <button
+        type="button"
+        id="step-1-indicator"
+        class="flex items-center gap-2 text-xs font-semibold text-primary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded px-1.5 py-0.5 cursor-pointer"
+        aria-current="step"
+      >
+        <span
+          id="step-1-badge"
+          class="w-6 h-6 rounded-full bg-primary text-white flex items-center justify-center text-xs font-bold shadow-xs"
+        >
+          1
+        </span>
+        <span class="hidden sm:inline text-text">Organization details</span>
+      </button>
+
+      <!-- Connecting Progress Line -->
+      <div class="flex-1 mx-3 sm:mx-4 h-1 bg-border rounded-full overflow-hidden">
+        <div id="step-progress-bar" class="h-full bg-primary transition-all duration-300 w-1/2">
+        </div>
+      </div>
+
+      <!-- Step 2 Pill -->
+      <button
+        type="button"
+        id="step-2-indicator"
+        class="flex items-center gap-2 text-xs font-medium text-text-muted transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded px-1.5 py-0.5 cursor-pointer"
+      >
+        <span
+          id="step-2-badge"
+          class="w-6 h-6 rounded-full bg-surface border border-border text-text-muted flex items-center justify-center text-xs font-bold"
+        >
+          2
+        </span>
+        <span class="hidden sm:inline">Security & plan</span>
+      </button>
+    </div>
+
+    <!-- Mobile Step Name Label -->
+    <div class="text-xs font-medium text-text-muted sm:hidden text-center mt-1">
+      <span id="mobile-step-label">Step 1 of 2: Organization details</span>
+    </div>
   </div>
 
-  <!-- Full name field -->
-  <div>
-    <label for="fullName" class="block text-sm font-medium text-text mb-2"> Full name </label>
-    <input
-      type="text"
-      id="fullName"
-      name="fullName"
-      required
-      minlength="2"
-      autocomplete="name"
-      class="w-full px-4 py-3 rounded-md border border-border bg-background text-text placeholder-text-muted focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-colors"
-      placeholder="John Doe"
-    />
-    <p class="mt-1 text-sm text-red-500 hidden" data-error="fullName"></p>
-  </div>
-
-  <!-- Email field -->
-  <div>
-    <label for="registerEmail" class="block text-sm font-medium text-text mb-2">
-      Email address
-    </label>
-    <input
-      type="email"
-      id="registerEmail"
-      name="email"
-      required
-      autocomplete="email"
-      class="w-full px-4 py-3 rounded-md border border-border bg-background text-text placeholder-text-muted focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-colors"
-      placeholder="you@example.com"
-    />
-    <p class="mt-1 text-sm text-red-500 hidden" data-error="registerEmail"></p>
-  </div>
-
-  <!-- Password field -->
-  <div>
-    <label for="registerPassword" class="block text-sm font-medium text-text mb-2">
-      Password
-    </label>
-    <input
-      type="password"
-      id="registerPassword"
-      name="password"
-      required
-      minlength="8"
-      autocomplete="new-password"
-      class="w-full px-4 py-3 rounded-md border border-border bg-background text-text placeholder-text-muted focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-colors"
-      placeholder="••••••••"
-    />
-    <p class="mt-1 text-sm text-text-muted">Must be at least 8 characters</p>
-    <p class="mt-1 text-sm text-red-500 hidden" data-error="registerPassword"></p>
-  </div>
-
-  <!-- Terms agreement checkbox -->
-  <div>
-    <div class="flex items-start">
-      <input
-        type="checkbox"
-        id="agreeTerms"
-        name="agreeTerms"
-        required
-        class="h-4 w-4 mt-0.5 rounded border-border text-primary focus:ring-primary focus:ring-offset-background"
-      />
-      <label for="agreeTerms" class="ml-2 text-sm text-text-muted">
-        I agree to the{' '}
-        <a href="/terms" class="text-primary hover:text-primary-dark transition-colors underline">
-          Terms of Service
-        </a>{' '}
-        and{' '}
-        <a href="/privacy" class="text-primary hover:text-primary-dark transition-colors underline">
-          Privacy Policy
-        </a>
+  <!-- ===================================================================== -->
+  <!-- REGISTRATION FORM (Single Form Preserving Full State)                  -->
+  <!-- ===================================================================== -->
+  <form
+    id="register-form"
+    action={action}
+    method={method}
+    class="space-y-4"
+    data-redirect={redirectUrl}
+    data-api-url={controlPlaneUrl}
+    aria-busy="false"
+    novalidate
+  >
+    <!-- Honeypot field for anti-bot defense -->
+    <div class="hidden" aria-hidden="true">
+      <label>
+        Don't fill this out if you're human:
+        <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" />
       </label>
     </div>
-    <p class="mt-1 text-sm text-red-500 hidden" data-error="agreeTerms"></p>
-  </div>
 
-  <!-- Form status messages -->
-  <div id="register-form-status" class="hidden">
-    <div
-      id="register-form-success"
-      class="hidden p-4 rounded-md bg-green-100 dark:bg-green-950 border border-green-300 dark:border-green-800"
-    >
-      <p class="text-green-900 dark:text-green-100 font-medium">Account created successfully!</p>
-      <p class="text-green-800 dark:text-green-300 text-sm mt-1">Redirecting you now...</p>
-    </div>
-    <div
-      id="register-form-error"
-      class="hidden p-4 rounded-md bg-red-100 dark:bg-red-950 border border-red-300 dark:border-red-800"
-    >
-      <p class="text-red-900 dark:text-red-100 font-medium">Registration failed</p>
-      <p class="text-red-800 dark:text-red-300 text-sm mt-1">
-        Please check your information and try again.
-      </p>
-    </div>
-  </div>
+    <!-- Hidden plan input -->
+    <input type="hidden" id="planId" name="planId" value={defaultPlanId} />
+    <input type="hidden" id="billingInterval" name="billingInterval" value={billingInterval} />
 
-  <!-- Submit button -->
-  <button
-    type="submit"
-    id="register-submit-button"
-    class="w-full cursor-pointer px-6 py-3 rounded-md bg-primary text-white font-medium hover:bg-primary-dark transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background disabled:opacity-50 disabled:cursor-not-allowed"
-  >
-    <span id="register-button-text">Create account</span>
-    <span id="register-button-loading" class="hidden">
-      <svg
-        class="animate-spin inline-block w-5 h-5 mr-2"
-        xmlns="http://www.w3.org/2000/svg"
-        fill="none"
-        viewBox="0 0 24 24"
+    <!-- =================================================================== -->
+    <!-- STEP 1: ORGANIZATION & ADMIN DETAILS                                -->
+    <!-- =================================================================== -->
+    <div id="step-1-container" class="space-y-4 transition-opacity duration-150">
+      <!-- Federated Google Sign-Up -->
+      <SocialAuthButtons variant="register" dividerText="Or register with email" />
+
+      <div class="border-b border-border pb-2.5">
+        <h2 class="text-sm font-semibold text-text">Organization details</h2>
+        <p class="text-xs text-text-muted mt-0.5">
+          Provide your business and administrator identity to initialize your workspace.
+        </p>
+      </div>
+
+      <!-- Business / Organization Name field -->
+      <div>
+        <label for="businessName" class="block text-sm font-medium text-text mb-1.5">
+          Organization / business name <span class="text-error" aria-hidden="true">*</span>
+        </label>
+        <input
+          type="text"
+          id="businessName"
+          name="businessName"
+          required
+          minlength="2"
+          autocomplete="organization"
+          aria-describedby="businessName-error"
+          aria-invalid="false"
+          class="w-full h-11 px-4 rounded-xl border border-border bg-background text-text placeholder:text-text-muted/60 focus:outline-none focus-visible:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 focus-visible:ring-2 focus-visible:ring-primary transition-colors text-sm shadow-xs"
+          placeholder="e.g. Acme Retail Kenya Ltd"
+        />
+        <div
+          class="mt-1.5 flex items-center gap-1.5 text-xs text-text-muted font-mono tabular-nums"
+        >
+          <span>Workspace URL:</span>
+          <span id="workspace-slug-preview" class="text-text-muted/70 font-medium transition-colors"
+            >https://your-workspace.markchat.co.ke</span
+          >
+        </div>
+        <p
+          id="businessName-error"
+          class="mt-1 text-xs text-error hidden"
+          data-error="businessName"
+          role="alert"
+        >
+        </p>
+      </div>
+
+      <!-- Administrator Full Name field -->
+      <div>
+        <label for="fullName" class="block text-sm font-medium text-text mb-1.5">
+          Administrator full name <span class="text-error" aria-hidden="true">*</span>
+        </label>
+        <input
+          type="text"
+          id="fullName"
+          name="fullName"
+          required
+          minlength="2"
+          autocomplete="name"
+          aria-describedby="fullName-error"
+          aria-invalid="false"
+          class="w-full h-11 px-4 rounded-xl border border-border bg-background text-text placeholder:text-text-muted/60 focus:outline-none focus-visible:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 focus-visible:ring-2 focus-visible:ring-primary transition-colors text-sm shadow-xs"
+          placeholder="e.g. Wanjiku Kimani"
+        />
+        <p
+          id="fullName-error"
+          class="mt-1 text-xs text-error hidden"
+          data-error="fullName"
+          role="alert"
+        >
+        </p>
+      </div>
+
+      <!-- Business Email Address field -->
+      <div>
+        <label for="registerEmail" class="block text-sm font-medium text-text mb-1.5">
+          Business email address <span class="text-error" aria-hidden="true">*</span>
+        </label>
+        <input
+          type="email"
+          id="registerEmail"
+          name="email"
+          required
+          autocomplete="email"
+          aria-describedby="registerEmail-error"
+          aria-invalid="false"
+          class="w-full h-11 px-4 rounded-xl border border-border bg-background text-text placeholder:text-text-muted/60 focus:outline-none focus-visible:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 focus-visible:ring-2 focus-visible:ring-primary transition-colors text-sm shadow-xs"
+          placeholder="wanjiku@acmeretail.co.ke"
+        />
+        <p
+          id="registerEmail-error"
+          class="mt-1 text-xs text-error hidden"
+          data-error="registerEmail"
+          role="alert"
+        >
+        </p>
+      </div>
+
+      <!-- Phone Number field -->
+      <div>
+        <div class="flex items-center justify-between mb-1.5">
+          <label for="registerPhone" class="block text-sm font-medium text-text">
+            Phone number
+          </label>
+          <span class="text-[11px] text-text-muted">For M-Pesa and account updates</span>
+        </div>
+        <input
+          type="tel"
+          id="registerPhone"
+          name="phone"
+          autocomplete="tel"
+          aria-describedby="registerPhone-error"
+          aria-invalid="false"
+          class="w-full h-11 px-4 rounded-xl border border-border bg-background text-text placeholder:text-text-muted/60 focus:outline-none focus-visible:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 focus-visible:ring-2 focus-visible:ring-primary transition-colors text-sm shadow-xs"
+          placeholder="+254 712 345 678"
+        />
+        <p
+          id="registerPhone-error"
+          class="mt-1 text-xs text-error hidden"
+          data-error="registerPhone"
+          role="alert"
+        >
+        </p>
+      </div>
+
+      <!-- Step 1 Continue Action -->
+      <div class="pt-2">
+        <button
+          type="button"
+          id="btn-continue-step1"
+          class="w-full h-11 cursor-pointer px-6 rounded-xl bg-primary hover:bg-primary-dark text-white font-medium text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background shadow-xs flex items-center justify-center gap-2 group"
+        >
+          <span>Continue to account setup</span>
+          <svg
+            class="w-4 h-4 group-hover:translate-x-0.5 transition-transform"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            aria-hidden="true"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- =================================================================== -->
+    <!-- STEP 2: SECURITY, PLAN CONFIRMATION & SUBMIT                       -->
+    <!-- =================================================================== -->
+    <div id="step-2-container" class="space-y-4 hidden transition-opacity duration-150">
+      <div class="border-b border-border pb-2.5 flex items-center justify-between">
+        <div>
+          <h2 class="text-sm font-semibold text-text">Account security & plan</h2>
+          <p class="text-xs text-text-muted mt-0.5">
+            Configure your master password and confirm subscription terms.
+          </p>
+        </div>
+        <button
+          type="button"
+          id="btn-back-header"
+          class="text-xs text-primary hover:text-primary-dark hover:underline flex items-center gap-1 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded px-1.5 py-0.5"
+        >
+          ← Back
+        </button>
+      </div>
+
+      <!-- Password field with visibility toggle & entropy meter -->
+      <div>
+        <label for="registerPassword" class="block text-sm font-medium text-text mb-1.5">
+          Password <span class="text-error" aria-hidden="true">*</span>
+        </label>
+        <div class="relative">
+          <input
+            type="password"
+            id="registerPassword"
+            name="password"
+            required
+            minlength="8"
+            autocomplete="new-password"
+            aria-describedby="registerPassword-error"
+            aria-invalid="false"
+            class="w-full h-11 px-4 pr-11 rounded-xl border border-border bg-background text-text placeholder:text-text-muted/60 focus:outline-none focus-visible:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 focus-visible:ring-2 focus-visible:ring-primary transition-colors text-sm shadow-xs"
+            placeholder="••••••••••••"
+          />
+          <button
+            type="button"
+            id="toggle-register-password"
+            class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-text-muted hover:text-text cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded my-1.5 mr-1"
+            aria-label="Show password"
+            aria-pressed="false"
+          >
+            <svg
+              id="eye-icon-reg"
+              class="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+              ></path>
+            </svg>
+          </button>
+        </div>
+
+        <!-- NIST SP 800-63B Entropy Indicator -->
+        <div id="password-strength-container" class="mt-2 space-y-1.5 hidden" aria-live="polite">
+          <div class="flex items-center justify-between text-xs">
+            <span class="text-text-muted">Password strength:</span>
+            <span id="password-strength-label" class="font-medium text-text">Weak</span>
+          </div>
+          <div class="grid grid-cols-3 gap-1.5 h-1 w-full bg-border rounded-full overflow-hidden">
+            <div id="strength-bar-1" class="h-full rounded-full bg-error transition-colors"></div>
+            <div id="strength-bar-2" class="h-full rounded-full bg-border transition-colors"></div>
+            <div id="strength-bar-3" class="h-full rounded-full bg-border transition-colors"></div>
+          </div>
+        </div>
+
+        <p class="mt-1 text-xs text-text-muted">
+          Min 8 characters (10+ recommended). Avoid common phrases.
+        </p>
+        <p
+          id="registerPassword-error"
+          class="mt-1 text-xs text-error hidden"
+          data-error="registerPassword"
+          role="alert"
+        >
+        </p>
+      </div>
+
+      <!-- Password Confirmation field -->
+      <div>
+        <label for="confirmPassword" class="block text-sm font-medium text-text mb-1.5">
+          Confirm password <span class="text-error" aria-hidden="true">*</span>
+        </label>
+        <input
+          type="password"
+          id="confirmPassword"
+          name="confirmPassword"
+          required
+          minlength="8"
+          autocomplete="new-password"
+          aria-describedby="confirmPassword-error"
+          aria-invalid="false"
+          class="w-full h-11 px-4 rounded-xl border border-border bg-background text-text placeholder:text-text-muted/60 focus:outline-none focus-visible:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 focus-visible:ring-2 focus-visible:ring-primary transition-colors text-sm shadow-xs"
+          placeholder="••••••••••••"
+        />
+        <p
+          id="confirmPassword-error"
+          class="mt-1 text-xs text-error hidden"
+          data-error="confirmPassword"
+          role="alert"
+        >
+        </p>
+      </div>
+
+      <!-- Plan Selection Cards -->
+      <div>
+        <label class="block text-sm font-medium text-text mb-2"> Selected subscription plan </label>
+        <div
+          class="grid grid-cols-1 sm:grid-cols-3 gap-2.5"
+          role="radiogroup"
+          aria-label="Subscription Plans"
+        >
+          <!-- Starter Plan -->
+          <div
+            class="plan-card cursor-pointer p-3 rounded-xl border border-border bg-background hover:bg-surface transition-all"
+            data-plan="starter"
+            tabindex="0"
+            role="radio"
+            aria-checked="false"
+          >
+            <div class="flex items-center justify-between">
+              <span class="font-medium text-xs text-text">Starter</span>
+              <span class="text-[10px] text-text-muted">3 Agents</span>
+            </div>
+            <div class="mt-1 font-semibold text-sm text-text tabular-nums">KES 1,500/mo</div>
+            <div class="text-[10px] text-text-muted mt-0.5">2 Inboxes</div>
+          </div>
+
+          <!-- Growth Plan (Default Trial) -->
+          <div
+            class="plan-card cursor-pointer p-3 rounded-xl border-2 border-primary bg-primary/5 transition-all shadow-xs"
+            data-plan="growth"
+            tabindex="0"
+            role="radio"
+            aria-checked="true"
+          >
+            <div class="flex items-center justify-between">
+              <span class="font-semibold text-xs text-text">Growth</span>
+              <span class="text-[9px] px-1.5 py-0.5 rounded bg-primary text-white font-medium"
+                >Trial</span
+              >
+            </div>
+            <div class="mt-1 font-bold text-sm text-text tabular-nums">KES 3,500/mo</div>
+            <div class="text-[10px] text-text-muted mt-0.5">72-Hr Free Trial</div>
+          </div>
+
+          <!-- Scale Plan -->
+          <div
+            class="plan-card cursor-pointer p-3 rounded-xl border border-border bg-background hover:bg-surface transition-all"
+            data-plan="scale"
+            tabindex="0"
+            role="radio"
+            aria-checked="false"
+          >
+            <div class="flex items-center justify-between">
+              <span class="font-medium text-xs text-text">Scale</span>
+              <span class="text-[10px] text-text-muted">25 Agents</span>
+            </div>
+            <div class="mt-1 font-semibold text-sm text-text tabular-nums">KES 5,000/mo</div>
+            <div class="text-[10px] text-text-muted mt-0.5">Unlimited Inboxes</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Terms & Privacy Agreement checkbox -->
+      <div class="pt-1">
+        <label class="flex items-start cursor-pointer select-none">
+          <input
+            type="checkbox"
+            id="agreeTerms"
+            name="agreeTerms"
+            required
+            class="h-4 w-4 mt-0.5 rounded border-border bg-background text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary cursor-pointer shrink-0"
+          />
+          <span class="ml-2.5 text-xs text-text-muted leading-relaxed">
+            I agree to MarkChat's{' '}
+            <a href="/terms" target="_blank" class="text-primary hover:underline"
+              >Terms of Service</a
+            >
+            {' '}and{' '}
+            <a href="/privacy" target="_blank" class="text-primary hover:underline"
+              >Privacy Policy</a
+            >. I acknowledge Kenya Data Protection Act (KDPA 2019) compliance requirements.
+          </span>
+        </label>
+        <p
+          id="agreeTerms-error"
+          class="mt-1 text-xs text-error hidden"
+          data-error="agreeTerms"
+          role="alert"
+        >
+        </p>
+      </div>
+
+      <!-- Navigation & Submit Controls for Step 2 -->
+      <div class="flex items-center gap-3 pt-2">
+        <button
+          type="button"
+          id="btn-back-step2"
+          class="h-11 px-4 rounded-xl border border-border bg-background hover:bg-surface text-text font-medium text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary cursor-pointer"
+        >
+          Back
+        </button>
+
+        <button
+          type="submit"
+          id="register-submit-button"
+          class="flex-1 h-11 cursor-pointer px-6 rounded-xl bg-primary hover:bg-primary-dark text-white font-medium text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:opacity-50 disabled:cursor-not-allowed shadow-xs flex items-center justify-center gap-2"
+        >
+          <span id="register-button-text">
+            {initialPlan.isTrial ? 'Start 72-Hour Free Trial' : 'Create MarkChat Account'}
+          </span>
+          <span id="register-button-loading" class="hidden items-center gap-2">
+            <svg
+              class="animate-spin w-4 h-4 text-white"
+              fill="none"
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+            >
+              <circle
+                class="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                stroke-width="4"></circle>
+              <path
+                class="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+              ></path>
+            </svg>
+            <span id="register-loading-status">Provisioning workspace...</span>
+          </span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Status Messages Container -->
+    <div id="register-form-status" class="hidden" role="alert" aria-live="polite">
+      <!-- Success State -->
+      <div
+        id="register-form-success"
+        class="hidden p-3.5 rounded-lg bg-success-bg border border-success text-success text-sm"
       >
-        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"
-        ></circle>
-        <path
-          class="opacity-75"
-          fill="currentColor"
-          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-        ></path>
-      </svg>
-      Creating account...
-    </span>
-  </button>
-</form>
+        <p class="font-semibold flex items-center gap-2">
+          <svg
+            class="w-4 h-4 text-success shrink-0"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            aria-hidden="true"
+          >
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"
+            ></path>
+          </svg>
+          Workspace ready!
+        </p>
+        <p class="text-xs mt-0.5">Redirecting to your new dashboard...</p>
+      </div>
+
+      <!-- Error State -->
+      <div
+        id="register-form-error"
+        class="hidden p-3.5 rounded-lg bg-error-bg border border-error text-error text-sm"
+      >
+        <p class="font-semibold flex items-center gap-2">
+          <svg
+            class="w-4 h-4 text-error shrink-0"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            aria-hidden="true"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+            ></path>
+          </svg>
+          Registration failed
+        </p>
+        <p id="register-error-text" class="text-xs mt-0.5 leading-relaxed">
+          An error occurred during workspace creation. Please check your details and try again.
+        </p>
+      </div>
+    </div>
+  </form>
+</div>
 
 <script>
   const form = document.getElementById('register-form') as HTMLFormElement;
+  const step1Container = document.getElementById('step-1-container');
+  const step2Container = document.getElementById('step-2-container');
+  const btnContinueStep1 = document.getElementById('btn-continue-step1');
+  const btnBackStep2 = document.getElementById('btn-back-step2');
+  const btnBackHeader = document.getElementById('btn-back-header');
+  const step1Indicator = document.getElementById('step-1-indicator');
+  const step2Indicator = document.getElementById('step-2-indicator');
+  const step1Badge = document.getElementById('step-1-badge');
+  const step2Badge = document.getElementById('step-2-badge');
+  const progressBar = document.getElementById('step-progress-bar');
+  const mobileStepLabel = document.getElementById('mobile-step-label');
+
+  const businessNameInput = document.getElementById('businessName') as HTMLInputElement;
+  const workspaceSlugPreview = document.getElementById('workspace-slug-preview');
+  const passwordInput = document.getElementById('registerPassword') as HTMLInputElement;
+  const confirmPasswordInput = document.getElementById('confirmPassword') as HTMLInputElement;
+  const toggleBtn = document.getElementById('toggle-register-password');
+
+  const strengthContainer = document.getElementById('password-strength-container');
+  const strengthLabel = document.getElementById('password-strength-label');
+  const strengthBar1 = document.getElementById('strength-bar-1');
+  const strengthBar2 = document.getElementById('strength-bar-2');
+  const strengthBar3 = document.getElementById('strength-bar-3');
+
   const submitButton = document.getElementById('register-submit-button') as HTMLButtonElement;
   const buttonText = document.getElementById('register-button-text');
   const buttonLoading = document.getElementById('register-button-loading');
+  const loadingStatus = document.getElementById('register-loading-status');
   const formStatus = document.getElementById('register-form-status');
   const formSuccess = document.getElementById('register-form-success');
   const formError = document.getElementById('register-form-error');
+  const planInput = document.getElementById('planId') as HTMLInputElement;
+
+  // Track touched fields to strictly prevent premature errors on initial load
+  const touchedFields = new Set<string>();
+
+  // Surface OAuth Errors Gracefully
+  const initialParams = new URLSearchParams(window.location.search);
+  const oauthError = initialParams.get('oauth_error');
+  if (oauthError) {
+    let message = 'Google authentication could not be completed. Please try again.';
+    if (oauthError === 'google_not_configured') {
+      message =
+        'Google Sign-In is not configured on this environment yet. Please register with your details below.';
+    } else if (oauthError === 'access_denied') {
+      message = 'Google sign-up was canceled.';
+    }
+    showFormError(message);
+    initialParams.delete('oauth_error');
+    const cleanSearch = initialParams.toString();
+    const cleanUrl =
+      window.location.pathname + (cleanSearch ? `?${cleanSearch}` : '') + window.location.hash;
+    window.history.replaceState({}, document.title, cleanUrl);
+  }
+
+  // Plan metadata
+  const plansMap: Record<string, { name: string; isTrial: boolean }> = {
+    starter: { name: 'Starter', isTrial: false },
+    growth: { name: 'Growth', isTrial: true },
+    scale: { name: 'Scale', isTrial: false },
+    enterprise: { name: 'Enterprise', isTrial: false },
+  };
+
+  // Plan selection cards
+  const planCards = document.querySelectorAll('.plan-card');
+  planCards.forEach((card) => {
+    card.addEventListener('click', () => {
+      const selected = card.getAttribute('data-plan') || 'growth';
+      selectPlan(selected);
+    });
+    card.addEventListener('keydown', (e) => {
+      const keyboardEvent = e as KeyboardEvent;
+      if (keyboardEvent.key === 'Enter' || keyboardEvent.key === ' ') {
+        e.preventDefault();
+        const selected = card.getAttribute('data-plan') || 'growth';
+        selectPlan(selected);
+      }
+    });
+  });
+
+  function selectPlan(planId: string) {
+    if (planInput) planInput.value = planId;
+    planCards.forEach((c) => {
+      const isSelected = c.getAttribute('data-plan') === planId;
+      c.setAttribute('aria-checked', isSelected ? 'true' : 'false');
+      if (isSelected) {
+        c.className =
+          'plan-card cursor-pointer p-3 rounded-xl border-2 border-primary bg-primary/5 transition-all shadow-xs';
+      } else {
+        c.className =
+          'plan-card cursor-pointer p-3 rounded-xl border border-border bg-background hover:bg-surface transition-all';
+      }
+    });
+
+    const isTrial = plansMap[planId]?.isTrial ?? false;
+    if (buttonText) {
+      buttonText.textContent = isTrial ? 'Start 72-Hour Free Trial' : 'Create MarkChat Account';
+    }
+  }
+
+  // Synchronize plan from URL query param if present
+  const urlParams = new URLSearchParams(window.location.search);
+  const planParam = urlParams.get('plan')?.toLowerCase();
+  if (planParam && plansMap[planParam]) {
+    selectPlan(planParam);
+  }
+
+  // Live Monospace Workspace URL Slug Preview
+  if (businessNameInput && workspaceSlugPreview) {
+    businessNameInput.addEventListener('input', () => {
+      const val = businessNameInput.value.trim().toLowerCase();
+      const slug = val.replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+      if (slug) {
+        workspaceSlugPreview.textContent = `https://${slug}.markchat.co.ke`;
+        workspaceSlugPreview.className = 'text-text font-medium transition-colors';
+      } else {
+        workspaceSlugPreview.textContent = 'https://your-workspace.markchat.co.ke';
+        workspaceSlugPreview.className = 'text-text-muted/70 font-medium transition-colors';
+      }
+    });
+  }
+
+  // Password visibility toggle with accessible aria state
+  const eyeOpenSvg = `
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+  `;
+  const eyeClosedSvg = `
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
+  `;
+
+  if (toggleBtn && passwordInput) {
+    toggleBtn.addEventListener('click', () => {
+      const isPassword = passwordInput.type === 'password';
+      passwordInput.type = isPassword ? 'text' : 'password';
+      toggleBtn.setAttribute('aria-pressed', isPassword ? 'true' : 'false');
+      toggleBtn.setAttribute('aria-label', isPassword ? 'Hide password' : 'Show password');
+      const eyeIcon = document.getElementById('eye-icon-reg');
+      if (eyeIcon) eyeIcon.innerHTML = isPassword ? eyeClosedSvg : eyeOpenSvg;
+    });
+  }
+
+  // NIST SP 800-63B Entropy Evaluation
+  const commonPasswords = [
+    'password',
+    'password123',
+    '1234567890',
+    'qwertyuiop',
+    'admin12345',
+    'markchat123',
+  ];
+
+  function evaluatePasswordEntropy(password: string, email: string): 'weak' | 'fair' | 'strong' {
+    if (!password || password.length < 8) return 'weak';
+    const lower = password.toLowerCase();
+    if (commonPasswords.includes(lower)) return 'weak';
+
+    if (email) {
+      const localPart = email.split('@')[0]?.toLowerCase();
+      if (localPart && localPart.length >= 3 && lower.includes(localPart)) {
+        return 'weak';
+      }
+    }
+
+    let pools = 0;
+    if (/[a-z]/.test(password)) pools++;
+    if (/[A-Z]/.test(password)) pools++;
+    if (/\d/.test(password)) pools++;
+    if (/[^a-zA-Z0-9]/.test(password)) pools++;
+
+    if (password.length >= 14 || (password.length >= 10 && pools >= 3)) {
+      return 'strong';
+    }
+    if (password.length >= 8 && pools >= 2) {
+      return 'fair';
+    }
+    return 'weak';
+  }
+
+  function updateStrengthUI(strength: 'weak' | 'fair' | 'strong') {
+    if (!strengthContainer || !strengthLabel || !strengthBar1 || !strengthBar2 || !strengthBar3)
+      return;
+    strengthContainer.classList.remove('hidden');
+
+    if (strength === 'strong') {
+      strengthLabel.textContent = 'Strong';
+      strengthLabel.className = 'font-semibold text-success';
+      strengthBar1.className = 'h-full rounded-full bg-success';
+      strengthBar2.className = 'h-full rounded-full bg-success';
+      strengthBar3.className = 'h-full rounded-full bg-success';
+    } else if (strength === 'fair') {
+      strengthLabel.textContent = 'Fair';
+      strengthLabel.className = 'font-semibold text-warning';
+      strengthBar1.className = 'h-full rounded-full bg-warning';
+      strengthBar2.className = 'h-full rounded-full bg-warning';
+      strengthBar3.className = 'h-full rounded-full bg-border';
+    } else {
+      strengthLabel.textContent = 'Weak';
+      strengthLabel.className = 'font-semibold text-error';
+      strengthBar1.className = 'h-full rounded-full bg-error';
+      strengthBar2.className = 'h-full rounded-full bg-border';
+      strengthBar3.className = 'h-full rounded-full bg-border';
+    }
+  }
 
   // Validation rules
   const validationRules: Record<string, (value: string) => string | null> = {
+    businessName: (value) => {
+      if (!value.trim()) return 'Organization or business name is required';
+      if (value.trim().length < 2) return 'Business name must be at least 2 characters';
+      return null;
+    },
     fullName: (value) => {
-      if (!value.trim()) return 'Full name is required';
-      if (value.trim().length < 2) return 'Full name must be at least 2 characters';
+      if (!value.trim()) return 'Administrator full name is required';
+      if (value.trim().length < 2) return 'Name must be at least 2 characters';
       return null;
     },
     registerEmail: (value) => {
-      if (!value.trim()) return 'Email is required';
+      if (!value.trim()) return 'Email address is required';
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(value)) return 'Please enter a valid email address';
       return null;
@@ -202,180 +835,420 @@ const { action = '', method = 'POST', netlify = false, redirectUrl = '/dashboard
     registerPassword: (value) => {
       if (!value) return 'Password is required';
       if (value.length < 8) return 'Password must be at least 8 characters';
+      const email = (document.getElementById('registerEmail') as HTMLInputElement)?.value;
+      const strength = evaluatePasswordEntropy(value, email);
+      updateStrengthUI(strength);
+      if (strength === 'weak') {
+        return 'Password is too common or easily guessed. Choose a more secure password.';
+      }
+      return null;
+    },
+    confirmPassword: (value) => {
+      if (!value) return 'Please confirm your password';
+      const original = passwordInput?.value;
+      if (original && value !== original) return 'Passwords do not match';
       return null;
     },
   };
 
-  // Checkbox validation (separate because it's a boolean)
   function validateCheckbox(): string | null {
     const checkbox = document.getElementById('agreeTerms') as HTMLInputElement;
-    if (!checkbox.checked) {
-      return 'You must agree to the Terms of Service and Privacy Policy';
+    if (!checkbox?.checked) {
+      return 'You must agree to the Terms of Service and Privacy Policy to proceed';
     }
     return null;
   }
 
-  // Show/hide error message
   function showError(fieldName: string, message: string | null) {
     const errorEl = document.querySelector(`#register-form [data-error="${fieldName}"]`);
-    const inputEl = document.getElementById(fieldName);
-
+    const inputEl = document.getElementById(fieldName) as HTMLInputElement | null;
     if (errorEl) {
       if (message) {
         errorEl.textContent = message;
         errorEl.classList.remove('hidden');
         if (inputEl) {
-          inputEl.classList.add('border-red-500');
-          inputEl.classList.remove('border-border');
+          inputEl.classList.add('border-error', 'focus:border-error', 'focus:ring-error/20');
+          inputEl.setAttribute('aria-invalid', 'true');
         }
       } else {
         errorEl.classList.add('hidden');
         if (inputEl) {
-          inputEl.classList.remove('border-red-500');
-          inputEl.classList.add('border-border');
+          inputEl.classList.remove('border-error', 'focus:border-error', 'focus:ring-error/20');
+          inputEl.removeAttribute('aria-invalid');
         }
       }
     }
   }
 
-  // Validate single field
-  function validateField(fieldName: string): boolean {
+  function validateField(fieldName: string, force: boolean = false): boolean {
+    if (!force && !touchedFields.has(fieldName)) return true;
+
     if (fieldName === 'agreeTerms') {
       const error = validateCheckbox();
       showError('agreeTerms', error);
       return !error;
     }
-
-    const input = form.elements.namedItem(
-      fieldName === 'registerEmail'
-        ? 'email'
-        : fieldName === 'registerPassword'
-          ? 'password'
-          : fieldName
-    ) as HTMLInputElement;
+    const input = document.getElementById(fieldName) as HTMLInputElement | null;
     if (!input || !validationRules[fieldName]) return true;
-
     const error = validationRules[fieldName](input.value);
     showError(fieldName, error);
     return !error;
   }
 
-  // Validate all fields
-  function validateForm(): boolean {
-    let isValid = true;
-    for (const fieldName of Object.keys(validationRules)) {
-      if (!validateField(fieldName)) {
-        isValid = false;
-      }
+  function validateStep1(): boolean {
+    const step1Fields = ['businessName', 'fullName', 'registerEmail'];
+    let valid = true;
+    for (const f of step1Fields) {
+      touchedFields.add(f);
+      if (!validateField(f, true)) valid = false;
     }
-    // Validate checkbox
-    if (!validateField('agreeTerms')) {
-      isValid = false;
-    }
-    return isValid;
+    return valid;
   }
 
-  // Real-time validation on blur
-  for (const fieldName of Object.keys(validationRules)) {
-    const inputId = fieldName;
-    const input = document.getElementById(inputId) as HTMLInputElement | null;
-    if (input && 'addEventListener' in input) {
-      input.addEventListener('blur', () => validateField(fieldName));
-      input.addEventListener('input', () => {
-        // Clear error on input if field was previously invalid
-        const errorEl = document.querySelector(`#register-form [data-error="${fieldName}"]`);
-        if (errorEl && !errorEl.classList.contains('hidden')) {
-          validateField(fieldName);
-        }
-      });
+  function validateStep2(): boolean {
+    let valid = true;
+    touchedFields.add('registerPassword');
+    touchedFields.add('confirmPassword');
+    touchedFields.add('agreeTerms');
+    if (!validateField('registerPassword', true)) valid = false;
+    if (!validateField('confirmPassword', true)) valid = false;
+    if (!validateField('agreeTerms', true)) valid = false;
+    return valid;
+  }
+
+  // =====================================================================
+  // STEP TRANSITION ENGINE
+  // =====================================================================
+  let currentStep = 1;
+
+  function goToStep(step: number) {
+    if (step === 2) {
+      if (!validateStep1()) {
+        const firstError = step1Container?.querySelector('[aria-invalid="true"]') as HTMLElement;
+        firstError?.focus();
+        return;
+      }
+      currentStep = 2;
+      step1Container?.classList.add('hidden');
+      step2Container?.classList.remove('hidden');
+
+      // Update indicators
+      if (progressBar) progressBar.style.width = '100%';
+      if (mobileStepLabel) mobileStepLabel.textContent = 'Step 2 of 2: Security & plan';
+
+      if (step1Badge) {
+        step1Badge.className =
+          'w-6 h-6 rounded-full bg-success text-white flex items-center justify-center text-xs font-bold shadow-xs';
+        step1Badge.innerHTML =
+          '<svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>';
+      }
+      if (step2Badge) {
+        step2Badge.className =
+          'w-6 h-6 rounded-full bg-primary text-white flex items-center justify-center text-xs font-bold shadow-xs';
+      }
+      if (step2Indicator) {
+        step2Indicator.className =
+          'flex items-center gap-2 text-xs font-semibold text-primary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded px-1.5 py-0.5 cursor-pointer';
+      }
+
+      passwordInput?.focus();
+    } else {
+      currentStep = 1;
+      step2Container?.classList.add('hidden');
+      step1Container?.classList.remove('hidden');
+
+      // Update indicators
+      if (progressBar) progressBar.style.width = '50%';
+      if (mobileStepLabel) mobileStepLabel.textContent = 'Step 1 of 2: Organization details';
+
+      if (step1Badge) {
+        step1Badge.className =
+          'w-6 h-6 rounded-full bg-primary text-white flex items-center justify-center text-xs font-bold shadow-xs';
+        step1Badge.textContent = '1';
+      }
+      if (step2Badge) {
+        step2Badge.className =
+          'w-6 h-6 rounded-full bg-surface border border-border text-text-muted flex items-center justify-center text-xs font-bold';
+        step2Badge.textContent = '2';
+      }
+      if (step2Indicator) {
+        step2Indicator.className =
+          'flex items-center gap-2 text-xs font-medium text-text-muted transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded px-1.5 py-0.5 cursor-pointer';
+      }
     }
   }
 
-  // Checkbox validation on change
-  const agreeTermsCheckbox = document.getElementById('agreeTerms') as HTMLInputElement;
-  agreeTermsCheckbox?.addEventListener('change', () => validateField('agreeTerms'));
+  // Event Listeners for Step Controls
+  btnContinueStep1?.addEventListener('click', () => goToStep(2));
+  btnBackStep2?.addEventListener('click', () => goToStep(1));
+  btnBackHeader?.addEventListener('click', () => goToStep(1));
 
-  // Form submission
-  form.addEventListener('submit', async (e) => {
-    e.preventDefault();
+  step1Indicator?.addEventListener('click', () => goToStep(1));
+  step2Indicator?.addEventListener('click', () => {
+    if (currentStep === 1) goToStep(2);
+  });
 
-    // Hide previous status messages
-    formStatus?.classList.add('hidden');
-    formSuccess?.classList.add('hidden');
-    formError?.classList.add('hidden');
-
-    // Validate form
-    if (!validateForm()) {
-      // Focus first invalid field
-      const firstError = form.querySelector('.border-red-500') as HTMLElement;
-      if (firstError) {
-        firstError.focus();
-      } else {
-        // If no input has error border, focus the checkbox error
-        const checkboxError = document.querySelector('#register-form [data-error="agreeTerms"]');
-        if (checkboxError && !checkboxError.classList.contains('hidden')) {
-          agreeTermsCheckbox?.focus();
+  // Real-time blur & input event bindings: mark touched only on blur
+  const allFieldNames = [
+    'businessName',
+    'fullName',
+    'registerEmail',
+    'registerPassword',
+    'confirmPassword',
+  ];
+  for (const fieldName of allFieldNames) {
+    const input = document.getElementById(fieldName);
+    input?.addEventListener('blur', () => {
+      touchedFields.add(fieldName);
+      validateField(fieldName);
+    });
+    input?.addEventListener('input', () => {
+      const errorEl = document.querySelector(`#register-form [data-error="${fieldName}"]`);
+      if (errorEl && !errorEl.classList.contains('hidden')) {
+        validateField(fieldName);
+      }
+      if (fieldName === 'registerPassword') {
+        const val = (input as HTMLInputElement).value;
+        const email = (document.getElementById('registerEmail') as HTMLInputElement)?.value;
+        if (val) {
+          updateStrengthUI(evaluatePasswordEntropy(val, email));
+        }
+        if (confirmPasswordInput?.value) {
+          validateField('confirmPassword');
         }
       }
-      return;
-    }
+    });
+  }
 
-    // Show loading state
-    submitButton.disabled = true;
-    buttonText?.classList.add('hidden');
-    buttonLoading?.classList.remove('hidden');
+  const agreeTermsCheckbox = document.getElementById('agreeTerms');
+  agreeTermsCheckbox?.addEventListener('change', () => {
+    touchedFields.add('agreeTerms');
+    validateField('agreeTerms');
+  });
 
-    const formData = new FormData(form);
-    const action = form.action;
+  // =====================================================================
+  // FORM SUBMISSION, SAGA POLLING & HARDENED FETCH
+  // =====================================================================
+  if (form) {
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
 
-    try {
-      // If no action URL, simulate success (demo mode)
-      if (!action || action === window.location.href) {
-        await new Promise((resolve) => setTimeout(resolve, 1500));
-        showSuccess();
+      formStatus?.classList.add('hidden');
+      formSuccess?.classList.add('hidden');
+      formError?.classList.add('hidden');
+
+      // 1. Honeypot anti-bot verification
+      const gotcha = (form.querySelector('input[name="_gotcha"]') as HTMLInputElement)?.value;
+      if (gotcha) return;
+
+      // 2. Validate all fields across both steps
+      const isStep1Valid = validateStep1();
+      const isStep2Valid = validateStep2();
+
+      if (!isStep1Valid) {
+        goToStep(1);
+        const firstError = step1Container?.querySelector('[aria-invalid="true"]') as HTMLElement;
+        firstError?.focus();
         return;
       }
 
-      // Submit to actual endpoint
-      const response = await fetch(action, {
-        method: form.method || 'POST',
-        body: formData,
-        headers: {
-          Accept: 'application/json',
-        },
-      });
-
-      if (response.ok) {
-        showSuccess();
-      } else {
-        showErrorState();
+      if (!isStep2Valid) {
+        const firstError = step2Container?.querySelector('[aria-invalid="true"]') as HTMLElement;
+        firstError?.focus();
+        return;
       }
-    } catch {
-      showErrorState();
-    }
-  });
 
-  function showSuccess() {
-    formStatus?.classList.remove('hidden');
-    formSuccess?.classList.remove('hidden');
-    resetButtonState();
+      // 3. UI In-Flight Lock
+      submitButton.disabled = true;
+      form.setAttribute('aria-busy', 'true');
+      buttonText?.classList.add('hidden');
+      buttonLoading?.classList.remove('hidden');
+      buttonLoading?.classList.add('inline-flex');
 
-    // Redirect after showing success message
-    const redirectUrl = form.dataset.redirect || '/';
-    setTimeout(() => {
-      window.location.href = redirectUrl;
-    }, 1500);
+      // 4. Gather Payload
+      const businessName = (
+        document.getElementById('businessName') as HTMLInputElement
+      ).value.trim();
+      const fullName = (document.getElementById('fullName') as HTMLInputElement).value.trim();
+      const email = (document.getElementById('registerEmail') as HTMLInputElement).value
+        .trim()
+        .toLowerCase();
+      const phone = (document.getElementById('registerPhone') as HTMLInputElement).value.trim();
+      const password = (document.getElementById('registerPassword') as HTMLInputElement).value;
+      const planId = planInput?.value || 'growth';
+
+      const payload = {
+        businessName,
+        fullName,
+        email,
+        phone,
+        password,
+        planId,
+      };
+
+      // 5. Durable Idempotency-Key
+      let idempotencyKey = sessionStorage.getItem('markchat_reg_idempotency_key');
+      if (!idempotencyKey) {
+        idempotencyKey = 'reg_' + Date.now() + '_' + Math.random().toString(36).substring(2, 11);
+        sessionStorage.setItem('markchat_reg_idempotency_key', idempotencyKey);
+      }
+
+      const apiUrl = form.dataset.apiUrl || 'http://localhost:5000';
+      const interval =
+        (document.getElementById('billingInterval') as HTMLInputElement)?.value === 'annual'
+          ? 'annual'
+          : 'monthly';
+      const redirectTarget =
+        '/billing?plan=' + encodeURIComponent(planId) + '&interval=' + interval;
+
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 15000);
+
+      try {
+        if (loadingStatus) loadingStatus.textContent = 'Initializing workspace...';
+
+        const response = await fetch(`${apiUrl}/api/v1/registration`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+            'Idempotency-Key': idempotencyKey,
+          },
+          body: JSON.stringify(payload),
+          signal: controller.signal,
+        });
+
+        clearTimeout(timeoutId);
+
+        if (response.status === 429) {
+          const retryAfter = response.headers.get('Retry-After') || '60';
+          showFormError(
+            `Too many registration requests. Please wait ${retryAfter} seconds before trying again.`
+          );
+          return;
+        }
+
+        if (!response.ok) {
+          const errData = await response.json().catch(() => ({}));
+          const safeMessage =
+            typeof errData.message === 'string' && !errData.message.includes('stack')
+              ? errData.message
+              : 'Workspace registration failed. Please verify your details and try again.';
+          showFormError(safeMessage);
+          return;
+        }
+
+        const envelope = await response.json();
+        const data = envelope.data || envelope;
+        const registrationId = data.registrationId;
+
+        // 6. Fast-path completion or polling
+        if (data.status === 'completed' && data.ssoUrl) {
+          sessionStorage.removeItem('markchat_reg_idempotency_key');
+          completeRegistration(redirectTarget);
+          return;
+        }
+
+        if (registrationId) {
+          await pollRegistrationStatus(apiUrl, registrationId, redirectTarget);
+        } else {
+          showFormError(
+            'The registration service returned no tracking reference. Contact support before retrying.'
+          );
+        }
+      } catch (err: unknown) {
+        clearTimeout(timeoutId);
+        if (err instanceof Error && err.name === 'AbortError') {
+          showFormError(
+            'The registration request timed out. Please check your network connection.'
+          );
+          return;
+        }
+        showFormError(
+          'Unable to connect to registration service. Please verify your internet connection and try again.'
+        );
+      }
+    });
   }
 
-  function showErrorState() {
+  async function pollRegistrationStatus(
+    apiUrl: string,
+    registrationId: string,
+    redirectTarget: string
+  ) {
+    let attempts = 0;
+    const maxAttempts = 30; // 60 seconds at 2s interval
+    const intervalMs = 2000;
+
+    const poll = async () => {
+      attempts++;
+      if (loadingStatus) {
+        loadingStatus.textContent = `Provisioning resources (${attempts}/${maxAttempts})...`;
+      }
+
+      try {
+        const res = await fetch(`${apiUrl}/api/v1/registration/${registrationId}`, {
+          headers: { Accept: 'application/json' },
+        });
+
+        if (res.ok) {
+          const envelope = await res.json();
+          const statusData = envelope.data || envelope;
+          if (statusData.status === 'completed') {
+            sessionStorage.removeItem('markchat_reg_idempotency_key');
+            completeRegistration(redirectTarget);
+            return;
+          }
+          if (statusData.status === 'failed') {
+            sessionStorage.removeItem('markchat_reg_idempotency_key');
+            const safeMsg =
+              typeof statusData.error === 'string' && !statusData.error.includes('stack')
+                ? statusData.error
+                : 'Provisioning could not be completed. Our team has been alerted.';
+            showFormError(safeMsg);
+            return;
+          }
+        }
+      } catch {
+        // Continue polling until maxAttempts
+      }
+
+      if (attempts < maxAttempts) {
+        setTimeout(poll, intervalMs);
+      } else {
+        sessionStorage.removeItem('markchat_reg_idempotency_key');
+        showFormError(
+          'Workspace provisioning is taking longer than usual. Please check your email for access instructions.'
+        );
+      }
+    };
+
+    setTimeout(poll, intervalMs);
+  }
+
+  function completeRegistration(redirectTarget: string) {
+    formStatus?.classList.remove('hidden');
+    formSuccess?.classList.remove('hidden');
+    // Registration alone does not establish an authenticated Control Plane session.
+    const destination = '/login?redirect=' + encodeURIComponent(redirectTarget);
+    setTimeout(() => {
+      window.location.href = destination;
+    }, 1200);
+  }
+
+  function showFormError(message: string) {
     formStatus?.classList.remove('hidden');
     formError?.classList.remove('hidden');
+    const errText = document.getElementById('register-error-text');
+    if (errText) errText.textContent = message;
     resetButtonState();
   }
 
   function resetButtonState() {
     submitButton.disabled = false;
+    form.removeAttribute('aria-busy');
     buttonText?.classList.remove('hidden');
     buttonLoading?.classList.add('hidden');
+    buttonLoading?.classList.remove('inline-flex');
   }
 </script>

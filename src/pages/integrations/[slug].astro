@@ -1,0 +1,232 @@
+---
+/**
+ * Dynamic Integration Detail Page (CMS-Driven)
+ */
+import MarketingLayout from '@/layouts/MarketingLayout.astro';
+import ProductOperations from '@/components/enterprise/ProductOperations.astro';
+import ComplianceRail from '@/components/enterprise/ComplianceRail.astro';
+import { Icon } from 'astro-icon/components';
+import IntegrationIcon from '@/components/ui/IntegrationIcon.astro';
+import { fetchIntegrations, type MarketingIntegration } from '@/lib/cms-api';
+import CTA from '@sections/marketing/CTA.astro';
+
+export async function getStaticPaths() {
+  const list = await fetchIntegrations();
+  return list.map((item) => ({
+    params: { slug: item.slug },
+    props: { integration: item, allIntegrations: list },
+  }));
+}
+
+interface Props {
+  integration: MarketingIntegration;
+  allIntegrations: MarketingIntegration[];
+}
+
+const { integration, allIntegrations } = Astro.props;
+const otherIntegrations = allIntegrations.filter((i) => i.slug !== integration.slug);
+---
+
+<MarketingLayout
+  title={`${integration.name} Integration - MarkChat Kenya`}
+  description={integration.shortDescription}
+>
+  <!-- Hero Section -->
+  <section class="py-16 sm:py-24 bg-surface border-b border-border">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <!-- Breadcrumb -->
+      <nav class="flex items-center gap-2 text-xs text-text-muted mb-8" aria-label="Breadcrumb">
+        <a href="/" class="hover:text-text">Home</a>
+        <Icon name="lucide:chevron-right" class="w-3.5 h-3.5" />
+        <a href="/integrations" class="hover:text-text">Integrations</a>
+        <Icon name="lucide:chevron-right" class="w-3.5 h-3.5" />
+        <span class="text-text font-medium">{integration.name}</span>
+      </nav>
+
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-8">
+        <div class="max-w-3xl">
+          <div class="flex items-center gap-3 mb-4">
+            <IntegrationIcon
+              iconKey={integration.iconKey}
+              logoUrl={integration.logoUrl}
+              name={integration.name}
+              size="lg"
+            />
+            <span
+              class="px-2.5 py-1 rounded-full text-xs font-semibold bg-surface-hover text-text border border-border"
+            >
+              {integration.category}
+            </span>
+            {
+              integration.isPopular && (
+                <span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-primary/10 text-primary border border-primary/20">
+                  Popular
+                </span>
+              )
+            }
+          </div>
+          <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-text tracking-tight">
+            {integration.name}
+          </h1>
+          <p class="mt-4 text-lg text-text-muted leading-relaxed">
+            {integration.shortDescription}
+          </p>
+        </div>
+
+        <div class="flex flex-col sm:flex-row md:flex-col gap-3 shrink-0">
+          <a
+            href={`/register`}
+            class="inline-flex items-center justify-center px-6 py-3 rounded-xl bg-primary text-white font-semibold text-sm hover:opacity-90 transition-opacity shadow-none"
+          >
+            <span>Connect {integration.name}</span>
+            <Icon name="lucide:arrow-right" class="w-4 h-4 ml-2" />
+          </a>
+          <a
+            href="/demo"
+            class="inline-flex items-center justify-center px-6 py-3 rounded-xl bg-background border border-border text-text font-semibold text-sm hover:bg-surface-hover transition-colors"
+          >
+            Book Live Demo
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 1: Overview -->
+  <section class="py-16 bg-background border-b border-border">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="prose prose-invert max-w-none text-text-muted leading-relaxed">
+        <h2 class="text-2xl font-bold text-text mb-4">Architectural Overview</h2>
+        <div class="whitespace-pre-line text-base">
+          {integration.overview.trim()}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 2: How It Works Inside MarkChat (3-Step Breakdown) -->
+  <section class="py-16 sm:py-20 bg-surface border-b border-border">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="mb-10 text-center md:text-left">
+        <span class="text-xs font-mono font-semibold text-primary uppercase">Execution Flow</span>
+        <h2 class="text-2xl sm:text-3xl font-bold text-text mt-1">How It Works Inside MarkChat</h2>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {
+          integration.howItWorksSteps.map((step, idx) => (
+            <div class="flex flex-col p-6 rounded-xl bg-surface border border-border">
+              <div class="w-9 h-9 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-sm shrink-0 border border-primary/20 mb-4">
+                0{idx + 1}
+              </div>
+              <h3 class="text-base font-bold text-text mb-2">Step {idx + 1}</h3>
+              <p class="text-xs sm:text-sm text-text-muted leading-relaxed">{step}</p>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 3: Business Benefits for Kenyan Merchants (4 ROI Bullets) -->
+  <section class="py-16 sm:py-20 bg-background border-b border-border">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="mb-10 text-center md:text-left">
+        <span class="text-xs font-mono font-semibold text-emerald-400 uppercase"
+          >Operational ROI</span
+        >
+        <h2 class="text-2xl sm:text-3xl font-bold text-text mt-1">
+          Business Benefits for Kenyan Merchants
+        </h2>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {
+          integration.businessBenefits.map((benefit) => (
+            <div class="flex items-start gap-4 p-6 rounded-xl bg-surface border border-border">
+              <div class="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-500/20">
+                <Icon name="lucide:check" class="w-4 h-4" />
+              </div>
+              <p class="text-sm text-text font-medium leading-relaxed">{benefit}</p>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 4: Setup Requirements -->
+  {
+    integration.setupRequirements && (
+      <section class="py-12 bg-surface border-b border-border">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="p-6 rounded-xl border border-border bg-surface flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+            <div>
+              <h3 class="text-base font-bold text-text">Setup Prerequisites</h3>
+              <p class="text-xs text-text-muted mt-1">{integration.setupRequirements}</p>
+            </div>
+            <a href={`/register`} class="btn btn-primary text-xs shrink-0">
+              Start Configuration
+            </a>
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  <!-- Explore Other Integrations -->
+  <section class="py-16 bg-background">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between mb-8">
+        <h2 class="text-xl font-bold text-text">Related Kenyan Integrations</h2>
+        <a href="/integrations" class="text-xs font-semibold text-primary hover:underline">
+          View all integrations &rarr;
+        </a>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+        {
+          otherIntegrations.slice(0, 3).map((item) => (
+            <a
+              href={`/integrations/${item.slug}`}
+              class="p-4 rounded-xl bg-surface border border-border hover:border-primary transition-all group"
+            >
+              <div class="flex items-center gap-3">
+                <IntegrationIcon
+                  iconKey={item.iconKey}
+                  logoUrl={item.logoUrl}
+                  name={item.name}
+                  size="sm"
+                />
+                <div class="min-w-0 flex-1">
+                  <h3 class="text-sm font-semibold text-text group-hover:text-primary transition-colors truncate">
+                    {item.name}
+                  </h3>
+                  <p class="text-xs text-text-muted truncate">{item.category}</p>
+                </div>
+              </div>
+            </a>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <CTA
+    title={`Ready to connect ${integration.name}?`}
+    description="Launch your MarkChat workspace to unify customer conversations, mobile money payments, and support channels."
+    action={{ label: 'Get Started with MarkChat', href: `/register` }}
+    background="muted"
+  />
+  <ProductOperations
+    kind={integration.slug.includes('sms') || integration.slug.includes('africas')
+      ? 'sms'
+      : integration.slug.includes('mpesa') ||
+          integration.slug.includes('pochi') ||
+          integration.slug.includes('paybill')
+        ? 'payments'
+        : 'inbox'}
+    title={`Integration workflow: ${integration.name}`}
+  />
+  <ComplianceRail condensed />
+</MarketingLayout>

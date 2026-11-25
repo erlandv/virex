@@ -1,122 +1,209 @@
 ---
+import MCResponsiveHeroMedia from '@/components/design-system/MCResponsiveHeroMedia.astro';
 import MarketingLayout from '@/layouts/MarketingLayout.astro';
-import PageHeader from '@sections/content/PageHeader.astro';
-import StatsSection from '@sections/social-proof/StatsSection.astro';
-import VideoEmbed from '@sections/content/VideoEmbed.astro';
-import ValuesSection from '@sections/team/ValuesSection.astro';
-import TeamSection from '@sections/team/TeamSection.astro';
-import ContentSection from '@sections/content/ContentSection.astro';
+import ComplianceRail from '@/components/enterprise/ComplianceRail.astro';
 import CTA from '@sections/marketing/CTA.astro';
+import { fetchHeroMediaSettings } from '@/lib/cms-api';
+import { Icon } from 'astro-icon/components';
 import { siteConfig } from '@/config';
 
-const team = [
+const pillars = [
   {
-    name: 'Sarah Mitchell',
-    role: 'CEO & Co-founder',
-    bio: 'Former infrastructure lead at a major cloud provider. Sarah started Virex to make deployment accessible to every developer.',
-    avatar: '/images/team/sarah-mitchell.webp',
+    icon: 'lucide:message-square-text',
+    eyebrow: 'Business communication',
+    title: 'Conversations before dashboards',
+    detail:
+      'Real teams need customer context, clear ownership, a useful history and practical handoff rules—not another silo.',
   },
   {
-    name: 'James Chen',
-    role: 'CTO & Co-founder',
-    bio: 'Built distributed systems at scale for 15 years. James leads our engineering team and architecture decisions.',
-    avatar: '/images/team/james-chen.webp',
+    icon: 'lucide:receipt-text',
+    eyebrow: 'Kenyan payments',
+    title: 'Verification before fulfilment',
+    detail:
+      'Payment confirmation should be based on approved merchant integrations and reconciled references, not forwarded screenshots.',
   },
   {
-    name: 'Maria Rodriguez',
-    role: 'VP of Product',
-    bio: 'Product leader with a passion for developer tools. Maria ensures every feature we ship solves real problems.',
-    avatar: '/images/team/maria-rodriguez.webp',
+    icon: 'lucide:shield-check',
+    eyebrow: 'Data stewardship',
+    title: 'Trust requires controls',
+    detail:
+      'Principles include restricted access, auditability, consent awareness and responsible handling of merchant and customer information.',
   },
   {
-    name: 'David Kim',
-    role: 'VP of Engineering',
-    bio: 'Scaling expert who loves building reliable systems. David leads our platform and infrastructure teams.',
-    avatar: '/images/team/david-kim.webp',
-  },
-];
-
-const values = [
-  {
-    title: 'Developer First',
-    description:
-      'We build for developers because we are developers. Every decision starts with how it impacts the people using our platform.',
-  },
-  {
-    title: 'Simplicity Wins',
-    description:
-      'Complex problems deserve simple solutions. We work hard to hide complexity so you can focus on building.',
-  },
-  {
-    title: 'Reliability Matters',
-    description:
-      'Your users depend on your app, and you depend on us. We take that responsibility seriously.',
-  },
-  {
-    title: 'Transparency Always',
-    description:
-      'No hidden fees, no surprise limits, no confusing pricing. What you see is what you get.',
+    icon: 'lucide:layers',
+    eyebrow: 'Composable architecture',
+    title: 'Clear service boundaries',
+    detail:
+      'Recurring Core workspace subscriptions remain separate from prepaid SMS messaging and telco requirements.',
   },
 ];
 
-const stats = [
-  { value: '50K+', label: 'Developers' },
-  { value: '10M+', label: 'Deployments' },
-  { value: '99.99%', label: 'Uptime' },
-  { value: '200+', label: 'Edge Locations' },
+const approach = [
+  {
+    number: '01',
+    title: 'Understand Kenyan workflow',
+    detail:
+      'Study the actual path from inquiry to payment, delivery, follow-up and customer support.',
+  },
+  {
+    number: '02',
+    title: 'Configure each integration',
+    detail:
+      'Validate merchant permissions, Meta or telco requirements, data flows and failure states.',
+  },
+  {
+    number: '03',
+    title: 'Measure operational outcomes',
+    detail:
+      'Define response-time, reconciliation and channel-health metrics before making performance claims.',
+  },
 ];
+const editorialHero = await fetchHeroMediaSettings('about');
 ---
 
 <MarketingLayout
-  title={`About - ${siteConfig.name}`}
-  description="Learn about the team and mission behind Virex, the modern deployment platform for developers."
+  title={`About Us — ${siteConfig.name}`}
+  description="About MarkChat’s Nairobi-rooted business communication mission, engineering approach, merchant payment integrations and privacy principles."
 >
-  <PageHeader title="We're building the future of deployment" align="left" maxWidth="lg">
-    <p class="mt-6 text-lg text-text-muted leading-relaxed">
-      Virex started with a simple observation: deploying applications shouldn't be hard. Yet
-      developers everywhere were spending hours configuring CI/CD pipelines, managing
-      infrastructure, and debugging deployment issues.
-    </p>
-    <p class="mt-4 text-lg text-text-muted leading-relaxed">
-      We founded Virex in 2021 to change that. Our mission is to make deployment so simple that it
-      disappears—letting developers focus entirely on building great products.
-    </p>
-  </PageHeader>
-
-  <StatsSection stats={stats} background="muted" />
-
-  <VideoEmbed
-    title="See Virex in action"
-    subtitle="Watch how easy it is to deploy your first application in under 2 minutes."
-    videoId="dQw4w9WgXcQ"
-    provider="youtube"
-    maxWidth="lg"
-    background="default"
-  />
-
-  <ValuesSection
-    title="Our values"
-    items={values}
-    variant="card"
-    columns={2}
-    background="default"
-  />
-
-  <TeamSection title="Meet the team" members={team} columns={4} background="muted" />
-
-  <ContentSection
-    title="Backed by the best"
-    content={[
-      "We're proud to be backed by leading investors who share our vision for the future of developer tools. Our investors include top-tier venture capital firms and angels who have built and scaled developer-focused companies.",
-      "With their support, we're building a platform that will serve millions of developers worldwide.",
-    ]}
-    background="default"
-  />
-
+  <section
+    class="relative pt-20 pb-20 sm:pt-28 sm:pb-28 bg-background border-b border-border overflow-hidden"
+  >
+    <div
+      class="absolute -top-56 left-1/2 -translate-x-1/2 w-[900px] h-[600px] rounded-full hidden bg-primary/5 pointer-events-none"
+      aria-hidden="true"
+    >
+    </div>
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="max-w-3xl">
+        <span
+          class="inline-flex text-xs font-bold tracking-wider uppercase bg-primary/10 text-primary px-3 py-1.5 rounded-lg border border-primary/15"
+          >Nairobi roots · African ambition</span
+        >
+        <h1
+          class="text-4xl sm:text-5xl lg:text-6xl text-text tracking-tight font-extrabold mt-7 leading-tight"
+        >
+          Business conversations deserve enterprise-grade clarity.
+        </h1>
+        <p class="text-lg text-text-muted leading-relaxed mt-7">
+          MarkChat is being built around the everyday realities of Kenyan commerce: WhatsApp
+          customer questions, team assignments, approved SMS communications and M-Pesa
+          reconciliation. The goal is straightforward—help teams see the next action, understand its
+          status and retain the right context.
+        </p>
+        <div class="flex flex-wrap gap-3 mt-9">
+          <a
+            href="/demo"
+            class="inline-flex items-center justify-center gap-2 rounded-lg px-6 py-3.5 font-semibold text-white bg-primary hover:opacity-90"
+            >Talk with our team <Icon name="lucide:arrow-up-right" class="w-4 h-4" /></a
+          >
+          <a
+            href="/product"
+            class="inline-flex items-center justify-center rounded-lg px-6 py-3.5 font-semibold text-text border border-border hover:bg-surface"
+            >Explore product architecture</a
+          >
+        </div>
+      </div>
+    </div>
+    <div class="relative mx-auto mt-8 max-w-7xl px-4 sm:px-6 lg:px-8">
+      <MCResponsiveHeroMedia page="about" settings={editorialHero} />
+    </div>
+  </section>
+  <section
+    class="py-16 sm:py-24 bg-surface border-b border-border"
+    aria-labelledby="mission-heading"
+  >
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid lg:grid-cols-[0.82fr_1.18fr] gap-10 lg:gap-16">
+        <div>
+          <p class="text-xs uppercase tracking-widest font-bold text-primary">
+            Our engineering mission
+          </p><h2
+            id="mission-heading"
+            class="text-3xl sm:text-4xl font-bold tracking-tight text-text mt-3"
+          >
+            Local context. Disciplined systems thinking.
+          </h2><p class="text-text-muted mt-5 leading-relaxed">
+            We design for teams that depend on communication every working day. That means
+            acknowledging the limitations of third-party channels, building legible failure states,
+            and distinguishing shipped capabilities from planned integrations.
+          </p>
+        </div>
+        <div class="grid sm:grid-cols-2 gap-4">
+          {
+            pillars.map((item) => (
+              <article class="p-6 bg-background border border-border rounded-xl">
+                <>
+                  <div class="inline-flex w-10 h-10 bg-primary/10 text-primary justify-center items-center rounded-lg">
+                    <Icon name={item.icon} class="w-5 h-5" />
+                  </div>
+                  <p class="text-xs text-primary uppercase tracking-wider font-semibold mt-6">
+                    {item.eyebrow}
+                  </p>
+                  <h3 class="text-lg font-bold text-text mt-2">{item.title}</h3>
+                  <p class="text-sm text-text-muted leading-relaxed mt-3">{item.detail}</p>
+                </>
+              </article>
+            ))
+          }
+        </div>
+      </div>
+    </div>
+  </section>
+  <section
+    class="py-16 sm:py-24 bg-background border-b border-border"
+    aria-labelledby="approach-heading"
+  >
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <p class="text-xs uppercase tracking-wider font-bold text-primary">
+        How we approach deployments
+      </p><h2
+        id="approach-heading"
+        class="text-3xl sm:text-4xl font-bold tracking-tight text-text mt-3"
+      >
+        From discovery to a documented handoff.
+      </h2>
+      <div class="grid md:grid-cols-3 gap-4 mt-10">
+        {
+          approach.map((item) => (
+            <article class="p-7 rounded-xl border border-border bg-surface">
+              <>
+                <span class="font-mono text-sm text-primary font-bold">{item.number} / 03</span>
+                <h3 class="font-bold text-lg text-text mt-7">{item.title}</h3>
+                <p class="mt-3 text-sm text-text-muted leading-relaxed">{item.detail}</p>
+              </>
+            </article>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+  <ComplianceRail heading="Kenyan obligations, built into the design conversation" />
+  <section class="py-16 sm:py-20 bg-surface border-b border-border">
+    <div
+      class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row md:items-center md:justify-between gap-6"
+    >
+      <div>
+        <p class="text-xs uppercase tracking-widest font-bold text-primary">
+          Enterprise inquiries
+        </p><h2 class="text-2xl sm:text-3xl font-bold text-text mt-2">
+          Need to discuss your own Paybill, Till, Sender ID or CRM?
+        </h2><p class="text-sm text-text-muted mt-3 max-w-2xl">
+          Share your requirements with the team. Integration and carrier approval are scoped and
+          verified case by case.
+        </p>
+      </div>
+      <a
+        href="/contact"
+        class="inline-flex items-center gap-2 justify-center shrink-0 bg-primary text-white rounded-lg py-3 px-6 text-sm font-semibold"
+        >Contact MarkChat <Icon name="lucide:arrow-up-right" class="w-4 h-4" /></a
+      >
+    </div>
+  </section>
   <CTA
-    title="Join us on our mission"
-    description="We're always looking for talented people who want to make deployment better for everyone."
-    action={{ label: 'View Open Positions', href: '/careers' }}
-    background="muted"
+    title="Build a clearer customer communication journey."
+    description="Explore the Core subscription options or discuss an integration with our Nairobi team."
+    action={{ label: 'Explore Plans', href: '/pricing' }}
+    secondaryAction={{ label: 'Book a Technical Demo', href: '/demo' }}
+    background="default"
   />
 </MarketingLayout>

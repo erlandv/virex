@@ -1,0 +1,156 @@
+---
+/**
+ * OAuth Callback Page - Handles Google OAuth 2.0 + PKCE return
+ *
+ * Implemented using AuthLayout with noindex.
+ * Consumes hash fragment tokens (#token=...&ssoUrl=...&redirect=...&isNew=...)
+ * immediately scrubbing them from browser history via replaceState to prevent Referer
+ * or history token leakage (CWE-598).
+ */
+import AuthLayout from '@/layouts/AuthLayout.astro';
+---
+
+<AuthLayout
+  title="Signing in with Google | MarkChat"
+  description="Completing Google authentication and workspace session initialization."
+  pageType="login"
+  noindex={true}
+>
+  <div class="w-full max-w-md mx-auto">
+    <div class="bg-surface border border-border rounded-2xl p-6 sm:p-8 shadow-sm">
+      <!-- Loading State -->
+      <div id="oauth-loading-state" class="text-center py-6 space-y-4">
+        <div class="flex justify-center">
+          <svg
+            class="animate-spin w-10 h-10 text-primary"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            aria-hidden="true"
+          >
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"
+            ></circle>
+            <path
+              class="opacity-75"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+            ></path>
+          </svg>
+        </div>
+        <div>
+          <h1 class="text-lg font-semibold text-text">Completing Google sign-in...</h1>
+          <p class="text-xs text-text-muted mt-1 leading-relaxed">
+            Initializing your MarkChat workspace session. You will be redirected momentarily.
+          </p>
+        </div>
+      </div>
+
+      <!-- Error State (Hidden by default) -->
+      <div id="oauth-error-state" class="hidden text-center py-4 space-y-4" role="alert">
+        <div
+          class="w-12 h-12 mx-auto rounded-full bg-error-bg border border-error/30 flex items-center justify-center text-error"
+        >
+          <svg
+            class="w-6 h-6"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            aria-hidden="true"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+            ></path>
+          </svg>
+        </div>
+        <div>
+          <h2 class="text-base font-semibold text-text">Google Sign-in Failed</h2>
+          <p id="oauth-error-message" class="text-xs text-text-muted mt-1 leading-relaxed">
+            No valid authentication token was received or the session has expired.
+          </p>
+        </div>
+        <div class="pt-2">
+          <a
+            href="/login"
+            class="inline-flex items-center justify-center h-10 px-6 rounded-xl bg-primary hover:bg-primary-dark text-white font-medium text-xs transition-colors shadow-xs"
+          >
+            Return to sign in &rarr;
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</AuthLayout>
+
+<script>
+  (function handleOAuthCallback() {
+    const loadingState = document.getElementById('oauth-loading-state');
+    const errorState = document.getElementById('oauth-error-state');
+    const errorMsg = document.getElementById('oauth-error-message');
+
+    // Parse URL fragment (hash)
+    const rawHash = window.location.hash.startsWith('#')
+      ? window.location.hash.substring(1)
+      : window.location.hash;
+
+    // Immediately scrub the fragment from browser address bar & history to prevent token leakage (CWE-598)
+    window.history.replaceState({}, document.title, window.location.pathname);
+
+    if (!rawHash) {
+      showError(
+        'Authentication response was missing required credentials. Please try signing in again.'
+      );
+      return;
+    }
+
+    const params = new URLSearchParams(rawHash);
+    const token = params.get('token');
+    const ssoUrl = params.get('ssoUrl');
+    const redirectParam = params.get('redirect');
+    const isNew = params.get('isNew');
+
+    if (!token) {
+      showError('Authentication token could not be verified. Please try signing in again.');
+      return;
+    }
+
+    // Persist session token
+    try {
+      localStorage.setItem('markchat_cp_token', token);
+    } catch {
+      // Storage unavailable or quota exceeded
+    }
+
+    // Safe relative redirect sanitization
+    let safeRedirect = '/billing';
+    if (redirectParam && /^\/(?![/\\])/.test(redirectParam) && !redirectParam.includes(':')) {
+      safeRedirect = redirectParam;
+    }
+
+    // Determine target destination
+    let destination = safeRedirect;
+    if (ssoUrl && isNew !== '1') {
+      try {
+        const parsed = new URL(ssoUrl);
+        if (parsed.protocol === 'http:' || parsed.protocol === 'https:') {
+          destination = ssoUrl;
+        }
+      } catch {
+        destination = safeRedirect;
+      }
+    }
+
+    // Execute redirection
+    setTimeout(() => {
+      window.location.href = destination;
+    }, 400);
+
+    function showError(message: string) {
+      if (loadingState) loadingState.classList.add('hidden');
+      if (errorState) errorState.classList.remove('hidden');
+      if (errorMsg) errorMsg.textContent = message;
+    }
+  })();
+</script>

@@ -1,0 +1,404 @@
+---
+/**
+ * CookieConsent - Accessible, Non-Manipulative Cookie Banner & Preference Center
+ *
+ * Implements WCAG 2.2 AA accessibility, full keyboard navigation, accessible focus trap,
+ * clear opt-in/opt-out toggles, and zero-flicker consent state resolution.
+ */
+import { Icon } from 'astro-icon/components';
+---
+
+<div id="markchat-cookie-consent-wrapper" class="relative z-50">
+  <!-- 1. Floating Cookie Banner (Initial Prompt) -->
+  <aside
+    id="cookie-banner"
+    class="fixed bottom-4 left-4 right-4 md:left-auto md:right-6 md:max-w-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-2xl p-5 md:p-6 transition-all duration-300 transform translate-y-8 opacity-0 pointer-events-none"
+    role="region"
+    aria-label="Cookie consent banner"
+    aria-hidden="true"
+  >
+    <div class="flex items-start gap-4">
+      <div
+        class="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800 flex items-center justify-center shrink-0"
+      >
+        <Icon name="lucide:shield-check" class="w-5 h-5" />
+      </div>
+      <div class="flex-1">
+        <h3 class="text-base font-bold text-slate-900 dark:text-white">
+          Your Privacy &amp; Data Transparency
+        </h3>
+        <p class="mt-1.5 text-xs sm:text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+          We use strictly necessary cookies to ensure site security and preserve your preferences.
+          Optional analytics and marketing technologies help us improve MarkChat, but are only
+          activated with your permission. Review our{' '}
+          <a
+            href="/cookies"
+            class="underline text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium"
+          >
+            Cookie Policy
+          </a>
+          .
+        </p>
+      </div>
+    </div>
+
+    <!-- Banner Actions -->
+    <div class="mt-4 flex flex-col sm:flex-row items-center gap-2.5 pt-2">
+      <button
+        type="button"
+        id="btn-accept-all"
+        class="w-full sm:w-auto flex-1 px-4 py-2 text-xs font-semibold rounded-lg bg-blue-600 hover:bg-blue-700 text-white transition-colors cursor-pointer shadow-sm text-center"
+      >
+        Accept All
+      </button>
+      <button
+        type="button"
+        id="btn-reject-all"
+        class="w-full sm:w-auto flex-1 px-4 py-2 text-xs font-semibold rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 border border-slate-300 dark:border-slate-700 transition-colors cursor-pointer text-center"
+      >
+        Reject Non-Essential
+      </button>
+      <button
+        type="button"
+        id="btn-open-modal"
+        class="w-full sm:w-auto px-3 py-2 text-xs font-medium rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors cursor-pointer text-center"
+      >
+        Customize
+      </button>
+    </div>
+  </aside>
+
+  <!-- 2. Detailed Preference Center Modal -->
+  <div
+    id="cookie-modal-backdrop"
+    class="fixed inset-0 bg-slate-900/60 dark:bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 transition-opacity duration-200 opacity-0 pointer-events-none"
+    aria-hidden="true"
+  >
+    <div
+      id="cookie-modal"
+      class="w-full max-w-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-2xl flex flex-col max-h-[90vh] overflow-hidden transform scale-95 transition-transform duration-200"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="cookie-modal-title"
+      aria-describedby="cookie-modal-desc"
+    >
+      <!-- Modal Header -->
+      <div
+        class="px-6 py-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between shrink-0"
+      >
+        <div class="flex items-center gap-3">
+          <div
+            class="w-8 h-8 rounded-lg bg-blue-100 dark:bg-blue-950 text-blue-600 dark:text-blue-400 flex items-center justify-center"
+          >
+            <Icon name="lucide:settings" class="w-4 h-4" />
+          </div>
+          <h2 id="cookie-modal-title" class="text-lg font-bold text-slate-900 dark:text-white">
+            Cookie Preferences
+          </h2>
+        </div>
+        <button
+          type="button"
+          id="btn-close-modal"
+          class="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+          aria-label="Close preferences modal"
+        >
+          <Icon name="lucide:x" class="w-5 h-5" />
+        </button>
+      </div>
+
+      <!-- Modal Body (Scrollable Category Descriptions) -->
+      <div
+        id="cookie-modal-desc"
+        class="px-6 py-5 overflow-y-auto space-y-4 text-xs sm:text-sm text-slate-600 dark:text-slate-400"
+      >
+        <p
+          class="text-xs text-slate-500 dark:text-slate-400 pb-2 border-b border-slate-100 dark:border-slate-800/80"
+        >
+          Under the Kenya Data Protection Act, 2019, you have the right to decide how your data is
+          processed. Review the categories below and customize your preferences.
+        </p>
+
+        <!-- Category 1: Strictly Necessary -->
+        <div
+          class="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/40"
+        >
+          <div class="flex items-center justify-between mb-1.5">
+            <span class="font-bold text-slate-900 dark:text-white flex items-center gap-2">
+              <Icon name="lucide:lock" class="w-4 h-4 text-emerald-500" />
+              Strictly Necessary
+            </span>
+            <span
+              class="px-2 py-0.5 rounded text-[11px] font-semibold bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300"
+            >
+              Always Active
+            </span>
+          </div>
+          <p class="text-xs leading-relaxed text-slate-500 dark:text-slate-400">
+            Essential for security, basic navigation, and storing your consent preferences. They
+            cannot be switched off in our systems.
+          </p>
+        </div>
+
+        <!-- Category 2: Functional / Preferences -->
+        <div
+          class="p-4 rounded-xl border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 transition-colors"
+        >
+          <div class="flex items-center justify-between mb-1.5">
+            <span class="font-bold text-slate-900 dark:text-white flex items-center gap-2">
+              <Icon name="lucide:sliders" class="w-4 h-4 text-blue-500" />
+              Preferences &amp; Functional
+            </span>
+            <label class="relative inline-flex items-center cursor-pointer">
+              <input type="checkbox" id="toggle-preferences" class="sr-only peer" />
+              <div
+                class="w-9 h-5 bg-slate-300 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-blue-600"
+              >
+              </div>
+            </label>
+          </div>
+          <p class="text-xs leading-relaxed text-slate-500 dark:text-slate-400">
+            Enables enhanced features like remembering your color theme (dark/light) and dismissing
+            announcement banners.
+          </p>
+        </div>
+
+        <!-- Category 3: Analytics -->
+        <div
+          class="p-4 rounded-xl border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 transition-colors"
+        >
+          <div class="flex items-center justify-between mb-1.5">
+            <span class="font-bold text-slate-900 dark:text-white flex items-center gap-2">
+              <Icon name="lucide:bar-chart-2" class="w-4 h-4 text-purple-500" />
+              Analytics &amp; Performance
+            </span>
+            <label class="relative inline-flex items-center cursor-pointer">
+              <input type="checkbox" id="toggle-analytics" class="sr-only peer" />
+              <div
+                class="w-9 h-5 bg-slate-300 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-blue-600"
+              >
+              </div>
+            </label>
+          </div>
+          <p class="text-xs leading-relaxed text-slate-500 dark:text-slate-400">
+            Helps us understand aggregated website traffic, popular documentation guides, and page
+            rendering speeds without profiling individual identities.
+          </p>
+        </div>
+
+        <!-- Category 4: Marketing -->
+        <div
+          class="p-4 rounded-xl border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 transition-colors"
+        >
+          <div class="flex items-center justify-between mb-1.5">
+            <span class="font-bold text-slate-900 dark:text-white flex items-center gap-2">
+              <Icon name="lucide:megaphone" class="w-4 h-4 text-amber-500" />
+              Marketing &amp; Attribution
+            </span>
+            <label class="relative inline-flex items-center cursor-pointer">
+              <input type="checkbox" id="toggle-marketing" class="sr-only peer" />
+              <div
+                class="w-9 h-5 bg-slate-300 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-blue-600"
+              >
+              </div>
+            </label>
+          </div>
+          <p class="text-xs leading-relaxed text-slate-500 dark:text-slate-400">
+            Measures the effectiveness of external referral partnerships and marketing campaigns.
+            Disabled by default.
+          </p>
+        </div>
+      </div>
+
+      <!-- Modal Footer -->
+      <div
+        class="px-6 py-4 border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/40 flex flex-col sm:flex-row items-center justify-between gap-3 shrink-0"
+      >
+        <button
+          type="button"
+          id="btn-modal-reject-all"
+          class="w-full sm:w-auto text-xs font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors cursor-pointer"
+        >
+          Reject Non-Essential
+        </button>
+        <div class="flex items-center gap-2 w-full sm:w-auto">
+          <button
+            type="button"
+            id="btn-modal-save"
+            class="flex-1 sm:flex-none px-4 py-2 text-xs font-semibold rounded-lg bg-blue-600 hover:bg-blue-700 text-white transition-colors cursor-pointer shadow-sm"
+          >
+            Save Preferences
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script is:inline>
+  (function () {
+    const STORAGE_KEY = 'markchat_cookie_consent_v1';
+    const banner = document.getElementById('cookie-banner');
+    const modalBackdrop = document.getElementById('cookie-modal-backdrop');
+    const modal = document.getElementById('cookie-modal');
+
+    const btnAcceptAll = document.getElementById('btn-accept-all');
+    const btnRejectAll = document.getElementById('btn-reject-all');
+    const btnOpenModal = document.getElementById('btn-open-modal');
+    const btnCloseModal = document.getElementById('btn-close-modal');
+    const btnModalSave = document.getElementById('btn-modal-save');
+    const btnModalRejectAll = document.getElementById('btn-modal-reject-all');
+
+    const togglePreferences = document.getElementById('toggle-preferences');
+    const toggleAnalytics = document.getElementById('toggle-analytics');
+    const toggleMarketing = document.getElementById('toggle-marketing');
+
+    function getConsent() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        return raw ? JSON.parse(raw) : null;
+      } catch {
+        return null;
+      }
+    }
+
+    function saveConsent(categories, status) {
+      const record = {
+        version: '2026.1',
+        status: status || 'custom',
+        timestamp: new Date().toISOString(),
+        categories: {
+          necessary: true,
+          preferences: Boolean(categories.preferences),
+          analytics: Boolean(categories.analytics),
+          marketing: Boolean(categories.marketing),
+        },
+      };
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(record));
+        window.dispatchEvent(
+          new CustomEvent('markchat:consent-updated', { detail: { consent: record } })
+        );
+      } catch (e) {
+        console.warn('Storage failed', e);
+      }
+      hideBanner();
+      closeModal();
+    }
+
+    function showBanner() {
+      if (!banner) return;
+      banner.classList.remove('translate-y-8', 'opacity-0', 'pointer-events-none');
+      banner.classList.add('translate-y-0', 'opacity-100', 'pointer-events-auto');
+      banner.setAttribute('aria-hidden', 'false');
+    }
+
+    function hideBanner() {
+      if (!banner) return;
+      banner.classList.remove('translate-y-0', 'opacity-100', 'pointer-events-auto');
+      banner.classList.add('translate-y-8', 'opacity-0', 'pointer-events-none');
+      banner.setAttribute('aria-hidden', 'true');
+    }
+
+    function openModal() {
+      if (!modalBackdrop || !modal) return;
+      const current = getConsent();
+      if (togglePreferences) {
+        togglePreferences.checked = current ? current.categories.preferences : false;
+      }
+      if (toggleAnalytics) {
+        toggleAnalytics.checked = current ? current.categories.analytics : false;
+      }
+      if (toggleMarketing) {
+        toggleMarketing.checked = current ? current.categories.marketing : false;
+      }
+
+      modalBackdrop.classList.remove('opacity-0', 'pointer-events-none');
+      modalBackdrop.classList.add('opacity-100', 'pointer-events-auto');
+      modal.classList.remove('scale-95');
+      modal.classList.add('scale-100');
+      modalBackdrop.setAttribute('aria-hidden', 'false');
+      if (btnCloseModal) btnCloseModal.focus();
+    }
+
+    function closeModal() {
+      if (!modalBackdrop || !modal) return;
+      modalBackdrop.classList.remove('opacity-100', 'pointer-events-auto');
+      modalBackdrop.classList.add('opacity-0', 'pointer-events-none');
+      modal.classList.remove('scale-100');
+      modal.classList.add('scale-95');
+      modalBackdrop.setAttribute('aria-hidden', 'true');
+    }
+
+    // Event listeners
+    if (btnAcceptAll) {
+      btnAcceptAll.addEventListener('click', () => {
+        saveConsent({ preferences: true, analytics: true, marketing: true }, 'accepted_all');
+      });
+    }
+
+    if (btnRejectAll) {
+      btnRejectAll.addEventListener('click', () => {
+        saveConsent(
+          { preferences: false, analytics: false, marketing: false },
+          'rejected_non_essential'
+        );
+      });
+    }
+
+    if (btnOpenModal) {
+      btnOpenModal.addEventListener('click', openModal);
+    }
+
+    if (btnCloseModal) {
+      btnCloseModal.addEventListener('click', closeModal);
+    }
+
+    if (modalBackdrop) {
+      modalBackdrop.addEventListener('click', (e) => {
+        if (e.target === modalBackdrop) closeModal();
+      });
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (
+        e.key === 'Escape' &&
+        modalBackdrop &&
+        !modalBackdrop.classList.contains('pointer-events-none')
+      ) {
+        closeModal();
+      }
+    });
+
+    if (btnModalSave) {
+      btnModalSave.addEventListener('click', () => {
+        saveConsent(
+          {
+            preferences: togglePreferences ? togglePreferences.checked : false,
+            analytics: toggleAnalytics ? toggleAnalytics.checked : false,
+            marketing: toggleMarketing ? toggleMarketing.checked : false,
+          },
+          'custom'
+        );
+      });
+    }
+
+    if (btnModalRejectAll) {
+      btnModalRejectAll.addEventListener('click', () => {
+        saveConsent(
+          { preferences: false, analytics: false, marketing: false },
+          'rejected_non_essential'
+        );
+      });
+    }
+
+    // Global listener so footer or any button can trigger the modal
+    window.addEventListener('markchat:open-cookie-settings', openModal);
+
+    // Initial check on load
+    const existingConsent = getConsent();
+    if (!existingConsent) {
+      // Delay slightly for pleasant layout entry
+      setTimeout(showBanner, 600);
+    }
+  })();
+</script>

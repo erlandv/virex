@@ -1,0 +1,12 @@
+---
+import LegalPolicyReader from '@/components/legal/LegalPolicyReader.astro';
+import { fetchLegalPolicyBySlug } from '@/lib/cms-api';
+
+const policy = await fetchLegalPolicyBySlug('acceptable-use-policy');
+
+if (!policy) {
+  return Astro.redirect('/404');
+}
+---
+
+<LegalPolicyReader policy={policy} />

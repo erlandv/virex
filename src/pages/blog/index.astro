@@ -1,133 +1,339 @@
 ---
+/**
+ * MarkChat Kenya — Blog & Resources Hub
+ *
+ * CMS-driven architecture consuming Astro Content Collections.
+ * Featuring full-width hero post, responsive 3-column feed grid,
+ * strictly forced 16:9 / aspect-video media scaling, and dark mode parity.
+ */
 import MarketingLayout from '@/layouts/MarketingLayout.astro';
-import Pagination from '@ui/Pagination.astro';
 import { Icon } from 'astro-icon/components';
 import { getCollection, type CollectionEntry } from 'astro:content';
 import { siteConfig } from '@/config';
-import { calculateReadingTime } from '@/lib/utils';
+import { calculateReadingTime, formatDate } from '@/lib/utils';
 
-type BlogPost = CollectionEntry<'blog'>;
+type RawBlogPost = CollectionEntry<'blog'>;
 
-const POSTS_PER_PAGE = 6;
-
-const posts = await getCollection('blog', ({ data }: { data: BlogPost['data'] }) => !data.draft);
-const sortedPosts = [...posts].sort(
-  (a: BlogPost, b: BlogPost) => b.data.publishedDate.getTime() - a.data.publishedDate.getTime()
+// Fetch published posts from Content Collections
+const rawPosts = await getCollection(
+  'blog',
+  ({ data }: { data: RawBlogPost['data'] }) => !data.draft
 );
 
-// Get current page from URL
-const currentPage = 1;
-const totalPages = Math.ceil(sortedPosts.length / POSTS_PER_PAGE);
-const paginatedPosts: BlogPost[] = sortedPosts.slice(0, POSTS_PER_PAGE);
+// Standardized CMS Post Model
+interface StandardizedPost {
+  id: string;
+  slug: string;
+  title: string;
+  excerpt: string;
+  publishedDate: Date;
+  formattedDate: string;
+  author: {
+    name: string;
+    role: string;
+    avatar?: string;
+    initials: string;
+  };
+  category: string;
+  coverImage: string;
+  tags: string[];
+  readingTime: number;
+  featured: boolean;
+  href: string;
+}
 
-// Get all unique tags
-const allTags = [...new Set(posts.flatMap((post: BlogPost) => post.data.tags))].sort();
+// Fallback images from public assets to ensure zero broken cover states
+const FALLBACK_IMAGES = [
+  '/images/blog/security-practices.webp',
+  '/images/blog/scaling-million.webp',
+  '/images/blog/virex-2-launch.webp',
+  '/images/blog/deployment-workflow.webp',
+  '/images/blog/env-variables.webp',
+  '/images/blog/future-dev-tools.webp',
+];
 
-// Helper to get typed tags
-const getTypedTags = (tags: string[]) => tags.slice(0, 3);
+const normalizedPosts: StandardizedPost[] = rawPosts.map((post: RawBlogPost, index: number) => {
+  const authorData =
+    typeof post.data.author === 'string'
+      ? { name: post.data.author, role: 'MarkChat Editorial' }
+      : post.data.author;
+
+  const authorName = authorData?.name || 'MarkChat Team';
+  const authorRole = authorData?.role || 'Staff Writer';
+  const authorInitials = authorName
+    .split(' ')
+    .map((n: string) => n[0])
+    .slice(0, 2)
+    .join('')
+    .toUpperCase();
+
+  const coverImage =
+    post.data.coverImage || post.data.image || FALLBACK_IMAGES[index % FALLBACK_IMAGES.length];
+
+  const category =
+    post.data.category || (post.data.tags.length > 0 ? post.data.tags[0] : 'Kenyan Commerce');
+
+  const excerpt = post.data.excerpt || post.data.description;
+  const readingTime = calculateReadingTime(post.body || '');
+
+  return {
+    id: post.id,
+    slug: post.id,
+    title: post.data.title,
+    excerpt,
+    publishedDate: post.data.publishedDate,
+    formattedDate: formatDate(post.data.publishedDate, {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+    }),
+    author: {
+      name: authorName,
+      role: authorRole,
+      avatar: typeof post.data.author === 'object' ? post.data.author.avatar : undefined,
+      initials: authorInitials,
+    },
+    category,
+    coverImage,
+    tags: post.data.tags || [],
+    readingTime,
+    featured: post.data.featured || false,
+    href: `/blog/${post.id}`,
+  };
+});
+
+// Sort descending by date
+const sortedPosts = [...normalizedPosts].sort(
+  (a, b) => b.publishedDate.getTime() - a.publishedDate.getTime()
+);
+
+// Hero Featured Post (explicitly featured or most recent)
+const featuredPost = sortedPosts.find((p) => p.featured) || sortedPosts[0];
+
+// Older posts for the responsive 3-column grid
+const gridPosts = featuredPost ? sortedPosts.filter((p) => p.id !== featuredPost.id) : sortedPosts;
+
+// Extract unique categories for filter tabs
+const allCategories = ['All', ...new Set(sortedPosts.map((p) => p.category))];
 ---
 
 <MarketingLayout
-  title={`Blog - ${siteConfig.name}`}
-  description={`Latest news, updates, and insights from the ${siteConfig.name} team.`}
+  title={`Blog & Resources — ${siteConfig.name}`}
+  description="Guides, benchmarks, and architectural insights for WhatsApp Cloud API, Africa’s Talking Bulk SMS, and Safaricom M-Pesa automated reconciliation."
 >
-  <section class="py-section">
-    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="text-center mb-12">
-        <h1 class="text-4xl sm:text-5xl font-bold text-text">Blog</h1>
-        <p class="mt-4 text-lg text-text-muted max-w-2xl mx-auto">
-          Latest news, updates, and insights from the {siteConfig.name} team.
+  <div
+    class="py-16 sm:py-24 bg-slate-50 dark:bg-background min-h-screen transition-colors duration-200"
+  >
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      {/* =============================================================== */}
+      {/* 1. HEADER SECTION                                               */}
+      {/* =============================================================== */}
+      <div class="max-w-3xl mb-12 sm:mb-16">
+        <div
+          class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-950/70 border border-blue-200/80 dark:border-blue-800/80 text-blue-700 dark:text-blue-300 text-xs font-bold tracking-wide uppercase mb-4"
+        >
+          <span class="w-2 h-2 rounded-full bg-blue-600 animate-pulse"></span>
+          <span>MarkChat Engineering & Commerce Blog</span>
+        </div>
+        <h1
+          class="text-4xl sm:text-5xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-tight"
+        >
+          Insights for African <span class="text-primary">Conversational Commerce</span>
+        </h1>
+        <p class="mt-4 text-lg sm:text-xl text-slate-600 dark:text-slate-300 leading-relaxed">
+          In-depth guides on automating Safaricom M-Pesa Daraja C2B, deploying official WhatsApp
+          Business Cloud API, and maximizing Bulk SMS deliverability.
         </p>
       </div>
 
-      <!-- Tags Filter -->
+      {/* =============================================================== */}
+      {/* 2. HERO FEATURED POST (Full-Width at Top with Gradient Overlay)  */}
+      {/* =============================================================== */}
       {
-        allTags.length > 0 && (
-          <div class="mb-10">
-            <div class="flex flex-wrap items-center gap-2">
-              <span class="text-sm font-medium text-text-muted mr-2">Filter by tag:</span>
-              <a
-                href="/blog"
-                class="px-3 py-1.5 text-sm font-medium rounded-md bg-primary text-white"
-              >
-                All
-              </a>
-              {allTags.map((tag) => (
-                <a
-                  href={`/blog/tag/${tag}`}
-                  class="px-3 py-1.5 text-sm font-medium rounded-md bg-surface text-text-muted hover:bg-primary/10 hover:text-primary transition-colors"
-                >
-                  {tag}
-                </a>
-              ))}
-            </div>
-          </div>
-        )
-      }
+        featuredPost && (
+          <section class="mb-16 sm:mb-20">
+            <a href={featuredPost.href} class="group block">
+              <div class="relative w-full aspect-video md:aspect-[21/9] rounded-xl overflow-hidden border border-border dark:border-border shadow-none bg-slate-950">
+                {/* Cover Image with subtle zoom */}
+                <img
+                  src={featuredPost.coverImage}
+                  alt={featuredPost.title}
+                  class="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105 opacity-90"
+                  loading="eager"
+                />
 
-      <!-- Posts Grid -->
-      <div class="space-y-10">
-        {
-          paginatedPosts.map((post) => (
-            <article class="group">
-              <a href={`/blog/${post.id}`} class="block">
-                <div class="flex flex-col sm:flex-row gap-6">
-                  <div class="sm:w-48 sm:h-32 shrink-0 rounded-lg overflow-hidden bg-surface">
-                    {post.data.image ? (
-                      <img
-                        src={post.data.image}
-                        alt={post.data.title}
-                        class="w-full h-32 sm:h-full object-cover"
-                      />
-                    ) : (
-                      <div class="w-full h-32 sm:h-full bg-primary/10 flex items-center justify-center">
-                        <Icon name="lucide:image" class="w-12 h-12 text-primary/40" />
-                      </div>
-                    )}
+                {/* Gradient Scrim Overlay for contrast */}
+                <div class="absolute inset-0 bg-[#171717]/85       " />
+
+                {/* Overlay Content */}
+                <div class="absolute inset-0 p-6 sm:p-10 lg:p-14 flex flex-col justify-end max-w-3xl">
+                  {/* Category Pill */}
+                  <div class="flex items-center gap-3 mb-3">
+                    <span class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-blue-600 text-white shadow-none">
+                      Featured • {featuredPost.category}
+                    </span>
+                    <span class="text-xs text-slate-300 font-medium">
+                      {featuredPost.readingTime} min read
+                    </span>
                   </div>
-                  <div class="flex-1">
-                    <div class="flex flex-wrap items-center gap-3 text-sm text-text-muted mb-2">
-                      <span>
-                        {post.data.publishedDate.toLocaleDateString('en-US', {
-                          year: 'numeric',
-                          month: 'long',
-                          day: 'numeric',
-                        })}
-                      </span>
-                      <span>·</span>
-                      <span>{calculateReadingTime(post.body || '')} min read</span>
+
+                  {/* Headline */}
+                  <h2 class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold text-white tracking-tight leading-tight group-hover:text-blue-300 transition-colors">
+                    {featuredPost.title}
+                  </h2>
+
+                  {/* Excerpt */}
+                  <p class="mt-3 sm:mt-4 text-sm sm:text-base text-slate-200 line-clamp-2 md:line-clamp-3 leading-relaxed">
+                    {featuredPost.excerpt}
+                  </p>
+
+                  {/* Author & Date Footer */}
+                  <div class="mt-6 flex items-center gap-4 text-xs sm:text-sm text-slate-300">
+                    <div class="flex items-center gap-2.5">
+                      {featuredPost.author.avatar ? (
+                        <img
+                          src={featuredPost.author.avatar}
+                          alt={featuredPost.author.name}
+                          class="w-8 h-8 rounded-full object-cover border border-white/20"
+                        />
+                      ) : (
+                        <div class="w-8 h-8 rounded-full bg-blue-600 text-white font-bold text-xs flex items-center justify-center">
+                          {featuredPost.author.initials}
+                        </div>
+                      )}
+                      <span class="font-semibold text-white">{featuredPost.author.name}</span>
                     </div>
-                    <h2 class="text-xl font-bold text-text group-hover:text-primary transition-colors">
-                      {post.data.title}
-                    </h2>
-                    <p class="mt-2 text-text-muted line-clamp-2">{post.data.description}</p>
-                    {post.data.tags.length > 0 && (
-                      <div class="flex flex-wrap gap-2 mt-3">
-                        {getTypedTags(post.data.tags).map((tag) => (
-                          <span class="px-2 py-0.5 text-xs font-medium bg-surface text-text-muted rounded">
-                            {tag}
-                          </span>
-                        ))}
-                      </div>
-                    )}
+                    <span>•</span>
+                    <span>{featuredPost.formattedDate}</span>
+                    <div class="ml-auto hidden sm:flex items-center gap-1.5 font-bold text-blue-400 group-hover:text-blue-300">
+                      <span>Read Article</span>
+                      <span class="transition-transform duration-200 group-hover:translate-x-1">
+                        &rarr;
+                      </span>
+                    </div>
                   </div>
                 </div>
-              </a>
-            </article>
-          ))
-        }
-      </div>
-
-      {
-        sortedPosts.length === 0 && (
-          <div class="text-center py-12">
-            <p class="text-text-muted">No blog posts yet. Check back soon!</p>
-          </div>
+              </div>
+            </a>
+          </section>
         )
       }
 
-      <!-- Pagination -->
-      <Pagination currentPage={currentPage} totalPages={totalPages} basePath="/blog" />
+      {/* =============================================================== */}
+      {/* 3. CATEGORY FILTER STRIP                                        */}
+      {/* =============================================================== */}
+      <div class="mb-10 sm:mb-12 overflow-x-auto pb-2 scrollbar-none">
+        <div class="flex items-center gap-2.5">
+          {
+            allCategories.map((cat, idx) => (
+              <a
+                href={cat === 'All' ? '/blog' : `/blog/tag/${cat}`}
+                class:list={[
+                  'px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold whitespace-nowrap transition-all duration-200',
+                  idx === 0
+                    ? 'bg-blue-600 text-white shadow-none '
+                    : 'bg-white dark:bg-surface border border-border dark:border-border text-slate-700 dark:text-slate-300 hover:border-blue-400 hover:text-blue-600 dark:hover:text-blue-400',
+                ]}
+              >
+                {cat}
+              </a>
+            ))
+          }
+        </div>
+      </div>
+
+      {/* =============================================================== */}
+      {/* 4. THE FEED: 3-COLUMN RESPONSIVE POSTS GRID                      */}
+      {/* =============================================================== */}
+      {
+        gridPosts.length > 0 ? (
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {gridPosts.map((post) => (
+              <article class="bg-white dark:bg-surface border border-border dark:border-border rounded-xl overflow-hidden shadow-none transition-all duration-300 hover:-translate-y-1 flex flex-col group">
+                <a
+                  href={post.href}
+                  class="block relative overflow-hidden bg-slate-100 dark:bg-slate-800"
+                >
+                  {/* Enforced Card Image Height & Scaling */}
+                  <img
+                    src={post.coverImage}
+                    alt={post.title}
+                    class="w-full h-48 object-cover transition-transform duration-500 group-hover:scale-105"
+                    loading="lazy"
+                  />
+                  {/* Floating Category Pill */}
+                  <div class="absolute top-3 left-3">
+                    <span class="px-2.5 py-1 rounded-full bg-slate-950/80  text-white text-[10px] font-bold uppercase tracking-wider border border-white/20 shadow-none">
+                      {post.category}
+                    </span>
+                  </div>
+                </a>
+
+                {/* Card Body */}
+                <div class="p-6 flex-1 flex flex-col justify-between">
+                  <div>
+                    {/* Meta Bar */}
+                    <div class="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400 mb-2.5">
+                      <time datetime={post.publishedDate.toISOString()}>{post.formattedDate}</time>
+                      <span>•</span>
+                      <span>{post.readingTime} min read</span>
+                    </div>
+
+                    {/* Title */}
+                    <h3 class="text-xl font-bold text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-2 leading-snug">
+                      <a href={post.href}>{post.title}</a>
+                    </h3>
+
+                    {/* Excerpt */}
+                    <p class="mt-2.5 text-sm text-slate-600 dark:text-slate-400 line-clamp-2 leading-relaxed">
+                      {post.excerpt}
+                    </p>
+                  </div>
+
+                  {/* Footer Row */}
+                  <div class="mt-6 pt-4 border-t border-border dark:border-border flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                      {post.author.avatar ? (
+                        <img
+                          src={post.author.avatar}
+                          alt={post.author.name}
+                          class="w-6 h-6 rounded-full object-cover"
+                        />
+                      ) : (
+                        <div class="w-6 h-6 rounded-full bg-blue-600 text-white font-bold text-[10px] flex items-center justify-center">
+                          {post.author.initials}
+                        </div>
+                      )}
+                      <span class="text-xs font-semibold text-slate-700 dark:text-slate-300">
+                        {post.author.name}
+                      </span>
+                    </div>
+
+                    <a
+                      href={post.href}
+                      class="text-xs font-bold text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 flex items-center gap-1 group-hover:translate-x-0.5 transition-transform"
+                      aria-label={`Read ${post.title}`}
+                    >
+                      <span>Read</span>
+                      <span>&rarr;</span>
+                    </a>
+                  </div>
+                </div>
+              </article>
+            ))}
+          </div>
+        ) : (
+          <div class="text-center py-20 bg-white dark:bg-surface rounded-xl border border-border dark:border-border p-8">
+            <Icon name="lucide:book-open" class="w-12 h-12 text-slate-400 mx-auto mb-3" />
+            <h3 class="text-lg font-bold text-slate-900 dark:text-white">
+              No articles published yet
+            </h3>
+            <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">
+              Check back soon for upcoming insights.
+            </p>
+          </div>
+        )
+      }
     </div>
-  </section>
+  </div>
 </MarketingLayout>

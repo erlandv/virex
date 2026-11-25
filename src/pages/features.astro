@@ -1,254 +1,505 @@
 ---
+/**
+ * MarkChat Kenya — Features & Capabilities Overview
+ *
+ * Grounded, CMS-driven product capabilities showcase demonstrating:
+ * - Section A: Hero with 3-pane interactive-looking workspace preview
+ * - Sections B–G: Alternating feature showcases (Shared Inbox, In-Chat M-Pesa, Omnichannel, CRM, Workflows, Infrastructure)
+ * - Section H: Developer & Integration Foundation (REST APIs, HMAC-SHA256 Webhooks)
+ * - Section I: Markcopilot Contextual AI Assistant
+ * - Section J: Frequently Asked Questions
+ * - Section K: Closing CTA
+ */
+import MCResponsiveHeroMedia from '@/components/design-system/MCResponsiveHeroMedia.astro';
 import MarketingLayout from '@/layouts/MarketingLayout.astro';
-import PageHeader from '@sections/content/PageHeader.astro';
-import ValuesSection from '@sections/team/ValuesSection.astro';
-import FeatureHighlight from '@sections/marketing/FeatureHighlight.astro';
-import BentoGrid from '@sections/marketing/BentoGrid.astro';
-import CTA from '@sections/marketing/CTA.astro';
+import ProductOperations from '@/components/enterprise/ProductOperations.astro';
+import { Icon } from 'astro-icon/components';
+import WorkspaceHeroShowcase from '@sections/features/WorkspaceHeroShowcase.astro';
+import FeatureVisualShowcase from '@sections/features/FeatureVisualShowcase.astro';
+import FAQSection from '@sections/content/FAQSection.astro';
+import { fetchFeatures, fetchFeaturesSettings } from '@/lib/cms-api';
 import { siteConfig } from '@/config';
 
-const highlightedFeatures = [
+// Retrieve published features and global page settings from authoritative CMS bridge
+const features = await fetchFeatures();
+const settings = await fetchFeaturesSettings();
+
+// Sort features by display order
+const sortedFeatures = [...features].sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0));
+
+function getCategoryKey(
+  cat: string
+): 'inbox' | 'payments' | 'channels' | 'crm' | 'automation' | 'infrastructure' {
+  const c = (cat || '').toLowerCase();
+  if (c.includes('inbox')) return 'inbox';
+  if (c.includes('payment')) return 'payments';
+  if (c.includes('channel')) return 'channels';
+  if (c.includes('crm') || c.includes('contact')) return 'crm';
+  if (c.includes('workflow') || c.includes('auto')) return 'automation';
+  return 'infrastructure';
+}
+
+const developerEndpoints = [
   {
-    title: 'Preview Deployments for Every PR',
-    description:
-      'Every pull request automatically gets its own unique preview URL. Share with your team, get feedback from stakeholders, and merge with confidence knowing exactly what will go live.',
-    image: '/images/features/preview-deploy.webp',
-    badge: 'Most Popular',
-    highlights: [
-      'Automatic deployment on every push',
-      'Unique URL for each pull request',
-      'Comment integration with GitHub/GitLab',
-      'Password protection for sensitive previews',
-    ],
-    cta: { label: 'Learn about previews', href: '/docs/previews' },
+    method: 'POST',
+    path: '/api/v1/conversations',
+    description: 'Initiate or update multichannel conversation sessions',
   },
   {
-    title: 'Global Edge Network',
-    description:
-      'Your application runs on 200+ edge locations worldwide, ensuring blazing fast load times for every user regardless of their location. Static assets are cached at the edge for instant delivery.',
-    icon: 'lucide:globe',
-    badge: 'Performance',
-    highlights: [
-      '200+ edge locations globally',
-      'Sub-50ms response times',
-      'Automatic SSL certificates',
-      'Smart caching strategies',
-    ],
-    cta: { label: 'Explore our network', href: '/docs/edge-network' },
+    method: 'POST',
+    path: '/api/v1/payments/stk',
+    description: 'Trigger authenticated M-Pesa STK push prompt to customer',
   },
   {
-    title: 'Zero-Config Framework Support',
-    description:
-      'Virex automatically detects your framework and configures the optimal build settings. Next.js, Astro, Remix, Nuxt, SvelteKit—we support them all out of the box.',
-    icon: 'lucide:package',
-    badge: 'Developer Experience',
-    highlights: [
-      'Auto-detection of 30+ frameworks',
-      'Optimized build configurations',
-      'Built-in caching for dependencies',
-      'Custom build commands when needed',
-    ],
-    cta: { label: 'View supported frameworks', href: '/docs/frameworks' },
+    method: 'GET',
+    path: '/api/v1/customers/:phone',
+    description: 'Retrieve consolidated 360 profile and transaction history',
   },
 ];
 
-const bentoFeatures = [
+const webhookPayloadExample = JSON.stringify(
   {
-    title: 'Instant Rollbacks',
-    description:
-      'Something went wrong? Roll back to any previous deployment with a single click. Zero downtime, zero stress.',
-    icon: 'lucide:history',
-    size: 'large' as const,
-    accent: 'primary' as const,
-    href: '/docs/rollbacks',
+    event: 'payment.confirmed',
+    timestamp: '2026-11-15T10:14:32Z',
+    data: {
+      trans_id: 'QKH78219LM',
+      amount: 3500,
+      currency: 'KES',
+      phone: '+254712345678',
+      channel: 'whatsapp',
+      conversation_id: 'conv_849204',
+      merchant_type: 'c2b_paybill',
+    },
   },
-  {
-    title: 'Real-time Logs',
-    description: 'Stream build and runtime logs in real-time for quick debugging.',
-    icon: 'lucide:terminal',
-    accent: 'blue' as const,
-  },
-  {
-    title: 'Environment Variables',
-    description: 'Securely manage secrets across development, preview, and production.',
-    icon: 'lucide:lock',
-    accent: 'green' as const,
-  },
-  {
-    title: 'Team Collaboration',
-    description:
-      'Role-based access control, deployment comments, and audit logs for your entire team.',
-    icon: 'lucide:users',
-    size: 'medium' as const,
-    accent: 'purple' as const,
-    href: '/docs/teams',
-  },
-];
+  null,
+  2
+);
 
-const featureCategories = [
+const markcopilotCapabilities = [
   {
-    title: 'Deployment',
-    subtitle: 'Get your code to production faster than ever',
-    items: [
-      {
-        icon: 'lucide:zap',
-        title: 'Instant Deploys',
-        description:
-          'Push to your Git repository and watch your changes go live in seconds. Our optimized build pipeline handles everything from dependency installation to asset optimization.',
-      },
-      {
-        icon: 'lucide:refresh-cw',
-        title: 'Automatic Rollbacks',
-        description:
-          'Every deployment is versioned and stored. Roll back to any previous version with a single click—no downtime, no stress.',
-      },
-      {
-        icon: 'lucide:git-branch',
-        title: 'Preview Deployments',
-        description:
-          'Every pull request gets its own unique URL. Share with your team, get feedback, and merge with confidence.',
-      },
-      {
-        icon: 'lucide:package',
-        title: 'Zero-Config Builds',
-        description:
-          'Virex auto-detects your framework and configures the build process automatically. Next.js, Astro, Remix, Vite—we support them all.',
-      },
-    ],
+    title: 'Business Knowledge Grounding',
+    description:
+      'Ingests PDF catalogs, menus, price sheets, and policies to answer questions accurately without hallucinations.',
+    icon: 'lucide:file-text',
   },
   {
-    title: 'Infrastructure',
-    subtitle: 'Enterprise-grade infrastructure without the complexity',
-    items: [
-      {
-        icon: 'lucide:globe',
-        title: 'Global Edge Network',
-        description:
-          'Your application runs on 200+ edge locations worldwide. Users get sub-50ms response times no matter where they are.',
-      },
-      {
-        icon: 'lucide:trending-up',
-        title: 'Auto-Scaling',
-        description:
-          'Handle traffic spikes effortlessly. Virex automatically scales your application up or down based on demand.',
-      },
-      {
-        icon: 'lucide:shield',
-        title: 'Built-in Security',
-        description:
-          'SSL certificates provisioned automatically. DDoS protection, WAF rules, and security headers configured out of the box.',
-      },
-      {
-        icon: 'lucide:database',
-        title: 'Edge Caching',
-        description:
-          'Intelligent caching at the edge reduces origin load and speeds up content delivery. Configure cache rules with simple headers.',
-      },
-    ],
+    title: 'Agent Copilot Drafts',
+    description:
+      'Suggests 1-click contextual reply drafts in English, Swahili, and Sheng for human agents in the team inbox.',
+    icon: 'lucide:message-square',
   },
   {
-    title: 'Developer Experience',
-    subtitle: 'Tools that make your team more productive',
-    items: [
-      {
-        icon: 'lucide:link',
-        title: 'Git Integration',
-        description:
-          'Connect your GitHub, GitLab, or Bitbucket repository. Automatic deployments on every push to your main branch.',
-      },
-      {
-        icon: 'lucide:terminal',
-        title: 'CLI & API',
-        description:
-          'Full-featured CLI for local development and CI/CD integration. REST API for custom automation workflows.',
-      },
-      {
-        icon: 'lucide:bar-chart',
-        title: 'Real-time Logs',
-        description:
-          'Stream build and runtime logs in real-time. Debug issues quickly with searchable, filterable log history.',
-      },
-      {
-        icon: 'lucide:bell',
-        title: 'Notifications',
-        description:
-          'Get notified about deployments, errors, and performance issues via Slack, Discord, email, or webhooks.',
-      },
-    ],
-  },
-  {
-    title: 'Collaboration',
-    subtitle: 'Built for teams of all sizes',
-    items: [
-      {
-        icon: 'lucide:users',
-        title: 'Team Management',
-        description:
-          'Invite team members with role-based access control. Admins, developers, and viewers each get appropriate permissions.',
-      },
-      {
-        icon: 'lucide:message-square',
-        title: 'Deployment Comments',
-        description:
-          'Leave comments on any deployment. Discuss changes, flag issues, and keep context with your code.',
-      },
-      {
-        icon: 'lucide:lock',
-        title: 'Environment Variables',
-        description:
-          'Securely manage secrets and configuration. Different values for development, preview, and production environments.',
-      },
-      {
-        icon: 'lucide:clipboard-list',
-        title: 'Audit Logs',
-        description:
-          'Track every action taken in your organization. Know who deployed what, when, and why.',
-      },
-    ],
+    title: 'Conversation Summarization',
+    description:
+      'Generates instant bullet-point summaries and urgency tags before handoffs between shifts or departments.',
+    icon: 'lucide:sparkles',
   },
 ];
 ---
 
 <MarketingLayout
-  title={`Features - ${siteConfig.name}`}
-  description="Discover all the features that make Virex the best platform for deploying and scaling your applications."
+  title={`Platform Features - ${siteConfig.name}`}
+  description="Explore MarkChat's unified customer communication platform: collaborative team inbox, in-chat Safaricom M-Pesa STK push, official WhatsApp Cloud API, and Markcopilot AI."
 >
-  <PageHeader
-    title="Everything you need to ship"
-    subtitle="From your first commit to global scale, Virex provides all the tools your team needs to build, deploy, and run modern applications."
-  />
+  <!-- ======================================================== -->
+  <!-- SECTION A: HERO SECTION                                  -->
+  <!-- ======================================================== -->
+  <section
+    class="relative pt-24 pb-16 md:pt-32 md:pb-24 overflow-hidden bg-slate-50 dark:bg-background"
+  >
+    <!-- Ambient Background Glows -->
+    <div
+      class="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[350px] bg-primary/10 dark:bg-primary/20 hidden rounded-full pointer-events-none -z-10"
+    >
+    </div>
+    <div
+      class="absolute top-1/3 right-1/4 w-[400px] h-[300px] bg-emerald-500/10 hidden rounded-full pointer-events-none -z-10"
+    >
+    </div>
 
-  <FeatureHighlight
-    title="Powerful Features in Detail"
-    subtitle="Deep dive into the capabilities that make Virex the best deployment platform."
-    features={highlightedFeatures}
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <!-- Eyebrow Pill -->
+      <div
+        class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 dark:bg-primary/20 border border-primary/20 text-primary text-xs font-bold tracking-wide uppercase mb-6 animate-fade-in"
+      >
+        <Icon name="lucide:sparkles" class="w-3.5 h-3.5" />
+        <span>{settings.hero.eyebrow}</span>
+      </div>
+
+      <!-- Headline -->
+      <h1
+        class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-slate-900 dark:text-white max-w-4xl mx-auto leading-tight sm:leading-tight"
+      >
+        {settings.hero.heading}
+      </h1>
+
+      <!-- Grounded Narrative Description -->
+      <p
+        class="mt-6 text-base sm:text-lg md:text-xl text-slate-600 dark:text-slate-300 max-w-3xl mx-auto leading-relaxed"
+      >
+        {settings.hero.description}
+      </p>
+
+      <!-- Action Buttons -->
+      <div class="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
+        <a
+          href={settings.hero.primaryCtaHref || '/demo'}
+          class="w-full sm:w-auto inline-flex items-center justify-center px-6 py-3.5 rounded-xl font-bold text-sm text-white bg-primary hover:brightness-110 shadow-none shadow-primary/25 transition-all"
+        >
+          <Icon name="lucide:calendar" class="w-4 h-4 mr-2" />
+          {settings.hero.primaryCtaLabel || 'Book a Live Demo'}
+        </a>
+        <a
+          href={settings.hero.secondaryCtaHref || '/pricing'}
+          class="w-full sm:w-auto inline-flex items-center justify-center px-6 py-3.5 rounded-xl font-bold text-sm text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-800/80 hover:bg-slate-100 dark:hover:bg-slate-800 border border-border dark:border-border shadow-none transition-all"
+        >
+          <Icon name="lucide:credit-card" class="w-4 h-4 mr-2" />
+          {settings.hero.secondaryCtaLabel || 'Explore Plans & Pricing'}
+        </a>
+      </div>
+
+      <MCResponsiveHeroMedia page="features" settings={settings.hero.heroMedia} class="mx-auto mt-10 max-w-5xl" />
+
+      <!-- Verified Architecture Badges -->
+      <div
+        class="mt-8 flex flex-wrap items-center justify-center gap-4 sm:gap-6 text-xs text-slate-500 dark:text-slate-400 font-medium"
+      >
+        <span class="inline-flex items-center gap-1.5">
+          <Icon name="lucide:check-circle" class="w-4 h-4 text-emerald-500" />
+          Official Meta WhatsApp Cloud API
+        </span>
+        <span class="inline-flex items-center gap-1.5">
+          <Icon name="lucide:check-circle" class="w-4 h-4 text-emerald-500" />
+          Safaricom Daraja In-Chat STK Push
+        </span>
+        <span class="inline-flex items-center gap-1.5">
+          <Icon name="lucide:check-circle" class="w-4 h-4 text-emerald-500" />
+          Africa's Talking BYOC SMS
+        </span>
+      </div>
+
+      <!-- Interactive 3-Pane Product Showcase -->
+      <div class="mt-14 sm:mt-16">
+        <WorkspaceHeroShowcase />
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================================================== -->
+  <!-- SECTIONS B–G: CMS-DRIVEN ALTERNATING FEATURE SHOWCASES   -->
+  <!-- ======================================================== -->
+  <div class="py-12 sm:py-20 space-y-24 sm:space-y-32 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    {
+      sortedFeatures.map((feature, index) => {
+        const isReversed = index % 2 === 1;
+        const categoryKey = getCategoryKey(feature.category);
+
+        return (
+          <section id={feature.slug} class="scroll-mt-24">
+            <div
+              class={`grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center ${isReversed ? 'lg:flex-row-reverse' : ''}`}
+            >
+              {/* Text Column (6 cols) */}
+              <div class={`lg:col-span-6 space-y-5 ${isReversed ? 'lg:order-2' : 'lg:order-1'}`}>
+                {/* Eyebrow & Badge */}
+                <div class="flex flex-wrap items-center gap-2">
+                  {feature.eyebrow && (
+                    <span class="text-xs font-bold uppercase tracking-wider text-primary">
+                      {feature.eyebrow}
+                    </span>
+                  )}
+                  {feature.badge && (
+                    <span class="inline-flex items-center text-[11px] font-bold px-2 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20">
+                      {feature.badge}
+                    </span>
+                  )}
+                </div>
+
+                {/* Feature Title */}
+                <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white leading-tight">
+                  {feature.title}
+                </h2>
+
+                {/* Core Description / Summary */}
+                <p class="text-sm sm:text-base text-slate-600 dark:text-slate-300 leading-relaxed">
+                  {feature.summary || feature.description}
+                </p>
+
+                {/* Extended Description if available */}
+                {feature.description &&
+                  feature.summary &&
+                  feature.description !== feature.summary && (
+                    <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 leading-relaxed border-l-2 border-primary/30 pl-3">
+                      {feature.description}
+                    </p>
+                  )}
+
+                {/* Feature Highlights Checklist */}
+                {feature.highlights && feature.highlights.length > 0 && (
+                  <ul class="space-y-2.5 pt-2">
+                    {feature.highlights.map((highlight) => (
+                      <li class="flex items-start gap-2.5 text-xs sm:text-sm text-slate-700 dark:text-slate-300 font-medium">
+                        <span class="w-5 h-5 rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0 mt-0.5">
+                          <Icon name="lucide:check" class="w-3.5 h-3.5" />
+                        </span>
+                        <span>{highlight}</span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+
+                {/* Technical Specification Details Block */}
+                {feature.technicalDetails && (
+                  <div class="p-3.5 rounded-xl bg-slate-100/70 dark:bg-slate-800/50 border border-border dark:border-border text-xs space-y-1.5">
+                    <span class="font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wide text-[10px] flex items-center gap-1.5">
+                      <Icon name="lucide:cpu" class="w-3.5 h-3.5 text-primary" />
+                      {feature.technicalDetails.title}
+                    </span>
+                    <ul class="space-y-1 font-mono text-[11px] text-slate-600 dark:text-slate-400">
+                      {feature.technicalDetails.points.map((point: string) => (
+                        <li class="flex items-center gap-1.5">
+                          <span class="text-primary font-bold">&bull;</span>
+                          <span>{point}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                {/* CTA Button */}
+                {feature.ctaText && feature.ctaUrl && (
+                  <div class="pt-2">
+                    <a
+                      href={feature.ctaUrl}
+                      class="inline-flex items-center text-xs sm:text-sm font-bold text-primary hover:text-primary-hover gap-1.5 transition-colors group"
+                    >
+                      <span>{feature.ctaText}</span>
+                      <Icon
+                        name="lucide:arrow-right"
+                        class="w-4 h-4 transition-transform group-hover:translate-x-1"
+                      />
+                    </a>
+                  </div>
+                )}
+              </div>
+
+              {/* Visual Column (6 cols) */}
+              <div class={`lg:col-span-6 ${isReversed ? 'lg:order-1' : 'lg:order-2'}`}>
+                <FeatureVisualShowcase category={categoryKey} slug={feature.slug} />
+              </div>
+            </div>
+          </section>
+        );
+      })
+    }
+  </div>
+
+  <!-- ======================================================== -->
+  <!-- SECTION H: DEVELOPER & INTEGRATION FOUNDATION            -->
+  <!-- ======================================================== -->
+  <section
+    class="py-16 sm:py-24 bg-slate-100/70 dark:bg-surface border-y border-border dark:border-border"
+  >
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center max-w-3xl mx-auto mb-12 sm:mb-16">
+        <div
+          class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold tracking-wide uppercase mb-3"
+        >
+          <Icon name="lucide:code" class="w-3.5 h-3.5" />
+          <span>{settings.developerSection.eyebrow}</span>
+        </div>
+        <h2
+          class="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white"
+        >
+          {settings.developerSection.heading}
+        </h2>
+        <p class="mt-4 text-sm sm:text-base text-slate-600 dark:text-slate-300">
+          {settings.developerSection.description}
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        <!-- Endpoints List (5 cols) -->
+        <div class="lg:col-span-5 space-y-4">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+            Core REST Endpoints
+          </h3>
+          <div class="space-y-3">
+            {
+              developerEndpoints.map((ep) => (
+                <div class="p-3.5 rounded-xl bg-white dark:bg-slate-800 border border-border dark:border-border shadow-none space-y-1">
+                  <div class="flex items-center gap-2 font-mono text-xs">
+                    <span
+                      class={`px-2 py-0.5 rounded font-bold text-[10px] ${ep.method === 'POST' ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400' : 'bg-blue-500/15 text-blue-600 dark:text-blue-400'}`}
+                    >
+                      {ep.method}
+                    </span>
+                    <span class="font-bold text-slate-900 dark:text-white">{ep.path}</span>
+                  </div>
+                  <p class="text-xs text-slate-500 dark:text-slate-400">{ep.description}</p>
+                </div>
+              ))
+            }
+          </div>
+
+          <!-- Webhook Security Callout -->
+          <div
+            class="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-xs space-y-2"
+          >
+            <div class="flex items-center gap-2 font-bold text-emerald-800 dark:text-emerald-300">
+              <Icon name="lucide:shield-check" class="w-4 h-4 text-emerald-500 shrink-0" />
+              <span>HMAC-SHA256 Cryptographic Verification</span>
+            </div>
+            <p class="text-slate-600 dark:text-slate-300 text-[11px] leading-relaxed">
+              Every outbound webhook request includes an <code
+                class="font-mono bg-emerald-500/20 px-1 py-0.5 rounded text-emerald-800 dark:text-emerald-200"
+                >X-MarkChat-Signature</code
+              > header generated using your secret key, allowing your backend to independently verify
+              authenticity.
+            </p>
+          </div>
+        </div>
+
+        <!-- Live Code Payload Showcase (7 cols) -->
+        <div class="lg:col-span-7">
+          <div
+            class="rounded-xl border border-slate-800 bg-slate-950 shadow-none overflow-hidden text-left"
+          >
+            <!-- Terminal Header -->
+            <div
+              class="flex items-center justify-between px-4 py-2.5 bg-slate-900 border-b border-slate-800 text-xs text-slate-400 font-mono"
+            >
+              <div class="flex items-center gap-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-rose-500/80 inline-block"></span>
+                <span class="w-2.5 h-2.5 rounded-full bg-amber-500/80 inline-block"></span>
+                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500/80 inline-block"></span>
+                <span class="ml-2 text-slate-300 text-[11px]">webhook-payment-confirmed.json</span>
+              </div>
+              <span class="text-[10px] text-emerald-400">HTTP 200 OK</span>
+            </div>
+            <!-- Code Body -->
+            <div
+              class="p-4 sm:p-5 overflow-x-auto font-mono text-xs text-slate-300 leading-relaxed"
+            >
+              <pre><code>{webhookPayloadExample}</code></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================================================== -->
+  <!-- SECTION I: MARKCOPILOT CONTEXTUAL AI ASSISTANT           -->
+  <!-- ======================================================== -->
+  <section class="py-16 sm:py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center max-w-3xl mx-auto mb-12 sm:mb-16">
+      <div
+        class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 text-xs font-bold tracking-wide uppercase mb-3"
+      >
+        <Icon name="lucide:sparkles" class="w-3.5 h-3.5" />
+        <span>{settings.markcopilotSection.eyebrow}</span>
+      </div>
+      <h2
+        class="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white"
+      >
+        {settings.markcopilotSection.heading}
+      </h2>
+      <p class="mt-4 text-sm sm:text-base text-slate-600 dark:text-slate-300 leading-relaxed">
+        {settings.markcopilotSection.description}
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
+      {
+        markcopilotCapabilities.map((cap) => (
+          <div class="p-6 rounded-xl border border-border dark:border-border bg-background dark:bg-surface shadow-none shadow-none transition-all space-y-3">
+            <div class="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
+              <Icon name={cap.icon || 'lucide:sparkles'} class="w-5 h-5" />
+            </div>
+            <h3 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white">
+              {cap.title}
+            </h3>
+            <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+              {cap.description}
+            </p>
+          </div>
+        ))
+      }
+    </div>
+
+    <!-- Commercial Transparency Callout -->
+    <div
+      class="mt-10 p-4 rounded-xl bg-slate-100 dark:bg-slate-800/60 border border-border dark:border-border text-center max-w-2xl mx-auto text-xs text-slate-600 dark:text-slate-300 flex items-center justify-center gap-2"
+    >
+      <Icon name="lucide:info" class="w-4 h-4 text-primary shrink-0" />
+      <span
+        >Markcopilot assists human teams with grounded recommendations and 1-click drafts; human
+        staff retain full oversight and final send control.</span
+      >
+    </div>
+  </section>
+
+  <!-- ======================================================== -->
+  <!-- SECTION J: FREQUENTLY ASKED QUESTIONS                    -->
+  <!-- ======================================================== -->
+  <ProductOperations
+    kind="inbox"
+    title="From a connected channel to an accountable customer action"
+  />
+  <FAQSection
+    title="Frequently Asked Questions"
+    subtitle="Clear, verified answers about channels, carrier billing, in-chat M-Pesa, and team seats."
+    faqs={settings.faqs}
     background="muted"
   />
 
-  {
-    featureCategories.map((category, index) => (
-      <ValuesSection
-        title={category.title}
-        subtitle={category.subtitle}
-        items={category.items}
-        variant="with-icon"
-        columns={2}
-        background={index % 2 === 0 ? 'muted' : 'default'}
-      />
-    ))
-  }
+  <!-- ======================================================== -->
+  <!-- SECTION K: CLOSING CTA                                   -->
+  <!-- ======================================================== -->
+  <section class="border-y border-border bg-surface py-16 sm:py-24 text-text">
+    <!-- Background Ambient Glow -->
+    <div class="absolute inset-0 bg-background hidden pointer-events-none"></div>
 
-  <BentoGrid
-    title="And Much More"
-    subtitle="Discover all the tools that make your deployment workflow seamless."
-    items={bentoFeatures}
-    background="muted"
-  />
+    <div class="relative max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-6">
+      <div
+        class="inline-flex items-center gap-2 px-3 py-1 rounded-md border border-border bg-background text-primary text-xs font-bold tracking-wide uppercase"
+      >
+        <Icon name="lucide:shield-check" class="w-3.5 h-3.5 text-emerald-400" />
+        <span>Kenyan Conversational Commerce</span>
+      </div>
 
-  <CTA
-    title="Ready to experience the difference?"
-    description="Start deploying with Virex today. Free tier available with no credit card required."
-    action={{ label: 'Get Started Free', href: '/pricing' }}
-    background="muted"
-  />
+      <h2 class="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight leading-tight">
+        {settings.closingCta.heading}
+      </h2>
+
+      <p class="text-base sm:text-lg text-text-muted max-w-2xl mx-auto leading-relaxed">
+        {settings.closingCta.description}
+      </p>
+
+      <div class="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4">
+        <a
+          href={settings.closingCta.primaryCtaHref || '/demo'}
+          class="w-full sm:w-auto inline-flex items-center justify-center px-8 py-4 rounded-xl font-bold text-sm text-white bg-primary hover:brightness-110 shadow-none shadow-primary/30 transition-all"
+        >
+          <Icon name="lucide:calendar" class="w-4 h-4 mr-2" />
+          {settings.closingCta.primaryCtaLabel || 'Book a Live Demo'}
+        </a>
+        <a
+          href={settings.closingCta.secondaryCtaHref || '/pricing'}
+          class="w-full sm:w-auto inline-flex items-center justify-center px-8 py-4 rounded-xl font-bold text-sm text-text bg-background hover:bg-surface border border-border transition-colors"
+        >
+          <Icon name="lucide:credit-card" class="w-4 h-4 mr-2" />
+          {settings.closingCta.secondaryCtaLabel || 'Explore Plans & Pricing'}
+        </a>
+      </div>
+
+      <div class="pt-6 flex flex-wrap items-center justify-center gap-6 text-xs text-text-muted">
+        <span>&bull; Nairobi GMT+03:00 Support</span>
+        <span>&bull; Safaricom Daraja Ready</span>
+        <span>&bull; Agent-assisted conversations</span>
+        <span>&bull; Provider configuration required</span>
+      </div>
+    </div>
+  </section>
 </MarketingLayout>

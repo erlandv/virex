@@ -1,0 +1,90 @@
+---
+import { existsSync } from 'node:fs';
+import path from 'node:path';
+import type { HeroMediaPage, HeroMediaSettings } from '@/lib/types';
+import { normalizeHeroMedia } from '@/lib/hero-media';
+
+interface Props {
+  page: HeroMediaPage;
+  settings?: Partial<HeroMediaSettings> | null;
+  presentation?: 'framed' | 'backdrop';
+  class?: string;
+  focalPoint?: 'center' | 'right';
+}
+
+const {
+  page,
+  settings,
+  presentation = 'framed',
+  class: className = '',
+  focalPoint = 'center',
+} = Astro.props;
+const media = normalizeHeroMedia(page, settings, import.meta.env.PUBLIC_CMS_MEDIA_HOST || '');
+const isBundled = (url: string) =>
+  url.startsWith('/media/') ? existsSync(path.join(process.cwd(), 'public', url.slice(1))) : true;
+const desktop = media.heroBackgroundImageUrl && isBundled(media.heroBackgroundImageUrl)
+  ? media.heroBackgroundImageUrl : '';
+const mobile = media.heroBackgroundMobileImageUrl && isBundled(media.heroBackgroundMobileImageUrl)
+  ? media.heroBackgroundMobileImageUrl : '';
+const image = media.heroMediaMode === 'layered-preview' ? '' : desktop || mobile;
+const scrims = {
+  subtle: 'bg-stone-100/55 dark:bg-neutral-900/60',
+  medium: 'bg-stone-100/88 dark:bg-neutral-900/85',
+  strong: 'bg-stone-100/95 dark:bg-neutral-900/95',
+};
+const framed = presentation === 'framed';
+const focalClass = focalPoint === 'right' ? 'object-right' : 'object-center';
+---
+
+{
+  image && (
+    <figure
+      data-mc-responsive-hero
+      data-hero-media-page={page}
+      data-hero-media-mode={media.heroMediaMode}
+      class:list={[
+        'relative overflow-hidden',
+        framed ? 'rounded-2xl border border-border bg-surface' : 'absolute inset-0',
+        className,
+      ]}
+    >
+      <picture>
+        {mobile && <source media="(max-width: 767px)" srcset={mobile} />}
+        <img
+          src={image}
+          alt={framed ? media.heroBackgroundAlt : ''}
+          width="1440"
+          height="900"
+          decoding="async"
+          loading={page === 'homepage' ? 'eager' : 'lazy'}
+          class:list={[
+            'block h-full w-full object-cover',
+            framed ? 'aspect-[4/5] sm:aspect-[16/10] lg:aspect-[16/9]' : 'absolute inset-0',
+            focalClass,
+          ]}
+          data-editorial-picture
+        />
+      </picture>
+      {(presentation === 'backdrop' || media.heroMediaMode === 'editorial-backdrop') && <div class:list={['absolute inset-0', scrims[media.heroScrimStrength]]} aria-hidden="true" />}
+      {framed && (
+        <figcaption class="relative border-t border-border bg-background px-4 py-2 text-xs text-text-muted">
+          Editorial illustration · not a screenshot of MarkChat software
+        </figcaption>
+      )}
+    </figure>
+  )
+}
+
+<script>
+  function initEditorialHeroMedia() {
+    document.querySelectorAll<HTMLImageElement>('[data-editorial-picture]').forEach(image => {
+      if (image.dataset.errorBound) return;
+      image.dataset.errorBound = 'true';
+      const fail = () => image.closest<HTMLElement>('[data-mc-responsive-hero]')?.classList.add('hidden');
+      image.addEventListener('error', fail);
+      if (image.complete && !image.naturalWidth) fail();
+    });
+  }
+  initEditorialHeroMedia();
+  document.addEventListener('astro:page-load', initEditorialHeroMedia);
+</script>

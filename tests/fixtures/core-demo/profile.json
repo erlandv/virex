@@ -1,0 +1,11 @@
+{
+  "data": {
+    "id": 9001,
+    "account_id": 1,
+    "name": "Demo Agent",
+    "email": "demo-agent@example.invalid",
+    "role": "agent",
+    "available_name": "Demo Agent"
+  },
+  "demo": true
+}

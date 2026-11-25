@@ -62,6 +62,8 @@ export interface ContactInfo {
   email: string;
   supportEmail?: string;
   salesEmail?: string;
+  partnersEmail?: string;
+  hours?: string;
   address: Address;
 }
 
@@ -229,4 +231,23 @@ export interface BillingHistoryItem {
   amount: number;
   status: 'paid' | 'pending' | 'failed';
   invoiceUrl?: string;
+}
+
+/** Public editorial hero media: never interpreted as a verified product screenshot. */
+export type HeroMediaMode = 'layered-preview' | 'editorial-backdrop' | 'hybrid';
+export type HeroScrimStrength = 'subtle' | 'medium' | 'strong';
+export type HeroMediaPage =
+  | 'homepage'
+  | 'features'
+  | 'markcopilot'
+  | 'integrations'
+  | 'solutions'
+  | 'about';
+
+export interface HeroMediaSettings {
+  heroBackgroundImageUrl: string;
+  heroBackgroundMobileImageUrl: string;
+  heroBackgroundAlt: string;
+  heroMediaMode: HeroMediaMode;
+  heroScrimStrength: HeroScrimStrength;
 }

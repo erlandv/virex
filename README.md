@@ -1,120 +1,73 @@
-# Virex - SaaS UI Theme for Astro
+# MarkChat Marketing Website
 
-[![Built with Astro](https://astro.badg.es/v2/built-with-astro/tiny.svg)](https://astro.build)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+**MARKTECHDESIGNS · Nairobi, Kenya**
 
-A production-ready SaaS theme for Astro. Designed to help you move from idea to launch quickly, Virex includes marketing pages, documentation, and a dashboard UI. Built with a strong focus on performance, simplicity, and easy customization.
+The acquisition, content, pricing, documentation and signup experience for MarkChat. Built on the existing **Virex Astro theme** (Astro 5, React 19, Tailwind CSS 4), preserving its component architecture, visual tokens, spacing and light/dark support. Upstream attribution and the existing `LICENSE` remain intact.
 
-## Why Virex?
+## Product boundaries
 
-Unlike many Astro themes that focus only on marketing pages, Virex also includes a production-ready dashboard UI. You get more than landing pages, but a structured dashboard layout with reusable components and example pages for common SaaS workflows.
+- **MarkChat Core**: recurring workspace subscriptions (Starter/Growth/Scale, KES prices from Control Plane); channel availability and AI/M-Pesa features depend on actual merchant and Core provisioning.
+- **MarkChat SMS Studio**: separate prepaid KES credit wallet, eligible Sender ID review, promotional 07:00–19:00 EAT and transactional route rules. Core subscription does **not** automatically include an SMS top-up.
+- **Control Plane**: the only authority for tenant registration, approved plan catalog, 72-hour trial policy, subscription state, verified Paystack checkout and service entitlements. Annual paid billing is **not yet implemented**.
+- **MarkChat Core**: intentionally inaccessible and unlinked in the current phase. Do not represent an illustrative client workflow as a deployed production feature.
 
-This allows you to move faster—from an initial landing page to an MVP dashboard UI—while keeping a consistent design system, theming, and code quality across your entire project.
-
-## Demo
-
-<div align="center">
-
-[![View Demo](https://img.shields.io/badge/View_Demo-→-0077FF?style=for-the-badge&logo=astro&logoColor=white)](https://virex.erland.me)
-
-<table>
-  <tr>
-    <td width="50%">
-      <img src="./screenshots/light-mode.webp" loading="lazy" alt="Virex Light Mode">
-      <p align="center"><em>Light Mode</em></p>
-    </td>
-    <td width="50%">
-      <img src="./screenshots/dark-mode.webp" loading="lazy" alt="Virex Dark Mode">
-      <p align="center"><em>Dark Mode</em></p>
-    </td>
-  </tr>
-</table>
-
-</div>
-
-## Features
-
-### Performance & Developer Experience
-
-Modern tech stack with **Astro**, **TypeScript**, and **Tailwind CSS v4**.
-
-- Path aliases (`@dashboard/*`, `@ui/*`, etc.) for cleaner imports
-- ESLint and Prettier configured for code quality
-- Design tokens with OKLCH color system for easy theming
-- Dark mode support with localStorage persistence
-- 200,000+ icons via astro-icon (Lucide + Simple Icons)
-
-### Marketing & Conversion
-
-A complete set of landing pages optimized for SaaS marketing.
-
-- Hero sections, feature grids, pricing tables, testimonials
-- Contact forms with validation and multiple backend support
-- Team pages, case studies, integrations showcases
-- SEO-optimized with meta tags, Open Graph, and JSON-LD
-- Accessible with WCAG compliance and semantic HTML
-- Legal pages (privacy policy, terms of service)
-
-### Dashboard UI
-
-Flexible dashboard layout with sidebar navigation and reusable components.
-
-- **Components**: StatCard, DataTable, Chart, Modal, Toast, and more
-- **Example Pages**: Overview, Settings (Profile, Team, Billing), Projects
-- **Routes**: `/dashboard`, `/dashboard/settings/*`, `/dashboard/projects`
-- Full light/dark mode support with consistent theming
-
-**Important**: Dashboard pages use starter templates with sample data. Authentication is intentionally left to the user. See [Dashboard docs](./docs/07-dashboard.md) for guidance.
-
-### Content Management
-
-Built-in content collections with full Markdown and MDX support.
-
-- **Blog**: Paginated posts with tag filtering and reading time
-- **Documentation**: Auto-generated sidebar with section grouping
-- **Changelog**: Version history with release timeline
-- **Testimonials**: Customer quotes with featured/ordering support
-
-## Quick Start
-
-### 1. Create a new project
+## Local setup
 
 ```bash
-npm create astro@latest -- --template erlandv/virex
-```
-
-### 2. Start development
-
-```bash
-cd your-project-name
+git checkout main
+git pull --ff-only origin main
+npm ci
+# Set PUBLIC_CONTROL_PLANE_URL in your private .env, not in committed secrets
+npm run check
+npm run build
 npm run dev
 ```
 
-Your site is now running at [http://localhost:4321](http://localhost:4321)
+The website uses `PUBLIC_CONTROL_PLANE_URL` for signup, Google OAuth and billing, with `PUBLIC_CONTROL_PLANE_API_URL` as a compatibility alias. Local Control Plane defaults to `http://localhost:5000` and the Astro development server to `http://localhost:4321`. Set matching production CORS origins explicitly and use HTTPS.
 
-## What's Next?
+## Customer flow
 
-Once your project is running, here's what you should do:
+Pricing CTAs select a canonical monthly plan: `/register?plan=starter|growth|scale&interval=monthly`. Email/password and Google OAuth hand registration to `/api/v1/registration` / `/api/v1/auth/google/start`. Registration itself is **not** a verified login session; users proceed through login/Google callback and then `/billing?plan=...&interval=...`. Billing reads approved catalog prices and returns the verified Paystack `authorizationUrl`; the browser redirect is not payment proof.
 
-1. **Configure Your Site** - Update site metadata in `src/config/site.ts`
-2. **Customize Design** - Edit design tokens in `src/styles/global.css`
-3. **Add Content** - Create blog posts, docs, and changelog entries
-4. **Build Dashboard** - Implement authentication and connect your API
+When `interval=annual` is supplied, checkout is intentionally blocked until Control Plane adds an approved annual price and billing period. The site no longer advertises unsupported annual discount collection.
 
-## Documentation
+## CMS, documentation and safety
 
-Full documentation is available in the [`docs/`](./docs/) folder:
+`src/lib/cms-api.ts` provides published content and authorized pricing information; offline fallback data is not payment authority. A subset of pre-Core guides that assert unverified Core operations or unsafe API token practices are held as content drafts pending an authorized Core review. The SMS Studio guide remains published with the actual approved-wallet/KYC policy.
 
-1. **[Getting Started](./docs/01-getting-started.md)** - Installation and project structure
-2. **[Configuration](./docs/02-configuration.md)** - Site settings and feature flags
-3. **[Customization](./docs/03-customization.md)** - Design tokens, branding, and theming
-4. **[Content Guide](./docs/04-content-guide.md)** - Managing blog, docs, changelog, and testimonials
-5. **[Components](./docs/05-components.md)** - Icons, forms, and UI components
-6. **[Pages](./docs/06-pages.md)** - Available pages and routing
-7. **[Dashboard](./docs/07-dashboard.md)** - Dashboard layouts and components
-8. **[Authentication](./docs/08-authentication.md)** - Authentication guidance
-9. **[Deployment](./docs/09-deployment.md)** - Deploying to Vercel, Netlify, or Cloudflare
+Real product screenshots, supplier integrations, security claims, quantified marketing statistics and customer testimonials require evidence before publication. Do not include real customer KYC documents, Paystack secrets, internal tokens or production payment credentials in client-facing Astro code.
 
-## License
+See [Phase A/B audit](docs/PHASE_A_B_MARKETING_AUDIT.md) and [original upstream license](LICENSE).
 
-Virex Theme is free for personal and commercial use under the [MIT License](./LICENSE). Attribution is not required, but a link back to this repository is always appreciated.
+## Enterprise product experience (2026-11)
+
+The Virex marketing site now includes composable Astro sections in `src/components/enterprise/`:
+
+- `LivePlatformWorkbench.astro`: four keyboard-accessible product demonstrations, including fictional SMS DLR and M-Pesa callback state transitions
+- `SmsCampaignCalculator.astro`: editable recipient volume, GSM-7 extension/Unicode segment units, sample rate tiers and sending-window context
+- `DeveloperPlayground.astro`: copyable cURL, Node, PHP/Laravel and Python patterns; not confirmed live endpoints
+- `EnterpriseArchitecture.astro`: accountable service-boundary diagram and Kenyan provider landscape
+- `ProductOperations.astro`, `ComplianceRail.astro`, `IndustryBlueprints.astro`: detail-page operational depth and compliance-informed workflows
+
+The calculator shares its pure segment math with `src/lib/sms-segments.ts`, covered by `tests/enterprise-experience.test.mjs`. For SMS pricing, **all example KES rates are fictional assumptions** and may not be used for billing. Actual rate catalogs, sender approvals, promotions, telco routing and M-Pesa merchant connectivity require independent confirmation. Interactive examples do not transmit anything.
+
+### Quality gates
+
+```bash
+npm ci
+npm run check
+npm run build
+npm test
+```
+
+`npm test` now starts an owned Astro preview on port 4321 and runs all `tests/*.test.mjs`. It rejects an occupied port to prevent testing the wrong website. `.github/workflows/marketing-quality.yml` contains the same pipeline and applies the repository's Prettier formatting to the new pages. If GitHub-hosted runners are unavailable or workflow billing is blocked, run the commands locally before deployment.
+
+### Enterprise sandbox, sender readiness, quote scoping
+
+- `DeveloperPlayground.astro` includes an isolated browser-only JSON request/response simulator for SMS and example payment callbacks. It computes GSM-7/UCS-2 segments using `src/lib/sms-segments.ts`, gives an explicitly fictional wallet estimate, and previews HMAC-SHA256 using a publicly embedded **demonstration-only** key. **No requests are issued to telecom, payment, or Control Plane APIs by the simulator.** A prefix-derived carrier hint cannot determine the current network after number portability.
+- `SenderReadinessMatrix.astro` compares illustrative 24/7 transactional eligibility with 07:00–19:00 EAT promotional scheduling and requires consent and opt-out handling. The checklist verifies local input formatting only; carrier acceptance and KYC approval must be obtained separately.
+- `EnterpriseScopeFields.astro` enriches existing `/demo` and `/contact?topic=enterprise` form submissions with requested SMS volume, channels, and M-Pesa mode. A scoped summary is serialized through the existing CMS lead contract; no second or unapproved submission endpoint was added.
+- `fetchPricingMatrix()` obtains the Control Plane catalog from `PUBLIC_CONTROL_PLANE_URL/api/v1/billing/plans` **at static build time**. It understands `{ data: { plans } }` and `{ plans }`, checks numeric KES prices, maps declared seat/inbox caps and boolean entitlements, and falls back to static canonical tiers if offline. Live checkout remains server-authoritative; an already-generated static website does not refresh catalog prices until the next build.
+- Annual checkout remains unsupported; SMS wallet credits are separate from Core workspace subscriptions.
+
+Quality gate: `npm run check && npm run build && npm test`. The full test command launches a temporary local preview server on port 4321. Run formatting before checks if the branch contains freshly authored Astro components: `npm run format`. GitHub Actions is **read-only** and does not auto-commit into `main`; runners and permissions must be configured for the build to execute. All browser and billing flows require staging acceptance before production use.

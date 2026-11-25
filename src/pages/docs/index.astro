@@ -1,233 +1,537 @@
 ---
 /**
- * Documentation Landing Page
+ * MarkChat Kenya — Documentation Landing Page & Knowledge Center
  *
- * @description
- * A landing page for documentation that displays all available docs
- * organized by section with descriptions and quick links.
+ * Fully CMS-driven documentation catalog powered by Astro Content Collections.
+ * Features:
+ * - Real-time client-side live search over title, description, category, and tags
+ * - Category filter pills with active state indicators
+ * - Empty state with quick reset triggers
+ * - Uniform card heights and balanced visual hierarchy
+ * - Dark mode parity (dark:bg-background)
+ * - Keyboard navigation and accessibility (WCAG 2.2 AA)
  */
 import { getCollection, type CollectionEntry } from 'astro:content';
 import MarketingLayout from '@/layouts/MarketingLayout.astro';
+import DeveloperPlayground from '@/components/enterprise/DeveloperPlayground.astro';
+import ServiceBoundaryNotice from '@/components/common/ServiceBoundaryNotice.astro';
 import { Icon } from 'astro-icon/components';
 import { siteConfig } from '@/config';
 
 type DocsEntry = CollectionEntry<'docs'>;
 
-// Get all non-draft docs
+// Fetch all published docs from collection
 const allDocs = await getCollection('docs', ({ data }: { data: DocsEntry['data'] }) => !data.draft);
 
-// Group docs by section and sort by order
-interface DocItem {
-  title: string;
-  description: string;
-  slug: string;
-  order: number;
+// Sort docs strictly by order
+const sortedDocs = [...allDocs].sort((a: DocsEntry, b: DocsEntry) => a.data.order - b.data.order);
+
+// Helper for estimated reading time based on 200 words per minute
+function getReadingTime(body: string = ''): string {
+  const words = body.trim().split(/\s+/).filter(Boolean).length;
+  const minutes = Math.max(1, Math.ceil(words / 200));
+  return `${minutes} min read`;
 }
 
-interface DocsSection {
-  section: string;
-  items: DocItem[];
-}
-
-const sectionMap = new Map<string, DocItem[]>();
-
-for (const doc of allDocs) {
-  const sectionName = doc.data.section;
-  if (!sectionMap.has(sectionName)) {
-    sectionMap.set(sectionName, []);
-  }
-  sectionMap.get(sectionName)!.push({
-    title: doc.data.title,
-    description: doc.data.description,
-    slug: doc.id,
-    order: doc.data.order,
-  });
-}
-
-// Sort items within each section by order
-const docsSections: DocsSection[] = [];
-for (const [sectionName, items] of sectionMap) {
-  items.sort((a, b) => a.order - b.order);
-  docsSections.push({ section: sectionName, items });
-}
-
-// Sort sections by the minimum order of their items
-docsSections.sort((a, b) => {
-  const aMinOrder = Math.min(...a.items.map((i) => i.order));
-  const bMinOrder = Math.min(...b.items.map((i) => i.order));
-  return aMinOrder - bMinOrder;
-});
-
-// Get the first doc for "Get Started" button
-const firstDoc = allDocs.sort((a: DocsEntry, b: DocsEntry) => a.data.order - b.data.order)[0];
-
-// Section icons mapping
-const sectionIcons: Record<string, string> = {
-  'Getting Started': 'lucide:rocket',
-  Configuration: 'lucide:settings',
-  Customization: 'lucide:palette',
-  Guides: 'lucide:book-open',
-  Reference: 'lucide:file-text',
-  FAQ: 'lucide:help-circle',
+// Category visual accents
+const CATEGORY_ACCENTS: Record<
+  string,
+  { bg: string; text: string; border: string; pillBg: string; pillText: string }
+> = {
+  'Getting Started': {
+    bg: 'bg-blue-50 dark:bg-blue-950/70',
+    text: 'text-blue-600 dark:text-blue-400',
+    border: 'border-blue-200/80 dark:border-blue-800/80',
+    pillBg: 'bg-blue-100/70 dark:bg-blue-950/80',
+    pillText: 'text-blue-700 dark:text-blue-300',
+  },
+  Channels: {
+    bg: 'bg-emerald-50 dark:bg-emerald-950/70',
+    text: 'text-emerald-600 dark:text-emerald-400',
+    border: 'border-emerald-200/80 dark:border-emerald-800/80',
+    pillBg: 'bg-emerald-100/70 dark:bg-emerald-950/80',
+    pillText: 'text-emerald-700 dark:text-emerald-300',
+  },
+  'Fintech & M-Pesa': {
+    bg: 'bg-teal-50 dark:bg-teal-950/70',
+    text: 'text-teal-600 dark:text-teal-400',
+    border: 'border-teal-200/80 dark:border-teal-800/80',
+    pillBg: 'bg-teal-100/70 dark:bg-teal-950/80',
+    pillText: 'text-teal-700 dark:text-teal-300',
+  },
+  'Team Operations': {
+    bg: 'bg-indigo-50 dark:bg-indigo-950/70',
+    text: 'text-indigo-600 dark:text-indigo-400',
+    border: 'border-indigo-200/80 dark:border-indigo-800/80',
+    pillBg: 'bg-indigo-100/70 dark:bg-indigo-950/80',
+    pillText: 'text-indigo-700 dark:text-indigo-300',
+  },
+  'AI Automation': {
+    bg: 'bg-purple-50 dark:bg-purple-950/70',
+    text: 'text-purple-600 dark:text-purple-400',
+    border: 'border-purple-200/80 dark:border-purple-800/80',
+    pillBg: 'bg-purple-100/70 dark:bg-purple-950/80',
+    pillText: 'text-purple-700 dark:text-purple-300',
+  },
+  'Developer APIs': {
+    bg: 'bg-cyan-50 dark:bg-cyan-950/70',
+    text: 'text-cyan-600 dark:text-cyan-400',
+    border: 'border-cyan-200/80 dark:border-cyan-800/80',
+    pillBg: 'bg-cyan-100/70 dark:bg-cyan-950/80',
+    pillText: 'text-cyan-700 dark:text-cyan-300',
+  },
+  Troubleshooting: {
+    bg: 'bg-amber-50 dark:bg-amber-950/70',
+    text: 'text-amber-600 dark:text-amber-400',
+    border: 'border-amber-200/80 dark:border-amber-800/80',
+    pillBg: 'bg-amber-100/70 dark:bg-amber-950/80',
+    pillText: 'text-amber-700 dark:text-amber-300',
+  },
 };
 
-function getSectionIcon(section: string): string {
-  return sectionIcons[section] || 'lucide:file-text';
-}
+const defaultAccent = {
+  bg: 'bg-slate-50 dark:bg-slate-800/70',
+  text: 'text-slate-600 dark:text-slate-400',
+  border: 'border-border dark:border-border',
+  pillBg: 'bg-slate-100 dark:bg-slate-800',
+  pillText: 'text-slate-700 dark:text-slate-300',
+};
+
+// Filter categories
+const categoriesList = [
+  'All Guides',
+  'Getting Started',
+  'Channels',
+  'Fintech & M-Pesa',
+  'Team Operations',
+  'AI Automation',
+  'Developer APIs',
+  'Troubleshooting',
+];
 ---
 
 <MarketingLayout
-  title={`Documentation - ${siteConfig.name}`}
-  description={`Learn how to use ${siteConfig.name}. Guides, tutorials, and reference documentation to help you get started.`}
+  title={`Documentation & Developer Center — ${siteConfig.name}`}
+  description={`Comprehensive documentation for MarkChat: Safaricom Daraja M-Pesa STK, WhatsApp Business Cloud, Africa's Talking SMS, REST APIs, and team collaboration.`}
 >
-  <!-- Hero Section -->
-  <section class="py-section bg-surface">
+  <DeveloperPlayground compact />
+  <ServiceBoundaryNotice />
+  <div
+    class="py-14 sm:py-20 bg-slate-50 dark:bg-background min-h-screen transition-colors duration-200"
+  >
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="max-w-3xl mx-auto text-center">
-        <h1 class="text-4xl sm:text-5xl font-bold text-text">Documentation</h1>
-        <p class="mt-6 text-lg text-text-muted">
-          Everything you need to know about {siteConfig.name}. From getting started to advanced
-          configuration.
+      {/* =============================================================== */}
+      {/* 1. HERO HEADER WITH LIVE SEARCH & CONTROLS                      */}
+      {/* =============================================================== */}
+      <div class="max-w-4xl mb-12">
+        <div
+          class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-950/70 border border-blue-200/80 dark:border-blue-800/80 text-blue-700 dark:text-blue-300 text-xs font-bold tracking-wide uppercase mb-4 shadow-none"
+        >
+          <span class="w-2 h-2 rounded-full bg-blue-600 animate-pulse"></span>
+          <span>MarkChat Documentation & API Reference</span>
+        </div>
+        <h1
+          class="text-4xl sm:text-5xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-tight"
+        >
+          Developer Documentation & <span class="text-primary">Merchant Guides</span>
+        </h1>
+        <p
+          class="mt-4 text-lg sm:text-xl text-slate-600 dark:text-slate-300 leading-relaxed font-normal"
+        >
+          Everything you need to integrate Safaricom Daraja M-Pesa STK pushes, WhatsApp Cloud API,
+          Africa’s Talking Bulk SMS, REST APIs, webhooks, and Markcopilot AI into your workflow.
         </p>
-        <div class="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
-          {
-            firstDoc && (
-              <a
-                href={`/docs/${firstDoc.id}`}
-                class="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-md bg-primary text-white font-medium hover:bg-primary-dark transition-colors"
+
+        {/* Live Search Bar */}
+        <div class="mt-8 relative max-w-2xl">
+          <label for="docs-search-input" class="sr-only">Search documentation</label>
+          <div class="relative">
+            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+              <Icon name="lucide:search" class="w-5 h-5 text-slate-400 dark:text-slate-500" />
+            </div>
+            <input
+              type="text"
+              id="docs-search-input"
+              placeholder="Search guides, channels, APIs, webhooks, or M-Pesa (Press '/' to focus)..."
+              class="w-full pl-11 pr-24 py-3.5 rounded-xl bg-white dark:bg-surface border border-border dark:border-border text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 text-sm shadow-none focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all"
+            />
+            <div
+              class="absolute inset-y-0 right-0 pr-3 flex items-center gap-1.5 pointer-events-none"
+            >
+              <kbd
+                class="hidden sm:inline-block px-2 py-0.5 text-[11px] font-mono text-slate-400 dark:text-slate-500 bg-slate-100 dark:bg-slate-800 rounded border border-border dark:border-border"
               >
-                <Icon name="lucide:book-open" class="w-5 h-5" />
-                Get Started
-              </a>
-            )
-          }
-          <a
-            href="#sections"
-            class="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-md border border-border bg-background text-text font-medium hover:bg-surface transition-colors"
-          >
-            <Icon name="lucide:list" class="w-5 h-5" />
-            Browse All
-          </a>
+                /
+              </kbd>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
-  </section>
 
-  <!-- Quick Links -->
-  <section class="py-12 border-b border-border">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <a
-          href="/docs/installation"
-          class="flex items-center gap-3 p-4 rounded-lg bg-surface hover:bg-surface/80 transition-colors group"
+      {/* =============================================================== */}
+      {/* 2. CATEGORY FILTER PILLS & LIVE COUNTER                         */}
+      {/* =============================================================== */}
+      <div
+        class="mb-10 flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-border dark:border-border pb-6"
+      >
+        <div
+          class="flex items-center gap-2 overflow-x-auto pb-2 md:pb-0 scrollbar-none"
+          role="tablist"
+          aria-label="Documentation categories"
         >
-          <div
-            class="p-2 rounded-md bg-primary/10 text-primary group-hover:bg-primary group-hover:text-white transition-colors"
-          >
-            <Icon name="lucide:download" class="w-5 h-5" />
-          </div>
-          <span class="font-medium text-text">Installation</span>
-        </a>
-        <a
-          href="/docs/configuration"
-          class="flex items-center gap-3 p-4 rounded-lg bg-surface hover:bg-surface/80 transition-colors group"
-        >
-          <div
-            class="p-2 rounded-md bg-primary/10 text-primary group-hover:bg-primary group-hover:text-white transition-colors"
-          >
-            <Icon name="lucide:settings" class="w-5 h-5" />
-          </div>
-          <span class="font-medium text-text">Configuration</span>
-        </a>
-        <a
-          href="/docs/customization"
-          class="flex items-center gap-3 p-4 rounded-lg bg-surface hover:bg-surface/80 transition-colors group"
-        >
-          <div
-            class="p-2 rounded-md bg-primary/10 text-primary group-hover:bg-primary group-hover:text-white transition-colors"
-          >
-            <Icon name="lucide:palette" class="w-5 h-5" />
-          </div>
-          <span class="font-medium text-text">Customization</span>
-        </a>
-        <a
-          href="/docs/faq"
-          class="flex items-center gap-3 p-4 rounded-lg bg-surface hover:bg-surface/80 transition-colors group"
-        >
-          <div
-            class="p-2 rounded-md bg-primary/10 text-primary group-hover:bg-primary group-hover:text-white transition-colors"
-          >
-            <Icon name="lucide:help-circle" class="w-5 h-5" />
-          </div>
-          <span class="font-medium text-text">FAQ</span>
-        </a>
+          {
+            categoriesList.map((cat, idx) => (
+              <button
+                type="button"
+                data-category-filter={cat}
+                class:list={[
+                  'category-filter-btn shrink-0 px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all duration-150 cursor-pointer',
+                  idx === 0
+                    ? 'bg-blue-600 text-white shadow-none'
+                    : 'bg-white dark:bg-surface text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white border border-border dark:border-border hover:border-border dark:hover:border-slate-700',
+                ]}
+              >
+                {cat}
+              </button>
+            ))
+          }
+        </div>
+
+        <div class="text-xs font-medium text-slate-500 dark:text-slate-400 shrink-0">
+          <span id="docs-counter">Showing {sortedDocs.length} of {sortedDocs.length} guides</span>
+        </div>
       </div>
-    </div>
-  </section>
 
-  <!-- Documentation Sections -->
-  <section id="sections" class="py-section">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="space-y-12">
-        {
-          docsSections.map((section) => (
-            <div>
-              <div class="flex items-center gap-3 mb-6">
-                <div class="p-2 rounded-md bg-primary/10 text-primary">
-                  <Icon name={getSectionIcon(section.section)} class="w-6 h-6" />
-                </div>
-                <h2 class="text-2xl font-bold text-text">{section.section}</h2>
-              </div>
-              <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {section.items.map((doc) => (
-                  <a
-                    href={`/docs/${doc.slug}`}
-                    class="block p-6 rounded-lg border border-border bg-background hover:border-primary hover:shadow-md transition-all group"
-                  >
-                    <h3 class="font-semibold text-text group-hover:text-primary transition-colors">
-                      {doc.title}
-                    </h3>
-                    <p class="mt-2 text-sm text-text-muted line-clamp-2">{doc.description}</p>
-                    <div class="mt-4 flex items-center gap-1 text-sm text-primary font-medium">
-                      Read more
-                      <Icon
-                        name="lucide:arrow-right"
-                        class="w-4 h-4 group-hover:translate-x-1 transition-transform"
-                      />
+      {/* =============================================================== */}
+      {/* 3. RESPONSIVE GRID (2 to 3 to 4 Scaling with Floating Cards)   */}
+      {/* =============================================================== */}
+      <section class="mb-20">
+        <div
+          id="docs-grid"
+          class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 lg:gap-8"
+        >
+          {
+            sortedDocs.map((doc) => {
+              const category = doc.data.category || doc.data.section || 'General';
+              const iconName = doc.data.icon || 'lucide:book-open';
+              const accent = CATEGORY_ACCENTS[category] || defaultAccent;
+              const readTime = getReadingTime(doc.body);
+              const difficulty = doc.data.difficulty || 'Beginner';
+              const tagsStr = (doc.data.tags || []).join(' ');
+
+              return (
+                <a
+                  href={`/docs/${doc.id}`}
+                  data-doc-card
+                  data-title={doc.data.title.toLowerCase()}
+                  data-description={doc.data.description.toLowerCase()}
+                  data-category={category}
+                  data-tags={tagsStr.toLowerCase()}
+                  class="bg-white dark:bg-surface border border-border dark:border-border rounded-xl p-6 relative overflow-hidden group cursor-pointer flex flex-col justify-between transition-all duration-300 ease-out hover:-translate-y-2 shadow-none dark:hover: hover:border-blue-500/50 dark:hover:border-blue-500/50 h-full"
+                >
+                  {/* Subtle Ambient Glow Behind Card */}
+                  <div class="absolute -right-8 -bottom-8 w-24 h-24 bg-blue-500/5 dark:bg-blue-500/10 rounded-full blur-xl group-hover:scale-150 transition-transform duration-500 pointer-events-none" />
+
+                  <div class="flex-1 flex flex-col">
+                    {/* Top Row: Icon Container & Doc Number */}
+                    <div class="flex items-center justify-between mb-4">
+                      <div
+                        class:list={[
+                          'w-12 h-12 rounded-xl flex items-center justify-center transition-transform duration-300 group-hover:scale-110 shadow-none border shrink-0',
+                          accent.bg,
+                          accent.text,
+                          accent.border,
+                        ]}
+                      >
+                        <Icon name={iconName} class="w-6 h-6" aria-hidden="true" />
+                      </div>
+                      <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                        Doc {doc.data.order < 10 ? `0${doc.data.order}` : doc.data.order}
+                      </span>
                     </div>
-                  </a>
-                ))}
-              </div>
-            </div>
-          ))
-        }
-      </div>
-    </div>
-  </section>
 
-  <!-- Help Section -->
-  <section class="py-section bg-surface">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="max-w-3xl mx-auto text-center">
-        <h2 class="text-2xl font-bold text-text">Need more help?</h2>
-        <p class="mt-4 text-text-muted">Can't find what you're looking for? We're here to help.</p>
-        <div class="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
+                    {/* Category & Difficulty Badges */}
+                    <div class="flex items-center gap-2 mb-3">
+                      <span
+                        class:list={[
+                          'inline-block px-2.5 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider',
+                          accent.pillBg,
+                          accent.pillText,
+                        ]}
+                      >
+                        {category}
+                      </span>
+                      <span class="inline-block px-2 py-0.5 rounded-md text-[10px] font-medium bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400">
+                        {difficulty}
+                      </span>
+                    </div>
+
+                    {/* Title */}
+                    <h2 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors mb-2 leading-snug line-clamp-2">
+                      {doc.data.title}
+                    </h2>
+
+                    {/* Description (Height Budget Clamped for Uniform Layout) */}
+                    <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 line-clamp-3 leading-relaxed mb-6">
+                      {doc.data.description}
+                    </p>
+                  </div>
+
+                  {/* Bottom Action & Read Time (Always Aligned at Bottom) */}
+                  <div class="flex items-center justify-between text-xs font-semibold text-blue-600 dark:text-blue-400 pt-4 border-t border-border dark:border-border mt-auto">
+                    <span class="text-[11px] font-normal text-slate-400 dark:text-slate-500">
+                      {readTime}
+                    </span>
+                    <span class="flex items-center gap-1 group-hover:translate-x-1.5 transition-transform duration-200 font-bold">
+                      <span>Read guide</span>
+                      <span>&rarr;</span>
+                    </span>
+                  </div>
+                </a>
+              );
+            })
+          }
+        </div>
+
+        {/* Empty State when Search/Filter yields zero matches */}
+        <div
+          id="docs-empty-state"
+          class="hidden text-center py-16 px-4 bg-white dark:bg-surface rounded-xl border border-border dark:border-border shadow-none"
+        >
+          <div
+            class="w-16 h-16 mx-auto mb-4 rounded-xl bg-blue-50 dark:bg-blue-950/70 border border-blue-200 dark:border-blue-800 flex items-center justify-center text-blue-600 dark:text-blue-400"
+          >
+            <Icon name="lucide:search-x" class="w-8 h-8" />
+          </div>
+          <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-1">
+            No Documentation Guides Found
+          </h3>
+          <p class="text-sm text-slate-500 dark:text-slate-400 max-w-md mx-auto mb-6">
+            We couldn't find any guides matching your query. Try searching for terms like <span
+              class="font-semibold text-slate-700 dark:text-slate-300">"mpesa"</span
+            >, <span class="font-semibold text-slate-700 dark:text-slate-300">"whatsapp"</span>, <span
+              class="font-semibold text-slate-700 dark:text-slate-300">"api"</span
+            >, or <span class="font-semibold text-slate-700 dark:text-slate-300">"webhook"</span>.
+          </p>
+          <button
+            type="button"
+            id="docs-reset-btn"
+            class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600 text-white font-semibold text-xs shadow-none hover:bg-blue-700 transition-colors cursor-pointer"
+          >
+            <Icon name="lucide:rotate-ccw" class="w-4 h-4" />
+            <span>Reset Search & Filters</span>
+          </button>
+        </div>
+      </section>
+
+      {/* =============================================================== */}
+      {/* 4. DEVELOPER IN-CHAT SHORTCUTS & CORE WEBHOOK SUMMARY           */}
+      {/* =============================================================== */}
+      <section
+        class="mb-20 p-8 sm:p-10 rounded-xl bg-white dark:bg-surface border border-border dark:border-border shadow-none"
+      >
+        <div class="max-w-2xl mb-8">
+          <h2 class="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">
+            Developer In-Chat Syntax & Webhook Protocols
+          </h2>
+          <p class="mt-2 text-sm text-slate-600 dark:text-slate-400">
+            Frontline agents and external microservices trigger these standardized commands to
+            collect payments and synchronize ticket lifecycles.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div
+            class="p-4 rounded-xl bg-slate-50 dark:bg-surface border border-border dark:border-border font-mono text-xs"
+          >
+            <span class="text-blue-600 dark:text-blue-400 font-bold"
+              >/stk &lt;amount&gt; &lt;phone&gt;</span
+            >
+            <p class="mt-1.5 text-slate-600 dark:text-slate-400 font-sans text-xs">
+              Triggers instant Safaricom SIM Toolkit PIN prompt to the customer’s phone handset.
+            </p>
+          </div>
+
+          <div
+            class="p-4 rounded-xl bg-slate-50 dark:bg-surface border border-border dark:border-border font-mono text-xs"
+          >
+            <span class="text-emerald-600 dark:text-emerald-400 font-bold"
+              >POST /api/v1/daraja/c2b</span
+            >
+            <p class="mt-1.5 text-slate-600 dark:text-slate-400 font-sans text-xs">
+              Encrypted callback validation and confirmation hooks registered on Safaricom Daraja.
+            </p>
+          </div>
+
+          <div
+            class="p-4 rounded-xl bg-slate-50 dark:bg-surface border border-border dark:border-border font-mono text-xs"
+          >
+            <span class="text-purple-600 dark:text-purple-400 font-bold"
+              >@markcopilot &lt;prompt&gt;</span
+            >
+            <p class="mt-1.5 text-slate-600 dark:text-slate-400 font-sans text-xs">
+              Invokes bilingual AI assist to summarize chat histories or translate customer Sheng.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* =============================================================== */}
+      {/* 5. ONBOARDING & ENTERPRISE ARCHITECTURE CALLOUT                 */}
+      {/* =============================================================== */}
+      <section
+        class="rounded-xl p-8 sm:p-12 bg-primary text-white shadow-none relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-8"
+      >
+        <div class="max-w-xl">
+          <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-white mb-2">
+            Need Custom Integration Architecture in Nairobi?
+          </h2>
+          <p class="text-blue-100 text-sm sm:text-base leading-relaxed">
+            Our local technical solutions team assists with Safaricom Daraja production go-live
+            audits, Africa’s Talking Alphanumeric registration, and Meta Business verification.
+          </p>
+        </div>
+
+        <div class="flex flex-col sm:flex-row gap-3 shrink-0 w-full md:w-auto">
           <a
             href="/contact"
-            class="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-md border border-border bg-background text-text font-medium hover:bg-background/80 transition-colors"
+            class="inline-flex items-center justify-center px-6 py-3 rounded-xl bg-white text-blue-700 font-bold text-sm shadow-none hover:bg-blue-50 transition-colors"
           >
-            <Icon name="lucide:mail" class="w-5 h-5" />
-            Contact Support
+            Contact Solutions Team
           </a>
           <a
-            href="/faq"
-            class="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-md border border-border bg-background text-text font-medium hover:bg-background/80 transition-colors"
+            href="/demo"
+            class="inline-flex items-center justify-center px-6 py-3 rounded-xl border border-white/40 text-white font-semibold text-sm hover:bg-background transition-colors"
           >
-            <Icon name="lucide:help-circle" class="w-5 h-5" />
-            View FAQ
+            Book Architecture Review
           </a>
         </div>
-      </div>
+      </section>
     </div>
-  </section>
+  </div>
 </MarketingLayout>
+
+<script>
+  function setupDocsDirectory() {
+    const searchInput = document.getElementById('docs-search-input') as HTMLInputElement | null;
+    const filterButtons = document.querySelectorAll<HTMLButtonElement>('.category-filter-btn');
+    const docCards = document.querySelectorAll<HTMLElement>('[data-doc-card]');
+    const counterEl = document.getElementById('docs-counter');
+    const emptyStateEl = document.getElementById('docs-empty-state');
+    const resetBtn = document.getElementById('docs-reset-btn');
+    const gridEl = document.getElementById('docs-grid');
+
+    if (!docCards.length) return;
+
+    let activeCategory = 'All Guides';
+    let searchQuery = '';
+    const totalDocs = docCards.length;
+
+    function applyFilters() {
+      let visibleCount = 0;
+      const q = searchQuery.toLowerCase().trim();
+
+      docCards.forEach((card) => {
+        const title = card.getAttribute('data-title') || '';
+        const description = card.getAttribute('data-description') || '';
+        const category = card.getAttribute('data-category') || '';
+        const tags = card.getAttribute('data-tags') || '';
+
+        const matchesCategory = activeCategory === 'All Guides' || category === activeCategory;
+        const matchesSearch =
+          !q ||
+          title.includes(q) ||
+          description.includes(q) ||
+          category.toLowerCase().includes(q) ||
+          tags.includes(q);
+
+        if (matchesCategory && matchesSearch) {
+          card.classList.remove('hidden');
+          visibleCount++;
+        } else {
+          card.classList.add('hidden');
+        }
+      });
+
+      // Update counter
+      if (counterEl) {
+        counterEl.textContent = `Showing ${visibleCount} of ${totalDocs} guides`;
+      }
+
+      // Empty state toggle
+      if (visibleCount === 0) {
+        emptyStateEl?.classList.remove('hidden');
+        gridEl?.classList.add('hidden');
+      } else {
+        emptyStateEl?.classList.add('hidden');
+        gridEl?.classList.remove('hidden');
+      }
+    }
+
+    // Category button clicks
+    filterButtons.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const cat = btn.getAttribute('data-category-filter') || 'All Guides';
+        activeCategory = cat;
+
+        filterButtons.forEach((b) => {
+          b.classList.remove('bg-blue-600', 'text-white', 'shadow-none');
+          b.classList.add('bg-white', 'dark:bg-surface', 'text-slate-600', 'dark:text-slate-400');
+        });
+
+        btn.classList.add('bg-blue-600', 'text-white', 'shadow-none');
+        btn.classList.remove(
+          'bg-white',
+          'dark:bg-surface',
+          'text-slate-600',
+          'dark:text-slate-400'
+        );
+
+        applyFilters();
+      });
+    });
+
+    // Real-time search input
+    searchInput?.addEventListener('input', (e) => {
+      searchQuery = (e.target as HTMLInputElement).value;
+      applyFilters();
+    });
+
+    // Keyboard shortcut '/' to focus search
+    window.addEventListener('keydown', (e) => {
+      if (e.key === '/' && document.activeElement !== searchInput) {
+        e.preventDefault();
+        searchInput?.focus();
+      }
+    });
+
+    // Reset button
+    resetBtn?.addEventListener('click', () => {
+      if (searchInput) searchInput.value = '';
+      searchQuery = '';
+      activeCategory = 'All Guides';
+
+      filterButtons.forEach((b) => {
+        const cat = b.getAttribute('data-category-filter');
+        if (cat === 'All Guides') {
+          b.classList.add('bg-blue-600', 'text-white', 'shadow-none');
+          b.classList.remove(
+            'bg-white',
+            'dark:bg-surface',
+            'text-slate-600',
+            'dark:text-slate-400'
+          );
+        } else {
+          b.classList.remove('bg-blue-600', 'text-white', 'shadow-none');
+          b.classList.add('bg-white', 'dark:bg-surface', 'text-slate-600', 'dark:text-slate-400');
+        }
+      });
+
+      applyFilters();
+    });
+  }
+
+  // Setup on page load and Astro view transitions
+  setupDocsDirectory();
+  document.addEventListener('astro:page-load', setupDocsDirectory);
+</script>

@@ -1,0 +1,16 @@
+{
+  "verified": false,
+  "captureVersion": 1,
+  "inbox": {
+    "light": null,
+    "dark": null
+  },
+  "mpesa": {
+    "light": null,
+    "dark": null
+  },
+  "markcopilot": {
+    "light": null,
+    "dark": null
+  }
+}

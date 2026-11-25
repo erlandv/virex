@@ -1,179 +1,111 @@
 ---
+/**
+ * Core-only public pricing. The separate SMS product is not advertised here.
+ * Subscription figures continue to come from the published billing catalog.
+ */
 import MarketingLayout from '@/layouts/MarketingLayout.astro';
 import PricingTable from '@sections/pricing/PricingTable.astro';
-import ComparisonTable from '@sections/pricing/ComparisonTable.astro';
-import TrustBadges from '@sections/pricing/TrustBadges.astro';
 import FAQSection from '@sections/content/FAQSection.astro';
 import CTA from '@sections/marketing/CTA.astro';
+import MCSection from '@/components/design-system/MCSection.astro';
+import MCSectionHeading from '@/components/design-system/MCSectionHeading.astro';
+import MCCard from '@/components/design-system/MCCard.astro';
+import MCStatusBadge from '@/components/design-system/MCStatusBadge.astro';
 import { siteConfig } from '@/config';
+import { fetchPricingMatrix, fetchFaqs } from '@/lib/cms-api';
 
-const planNames = ['Hobby', 'Pro', 'Enterprise'];
+const [matrix, faqsList] = await Promise.all([fetchPricingMatrix(), fetchFaqs()]);
+const deferred =
+  /\bsms\b|sender\s+id|byoc|\bsla\b|saml|sso|whitelabel|dedicated\s+support|shortcode|audit\s+logs?|agent\s+capacity/i;
 
-const plans = [
-  {
-    name: 'Hobby',
-    monthlyPrice: 0,
-    description: 'Perfect for side projects and experiments',
-    features: [
-      '3 projects',
-      '100 GB bandwidth/month',
-      'Automatic HTTPS',
-      'Preview deployments',
-      'Community support',
-    ],
-    highlighted: false,
-    cta: { label: 'Start Free', href: '/register' },
+const plans = matrix.tiers.map((tier) => ({
+  name: tier.name,
+  monthlyPrice: tier.monthlyPrice,
+  customPrice: tier.monthlyPrice === null ? 'Custom' : undefined,
+  description: deferred.test(tier.description)
+    ? 'Customer conversation workspace with features and integrations confirmed during onboarding.'
+    : tier.description,
+  features: tier.features.filter((feature) => !deferred.test(feature)).slice(0, 5),
+  highlighted: tier.highlighted,
+  badge: deferred.test(tier.badge || '') ? 'Workspace plan' : tier.badge,
+  cta: {
+    label: tier.ctaLabel,
+    href: /^\/(?!\/)/.test(tier.ctaHref) ? tier.ctaHref : '/contact',
   },
-  {
-    name: 'Pro',
-    monthlyPrice: 20,
-    description: 'For professional developers and small teams',
-    features: [
-      'Unlimited projects',
-      '1 TB bandwidth/month',
-      'Team collaboration (5 members)',
-      'Priority builds',
-      'Advanced analytics',
-      'Email support',
-    ],
-    highlighted: true,
-    cta: { label: 'Start Free Trial', href: '/register' },
-  },
-  {
-    name: 'Enterprise',
-    monthlyPrice: null,
-    customPrice: 'Custom',
-    description: 'For organizations with advanced needs',
-    features: [
-      'Unlimited everything',
-      'Custom bandwidth limits',
-      'Unlimited team members',
-      'SSO & SAML',
-      'SLA guarantee',
-      'Dedicated support',
-      'Custom contracts',
-    ],
-    highlighted: false,
-    cta: { label: 'Contact Sales', href: '/contact' },
-  },
-];
+}));
 
-const faqs = [
-  {
-    question: 'Can I change plans later?',
-    answer:
-      "Yes, you can upgrade or downgrade your plan at any time. When upgrading, you'll be charged the prorated difference. When downgrading, the new rate applies at your next billing cycle.",
-  },
-  {
-    question: 'What happens if I exceed my bandwidth limit?',
-    answer:
-      "We'll notify you when you're approaching your limit. If you exceed it, your sites will continue to work—we'll just reach out to discuss upgrading your plan or purchasing additional bandwidth.",
-  },
-  {
-    question: 'Do you offer discounts for annual billing?',
-    answer:
-      'Yes! Annual plans come with a 20% discount. You can switch to annual billing from your account settings at any time.',
-  },
-  {
-    question: 'Is there a free trial for paid plans?',
-    answer:
-      "Absolutely. All paid plans come with a 14-day free trial. No credit card required to start—you'll only be charged if you decide to continue after the trial.",
-  },
-  {
-    question: 'What payment methods do you accept?',
-    answer:
-      'We accept all major credit cards (Visa, Mastercard, American Express) and PayPal. Enterprise customers can also pay via invoice with NET-30 terms.',
-  },
-  {
-    question: "Can I get a refund if I'm not satisfied?",
-    answer:
-      "Yes, we offer a 30-day money-back guarantee on all paid plans. If you're not happy with Virex, contact support for a full refund.",
-  },
-];
-
-const comparisonCategories = [
-  {
-    name: 'Usage',
-    features: [
-      { name: 'Projects', values: ['3', 'Unlimited', 'Unlimited'] },
-      { name: 'Bandwidth', values: ['100 GB/mo', '1 TB/mo', 'Custom'] },
-      { name: 'Build minutes', values: ['100/mo', '1,000/mo', 'Unlimited'] },
-      { name: 'Concurrent builds', values: ['1', '3', '10+'] },
-    ],
-  },
-  {
-    name: 'Features',
-    features: [
-      { name: 'Preview deployments', values: [true, true, true] },
-      { name: 'Automatic HTTPS', values: [true, true, true] },
-      { name: 'Custom domains', values: ['1', '10', 'Unlimited'] },
-      { name: 'Edge functions', values: [false, true, true] },
-      { name: 'Analytics', values: [false, true, true] },
-      { name: 'Password protection', values: [false, true, true] },
-    ],
-  },
-  {
-    name: 'Collaboration',
-    features: [
-      { name: 'Team members', values: [false, '5', 'Unlimited'] },
-      { name: 'Role-based access', values: [false, true, true] },
-      { name: 'Audit logs', values: [false, false, true] },
-      { name: 'SSO/SAML', values: [false, false, true] },
-    ],
-  },
-  {
-    name: 'Support',
-    features: [
-      { name: 'Community support', values: [true, true, true] },
-      { name: 'Email support', values: [false, true, true] },
-      { name: 'Priority support', values: [false, false, true] },
-      { name: 'Dedicated account manager', values: [false, false, true] },
-      { name: 'SLA guarantee', values: [false, false, true] },
-    ],
-  },
-];
+const pricingFaqs = faqsList
+  .filter((faq) => ['pricing', 'mpesa', 'general'].includes(faq.category))
+  .filter((faq) => !deferred.test(faq.question + ' ' + faq.answer))
+  .slice(0, 6)
+  .map((faq) => ({ question: faq.question, answer: faq.answer }));
 ---
 
 <MarketingLayout
-  title={`Pricing - ${siteConfig.name}`}
-  description="Simple, transparent pricing for teams of all sizes. Start free and scale as you grow."
+  title={`Pricing & Plans — ${siteConfig.name} Kenya`}
+  description="Explore current MarkChat Core workspace subscriptions in KES, compare collaboration features, and arrange approved messaging and M-Pesa provider setup."
 >
   <PricingTable
-    title="Simple, transparent pricing"
-    subtitle="Start free and scale as you grow. No hidden fees, no surprises."
+    flatPreview
+    title="Simple, transparent Core workspace pricing"
+    subtitle="Choose a plan that suits your team. Provider setup, permissions and transaction fees are confirmed separately."
     plans={plans}
-    annualDiscount={20}
     defaultPeriod="monthly"
+    background="muted"
+    footerLink={{ label: 'Discuss business requirements', href: '/contact' }}
   />
 
-  <TrustBadges
-    guarantee={{
-      title: '30-day money-back guarantee',
-      description:
-        'Try risk-free. Not satisfied? Get a full refund within 30 days, no questions asked.',
-    }}
-  />
+  <MCSection tone="default" id="billing-principles">
+    <div class="mb-9">
+      <MCSectionHeading
+        eyebrow="How billing works"
+        title="A clear path from your plan to an active workspace"
+        description="Core subscriptions cover your MarkChat workspace. Channel providers and payment integrations require their own configuration and approval."
+      />
+    </div>
+    <div class="grid gap-4 md:grid-cols-3">
+      <MCCard>
+        <MCStatusBadge status="available" label="Workspace subscription" />
+        <h3 class="mt-4 text-lg font-semibold text-text">Choose a workspace</h3>
+        <p class="mt-3 text-sm leading-relaxed text-text-muted">
+          Compare published monthly subscription prices and included collaboration features.
+        </p>
+      </MCCard>
+      <MCCard>
+        <MCStatusBadge status="integration" label="Provider approval" />
+        <h3 class="mt-4 text-lg font-semibold text-text">Connect eligible channels</h3>
+        <p class="mt-3 text-sm leading-relaxed text-text-muted">
+          WhatsApp and other integrations depend on permissions and your provider account.
+        </p>
+      </MCCard>
+      <MCCard>
+        <MCStatusBadge status="integration" label="Merchant configuration" />
+        <h3 class="mt-4 text-lg font-semibold text-text">Configure M-Pesa</h3>
+        <p class="mt-3 text-sm leading-relaxed text-text-muted">
+          Authorized Daraja payment workflows require merchant credentials and callback
+          verification.
+        </p>
+      </MCCard>
+    </div>
+  </MCSection>
 
-  <ComparisonTable
-    title="Compare plans in detail"
-    subtitle="See exactly what's included in each plan."
-    plans={planNames}
-    categories={comparisonCategories}
-    highlightedPlan={1}
-    background="default"
-  />
-
-  <FAQSection
-    title="Frequently asked questions"
-    faqs={faqs}
-    variant="simple"
-    background="default"
-  />
+  {
+    pricingFaqs.length > 0 && (
+      <FAQSection
+        title="Frequently asked billing questions"
+        subtitle="Current subscription terms and provider readiness."
+        faqs={pricingFaqs}
+        variant="simple"
+        background="muted"
+      />
+    )
+  }
 
   <CTA
-    title="Need something custom?"
-    description="Have specific requirements or need a custom solution? Our team is happy to discuss your needs and create a plan that works for you."
-    action={{ label: 'Talk to Sales', href: '/contact' }}
-    background="muted"
+    title="Need help choosing the right plan?"
+    description="Talk with our Nairobi team about workspace seats, messaging channels and authorized payment integrations."
+    action={{ label: 'Book a Demo', href: '/demo' }}
+    secondaryAction={{ label: 'Contact Sales', href: '/contact' }}
+    background="default"
   />
 </MarketingLayout>

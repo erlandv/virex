@@ -1,62 +1,72 @@
 /**
- * Contact Page Configuration
+ * Contact Page Configuration for MarkChat
  *
- * @description
- * Contact information, methods, and FAQ data for the contact page.
- * Modify these values to customize your contact page content.
+ * Verified contact details, communication channels, and FAQs tailored for Kenyan businesses.
  */
 
 import type { ContactInfo, ContactMethod, ContactFAQ } from '../lib/types';
 
-/** Contact information used across contact page and legal pages */
 export const contact: ContactInfo = {
-  email: 'hello@virex.example.com',
-  supportEmail: 'support@virex.example.com',
-  salesEmail: 'sales@virex.example.com',
+  email: 'hello@markchat.co.ke',
+  supportEmail: 'support@markchat.co.ke',
+  salesEmail: 'sales@markchat.co.ke',
+  partnersEmail: 'partners@markchat.co.ke',
+  hours: 'Monday – Saturday, 8:00 AM – 6:00 PM EAT',
   address: {
-    street: '123 Market Street, Suite 400',
-    city: 'San Francisco',
-    state: 'CA',
-    zip: '94102',
-    country: 'United States',
+    street: 'Nairobi Operations Hub',
+    city: 'Nairobi',
+    state: 'Nairobi County',
+    zip: '00100',
+    country: 'Kenya',
   },
 };
 
-/** Contact methods displayed on the contact page */
 export const contactMethods: ContactMethod[] = [
   {
+    icon: 'lucide:trending-up',
+    label: 'Sales & Onboarding',
+    value: contact.salesEmail || 'sales@markchat.co.ke',
+    href: `mailto:${contact.salesEmail || 'sales@markchat.co.ke'}`,
+  },
+  {
+    icon: 'lucide:life-buoy',
+    label: 'Technical Support',
+    value: contact.supportEmail || 'support@markchat.co.ke',
+    href: `mailto:${contact.supportEmail || 'support@markchat.co.ke'}`,
+  },
+  {
+    icon: 'lucide:layers',
+    label: 'Partnerships & Integrations',
+    value: contact.partnersEmail || 'partners@markchat.co.ke',
+    href: `mailto:${contact.partnersEmail || 'partners@markchat.co.ke'}`,
+  },
+  {
     icon: 'lucide:mail',
-    label: 'Email',
+    label: 'General Inquiries',
     value: contact.email,
     href: `mailto:${contact.email}`,
   },
-  {
-    icon: 'simple-icons:discord',
-    label: 'Discord',
-    value: 'Join Discord',
-    href: 'https://discord.gg/virex',
-  },
-  {
-    icon: 'lucide:twitter',
-    label: 'Twitter',
-    value: '@virex',
-    href: 'https://twitter.com/virex',
-  },
 ];
 
-/** FAQ items displayed on the contact page */
 export const contactFAQs: ContactFAQ[] = [
   {
-    question: "What's your typical response time?",
-    answer: 'We respond to most inquiries within 24 hours during business days.',
-  },
-  {
-    question: 'Do you offer phone support?',
+    question: 'How quickly does the MarkChat team respond to inquiries?',
     answer:
-      'Phone support is available for Enterprise customers. Others can reach us via email or Discord.',
+      'Our Nairobi operations and merchant success teams review submissions Monday through Saturday, 8:00 AM to 6:00 PM EAT. You will receive a direct email or phone follow-up tailored to your inquiry.',
   },
   {
-    question: 'How do I report a bug?',
-    answer: 'Use the form with "Technical support" as subject, or open an issue on our GitHub.',
+    question: 'Can you help set up our Safaricom Daraja API Paybill or Till credentials?',
+    answer:
+      'Yes. Our merchant onboarding team assists you step-by-step through Daraja portal configuration, production shortcode provisioning, C2B callback URLs, and live STK testing.',
+  },
+  {
+    question: 'Can we integrate our existing Africa’s Talking Bulk SMS account (BYOC)?',
+    answer:
+      'Absolutely. With Bring Your Own Carrier (BYOC), you connect your existing Africa’s Talking API key and Alphanumeric Sender ID directly with zero markup on telco SMS rates.',
+  },
+  {
+    question: 'Do you offer guided product demonstrations for our team?',
+    answer:
+      'Yes. For retail stores, clinics, pharmacy chains, and high-volume merchant teams, we provide tailored Google Meet demonstrations or in-person sessions in Nairobi.',
   },
 ];

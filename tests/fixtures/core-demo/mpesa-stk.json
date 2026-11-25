@@ -1,0 +1,16 @@
+{
+  "data": {
+    "checkoutRequestId": "DEMO-STK-0001",
+    "merchantRequestId": "DEMO-REQUEST-0001",
+    "amount": 4500,
+    "currency": "KES",
+    "msisdn": "+254700000001",
+    "resultCode": "SIMULATED",
+    "status": "demo_preview",
+    "verified": false,
+    "paid": false,
+    "message": "Simulated M-Pesa /stk checkout: no payment initiated or settled",
+    "reference": "DEMO-STK-0001"
+  },
+  "demo": true
+}

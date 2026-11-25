@@ -1,7 +1,6 @@
 ---
 import DocsLayout from '@/layouts/DocsLayout.astro';
 import { getCollection, render, type CollectionEntry } from 'astro:content';
-import { siteConfig } from '@/config';
 
 type DocsEntry = CollectionEntry<'docs'>;
 
@@ -22,9 +21,14 @@ const { Content } = await render(doc);
 ---
 
 <DocsLayout
-  title={`${doc.data.title} - ${siteConfig.name} Docs`}
+  title={doc.data.title}
   description={doc.data.description}
-  section={doc.data.section}
+  category={doc.data.category || doc.data.section}
+  section={doc.data.section || doc.data.category}
+  icon={doc.data.icon || 'lucide:book-open'}
+  difficulty={doc.data.difficulty}
+  lastUpdated={doc.data.lastUpdated}
+  body={doc.body}
 >
   <Content />
 </DocsLayout>

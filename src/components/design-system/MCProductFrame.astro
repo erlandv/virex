@@ -1,0 +1,59 @@
+---
+import MCScreenshotFallback from './MCScreenshotFallback.astro';
+
+interface Props {
+  src?: string | null;
+  alt: string;
+  label?: string;
+  class?: string;
+}
+
+const { src, alt, label, class: className = '' } = Astro.props;
+---
+
+<figure
+  data-mc-media-frame
+  class:list={[
+    'overflow-hidden rounded-xl border border-border bg-surface-elevated p-2 sm:p-3',
+    className,
+  ]}
+>
+  {
+    src && (
+      <img
+        data-mc-media-image
+        src={src}
+        alt={alt}
+        loading="lazy"
+        decoding="async"
+        class="block h-auto w-full rounded-md border border-border object-contain"
+      />
+    )
+  }
+  <div data-mc-media-fallback class:list={[src && 'hidden']}>
+    <MCScreenshotFallback label={label || alt} />
+  </div>
+  <slot name="caption" />
+</figure>
+
+<script>
+  function initMCProductFrames() {
+    document.querySelectorAll<HTMLImageElement>('[data-mc-media-image]').forEach((image) => {
+      if (image.dataset.fallbackBound === 'true') return;
+      image.dataset.fallbackBound = 'true';
+      const showFallback = () => {
+        image.hidden = true;
+        image.classList.add('hidden');
+        image
+          .closest('[data-mc-media-frame]')
+          ?.querySelector<HTMLElement>('[data-mc-media-fallback]')
+          ?.classList.remove('hidden');
+      };
+      image.addEventListener('error', showFallback);
+      if (image.complete && image.naturalWidth === 0) showFallback();
+    });
+  }
+
+  initMCProductFrames();
+  document.addEventListener('astro:page-load', initMCProductFrames);
+</script>

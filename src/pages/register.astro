@@ -1,50 +1,45 @@
 ---
 /**
- * Register Page
+ * MarkChat Customer Registration Page
  *
- * @description
- * User registration page with form and social authentication options.
- * Uses demo mode by default - configure action prop on RegisterForm for real backend.
+ * Implements the minimal, distraction-free AuthLayout built directly on BaseLayout.
+ * Centered Virex card UI with native semantic OKLCH tokens and two-step registration wizard.
  */
-import MarketingLayout from '@/layouts/MarketingLayout.astro';
-import RegisterForm from '@forms/RegisterForm.astro';
-import SocialAuthButtons from '@forms/SocialAuthButtons.astro';
+import AuthLayout from '@/layouts/AuthLayout.astro';
+import RegisterForm from '@/components/forms/RegisterForm.astro';
 import { siteConfig } from '@/config';
+
+const url = new URL(Astro.request.url);
+const requestedPlan = url.searchParams.get('plan') || 'growth';
+const selectedPlan = ['starter', 'growth', 'scale'].includes(requestedPlan)
+  ? requestedPlan
+  : 'growth';
+const interval = url.searchParams.get('interval') === 'annual' ? 'annual' : 'monthly';
 ---
 
-<MarketingLayout
-  title={`Create Account - ${siteConfig.name}`}
-  description="Create your free account and start building with our platform today."
+<AuthLayout
+  title={`Create Account — ${siteConfig.name} Kenya`}
+  description="Register your MarkChat workspace for connected customer conversations, Markcopilot AI assistance, and configured M-Pesa payment workflows."
+  pageType="register"
 >
-  <section class="py-section">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="max-w-md mx-auto">
-        <!-- Card container -->
-        <div class="bg-surface rounded-lg border border-border p-8 shadow-sm">
-          <!-- Header -->
-          <div class="text-center mb-8">
-            <h1 class="text-2xl font-bold text-text">Create your account</h1>
-            <p class="mt-2 text-text-muted">Start your free trial today</p>
-          </div>
-
-          <!-- Register Form -->
-          <RegisterForm />
-
-          <!-- Social Auth -->
-          <SocialAuthButtons dividerText="Or sign up with" variant="register" />
-
-          <!-- Login link -->
-          <p class="mt-6 text-center text-sm text-text-muted">
-            Already have an account?{' '}
-            <a
-              href="/login"
-              class="font-medium text-primary hover:text-primary-dark transition-colors"
-            >
-              Sign in
-            </a>
-          </p>
-        </div>
-      </div>
+  <div class="max-w-xl mx-auto w-full">
+    <!-- Centered Header with Title & Subheadline -->
+    <div class="text-center mb-8">
+      <h1 class="text-2xl sm:text-3xl font-bold text-text tracking-tight">
+        Create your MarkChat Workspace
+      </h1>
+      <p class="mt-2 text-sm text-text-muted">
+        Start your 72-hour trial with unified WhatsApp, in-chat M-Pesa, and team inbox.
+      </p>
     </div>
-  </section>
-</MarketingLayout>
+
+    <!-- Virex Card Container -->
+    <div class="bg-surface border border-border rounded-2xl shadow-sm p-6 sm:p-8">
+      <RegisterForm
+        defaultPlanId={selectedPlan}
+        billingInterval={interval}
+        redirectUrl={`/billing?plan=${selectedPlan}&interval=${interval}`}
+      />
+    </div>
+  </div>
+</AuthLayout>

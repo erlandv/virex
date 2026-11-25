@@ -1,0 +1,120 @@
+---
+import MCCard from './MCCard.astro';
+import { Icon } from 'astro-icon/components';
+
+interface Feature {
+  id: string;
+  title: string;
+  description: string;
+  icon: string;
+  href?: string;
+  illustration?: string;
+}
+interface Props {
+  features: Feature[];
+}
+const { features } = Astro.props;
+const primary = features[0];
+const supporting = features.slice(3);
+---
+
+<div class="space-y-4" data-mc-feature-bento>
+  <div class="grid gap-4 lg:grid-cols-[1.1fr_0.9fr]">
+    {
+      primary && (
+        <MCCard class="group flex flex-col justify-between overflow-hidden bg-surface-elevated">
+          <div>
+            <p class="text-xs font-bold uppercase tracking-widest text-primary">Core workspace</p>
+            <h3 class="mt-4 text-2xl font-bold tracking-tight text-text sm:text-3xl">
+              {primary.title}
+            </h3>
+            <p class="mt-3 max-w-md text-sm leading-relaxed text-text-muted">
+              {primary.description}
+            </p>
+            {primary.href && (
+              <a
+                href={primary.href}
+                class="mt-5 inline-flex text-sm font-bold text-primary hover:underline"
+              >
+                Explore the workspace <span aria-hidden="true"> →</span>
+              </a>
+            )}
+          </div>
+          {primary.illustration && (
+            <div class="mt-8 overflow-hidden rounded-xl border border-border bg-surface p-6">
+              <img
+                src={primary.illustration}
+                alt=""
+                loading="lazy"
+                aria-hidden="true"
+                class="mx-auto h-48 w-full object-contain"
+              />
+            </div>
+          )}
+        </MCCard>
+      )
+    }
+    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-1">
+      {
+        features.slice(1, 3).map((feature) => (
+          <MCCard class="group grid items-center gap-4 sm:grid-cols-[1fr_120px]">
+            <div>
+              <h3 class="text-xl font-bold text-text">{feature.title}</h3>
+              <p class="mt-3 text-sm leading-relaxed text-text-muted">{feature.description}</p>
+              {feature.href && (
+                <a
+                  href={feature.href}
+                  class="mt-4 inline-flex text-sm font-semibold text-primary hover:underline"
+                >
+                  Explore feature <span aria-hidden="true"> →</span>
+                </a>
+              )}
+            </div>
+            {feature.illustration ? (
+              <img
+                src={feature.illustration}
+                alt=""
+                aria-hidden="true"
+                loading="lazy"
+                class="h-28 w-full rounded-lg bg-surface object-contain"
+              />
+            ) : (
+              <Icon name={feature.icon} class="h-9 w-9 text-primary" />
+            )}
+          </MCCard>
+        ))
+      }
+    </div>
+  </div>
+  <div class="grid gap-4 sm:grid-cols-2">
+    {
+      supporting.map((feature) => (
+        <MCCard class="grid items-start gap-5 sm:grid-cols-[96px_minmax(0,1fr)]">
+          {feature.illustration ? (
+            <img
+              src={feature.illustration}
+              alt=""
+              aria-hidden="true"
+              loading="lazy"
+              class="h-24 w-full rounded-lg bg-surface object-contain"
+            />
+          ) : (
+            <Icon name={feature.icon} class="h-8 w-8 text-primary" />
+          )}
+          <div>
+            <h3 class="text-base font-bold text-text">{feature.title}</h3>
+            <p class="mt-2 text-sm leading-relaxed text-text-muted">{feature.description}</p>
+            {feature.href && (
+              <a
+                href={feature.href}
+                class="mt-3 inline-flex text-sm font-semibold text-primary hover:underline"
+              >
+                Explore feature <span aria-hidden="true"> →</span>
+              </a>
+            )}
+          </div>
+        </MCCard>
+      ))
+    }
+  </div>
+</div>

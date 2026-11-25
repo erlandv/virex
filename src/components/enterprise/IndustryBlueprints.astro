@@ -1,0 +1,111 @@
+---
+import { Icon } from 'astro-icon/components';
+const journeys = [
+  {
+    icon: 'lucide:shopping-bag',
+    slug: 'ecommerce',
+    name: 'Retail & E-Commerce',
+    trigger: 'Instagram or WhatsApp stock inquiry',
+    action: 'Assign agent, confirm size, request approved payment',
+    outcome: 'Order-ready handoff with a verifiable record',
+    metric: 'Measure inquiry-to-order conversion',
+  },
+  {
+    icon: 'lucide:stethoscope',
+    slug: 'healthcare',
+    name: 'Clinics & Pharmacies',
+    trigger: 'Patient asks about availability or appointment',
+    action: 'Route to authorized staff; suppress clinical details',
+    outcome: 'Consent-aware reminder or assisted scheduling',
+    metric: 'Measure appointment follow-through',
+  },
+  {
+    icon: 'lucide:graduation-cap',
+    slug: 'education',
+    name: 'Schools & Universities',
+    trigger: 'Guardian requests fees or timetable',
+    action: 'Respond from approved material and verify fee references',
+    outcome: 'Clear fee-status escalation and relevant alerts',
+    metric: 'Measure service response time',
+  },
+  {
+    icon: 'lucide:landmark',
+    slug: 'fintech',
+    name: 'SACCOs & Fintech',
+    trigger: 'Member needs account or payment help',
+    action: 'Authenticate identity and escalate protected requests',
+    outcome: 'Audited response without exposing balances in chat',
+    metric: 'Measure verified case resolution',
+  },
+  {
+    icon: 'lucide:truck',
+    slug: 'automotive-logistics',
+    name: 'Logistics & Delivery',
+    trigger: 'Shipment updates and failed delivery attempts',
+    action: 'Dispatch approved notifications with sender checks',
+    outcome: 'Acknowledged handoff to dispatch teams',
+    metric: 'Measure redelivery and status inquiry volume',
+  },
+];
+---
+
+<section
+  class="py-16 sm:py-24 bg-background border-b border-border"
+  aria-labelledby="industry-blueprint-title"
+>
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="max-w-3xl">
+      <p class="text-xs font-bold uppercase tracking-wider text-primary">
+        Industry operating blueprints
+      </p><h2 id="industry-blueprint-title" class="text-3xl sm:text-4xl font-bold text-text mt-3">
+        From the first message to the next measurable outcome.
+      </h2><p class="text-text-muted mt-4">
+        Illustrative implementation journeys—not customer results or guaranteed ROI. Each can be
+        adapted to actual integrations, consent rules and staffing.
+      </p>
+    </div>
+    <div class="grid lg:grid-cols-2 gap-4 mt-10">
+      {
+        journeys.map((item) => (
+          <article class="rounded-xl border border-border bg-surface/40 p-6 flex flex-col">
+            <>
+              <div class="flex items-center gap-3">
+                <>
+                  <div class="w-10 h-10 rounded-lg bg-primary/10 text-primary inline-flex justify-center items-center">
+                    <Icon name={item.icon} class="w-5 h-5" />
+                  </div>
+                  <h3 class="font-bold text-lg text-text">{item.name}</h3>
+                </>
+              </div>
+              <ol class="mt-6 grid sm:grid-cols-3 gap-3">
+                {[
+                  [item.trigger, 'Signal'],
+                  [item.action, 'Workflow'],
+                  [item.outcome, 'Outcome'],
+                ].map(([detail, label], i) => (
+                  <li class="border-l-2 border-primary/40 pl-3">
+                    <span class="text-[11px] uppercase tracking-wider font-semibold text-primary">
+                      {i + 1}. {label}
+                    </span>
+                    <p class="text-sm text-text mt-2">{detail}</p>
+                  </li>
+                ))}
+              </ol>
+              <div class="flex flex-wrap justify-between items-center gap-3 mt-auto pt-6">
+                <>
+                  <p class="text-xs font-medium text-text-muted">{item.metric}</p>
+                  <a
+                    href={'/solutions/' + item.slug}
+                    class="text-xs font-bold text-primary hover:underline inline-flex gap-1 items-center"
+                  >
+                    Explore blueprint <Icon name="lucide:arrow-up-right" class="w-3.5 h-3.5" />
+                  </a>
+                </>
+              </div>
+            </>
+          </article>
+        ))
+      }
+    </div>
+  </div>
+</section>

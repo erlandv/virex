@@ -1,0 +1,167 @@
+---
+/**
+ * LegalPolicyReader - High-End Accessible Legal & Policy Document Template
+ *
+ * Implements strict typography, metadata display (version, last updated),
+ * sanitized rich content, print stylesheet support, and compliance disclosures.
+ */
+import MarketingLayout from '@/layouts/MarketingLayout.astro';
+import { Icon } from 'astro-icon/components';
+import { sanitizeHtml } from '@/lib/sanitize';
+import type { LegalPolicy } from '@/lib/cms-api';
+
+interface Props {
+  policy: LegalPolicy;
+}
+
+const { policy } = Astro.props;
+
+// Sanitize body HTML to prevent any stored XSS from CMS edits
+const safeContent = sanitizeHtml(policy.content);
+
+// Format human date
+const formattedDate = new Date(policy.lastUpdated).toLocaleDateString('en-KE', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+});
+
+const pageTitle = policy.seoTitle || `${policy.title} | MarkChat Kenya`;
+const pageDescription = policy.seoDescription || policy.description;
+const canonicalHref = policy.canonicalUrl;
+---
+
+<MarketingLayout
+  title={pageTitle}
+  description={pageDescription}
+  canonicalUrl={canonicalHref}
+  noindex={!policy.indexable}
+>
+  <div class="py-12 md:py-20 bg-background text-text">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <!-- Breadcrumb Navigation -->
+      <nav aria-label="Breadcrumb" class="mb-8">
+        <ol class="flex items-center gap-2 text-xs sm:text-sm text-text-muted">
+          <li>
+            <a href="/" class="hover:text-text transition-colors flex items-center gap-1">
+              <Icon name="lucide:home" class="w-3.5 h-3.5" />
+              <span>Home</span>
+            </a>
+          </li>
+          <li aria-hidden="true">/</li>
+          <li>
+            <span class="text-text-muted">Legal &amp; Compliance</span>
+          </li>
+          <li aria-hidden="true">/</li>
+          <li class="font-medium text-text truncate max-w-[200px] sm:max-w-none">
+            {policy.title}
+          </li>
+        </ol>
+      </nav>
+
+      <!-- Document Header -->
+      <header class="pb-8 mb-8 border-b border-border">
+        <div class="flex flex-wrap items-center gap-3 mb-4">
+          <span
+            class="px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300 border border-blue-200 dark:border-blue-800"
+          >
+            {policy.category}
+          </span>
+          <span
+            class="px-2.5 py-1 rounded-full text-xs font-mono font-medium bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300 border border-slate-200 dark:border-slate-700"
+          >
+            Version {policy.version}
+          </span>
+          <span class="text-xs text-text-muted flex items-center gap-1 ml-auto">
+            <Icon name="lucide:clock" class="w-3.5 h-3.5" />
+            Last Updated: {formattedDate}
+          </span>
+        </div>
+
+        <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-text">
+          {policy.title}
+        </h1>
+        <p class="mt-4 text-base sm:text-lg text-text-muted leading-relaxed">
+          {policy.description}
+        </p>
+
+        <!-- Quick Utility Actions -->
+        <div class="mt-6 flex flex-wrap items-center gap-4 text-xs sm:text-sm">
+          <button
+            type="button"
+            onclick="window.print()"
+            class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg border border-border bg-surface hover:bg-surface-hover text-text transition-colors cursor-pointer"
+          >
+            <Icon name="lucide:printer" class="w-4 h-4" />
+            Print / Save as PDF
+          </button>
+          {
+            policy.slug === 'cookie-policy' && (
+              <button
+                type="button"
+                onclick="window.dispatchEvent(new CustomEvent('markchat:open-cookie-settings'))"
+                class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-medium transition-colors cursor-pointer"
+              >
+                <Icon name="lucide:cookie" class="w-4 h-4" />
+                Open Cookie Settings
+              </button>
+            )
+          }
+          <a
+            href="mailto:privacy@markchat.co.ke"
+            class="inline-flex items-center gap-1.5 text-text-muted hover:text-text transition-colors ml-auto"
+          >
+            <Icon name="lucide:mail" class="w-4 h-4" />
+            Inquire with Compliance Officer
+          </a>
+        </div>
+      </header>
+
+      <!-- Main Sanitized Legal Document Content -->
+      <article
+        class="prose prose-slate dark:prose-invert prose-headings:font-bold prose-headings:text-text prose-a:text-blue-600 dark:prose-a:text-blue-400 prose-code:text-blue-600 dark:prose-code:text-blue-400 max-w-none prose-table:border-collapse prose-table:w-full leading-relaxed"
+        set:html={safeContent}
+      />
+
+      <!-- Regulatory Notice / Kenyan Compliance Footer Box -->
+      <aside
+        class="mt-14 p-6 rounded-xl border border-blue-200 dark:border-blue-900/60 bg-blue-50/50 dark:bg-blue-950/20"
+      >
+        <div class="flex items-start gap-4">
+          <div
+            class="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center shrink-0"
+          >
+            <Icon name="lucide:shield-check" class="w-5 h-5" />
+          </div>
+          <div>
+            <h2 class="text-base font-bold text-slate-900 dark:text-white">
+              Kenyan Data Protection &amp; Regulatory Recourse
+            </h2>
+            <p class="mt-1.5 text-xs sm:text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+              MarkChat Technologies Ltd adheres strictly to the Kenya Data Protection Act, 2019. If
+              you have questions or wish to exercise your statutory rights (such as data access,
+              rectification, or deletion), contact our Data Protection Officer at{' '}
+              <a
+                href="mailto:privacy@markchat.co.ke"
+                class="underline text-blue-600 dark:text-blue-400 font-semibold"
+              >
+                privacy@markchat.co.ke
+              </a>
+              . You may also lodge complaints with the Office of the Data Protection Commissioner (ODPC)
+              at{' '}
+              <a
+                href="https://www.odpc.go.ke"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="underline text-blue-600 dark:text-blue-400 font-medium"
+              >
+                odpc.go.ke
+              </a>
+              .
+            </p>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</MarketingLayout>

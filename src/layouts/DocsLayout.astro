@@ -1,137 +1,390 @@
 ---
+/**
+ * DocsLayout - Production-Ready Documentation Reader Layout Wrapper
+ *
+ * Implements strict constraints:
+ * - max-w-4xl reading column
+ * - Tailwind typography (prose prose-lg dark:prose-invert prose-blue)
+ * - Automatic responsive scaling for all images, videos, iframes, and code blocks
+ * - Flawless dark mode inversion (dark:bg-background)
+ * - Sequential category sorting in sidebar navigation
+ * - Metadata row: Difficulty badge, reading time, last updated
+ */
 import { getCollection, type CollectionEntry } from 'astro:content';
 import MarketingLayout from './MarketingLayout.astro';
 import { Icon } from 'astro-icon/components';
+import { siteConfig } from '@/config';
 
 type DocsEntry = CollectionEntry<'docs'>;
 
 interface Props {
   title: string;
   description: string;
-  section: string;
+  category?: string;
+  section?: string;
+  icon?: string;
+  difficulty?: 'Beginner' | 'Intermediate' | 'Advanced';
+  lastUpdated?: string;
+  body?: string;
 }
 
-const { title, description, section } = Astro.props;
+const {
+  title,
+  description,
+  category,
+  section,
+  icon = 'lucide:book-open',
+  difficulty = 'Beginner',
+  lastUpdated,
+  body = '',
+} = Astro.props;
 
-// Get all non-draft docs and organize by section
+// Calculate estimated reading time
+function getReadingTime(text: string): string {
+  const words = text.trim().split(/\s+/).filter(Boolean).length;
+  const minutes = Math.max(1, Math.ceil(words / 200));
+  return `${minutes} min read`;
+}
+
+const readTime = getReadingTime(body);
+
+// Get all non-draft docs
 const allDocs = await getCollection('docs', ({ data }: { data: DocsEntry['data'] }) => !data.draft);
 
-// Group docs by section and sort by order
-interface DocItem {
+// Sort docs by order
+const sortedDocs = [...allDocs].sort((a: DocsEntry, b: DocsEntry) => a.data.order - b.data.order);
+
+// Category ordering definition
+const CATEGORY_ORDER = [
+  'Getting Started',
+  'Channels',
+  'Fintech & M-Pesa',
+  'Team Operations',
+  'AI Automation',
+  'Developer APIs',
+  'Troubleshooting',
+];
+
+interface DocNavItem {
   title: string;
   slug: string;
   order: number;
+  icon: string;
+  category: string;
 }
 
-interface SidebarSection {
-  section: string;
-  items: DocItem[];
-}
+const categoryMap = new Map<string, DocNavItem[]>();
 
-const sidebarSections: SidebarSection[] = [];
-const sectionMap = new Map<string, DocItem[]>();
-
-for (const doc of allDocs) {
-  const sectionName = doc.data.section;
-  if (!sectionMap.has(sectionName)) {
-    sectionMap.set(sectionName, []);
+for (const doc of sortedDocs) {
+  const cat = doc.data.category || doc.data.section || 'General';
+  if (!categoryMap.has(cat)) {
+    categoryMap.set(cat, []);
   }
-  sectionMap.get(sectionName)!.push({
+  categoryMap.get(cat)!.push({
     title: doc.data.title,
     slug: doc.id,
     order: doc.data.order,
+    icon: doc.data.icon || 'lucide:file-text',
+    category: cat,
   });
 }
 
-// Sort items within each section by order
-for (const [sectionName, items] of sectionMap) {
-  items.sort((a, b) => a.order - b.order);
-  sidebarSections.push({ section: sectionName, items });
-}
+// Sort categories according to CATEGORY_ORDER
+const docCategories = Array.from(categoryMap.entries())
+  .sort(([a], [b]) => {
+    const idxA = CATEGORY_ORDER.indexOf(a);
+    const idxB = CATEGORY_ORDER.indexOf(b);
+    if (idxA !== -1 && idxB !== -1) return idxA - idxB;
+    if (idxA !== -1) return -1;
+    if (idxB !== -1) return 1;
+    return a.localeCompare(b);
+  })
+  .map(([catName, items]) => ({
+    name: catName,
+    items,
+  }));
 
-// Sort sections by the minimum order of their items
-sidebarSections.sort((a, b) => {
-  const aMinOrder = Math.min(...a.items.map((i) => i.order));
-  const bMinOrder = Math.min(...b.items.map((i) => i.order));
-  return aMinOrder - bMinOrder;
-});
+// Current page slug for active sidebar state
+const currentSlug = Astro.url.pathname.replace(/^\/docs\/?/, '').replace(/\/$/, '');
 
-// Get current page slug for highlighting
-const currentSlug = Astro.url.pathname.replace('/docs/', '').replace(/\/$/, '');
+// Find current index to provide next/previous pagination
+const currentIndex = sortedDocs.findIndex((d) => d.id === currentSlug);
+const prevDoc = currentIndex > 0 ? sortedDocs[currentIndex - 1] : null;
+const nextDoc = currentIndex < sortedDocs.length - 1 ? sortedDocs[currentIndex + 1] : null;
+
+const displayCategory = category || section || 'Documentation';
+const techArticleSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'TechArticle',
+  headline: title,
+  description,
+  inLanguage: 'en-KE',
+  author: { '@type': 'Organization', name: siteConfig.name },
+  publisher: { '@type': 'Organization', name: siteConfig.name, url: siteConfig.url },
+  mainEntityOfPage: new URL(Astro.url.pathname, siteConfig.url).href,
+};
+const techArticleJson = JSON.stringify(techArticleSchema).replace(/</g, '\\u003c');
 ---
 
-<MarketingLayout title={title} description={description}>
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-section">
-    <div class="flex flex-col lg:flex-row gap-8">
-      <!-- Sidebar -->
-      <aside class="lg:w-64 shrink-0">
-        <nav class="sticky top-24">
-          <!-- Mobile sidebar toggle -->
-          <button
-            id="docs-sidebar-toggle"
-            type="button"
-            class="lg:hidden w-full flex items-center justify-between p-3 mb-4 bg-surface rounded-md text-text"
-          >
-            <span class="font-medium">Documentation</span>
-            <Icon name="lucide:chevron-down" class="w-5 h-5" />
-          </button>
+<MarketingLayout title={`${title} — MarkChat Docs`} description={description}>
+  <script type="application/ld+json" is:inline set:html={techArticleJson} />
+  <div
+    class="py-12 sm:py-16 bg-white dark:bg-background min-h-screen text-slate-800 dark:text-slate-200 transition-colors duration-200"
+  >
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      {/* Top Breadcrumb Header */}
+      <nav
+        aria-label="Breadcrumb"
+        class="mb-8 flex items-center justify-between border-b border-border dark:border-border pb-4"
+      >
+        <ol class="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
+          <li>
+            <a
+              href="/docs"
+              class="hover:text-blue-600 dark:hover:text-blue-400 font-medium transition-colors"
+            >
+              Docs
+            </a>
+          </li>
+          <li aria-hidden="true">/</li>
+          <li>
+            <span class="text-slate-600 dark:text-slate-400 font-medium">{displayCategory}</span>
+          </li>
+          <li aria-hidden="true">/</li>
+          <li>
+            <span
+              class="text-slate-900 dark:text-white font-semibold truncate max-w-xs sm:max-w-md inline-block align-bottom"
+              >{title}</span
+            >
+          </li>
+        </ol>
+        <a
+          href="/docs"
+          class="inline-flex items-center gap-1.5 text-xs sm:text-sm font-semibold text-blue-600 dark:text-blue-400 hover:underline shrink-0"
+        >
+          <span>&larr; All Guides</span>
+        </a>
+      </nav>
 
-          <!-- Sidebar content -->
-          <div id="docs-sidebar" class="hidden lg:block space-y-6">
-            {
-              sidebarSections.map((sidebarSection) => (
-                <div>
-                  <h3 class="font-semibold text-sm text-text mb-2">{sidebarSection.section}</h3>
-                  <ul class="space-y-1">
-                    {sidebarSection.items.map((item) => {
-                      const isActive = currentSlug === item.slug;
-                      return (
-                        <li>
-                          <a
-                            href={`/docs/${item.slug}`}
-                            class:list={[
-                              'block px-3 py-2 text-sm rounded-md transition-colors',
-                              isActive
-                                ? 'bg-primary text-white font-medium'
-                                : 'text-text-muted hover:text-text hover:bg-surface',
-                            ]}
-                          >
-                            {item.title}
-                          </a>
-                        </li>
-                      );
-                    })}
-                  </ul>
+      <div class="flex flex-col lg:flex-row gap-10">
+        {/* ============================================================= */}
+        {/* SIDEBAR NAVIGATION (Sticky Desktop, Drawer Mobile)            */}
+        {/* ============================================================= */}
+        <aside class="lg:w-72 shrink-0">
+          <nav class="sticky top-24 space-y-6" aria-label="Documentation Sidebar">
+            {/* Mobile Accordion Toggle */}
+            <button
+              id="docs-sidebar-toggle"
+              type="button"
+              class="lg:hidden w-full flex items-center justify-between p-3.5 bg-slate-100 dark:bg-surface rounded-xl border border-border dark:border-border text-slate-900 dark:text-white font-semibold text-sm cursor-pointer"
+            >
+              <span class="flex items-center gap-2">
+                <Icon name="lucide:menu" class="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                <span>Documentation Menu ({sortedDocs.length} Guides)</span>
+              </span>
+              <Icon name="lucide:chevron-down" class="w-4 h-4 text-slate-400" />
+            </button>
+
+            {/* Sidebar Content */}
+            <div
+              id="docs-sidebar"
+              class="hidden lg:block space-y-6 max-h-[calc(100vh-8rem)] overflow-y-auto pr-2 scrollbar-thin"
+            >
+              {
+                docCategories.map((catGroup) => (
+                  <div>
+                    <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-2.5 px-3">
+                      {catGroup.name}
+                    </h3>
+                    <ul class="space-y-1">
+                      {catGroup.items.map((item) => {
+                        const isActive = currentSlug === item.slug;
+                        return (
+                          <li>
+                            <a
+                              href={`/docs/${item.slug}`}
+                              class:list={[
+                                'flex items-center gap-2.5 px-3 py-2 text-sm rounded-xl transition-all duration-150',
+                                isActive
+                                  ? 'bg-blue-600 text-white font-semibold shadow-none '
+                                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60 font-medium',
+                              ]}
+                            >
+                              <Icon
+                                name={item.icon}
+                                class:list={[
+                                  'w-4 h-4 shrink-0',
+                                  isActive ? 'text-white' : 'text-slate-400 dark:text-slate-500',
+                                ]}
+                              />
+                              <span class="truncate">{item.title}</span>
+                            </a>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  </div>
+                ))
+              }
+            </div>
+          </nav>
+        </aside>
+
+        {/* ============================================================= */}
+        {/* MAIN DOCUMENTATION READER CONTENT (Strict max-w-4xl)          */}
+        {/* ============================================================= */}
+        <main class="flex-1 min-w-0 max-w-4xl mx-auto">
+          <article>
+            {/* Document Header */}
+            <header class="mb-10 pb-8 border-b border-border dark:border-border">
+              <div class="flex flex-wrap items-center gap-2 mb-4">
+                <div
+                  class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-blue-50 dark:bg-blue-950/70 text-blue-700 dark:text-blue-300 border border-blue-200/80 dark:border-blue-800/80"
+                >
+                  <Icon name={icon} class="w-3.5 h-3.5" />
+                  <span>{displayCategory}</span>
                 </div>
-              ))
-            }
-          </div>
-        </nav>
-      </aside>
+                <span
+                  class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-border dark:border-border"
+                >
+                  {difficulty}
+                </span>
+                <span
+                  class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium text-slate-400 dark:text-slate-500"
+                >
+                  {readTime}
+                </span>
+                {
+                  lastUpdated && (
+                    <span class="text-xs text-slate-400 dark:text-slate-500">
+                      • Updated {lastUpdated}
+                    </span>
+                  )
+                }
+              </div>
 
-      <!-- Main content -->
-      <main class="flex-1 min-w-0">
-        <article>
-          <header class="mb-8 pb-6 border-b border-border">
-            <p class="text-sm text-primary font-medium mb-2">{section}</p>
-            <h1 class="text-3xl font-bold text-text">{title}</h1>
-            <p class="mt-2 text-text-muted">{description}</p>
-          </header>
+              <h1
+                class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-tight"
+              >
+                {title}
+              </h1>
+              <p
+                class="mt-4 text-base sm:text-lg text-slate-600 dark:text-slate-400 leading-relaxed"
+              >
+                {description}
+              </p>
+            </header>
 
-          <div class="prose prose-lg max-w-none dark:prose-invert">
-            <slot />
-          </div>
-        </article>
-      </main>
+            {/* Prose Reader Content */}
+            <div class="docs-prose-wrapper">
+              <div
+                class="prose prose-lg dark:prose-invert prose-blue max-w-none text-slate-700 dark:text-slate-300 leading-relaxed prose-headings:font-bold prose-headings:tracking-tight prose-headings:text-slate-900 dark:prose-headings:text-white prose-a:text-blue-600 dark:prose-a:text-blue-400 prose-a:no-underline hover:prose-a:underline prose-code:text-blue-600 dark:prose-code:text-blue-400 prose-pre:bg-slate-900 dark:prose-pre:bg-slate-950 prose-pre:border prose-pre:border-slate-800 prose-pre:rounded-xl prose-pre:shadow-none"
+              >
+                <slot />
+              </div>
+            </div>
+
+            {/* Document Pagination (Prev / Next) */}
+            <div
+              class="mt-14 pt-8 border-t border-border dark:border-border grid grid-cols-1 sm:grid-cols-2 gap-4"
+            >
+              {
+                prevDoc ? (
+                  <a
+                    href={`/docs/${prevDoc.id}`}
+                    class="p-4 rounded-xl border border-border dark:border-border hover:border-blue-500/50 dark:hover:border-blue-500/50 bg-slate-50 dark:bg-surface shadow-none transition-all group flex flex-col"
+                  >
+                    <span class="text-xs font-medium text-slate-400 dark:text-slate-500 mb-1 flex items-center gap-1 group-hover:-translate-x-0.5 transition-transform">
+                      &larr; Previous Guide
+                    </span>
+                    <span class="text-sm font-bold text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400">
+                      {prevDoc.data.title}
+                    </span>
+                  </a>
+                ) : (
+                  <div />
+                )
+              }
+
+              {
+                nextDoc && (
+                  <a
+                    href={`/docs/${nextDoc.id}`}
+                    class="p-4 rounded-xl border border-border dark:border-border hover:border-blue-500/50 dark:hover:border-blue-500/50 bg-slate-50 dark:bg-surface shadow-none transition-all group flex flex-col items-end text-right"
+                  >
+                    <span class="text-xs font-medium text-slate-400 dark:text-slate-500 mb-1 flex items-center gap-1 group-hover:translate-x-0.5 transition-transform">
+                      Next Guide &rarr;
+                    </span>
+                    <span class="text-sm font-bold text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400">
+                      {nextDoc.data.title}
+                    </span>
+                  </a>
+                )
+              }
+            </div>
+          </article>
+        </main>
+      </div>
     </div>
   </div>
 </MarketingLayout>
 
 <script>
-  const toggle = document.getElementById('docs-sidebar-toggle');
-  const sidebar = document.getElementById('docs-sidebar');
+  function setupSidebar() {
+    const toggle = document.getElementById('docs-sidebar-toggle');
+    const sidebar = document.getElementById('docs-sidebar');
 
-  toggle?.addEventListener('click', () => {
-    sidebar?.classList.toggle('hidden');
-  });
+    toggle?.addEventListener('click', () => {
+      sidebar?.classList.toggle('hidden');
+    });
+  }
+
+  setupSidebar();
+  document.addEventListener('astro:page-load', setupSidebar);
 </script>
+
+<style is:global>
+  /* Automatic scaling for images, videos, iframes, and code blocks in documentation */
+  .docs-prose-wrapper img,
+  .docs-prose-wrapper video {
+    width: 100% !important;
+    height: auto !important;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    border-radius: 1rem !important;
+    box-shadow:
+      0 10px 25px -5px rgba(0, 0, 0, 0.1),
+      0 8px 10px -6px rgba(0, 0, 0, 0.1) !important;
+    margin-top: 2rem !important;
+    margin-bottom: 2rem !important;
+    display: block;
+  }
+
+  .docs-prose-wrapper iframe {
+    width: 100% !important;
+    aspect-ratio: 16 / 9;
+    height: auto !important;
+    border-radius: 1rem !important;
+    box-shadow:
+      0 10px 25px -5px rgba(0, 0, 0, 0.15),
+      0 8px 10px -6px rgba(0, 0, 0, 0.1) !important;
+    margin-top: 2rem !important;
+    margin-bottom: 2rem !important;
+    border: 1px solid rgba(148, 163, 184, 0.2) !important;
+    display: block;
+  }
+
+  .docs-prose-wrapper pre {
+    overflow-x: auto;
+    max-width: 100%;
+  }
+
+  .dark .docs-prose-wrapper img,
+  .dark .docs-prose-wrapper video,
+  .dark .docs-prose-wrapper iframe {
+    box-shadow:
+      0 20px 25px -5px rgba(0, 0, 0, 0.6),
+      0 8px 10px -6px rgba(0, 0, 0, 0.4) !important;
+    border-color: rgba(51, 65, 85, 0.6) !important;
+  }
+</style>

@@ -1,0 +1,223 @@
+---
+import { Icon } from 'astro-icon/components';
+
+const routes = [
+  {
+    title: 'Transactional messaging',
+    window: '24/7 when approved',
+    badge: 'Operational alerts',
+    icon: 'lucide:receipt-text',
+    description:
+      'Time-sensitive OTPs, payment receipts and order-status alerts over carrier-authorized routes.',
+    checks: [
+      'Verify the customer and sending purpose',
+      'Use the approved transactional Sender ID and route',
+      'Capture delivery receipts and handle unknown outcomes',
+    ],
+  },
+  {
+    title: 'Promotional messaging',
+    window: '07:00–19:00 EAT',
+    badge: 'Marketing campaigns',
+    icon: 'lucide:megaphone',
+    description:
+      'Consent-based campaigns, promotions and scheduled announcements within the Kenyan promotional window.',
+    checks: [
+      'Maintain permission records and consent',
+      'Apply STOP suppression and opt-out handling',
+      'Schedule outside the curfew; verify carrier policy',
+    ],
+  },
+];
+const evidence = [
+  {
+    id: 'registration',
+    label: 'Certificate of Incorporation / CR12',
+    detail: 'Current business registration and ownership information',
+  },
+  {
+    id: 'kra',
+    label: 'KRA PIN Certificate',
+    detail: 'Business tax-identification evidence when the provider requests it',
+  },
+  {
+    id: 'authorization',
+    label: 'Signed telco authorization letter',
+    detail: 'Company letterhead and authorized representative signature',
+  },
+];
+---
+
+<section
+  id="sender-id-readiness"
+  aria-labelledby="sender-readiness-heading"
+  class="bg-surface/40 py-16 sm:py-24 border-b border-border scroll-mt-24"
+>
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="max-w-3xl mb-10">
+      <p class="text-xs uppercase tracking-widest font-bold text-primary">Kenya telco onboarding</p>
+      <h2
+        id="sender-readiness-heading"
+        class="text-3xl sm:text-4xl tracking-tight text-text font-bold mt-3"
+      >
+        Be ready before applying for a Sender ID.
+      </h2>
+      <p class="text-text-muted mt-4 leading-relaxed">
+        A practical preparation guide for business messaging. Carrier, aggregator and Communications
+        Authority requirements vary: these planning rules are not a claim of regulatory approval.
+      </p>
+    </div>
+    <div class="grid lg:grid-cols-2 gap-4">
+      {
+        routes.map((route) => (
+          <article class="p-6 sm:p-8 border border-border rounded-2xl bg-background">
+            <div class="flex items-start gap-4">
+              <span class="w-11 h-11 shrink-0 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
+                <Icon name={route.icon} class="w-5 h-5" />
+              </span>
+              <div>
+                <>
+                  <p class="text-xs uppercase font-bold text-primary tracking-wider">
+                    {route.badge}
+                  </p>
+                  <h3 class="font-bold text-text text-xl mt-1">{route.title}</h3>
+                </>
+              </div>
+            </div>
+            <p class="text-text-muted leading-relaxed text-sm mt-5">{route.description}</p>
+            <p class="rounded-lg border border-primary/20 bg-primary/5 text-primary text-sm font-bold px-4 py-3 mt-5">
+              <Icon name="lucide:clock-3" class="w-4 h-4 inline mr-2" />
+              {route.window}
+            </p>
+            <ul class="space-y-3 mt-6 text-sm text-text-muted">
+              {route.checks.map((check) => (
+                <li class="flex items-start gap-2">
+                  <Icon name="lucide:check" class="w-4 h-4 text-primary shrink-0 mt-0.5" />
+                  {check}
+                </li>
+              ))}
+            </ul>
+          </article>
+        ))
+      }
+    </div>
+    <div data-sender-kyc class="grid lg:grid-cols-[1fr_0.85fr] gap-5 mt-8">
+      <div class="bg-background border border-border rounded-2xl p-6 sm:p-8">
+        <h3 class="text-xl font-bold text-text">Sender identity & KYC readiness</h3>
+        <p class="text-sm text-text-muted mt-2">
+          Use this checklist locally. No documents are uploaded or collected.
+        </p>
+        <div class="mt-7">
+          <label for="sender-id-input" class="block font-semibold text-sm text-text mb-2"
+            >Proposed alphanumeric Sender ID</label
+          >
+          <input
+            id="sender-id-input"
+            data-sender-input
+            type="text"
+            maxlength="32"
+            value="MARKCHAT"
+            autocomplete="off"
+            spellcheck="false"
+            class="w-full bg-surface rounded-lg border border-border text-text py-3 px-4 uppercase tracking-widest font-semibold focus-visible:outline-2 focus-visible:outline-primary"
+            aria-describedby="sender-live-feedback"
+          />
+          <p
+            id="sender-live-feedback"
+            data-sender-feedback
+            role="status"
+            aria-live="polite"
+            class="text-xs text-text-muted mt-2"
+          >
+            Enter 3–11 letters or digits. Final approval requires carrier review.
+          </p>
+        </div>
+        <fieldset class="mt-7 space-y-4">
+          <legend class="font-semibold text-text text-sm mb-4">Business document checklist</legend>
+          {
+            evidence.map((item) => (
+              <label class="flex items-start gap-3 cursor-pointer">
+                <input
+                  data-kyc-check
+                  type="checkbox"
+                  value={item.id}
+                  class="accent-primary w-4 h-4 mt-1"
+                />
+                <span>
+                  <>
+                    <strong class="block text-sm font-semibold text-text">{item.label}</strong>
+                    <span class="text-xs text-text-muted leading-relaxed">{item.detail}</span>
+                  </>
+                </span>
+              </label>
+            ))
+          }
+        </fieldset>
+      </div>
+      <aside class="bg-background border border-border rounded-2xl p-6 sm:p-8">
+        <p class="text-xs uppercase tracking-widest font-bold text-primary">Preparation status</p>
+        <p class="text-3xl font-bold text-text mt-4" data-kyc-progress aria-live="polite">0 / 3</p>
+        <div class="h-2 rounded-full bg-surface border border-border mt-4 overflow-hidden">
+          <div data-kyc-progressbar class="bg-primary h-full transition-all" style="width: 0%">
+          </div>
+        </div>
+        <p data-kyc-result class="mt-5 text-sm text-text-muted leading-relaxed">
+          Confirm the name format and mark documents as ready to see your preparation status.
+        </p>
+        <div class="border-t border-border mt-7 pt-5 text-sm text-text-muted space-y-3">
+          <p>
+            Document readiness does not equal sender registration, carrier acceptance, or permission
+            to send.
+          </p>
+          <p>
+            Keep application evidence private; provide it only through the provider's secure
+            approval process.
+          </p>
+        </div>
+        <a
+          href="/contact?topic=sender-id"
+          class="mt-7 inline-flex w-full justify-center gap-2 items-center text-sm font-semibold text-white rounded-lg bg-primary px-5 py-3"
+          >Ask about sender onboarding <Icon name="lucide:arrow-up-right" class="w-4 h-4" /></a
+        >
+      </aside>
+    </div>
+  </div>
+</section>
+<script>
+  function initKycReadiness() {
+    document.querySelectorAll<HTMLElement>('[data-sender-kyc]').forEach((root) => {
+      if (root.dataset.initialized === 'true') return;
+      root.dataset.initialized = 'true';
+      const input = root.querySelector<HTMLInputElement>('[data-sender-input]');
+      const checked = Array.from(root.querySelectorAll<HTMLInputElement>('[data-kyc-check]'));
+      const status = root.querySelector<HTMLElement>('[data-sender-feedback]');
+      const result = root.querySelector<HTMLElement>('[data-kyc-result]');
+      const progress = root.querySelector<HTMLElement>('[data-kyc-progress]');
+      const progressBar = root.querySelector<HTMLElement>('[data-kyc-progressbar]');
+      const render = () => {
+        const value = (input?.value || '').trim().toUpperCase();
+        const nameValid = /^[A-Z0-9]{3,11}$/.test(value);
+        const ready = checked.filter((item) => item.checked).length;
+        if (status)
+          status.textContent = nameValid
+            ? 'Format valid for a preliminary check; uniqueness and carrier approval still required.'
+            : 'Invalid format. Use only 3–11 letters or digits, no spaces or punctuation.';
+        if (progress) progress.textContent = ready + ' / ' + checked.length + ' documents';
+        if (progressBar) progressBar.style.width = (ready / checked.length) * 100 + '%';
+        if (result)
+          result.textContent =
+            nameValid && ready === checked.length
+              ? 'Your preparation checklist is complete. Submit to an approved provider for actual review.'
+              : 'Preparation incomplete: ' +
+                (nameValid ? '' : 'correct Sender ID formatting; ') +
+                (checked.length - ready) +
+                ' document(s) remain.';
+      };
+      input?.addEventListener('input', render);
+      checked.forEach((item) => item.addEventListener('change', render));
+      render();
+    });
+  }
+  initKycReadiness();
+  document.addEventListener('astro:page-load', initKycReadiness);
+</script>

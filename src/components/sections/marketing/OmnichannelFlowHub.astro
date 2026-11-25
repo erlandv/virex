@@ -1,0 +1,48 @@
+---
+import MCContainer from '@/components/design-system/MCContainer.astro';
+import MCIntegrationIcon from '@/components/design-system/MCIntegrationIcon.astro';
+
+const channels = [
+  { id: 'whatsapp', name: 'WhatsApp' },
+  { id: 'mpesa', name: 'M-Pesa' },
+  { id: 'instagram', name: 'Instagram' },
+  { id: 'messenger', name: 'Messenger' },
+  { id: 'tiktok', name: 'TikTok' },
+  { id: 'telegram', name: 'Telegram' },
+  { id: 'shopify', name: 'Shopify' },
+  { id: 'email', name: 'Email' },
+];
+---
+
+<section
+  class="border-b border-border bg-surface py-10 sm:py-12"
+  aria-label="Customer channels and business integrations"
+>
+  <MCContainer class="max-w-[1360px]">
+    <div class="mb-6 flex flex-wrap items-end justify-between gap-3">
+      <div>
+        <p class="text-xs font-bold uppercase tracking-widest text-primary">
+          Work with your customers' channels
+        </p>
+        <h2 class="mt-2 text-xl font-bold text-text sm:text-2xl">
+          Conversations and commerce, connected.
+        </h2>
+      </div>
+      <a href="/integrations" class="text-sm font-semibold text-primary hover:underline"
+        >Integration setup and availability →</a
+      >
+    </div>
+    <div class="grid grid-cols-4 items-center gap-3 sm:grid-cols-8">
+      {
+        channels.map((channel) => (
+          <div class="flex min-w-0 flex-col items-center gap-2.5 py-2 text-center">
+            <MCIntegrationIcon iconKey={channel.id} name={channel.name} size="sm" />
+            <span class="text-[11px] font-medium leading-tight text-text-muted">
+              {channel.name}
+            </span>
+          </div>
+        ))
+      }
+    </div>
+  </MCContainer>
+</section>

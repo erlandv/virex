@@ -1,89 +1,87 @@
 ---
 /**
- * SocialAuthButtons - Social authentication buttons with divider
+ * SocialAuthButtons - Federated Google Authentication Button with Virex Divider
  *
  * @description
- * Displays social login/signup buttons for Google and GitHub with a divider line.
- * Supports both login and register variants with customizable text and URLs.
- * Buttons are displayed only when their respective URLs are provided.
- *
- * @example Default (shows both buttons with placeholder URLs)
- * ```astro
- * <SocialAuthButtons dividerText="Or continue with" />
- * ```
- *
- * @example Login variant
- * ```astro
- * <SocialAuthButtons
- *   dividerText="Or continue with"
- *   googleUrl="/auth/google"
- *   githubUrl="/auth/github"
- *   variant="login"
- * />
- * ```
- *
- * @example Register variant
- * ```astro
- * <SocialAuthButtons
- *   dividerText="Or sign up with"
- *   googleUrl="/auth/google"
- *   githubUrl="/auth/github"
- *   variant="register"
- * />
- * ```
+ * Renders a full-width Google OAuth button using native Virex semantic design tokens.
+ * Supports both login and register variants with accessible aria-labels and focus rings.
  */
 import { Icon } from 'astro-icon/components';
 
 interface Props {
   /** Text to display in the divider */
   dividerText?: string;
-  /** Google OAuth URL (shows button if provided or defaults to #) */
+  /** Google OAuth URL override */
   googleUrl?: string;
-  /** GitHub OAuth URL (shows button if provided or defaults to #) */
-  githubUrl?: string;
-  /** Variant for button styling/text */
+  /** Variant for button styling and label */
   variant?: 'login' | 'register';
 }
 
-const {
-  dividerText = 'Or continue with',
-  googleUrl = '#',
-  githubUrl = '#',
-  variant = 'login',
-} = Astro.props;
+const { dividerText = 'Or continue with', googleUrl, variant = 'login' } = Astro.props;
 
+const controlPlaneUrl =
+  import.meta.env.PUBLIC_CONTROL_PLANE_URL ||
+  import.meta.env.PUBLIC_CONTROL_PLANE_API_URL ||
+  'http://localhost:5000';
+const resolvedGoogleUrl =
+  googleUrl || `${controlPlaneUrl}/api/v1/auth/google/start?mode=${variant}`;
 const googleLabel = variant === 'register' ? 'Sign up with Google' : 'Continue with Google';
-const githubLabel = variant === 'register' ? 'Sign up with GitHub' : 'Continue with GitHub';
 ---
 
-<div class="mt-6">
+<div class="w-full">
+  <!-- Google OAuth button -->
+  <a
+    href={resolvedGoogleUrl}
+    id="google-auth-button"
+    class="w-full h-11 flex items-center justify-center gap-3 px-4 rounded-xl border border-border bg-background hover:bg-surface text-text transition-colors text-sm font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background cursor-pointer shadow-xs"
+    aria-label={googleLabel}
+  >
+    <Icon name="simple-icons:google" class="w-4 h-4 shrink-0 text-[#4285F4]" aria-hidden="true" />
+    <span>{googleLabel}</span>
+  </a>
+
   <!-- Divider -->
-  <div class="relative">
+  <div class="relative my-6" aria-hidden="true">
     <div class="absolute inset-0 flex items-center">
       <div class="w-full border-t border-border"></div>
     </div>
-    <div class="relative flex justify-center text-sm">
-      <span class="px-4 bg-surface text-text-muted">{dividerText}</span>
+    <div class="relative flex justify-center text-xs uppercase tracking-wider">
+      <span class="px-3 bg-surface text-text-muted font-medium">{dividerText}</span>
     </div>
   </div>
-
-  <!-- Social buttons -->
-  <div class="mt-6 grid grid-cols-2 gap-4">
-    <a
-      href={googleUrl}
-      class="flex items-center justify-center gap-2 px-4 py-3 rounded-md border border-border bg-background text-text hover:bg-surface transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background"
-      aria-label={googleLabel}
-    >
-      <Icon name="simple-icons:google" class="w-5 h-5" aria-hidden="true" />
-      <span class="text-sm font-medium">Google</span>
-    </a>
-    <a
-      href={githubUrl}
-      class="flex items-center justify-center gap-2 px-4 py-3 rounded-md border border-border bg-background text-text hover:bg-surface transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background"
-      aria-label={githubLabel}
-    >
-      <Icon name="simple-icons:github" class="w-5 h-5" aria-hidden="true" />
-      <span class="text-sm font-medium">GitHub</span>
-    </a>
-  </div>
 </div>
+
+<script>
+  // Progressive enhancement: forward safe redirect and selected plan into Google OAuth start URL
+  const googleBtn = document.getElementById('google-auth-button') as HTMLAnchorElement | null;
+  if (googleBtn) {
+    googleBtn.addEventListener('click', () => {
+      try {
+        const url = new URL(googleBtn.href, window.location.origin);
+        const searchParams = new URLSearchParams(window.location.search);
+        const redirectParam = searchParams.get('redirect');
+        if (redirectParam && /^\/(?![/\\])/.test(redirectParam) && !redirectParam.includes(':')) {
+          url.searchParams.set('redirect', redirectParam);
+        }
+        const planInput = document.getElementById('planId') as HTMLInputElement | null;
+        if (planInput && planInput.value) {
+          url.searchParams.set('plan', planInput.value.trim().toLowerCase());
+          const interval =
+            new URLSearchParams(window.location.search).get('interval') === 'annual'
+              ? 'annual'
+              : 'monthly';
+          url.searchParams.set(
+            'redirect',
+            '/billing?plan=' +
+              encodeURIComponent(planInput.value.trim().toLowerCase()) +
+              '&interval=' +
+              interval
+          );
+        }
+        googleBtn.href = url.toString();
+      } catch {
+        // Safe fallback; preserve default href
+      }
+    });
+  }
+</script>

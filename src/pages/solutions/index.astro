@@ -1,0 +1,138 @@
+---
+/**
+ * MarkChat Solutions Directory
+ */
+import MCResponsiveHeroMedia from '@/components/design-system/MCResponsiveHeroMedia.astro';
+import MarketingLayout from '@/layouts/MarketingLayout.astro';
+import IndustryBlueprints from '@/components/enterprise/IndustryBlueprints.astro';
+import ServiceBoundaryNotice from '@/components/common/ServiceBoundaryNotice.astro';
+import PageHeader from '@sections/content/PageHeader.astro';
+import { fetchHeroMediaSettings } from '@/lib/cms-api';
+import { Icon } from 'astro-icon/components';
+import CTA from '@sections/marketing/CTA.astro';
+import { solutionsPages } from '@/data/marketing-content';
+
+const byTeam = solutionsPages.filter((p) => ['support', 'sales', 'marketing'].includes(p.slug));
+const bySize = solutionsPages.filter((p) => ['startups', 'growth', 'enterprise'].includes(p.slug));
+const byIndustry = solutionsPages.filter(
+  (p) => !['support', 'sales', 'marketing', 'startups', 'growth', 'enterprise'].includes(p.slug)
+);
+const editorialHero = await fetchHeroMediaSettings('solutions');
+---
+
+<MarketingLayout
+  title="Industry Solutions - MarkChat Kenya"
+  description="Tailored conversational commerce and support solutions for Kenyan businesses, from retail and clinics to logistics and schools."
+>
+  <ServiceBoundaryNotice />
+  <PageHeader
+    title="Solutions Tailored to Your Industry"
+    subtitle="From Instagram retail dukas to national financial institutions, discover how MarkChat powers customer engagement in your sector."
+  />
+
+  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    <MCResponsiveHeroMedia page="solutions" settings={editorialHero} class="mb-10" />
+  </div>
+
+  <!-- By Team & Size -->
+  <section class="py-16 bg-surface border-b border-border">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="mb-10">
+        <span class="text-xs font-mono font-semibold text-primary uppercase tracking-wider"
+          >Role & Scale</span
+        >
+        <h2 class="text-2xl sm:text-3xl font-extrabold text-text mt-1">By Team & Company Size</h2>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {
+          [...byTeam, ...bySize].map((item) => (
+            <a
+              href={`/solutions/${item.slug}`}
+              class="group flex flex-col justify-between p-6 rounded-xl border border-border bg-background hover:border-primary/50 shadow-none transition-all"
+            >
+              <div>
+                <div class="flex items-center justify-between mb-4">
+                  <div class="w-10 h-10 rounded-xl bg-primary/10 text-primary border border-primary/20 flex items-center justify-center group-hover:scale-105 transition-transform">
+                    <Icon name={item.icon} class="w-5 h-5" />
+                  </div>
+                  {item.badge && (
+                    <span class="px-2 py-0.5 text-xs font-semibold rounded-full bg-primary/10 text-primary border border-primary/20">
+                      {item.badge}
+                    </span>
+                  )}
+                </div>
+                <h3 class="text-lg font-bold text-text group-hover:text-primary transition-colors">
+                  {item.title}
+                </h3>
+                <p class="text-sm text-text-muted mt-2 line-clamp-2 leading-relaxed">
+                  {item.subtitle}
+                </p>
+              </div>
+
+              <div class="mt-5 pt-3 border-t border-border/50 flex items-center justify-between text-xs font-semibold text-primary">
+                <span>View solution guide</span>
+                <span class="group-hover:translate-x-1 transition-transform">→</span>
+              </div>
+            </a>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- By Industry -->
+  <section class="py-16 bg-background border-b border-border">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="mb-10">
+        <span class="text-xs font-mono font-semibold text-primary uppercase tracking-wider"
+          >Specific Sectors</span
+        >
+        <h2 class="text-2xl sm:text-3xl font-extrabold text-text mt-1">Industry Solutions</h2>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {
+          byIndustry.map((item) => (
+            <a
+              href={`/solutions/${item.slug}`}
+              class="group flex flex-col justify-between p-6 rounded-xl border border-border bg-surface hover:border-primary/50 shadow-none transition-all"
+            >
+              <div>
+                <div class="flex items-center justify-between mb-4">
+                  <div class="w-10 h-10 rounded-xl bg-primary/10 text-primary border border-primary/20 flex items-center justify-center group-hover:scale-105 transition-transform">
+                    <Icon name={item.icon} class="w-5 h-5" />
+                  </div>
+                  {item.badge && (
+                    <span class="px-2 py-0.5 text-xs font-semibold rounded-full bg-surface-hover text-text-muted border border-border">
+                      {item.badge}
+                    </span>
+                  )}
+                </div>
+                <h3 class="text-lg font-bold text-text group-hover:text-primary transition-colors">
+                  {item.title}
+                </h3>
+                <p class="text-sm text-text-muted mt-2 line-clamp-2 leading-relaxed">
+                  {item.subtitle}
+                </p>
+              </div>
+
+              <div class="mt-5 pt-3 border-t border-border/50 flex items-center justify-between text-xs font-semibold text-primary">
+                <span>Explore industry workflow</span>
+                <span class="group-hover:translate-x-1 transition-transform">→</span>
+              </div>
+            </a>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <IndustryBlueprints />
+  <CTA
+    title="Need a custom industry deployment?"
+    description="We integrate with custom ERPs, core banking Paybills, and regional telco gateways."
+    action={{ label: 'Book Technical Consultation', href: '/demo' }}
+    background="muted"
+  />
+</MarketingLayout>

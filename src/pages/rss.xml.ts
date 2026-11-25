@@ -1,11 +1,10 @@
 import rss from '@astrojs/rss';
 import { getCollection, type CollectionEntry } from 'astro:content';
 import { siteConfig } from '@/config';
-import type { APIContext } from 'astro';
 
 type BlogPost = CollectionEntry<'blog'>;
 
-export async function GET(context: APIContext) {
+export async function GET() {
   // Return empty feed if blog feature is disabled
   if (!siteConfig.features.blog) {
     return new Response('<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"></rss>', {
@@ -23,7 +22,7 @@ export async function GET(context: APIContext) {
   return rss({
     title: `${siteConfig.name} Blog`,
     description: siteConfig.description,
-    site: context.site ?? siteConfig.url,
+    site: siteConfig.url,
     items: sortedPosts.map((post: BlogPost) => ({
       title: post.data.title,
       pubDate: post.data.publishedDate,

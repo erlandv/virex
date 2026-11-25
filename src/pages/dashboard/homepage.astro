@@ -1,0 +1,549 @@
+---
+/**
+ * MarkChat CMS — Homepage Experience Editor
+ */
+import DashboardLayout from '@/layouts/DashboardLayout.astro';
+import MCHeroMediaEditor from '@/components/dashboard/MCHeroMediaEditor.astro';
+import Card from '@dashboard-ui/Card.astro';
+import StatCard from '@dashboard-ui/StatCard.astro';
+import { Icon } from 'astro-icon/components';
+import { adminFetchHomepageSettings } from '@/lib/cms-api';
+
+const settings = await adminFetchHomepageSettings();
+
+const sectionsList = [
+  {
+    key: 'hero',
+    name: 'Hero Section',
+    desc: 'Main value headline, CTAs, and floating channel hub',
+  },
+  {
+    key: 'omnichannelFlow',
+    name: 'Omnichannel Flow Diagram',
+    desc: 'Interactive channel convergence pulse',
+  },
+  {
+    key: 'howItWorks',
+    name: 'How It Works (3 Steps)',
+    desc: 'Channel connect, AI collaboration, and in-chat STK',
+  },
+  {
+    key: 'coreCapabilities',
+    name: 'Core Capabilities Breakdown',
+    desc: '6 architecture pillars built for African commerce',
+  },
+  {
+    key: 'operationalScenarios',
+    name: 'Real-World Workflows',
+    desc: 'Step-by-step chat walkthroughs with M-Pesa',
+  },
+  {
+    key: 'markcopilot',
+    name: 'Markcopilot AI Explainer',
+    desc: 'Bilingual East African NLP node graph',
+  },
+  {
+    key: 'solutionsPreview',
+    name: 'Industry Solutions Preview',
+    desc: 'Bento showcase linking to /solutions',
+  },
+  {
+    key: 'integrations',
+    name: 'Featured Integrations Grid',
+    desc: 'Safaricom Daraja, Africa’s Talking, and Meta',
+  },
+  {
+    key: 'pricing',
+    name: 'Transparent KES Pricing',
+    desc: 'Starter, Pro, and Enterprise monthly tiers',
+  },
+  {
+    key: 'kenyaPrinciples',
+    name: 'Nairobi Principles & Team',
+    desc: 'Local context, fraud shield, and engineering team',
+  },
+  {
+    key: 'faqs',
+    name: 'Frequently Asked Questions',
+    desc: 'Merchant queries on setup, Daraja, and BYOC SMS',
+  },
+  {
+    key: 'closingCta',
+    name: 'Closing Conversion Banner',
+    desc: 'Bottom primary and secondary action prompts',
+  },
+  { key: 'newsletter', name: 'Newsletter Signup', desc: 'Footer email subscription bar' },
+];
+
+const activeSectionsCount = Object.values(settings.sections || {}).filter(Boolean).length;
+---
+
+<DashboardLayout
+  title="Homepage Experience Editor"
+  description="Manage public homepage hero messaging, conversion CTAs, micro-metrics, and toggle operational sections"
+  breadcrumbs={[{ label: 'Dashboard', href: '/dashboard' }, { label: 'Homepage Editor' }]}
+>
+  <div class="cms-homepage-page space-y-8">
+    {/* Page Header */}
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div>
+        <h1 class="text-2xl font-bold tracking-tight text-text">Homepage Experience Editor</h1>
+        <p class="text-sm text-text-muted mt-1">
+          Control live hero headlines, micro-metrics, CTAs, and toggle homepage operational modules.
+        </p>
+      </div>
+      <div class="flex flex-wrap items-center gap-3">
+        <a href="/" target="_blank" class="btn btn-secondary text-sm">
+          <Icon name="lucide:external-link" class="w-4 h-4 mr-1.5 inline" />
+          Preview Live /
+        </a>
+        <button type="button" id="save-all-btn" class="btn btn-primary text-sm cursor-pointer">
+          <Icon name="lucide:save" class="w-4 h-4 mr-1.5 inline" />
+          Save Changes
+        </button>
+      </div>
+    </div>
+
+    {/* Quick Stats */}
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <StatCard
+        title="Active Sections"
+        value={`${activeSectionsCount} / 13`}
+        icon="layout-dashboard"
+        description="Publicly enabled homepage modules"
+      />
+      <StatCard
+        title="Hero Status"
+        value="Live"
+        icon="check-circle"
+        description="Active conversion gateway"
+      />
+      <StatCard
+        title="Channel Streams"
+        value="6 Hubs"
+        icon="git-merge"
+        description="Connected omnichannel network"
+      />
+      <StatCard
+        title="Persistence"
+        value="Authoritative"
+        icon="database"
+        description="CMS bridge synchronization"
+      />
+    </div>
+
+    {/* Form Form Container */}
+    <form id="homepage-settings-form" class="space-y-8">
+      {/* 1. Hero Configuration Card */}
+      <Card
+        title="Hero Experience Settings"
+        description="Customize top badge, main headline, description, and conversion buttons"
+      >
+        <div class="p-6 space-y-6">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="form-group">
+              <label
+                class="form-label text-xs font-semibold block mb-1.5 text-text"
+                for="hero-badge"
+              >
+                Top Pill Badge *
+              </label>
+              <input
+                type="text"
+                id="hero-badge"
+                name="heroBadge"
+                class="form-input w-full rounded-xl bg-surface border border-border px-3.5 py-2.5 text-sm text-text"
+                value={settings.hero.badge}
+                required
+              />
+            </div>
+
+            <div class="form-group">
+              <label
+                class="form-label text-xs font-semibold block mb-1.5 text-text"
+                for="hero-title"
+              >
+                Main Headline *
+              </label>
+              <input
+                type="text"
+                id="hero-title"
+                name="heroTitle"
+                class="form-input w-full rounded-xl bg-surface border border-border px-3.5 py-2.5 text-sm text-text font-semibold"
+                value={settings.hero.title}
+                required
+              />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label
+              class="form-label text-xs font-semibold block mb-1.5 text-text"
+              for="hero-subtitle"
+            >
+              Supporting Value Description *
+            </label>
+            <textarea
+              id="hero-subtitle"
+              name="heroSubtitle"
+              rows={3}
+              class="form-input w-full rounded-xl bg-surface border border-border px-3.5 py-2.5 text-sm text-text leading-relaxed"
+              required>{settings.hero.subtitle}</textarea
+            >
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-2">
+            <div class="form-group">
+              <label
+                class="form-label text-xs font-semibold block mb-1 text-text"
+                for="hero-primary-label"
+              >
+                Primary CTA Label
+              </label>
+              <input
+                type="text"
+                id="hero-primary-label"
+                class="form-input w-full rounded-xl bg-surface border border-border px-3 py-2 text-sm text-text"
+                value={settings.hero.primaryCtaLabel}
+              />
+            </div>
+            <div class="form-group">
+              <label
+                class="form-label text-xs font-semibold block mb-1 text-text"
+                for="hero-primary-href"
+              >
+                Primary CTA Destination
+              </label>
+              <input
+                type="text"
+                id="hero-primary-href"
+                class="form-input w-full rounded-xl bg-surface border border-border px-3 py-2 text-sm text-text font-mono"
+                value={settings.hero.primaryCtaHref}
+              />
+            </div>
+            <div class="form-group">
+              <label
+                class="form-label text-xs font-semibold block mb-1 text-text"
+                for="hero-secondary-label"
+              >
+                Secondary CTA Label
+              </label>
+              <input
+                type="text"
+                id="hero-secondary-label"
+                class="form-input w-full rounded-xl bg-surface border border-border px-3 py-2 text-sm text-text"
+                value={settings.hero.secondaryCtaLabel}
+              />
+            </div>
+            <div class="form-group">
+              <label
+                class="form-label text-xs font-semibold block mb-1 text-text"
+                for="hero-secondary-href"
+              >
+                Secondary CTA Destination
+              </label>
+              <input
+                type="text"
+                id="hero-secondary-href"
+                class="form-input w-full rounded-xl bg-surface border border-border px-3 py-2 text-sm text-text font-mono"
+                value={settings.hero.secondaryCtaHref}
+              />
+            </div>
+          </div>
+
+          <MCHeroMediaEditor page="homepage" settings={settings.hero.heroMedia} />
+
+          {/* Micro-Metrics Editor */}
+          <div class="pt-4 border-t border-border">
+            <h4 class="text-xs font-bold uppercase tracking-wider text-text-muted mb-3">
+              Hero Micro-Metrics / Capability Counters
+            </h4>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              {
+                (settings.hero.stats || []).map((stat, idx) => (
+                  <div class="p-4 rounded-xl border border-border bg-surface/50 space-y-2">
+                    <span class="text-[10px] font-bold uppercase text-primary">
+                      Metric #{idx + 1}
+                    </span>
+                    <input
+                      type="text"
+                      id={`stat-value-${idx}`}
+                      class="form-input w-full rounded-lg bg-surface border border-border px-2.5 py-1.5 text-sm text-text font-bold"
+                      value={stat.value}
+                      placeholder="Value (e.g. 6 Channels)"
+                    />
+                    <input
+                      type="text"
+                      id={`stat-label-${idx}`}
+                      class="form-input w-full rounded-lg bg-surface border border-border px-2.5 py-1.5 text-xs text-text-muted"
+                      value={stat.label}
+                      placeholder="Label"
+                    />
+                  </div>
+                ))
+              }
+            </div>
+          </div>
+        </div>
+      </Card>
+
+      {/* 2. Section Visibility Matrix */}
+      <Card
+        title="Homepage Section Visibility Matrix"
+        description="Enable or disable specific sections on the public homepage"
+      >
+        <div class="p-6">
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {
+              sectionsList.map((sec) => {
+                const isChecked = !!(settings.sections as any)?.[sec.key];
+
+                return (
+                  <label class="flex items-start gap-3 p-4 rounded-xl border border-border bg-surface/50 hover:bg-surface cursor-pointer transition-colors">
+                    <input
+                      type="checkbox"
+                      id={`sec-${sec.key}`}
+                      name={`section_${sec.key}`}
+                      checked={isChecked}
+                      class="mt-1 h-4 w-4 rounded border-border text-primary focus:ring-primary"
+                    />
+                    <div class="min-w-0">
+                      <span class="text-sm font-semibold text-text block">{sec.name}</span>
+                      <span class="text-xs text-text-muted block mt-0.5 leading-snug">
+                        {sec.desc}
+                      </span>
+                    </div>
+                  </label>
+                );
+              })
+            }
+          </div>
+        </div>
+      </Card>
+
+      {/* 3. Closing CTA Configuration */}
+      <Card
+        title="Closing Conversion CTA Settings"
+        description="Customize bottom conversion banner title, description, and action buttons"
+      >
+        <div class="p-6 space-y-4">
+          <div class="form-group">
+            <label
+              class="form-label text-xs font-semibold block mb-1 text-text"
+              for="closing-title"
+            >
+              CTA Title *
+            </label>
+            <input
+              type="text"
+              id="closing-title"
+              name="closingTitle"
+              class="form-input w-full rounded-xl bg-surface border border-border px-3.5 py-2.5 text-sm text-text font-bold"
+              value={settings.closingCta.title}
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label text-xs font-semibold block mb-1 text-text" for="closing-desc">
+              CTA Description *
+            </label>
+            <textarea
+              id="closing-desc"
+              name="closingDesc"
+              rows={2}
+              class="form-input w-full rounded-xl bg-surface border border-border px-3.5 py-2.5 text-sm text-text leading-relaxed"
+              required>{settings.closingCta.description}</textarea
+            >
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-2">
+            <div class="form-group">
+              <label
+                class="form-label text-xs font-semibold block mb-1 text-text"
+                for="closing-primary-label"
+              >
+                Primary Button Label
+              </label>
+              <input
+                type="text"
+                id="closing-primary-label"
+                class="form-input w-full rounded-xl bg-surface border border-border px-3 py-2 text-sm text-text"
+                value={settings.closingCta.primaryCtaLabel}
+              />
+            </div>
+            <div class="form-group">
+              <label
+                class="form-label text-xs font-semibold block mb-1 text-text"
+                for="closing-primary-href"
+              >
+                Primary Button Destination
+              </label>
+              <input
+                type="text"
+                id="closing-primary-href"
+                class="form-input w-full rounded-xl bg-surface border border-border px-3 py-2 text-sm text-text font-mono"
+                value={settings.closingCta.primaryCtaHref}
+              />
+            </div>
+            <div class="form-group">
+              <label
+                class="form-label text-xs font-semibold block mb-1 text-text"
+                for="closing-secondary-label"
+              >
+                Secondary Button Label
+              </label>
+              <input
+                type="text"
+                id="closing-secondary-label"
+                class="form-input w-full rounded-xl bg-surface border border-border px-3 py-2 text-sm text-text"
+                value={settings.closingCta.secondaryCtaLabel}
+              />
+            </div>
+            <div class="form-group">
+              <label
+                class="form-label text-xs font-semibold block mb-1 text-text"
+                for="closing-secondary-href"
+              >
+                Secondary Button Destination
+              </label>
+              <input
+                type="text"
+                id="closing-secondary-href"
+                class="form-input w-full rounded-xl bg-surface border border-border px-3 py-2 text-sm text-text font-mono"
+                value={settings.closingCta.secondaryCtaHref}
+              />
+            </div>
+          </div>
+        </div>
+      </Card>
+
+      {/* Save Button Bar */}
+      <div class="flex items-center justify-end gap-4 pt-4">
+        <a href="/" target="_blank" class="btn btn-secondary text-sm"> Cancel &amp; View Live </a>
+        <button type="submit" class="btn btn-primary text-sm px-6 py-2.5">
+          <Icon name="lucide:save" class="w-4 h-4 mr-1.5 inline" />
+          Save Homepage Settings
+        </button>
+      </div>
+    </form>
+  </div>
+</DashboardLayout>
+
+<script>
+  import { updateHomepageSettings, type HomepageSettings } from '@/lib/cms-api';
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const form = document.getElementById('homepage-settings-form') as HTMLFormElement;
+    const saveAllBtn = document.getElementById('save-all-btn');
+
+    async function handleSave() {
+      const heroBadge = (document.getElementById('hero-badge') as HTMLInputElement).value;
+      const heroTitle = (document.getElementById('hero-title') as HTMLInputElement).value;
+      const heroSubtitle = (document.getElementById('hero-subtitle') as HTMLTextAreaElement).value;
+      const heroPrimaryLabel = (document.getElementById('hero-primary-label') as HTMLInputElement)
+        .value;
+      const heroPrimaryHref = (document.getElementById('hero-primary-href') as HTMLInputElement)
+        .value;
+      const heroSecondaryLabel = (
+        document.getElementById('hero-secondary-label') as HTMLInputElement
+      ).value;
+      const heroSecondaryHref = (document.getElementById('hero-secondary-href') as HTMLInputElement)
+        .value;
+
+      const stats = [
+        {
+          value:
+            (document.getElementById('stat-value-0') as HTMLInputElement)?.value || '6 Channels',
+          label:
+            (document.getElementById('stat-label-0') as HTMLInputElement)?.value ||
+            'Single Shared Hub',
+        },
+        {
+          value: (document.getElementById('stat-value-1') as HTMLInputElement)?.value || '< 10s',
+          label:
+            (document.getElementById('stat-label-1') as HTMLInputElement)?.value ||
+            'In-Chat /stk Delivery',
+        },
+        {
+          value:
+            (document.getElementById('stat-value-2') as HTMLInputElement)?.value || 'Bilingual AI',
+          label:
+            (document.getElementById('stat-label-2') as HTMLInputElement)?.value ||
+            'English, Swahili & Sheng',
+          highlight: true,
+        },
+      ];
+
+      const getCheck = (id: string) =>
+        (document.getElementById(id) as HTMLInputElement)?.checked ?? true;
+
+      const sections = {
+        hero: getCheck('sec-hero'),
+        omnichannelFlow: getCheck('sec-omnichannelFlow'),
+        howItWorks: getCheck('sec-howItWorks'),
+        coreCapabilities: getCheck('sec-coreCapabilities'),
+        operationalScenarios: getCheck('sec-operationalScenarios'),
+        markcopilot: getCheck('sec-markcopilot'),
+        solutionsPreview: getCheck('sec-solutionsPreview'),
+        integrations: getCheck('sec-integrations'),
+        pricing: getCheck('sec-pricing'),
+        kenyaPrinciples: getCheck('sec-kenyaPrinciples'),
+        faqs: getCheck('sec-faqs'),
+        closingCta: getCheck('sec-closingCta'),
+        newsletter: getCheck('sec-newsletter'),
+      };
+
+      const closingTitle = (document.getElementById('closing-title') as HTMLInputElement).value;
+      const closingDesc = (document.getElementById('closing-desc') as HTMLTextAreaElement).value;
+      const closingPrimaryLabel = (
+        document.getElementById('closing-primary-label') as HTMLInputElement
+      ).value;
+      const closingPrimaryHref = (
+        document.getElementById('closing-primary-href') as HTMLInputElement
+      ).value;
+      const closingSecondaryLabel = (
+        document.getElementById('closing-secondary-label') as HTMLInputElement
+      ).value;
+      const closingSecondaryHref = (
+        document.getElementById('closing-secondary-href') as HTMLInputElement
+      ).value;
+
+      const updatedSettings: Partial<HomepageSettings> = {
+        hero: {
+          badge: heroBadge,
+          title: heroTitle,
+          subtitle: heroSubtitle,
+          primaryCtaLabel: heroPrimaryLabel,
+          primaryCtaHref: heroPrimaryHref,
+          secondaryCtaLabel: heroSecondaryLabel,
+          secondaryCtaHref: heroSecondaryHref,
+          stats,
+          heroMedia: window.markchatReadHeroMedia?.('homepage'),
+        },
+        sections,
+        closingCta: {
+          title: closingTitle,
+          description: closingDesc,
+          primaryCtaLabel: closingPrimaryLabel,
+          primaryCtaHref: closingPrimaryHref,
+          secondaryCtaLabel: closingSecondaryLabel,
+          secondaryCtaHref: closingSecondaryHref,
+        },
+      };
+
+      await updateHomepageSettings(updatedSettings);
+      alert('Homepage settings successfully saved to CMS!');
+      window.location.reload();
+    }
+
+    form?.addEventListener('submit', (e) => {
+      e.preventDefault();
+      handleSave();
+    });
+
+    saveAllBtn?.addEventListener('click', () => {
+      handleSave();
+    });
+  });
+</script>

@@ -1,229 +1,132 @@
 ---
-/**
- * Hero - Landing page hero section with flexible background options
- *
- * @description
- * A full-width hero section designed for landing pages. Includes a main headline,
- * supporting subtitle text, and up to two call-to-action buttons. Supports multiple
- * background types: solid color, gradient, image, or video.
- *
- * @example Default (solid background)
- * ```astro
- * <Hero
- *   title="Ship faster. Scale effortlessly."
- *   subtitle="The modern deployment platform for teams."
- *   primaryCTA={{ label: "Get Started", href: "/signup" }}
- * />
- * ```
- *
- * @example With gradient background
- * ```astro
- * <Hero
- *   title="Ship faster"
- *   subtitle="The modern platform for teams."
- *   primaryCTA={{ label: "Get Started", href: "/signup" }}
- *   backgroundType="gradient"
- *   gradient="from-primary/20 via-background to-background"
- * />
- * ```
- *
- * @example With image background
- * ```astro
- * <Hero
- *   title="Ship faster"
- *   subtitle="The modern platform for teams."
- *   primaryCTA={{ label: "Get Started", href: "/signup" }}
- *   backgroundType="image"
- *   backgroundImage="/images/hero-bg.jpg"
- *   overlay={true}
- *   overlayOpacity={60}
- * />
- * ```
- *
- * @example With video background
- * ```astro
- * <Hero
- *   title="Ship faster"
- *   subtitle="The modern platform for teams."
- *   primaryCTA={{ label: "Get Started", href: "/signup" }}
- *   backgroundType="video"
- *   backgroundVideo="/videos/hero-bg.mp4"
- *   backgroundVideoPoster="/images/hero-poster.jpg"
- *   overlay={true}
- * />
- * ```
- */
+import MCContainer from '@/components/design-system/MCContainer.astro';
+import MCButton from '@/components/design-system/MCButton.astro';
+import MCProductFrame from '@/components/design-system/MCProductFrame.astro';
+import MCConceptualPreview from '@/components/design-system/MCConceptualPreview.astro';
+import MCResponsiveHeroMedia from '@/components/design-system/MCResponsiveHeroMedia.astro';
+import { normalizeHeroMedia } from '@/lib/hero-media';
+import type { HeroMediaSettings } from '@/lib/types';
+import { existsSync } from 'node:fs';
+import path from 'node:path';
+import { resolveProductAsset, type CmsProductMediaOverride } from '@/data/product-assets';
 
 interface Props {
-  /** Main headline text displayed prominently */
-  title: string;
-  /** Supporting text that appears below the headline */
-  subtitle: string;
-  /** Primary call-to-action button with label and link */
-  primaryCTA: { label: string; href: string };
-  /** Optional secondary call-to-action button */
+  title?: string;
+  subtitle?: string;
+  badge?: string;
+  primaryCTA?: { label: string; href: string };
   secondaryCTA?: { label: string; href: string };
-  /** Background type */
-  backgroundType?: 'solid' | 'gradient' | 'image' | 'video';
-  /** Solid background style (when backgroundType is 'solid') */
-  background?: 'default' | 'muted' | 'accent';
-  /** Gradient classes (when backgroundType is 'gradient') */
-  gradient?: string;
-  /** Background image URL (when backgroundType is 'image') */
-  backgroundImage?: string;
-  /** Background video URL (when backgroundType is 'video') */
-  backgroundVideo?: string;
-  /** Video poster image for loading state */
-  backgroundVideoPoster?: string;
-  /** Show dark overlay on image/video backgrounds */
-  overlay?: boolean;
-  /** Overlay opacity percentage (0-100) */
-  overlayOpacity?: number;
-  /** Text color scheme for image/video backgrounds */
-  textColor?: 'auto' | 'light' | 'dark';
-  /** Minimum height for the hero section */
-  minHeight?: 'default' | 'screen' | 'large';
-  /** Content alignment */
-  align?: 'center' | 'left';
+  cmsMedia?: CmsProductMediaOverride | null;
+  heroMedia?: Partial<HeroMediaSettings> | null;
 }
 
 const {
-  title,
-  subtitle,
-  primaryCTA,
-  secondaryCTA,
-  backgroundType = 'solid',
-  background = 'default',
-  gradient = 'from-primary/10 via-background to-background',
-  backgroundImage,
-  backgroundVideo,
-  backgroundVideoPoster,
-  overlay = false,
-  overlayOpacity = 50,
-  textColor = 'auto',
-  minHeight = 'default',
-  align = 'center',
+  title = 'Every conversation. One smarter inbox.',
+  subtitle = 'Built for Kenyan businesses. Bring customer conversations, AI-assisted replies, and M-Pesa workflows together in one place.',
+  badge = 'BUILT FOR KENYAN BUSINESSES',
+  primaryCTA = { label: 'Get Started', href: '/register' },
+  secondaryCTA = { label: 'Book a Demo', href: '/demo' },
+  cmsMedia,
+  heroMedia,
 } = Astro.props;
+const editorial = normalizeHeroMedia('homepage', heroMedia);
+const validDeployed = (src: string) =>
+  Boolean(src) && (src.startsWith('https://') || existsSync(path.join(process.cwd(), 'public', src.slice(1))));
+const hasEditorial = validDeployed(editorial.heroBackgroundImageUrl) || validDeployed(editorial.heroBackgroundMobileImageUrl);
+const useEditorial = hasEditorial && editorial.heroMediaMode !== 'layered-preview';
+const useBackdrop = useEditorial && editorial.heroMediaMode === 'editorial-backdrop';
 
-// Solid background classes
-const solidBgClass = {
-  default: 'bg-background',
-  muted: 'bg-surface',
-  accent: 'bg-primary/5',
-}[background];
-
-// Determine if we need light text (for dark backgrounds)
-const needsLightText =
-  textColor === 'light' ||
-  (textColor === 'auto' && (backgroundType === 'image' || backgroundType === 'video') && overlay);
-
-// Text color classes
-const textClasses = needsLightText
-  ? {
-      heading: 'text-white',
-      body: 'text-white/80',
-      button: 'border-white/30 text-white hover:bg-white/10',
-    }
-  : {
-      heading: 'text-text',
-      body: 'text-text-muted',
-      button: 'border-border text-text hover:bg-surface',
-    };
-
-// Min height classes
-const minHeightClass = {
-  default: 'py-section',
-  large: 'py-24 md:py-32',
-  screen: 'min-h-[80vh] flex items-center',
-}[minHeight];
-
-// Alignment classes
-const alignClass = align === 'left' ? 'text-left' : 'text-center mx-auto';
-const buttonAlignClass = align === 'left' ? 'justify-start' : 'justify-center';
+const light = resolveProductAsset('inbox', 'light', cmsMedia);
+const dark = resolveProductAsset('inbox', 'dark', cmsMedia);
+const defaultTitle = title === 'Every conversation. One smarter inbox.';
 ---
 
 <section
-  class:list={[
-    'relative overflow-hidden',
-    minHeightClass,
-    backgroundType === 'solid' && solidBgClass,
-    backgroundType === 'gradient' && `bg-linear-to-br ${gradient}`,
-  ]}
+  id="product-hero"
+  class="relative overflow-hidden border-b border-border bg-background py-14 sm:py-20 lg:py-24"
+  aria-labelledby="hero-heading"
 >
-  {/* Image Background */}
-  {
-    backgroundType === 'image' && backgroundImage && (
-      <div class="absolute inset-0 z-0">
-        <img src={backgroundImage} alt="" class="w-full h-full object-cover" loading="eager" />
-      </div>
-    )
-  }
-
-  {/* Video Background */}
-  {
-    backgroundType === 'video' && backgroundVideo && (
-      <div class="absolute inset-0 z-0">
-        <video
-          autoplay
-          muted
-          loop
-          playsinline
-          poster={backgroundVideoPoster}
-          class="w-full h-full object-cover"
+  {useBackdrop && <MCResponsiveHeroMedia page="homepage" settings={editorial} presentation="backdrop" class="pointer-events-none" />}
+  <MCContainer class="relative z-10 max-w-[1360px]">
+    <div class="grid items-center gap-12 lg:grid-cols-[0.95fr_1.05fr] lg:gap-16">
+      <div class="max-w-xl">
+        <p class="mb-5 text-xs font-bold uppercase tracking-widest text-primary">{badge}</p>
+        <h1
+          id="hero-heading"
+          class="text-4xl font-bold leading-[1.1] tracking-tight text-text sm:text-5xl lg:text-6xl"
         >
-          <source src={backgroundVideo} type="video/mp4" />
-        </video>
-      </div>
-    )
-  }
-
-  {/* Overlay */}
-  {
-    overlay && (backgroundType === 'image' || backgroundType === 'video') && (
-      <div class="absolute inset-0 z-1 bg-black" style={`opacity: ${overlayOpacity / 100}`} />
-    )
-  }
-
-  {/* Content */}
-  <div
-    class:list={[
-      'relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8',
-      minHeight === 'screen' && 'w-full',
-    ]}
-  >
-    <div class:list={['max-w-3xl', alignClass]}>
-      <h1
-        class:list={[
-          'text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight tracking-tight',
-          textClasses.heading,
-        ]}
-      >
-        {title}
-      </h1>
-      <p class:list={['mt-6 text-lg sm:text-xl leading-relaxed', textClasses.body]}>
-        {subtitle}
-      </p>
-      <div class:list={['mt-10 flex flex-col sm:flex-row items-center gap-4', buttonAlignClass]}>
-        <a
-          href={primaryCTA.href}
-          class="inline-flex items-center justify-center px-6 py-3 rounded-md bg-primary text-white font-medium hover:bg-primary-dark transition-colors w-full sm:w-auto"
+          {
+            defaultTitle ? (
+              <>
+                Every conversation.
+                <span class="mt-2 block text-primary">One smarter inbox.</span>
+              </>
+            ) : (
+              title
+            )
+          }
+        </h1>
+        <p class="mt-6 max-w-lg text-base leading-relaxed text-text-muted sm:text-lg">
+          {subtitle}
+        </p>
+        <div class="mt-8 flex flex-wrap gap-3">
+          <MCButton href={primaryCTA.href}>{primaryCTA.label}</MCButton>
+          <MCButton href={secondaryCTA.href} variant="secondary">{secondaryCTA.label}</MCButton>
+        </div>
+        <div
+          class="mt-10 flex flex-wrap gap-x-6 gap-y-2 border-t border-border pt-5 text-xs font-medium text-text-muted"
+          aria-label="Capabilities"
         >
-          {primaryCTA.label}
-        </a>
+          <span>Shared conversations</span>
+          <span>AI-assisted replies</span>
+          <span>Configured M-Pesa</span>
+        </div>
+      </div>
+      <div class="relative min-w-0 pb-6 pt-3">
         {
-          secondaryCTA && (
-            <a
-              href={secondaryCTA.href}
-              class:list={[
-                'inline-flex items-center justify-center px-6 py-3 rounded-md border font-medium transition-colors w-full sm:w-auto',
-                textClasses.button,
-              ]}
-            >
-              {secondaryCTA.label}
-            </a>
+          useEditorial && !useBackdrop ? (
+            <div class="space-y-3">
+              <MCResponsiveHeroMedia page="homepage" settings={editorial} focalPoint="right" />
+              {editorial.heroMediaMode === 'hybrid' && (
+                <div class="grid gap-3 sm:grid-cols-2">
+                  <MCConceptualPreview kind="mpesa" />
+                  <MCConceptualPreview kind="markcopilot" />
+                </div>
+              )}
+            </div>
+          ) : light.src || dark.src ? (
+            <>
+              <div class="dark:hidden">
+                <MCProductFrame
+                  src={light.src}
+                  alt={light.alt}
+                  label="Unified Inbox product demonstration"
+                />
+              </div>
+              <div class="hidden dark:block">
+                <MCProductFrame
+                  src={dark.src}
+                  alt={dark.alt}
+                  label="Unified Inbox product demonstration"
+                />
+              </div>
+            </>
+          ) : (
+            <div class="space-y-3" data-mc-nonoverlap-layout>
+              <div class="overflow-hidden rounded-2xl border border-border shadow-sm">
+                <MCConceptualPreview kind="inbox" class="rounded-2xl border-0" />
+              </div>
+              <div class="grid items-stretch gap-3 sm:grid-cols-2">
+                <MCConceptualPreview kind="mpesa" />
+                <MCConceptualPreview kind="markcopilot" />
+              </div>
+              <p class="text-right text-xs text-text-muted">
+                Conceptual product preview · synthetic example content
+              </p>
+            </div>
           )
         }
       </div>
     </div>
-  </div>
+  </MCContainer>
 </section>

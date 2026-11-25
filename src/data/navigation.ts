@@ -1,0 +1,521 @@
+/**
+ * MarkChat Mega-Menu Navigation Data Configuration
+ *
+ * Implements the expansive Chatwoot-style mega-menu structure (Product, Solutions, Resources)
+ * with authentic Kenyan commerce context, icons, descriptions, and direct routes.
+ */
+
+export interface MegaMenuItem {
+  label: string;
+  href: string;
+  description: string;
+  icon: string;
+  badge?: string;
+  external?: boolean;
+}
+
+export interface MegaMenuSection {
+  title?: string;
+  items: MegaMenuItem[];
+}
+
+export interface MegaMenuColumn {
+  title?: string;
+  sections: MegaMenuSection[];
+}
+
+export interface MegaMenuConfig {
+  id: 'product' | 'solutions' | 'resources';
+  label: string;
+  columns: MegaMenuColumn[];
+  spotlight?: {
+    title: string;
+    description: string;
+    badge?: string;
+    href: string;
+    ctaLabel: string;
+    icon?: string;
+  };
+}
+
+export const productMegaMenu: MegaMenuConfig = {
+  id: 'product',
+  label: 'Product',
+  columns: [
+    {
+      title: 'Products & Pricing',
+      sections: [
+        {
+          title: 'PRODUCTS',
+          items: [
+            {
+              label: 'Markcopilot AI',
+              href: '/markcopilot',
+              description:
+                'Dual-mode AI that drafts agent replies and handles 24/7 Swahili & Sheng support.',
+              icon: 'lucide:sparkles',
+              badge: 'AI',
+            },
+            {
+              label: 'Shared Inbox',
+              href: '/product/shared-inbox',
+              description:
+                'Unify WhatsApp, Instagram, Messenger and email conversations in one team workspace.',
+              icon: 'lucide:inbox',
+            },
+            {
+              label: 'Help Center',
+              href: '/product/help-center',
+              description:
+                'Build a multilingual self-service knowledge base to deflect repetitive questions.',
+              icon: 'lucide:help-circle',
+            },
+            {
+              label: 'In-Chat M-Pesa STK',
+              href: '/integrations/safaricom-mpesa-daraja',
+              description:
+                'Prompt instant Safaricom SIM Toolkit PIN checkouts directly inside WhatsApp threads.',
+              icon: 'lucide:smartphone',
+              badge: 'STK',
+            },
+          ],
+        },
+        {
+          title: 'PRICING & RECONCILIATION',
+          items: [
+            {
+              label: 'Cloud Pricing',
+              href: '/pricing',
+              description: 'Transparent KES plans with multi-channel shared inboxes.',
+              icon: 'lucide:cloud',
+            },
+            {
+              label: 'Daraja C2B Verification',
+              href: '/integrations/safaricom-mpesa-daraja',
+              description: 'Real-time webhook reconciliation to eliminate fake screenshot fraud.',
+              icon: 'lucide:shield-check',
+            },
+          ],
+        },
+      ],
+    },
+    {
+      title: 'Features',
+      sections: [
+        {
+          items: [
+            {
+              label: 'WhatsApp Campaigns',
+              href: '/features/whatsapp-campaigns',
+              description:
+                'Reach opted-in customers on WhatsApp and manage responses through connected conversations.',
+              icon: 'lucide:send',
+              badge: 'Meta',
+            },
+            {
+              label: 'Website Live Chat',
+              href: '/features/website-live-chat',
+              description:
+                'Embed a blazing-fast 15KB chat widget to capture anonymous website visitors.',
+              icon: 'lucide:message-square',
+            },
+            {
+              label: 'Channels',
+              href: '/features/channels',
+              description: 'Connect WhatsApp, Instagram, Facebook Messenger and web chat.',
+              icon: 'lucide:layers',
+            },
+            {
+              label: 'Team Collaboration',
+              href: '/features/team-collaboration',
+              description:
+                'Tag teammates, leave private notes, and prevent agent collision on tickets.',
+              icon: 'lucide:users-round',
+            },
+            {
+              label: 'Automations',
+              href: '/features/automations',
+              description: 'Set up round-robin routing, SLA breach timers, and auto-assign rules.',
+              icon: 'lucide:zap',
+            },
+            {
+              label: 'Integrations',
+              href: '/integrations',
+              description:
+                '18+ native connectors including Safaricom Daraja, Shopify, and Pochi la Biashara.',
+              icon: 'lucide:blocks',
+            },
+          ],
+        },
+      ],
+    },
+    {
+      title: 'Use Cases',
+      sections: [
+        {
+          items: [
+            {
+              label: 'Support Desk',
+              href: '/features/support-desk',
+              description:
+                'Resolve tickets faster with shared SLAs, custom views, and macro shortcuts.',
+              icon: 'lucide:headphones',
+            },
+            {
+              label: 'Omnichannel Engagement',
+              href: '/features/omnichannel-engagement',
+              description:
+                'Reply to marketing campaigns, social DMs, and community care instantly.',
+              icon: 'lucide:repeat',
+            },
+            {
+              label: 'Website Conversion',
+              href: '/features/website-conversion',
+              description:
+                'Turn hesitant website visitors into buyers via live chat and WhatsApp routing.',
+              icon: 'lucide:trending-up',
+            },
+            {
+              label: 'Conversation Infra',
+              href: '/features/conversation-infra',
+              description:
+                'Build custom chat experiences with our high-throughput APIs and webhooks.',
+              icon: 'lucide:network',
+            },
+            {
+              label: 'Self-Service & Deflection',
+              href: '/features/self-service',
+              description: 'Shrink your ticket volume by letting AI answer FAQs automatically.',
+              icon: 'lucide:book-open',
+            },
+            {
+              label: 'Automation & Routing',
+              href: '/features/automation-and-routing',
+              description:
+                'Implement no-code workflows to match customers with the right agent skill.',
+              icon: 'lucide:git-fork',
+            },
+          ],
+        },
+      ],
+    },
+    {
+      title: 'Featured',
+      sections: [],
+    },
+  ],
+  spotlight: {
+    title: 'In-Chat M-Pesa Checkout',
+    description:
+      'Type /stk directly in customer WhatsApp chats to trigger Safaricom PIN prompts and verify payments instantly.',
+    badge: 'Kenyan Commerce',
+    href: '/integrations/safaricom-mpesa-daraja',
+    ctaLabel: 'See how STK works →',
+    icon: 'lucide:smartphone',
+  },
+};
+
+export const solutionsMegaMenu: MegaMenuConfig = {
+  id: 'solutions',
+  label: 'Solutions',
+  columns: [
+    {
+      title: 'Teams & Size',
+      sections: [
+        {
+          title: 'By Team',
+          items: [
+            {
+              label: 'Support',
+              href: '/solutions/support',
+              description: 'Fast resolution with Swahili/Sheng AI & SLA alerts',
+              icon: 'lucide:headphones',
+            },
+            {
+              label: 'Sales',
+              href: '/solutions/sales',
+              description: 'Close deals in chat with real-time /stk prompts',
+              icon: 'lucide:badge-dollar-sign',
+            },
+            {
+              label: 'Marketing',
+              href: '/solutions/marketing',
+              description: 'Personalized customer engagement across supported social channels',
+              icon: 'lucide:megaphone',
+            },
+          ],
+        },
+        {
+          title: 'By Size',
+          items: [
+            {
+              label: 'Startups',
+              href: '/solutions/startups',
+              description: 'Starter tier at KES 1,500/mo for 3 agents & 2 inboxes',
+              icon: 'lucide:rocket',
+            },
+            {
+              label: 'Growth',
+              href: '/solutions/growth',
+              description: 'Unlimited team agents, SLA tracking & C2B sync',
+              icon: 'lucide:bar-chart-2',
+            },
+            {
+              label: 'Enterprise',
+              href: '/solutions/enterprise',
+              description: 'Dedicated Paybill routing, team roles & high-throughput infra',
+              icon: 'lucide:building-2',
+            },
+          ],
+        },
+      ],
+    },
+    {
+      title: 'Industries A',
+      sections: [
+        {
+          items: [
+            {
+              label: 'Healthcare & Clinics',
+              href: '/solutions/healthcare',
+              description:
+                'Secure patient booking, appointment reminders, and confidential messaging.',
+              icon: 'lucide:stethoscope',
+            },
+            {
+              label: 'E-commerce & Retail',
+              href: '/solutions/ecommerce',
+              description:
+                'Send abandoned cart alerts and process instant M-Pesa STK checkouts in-chat.',
+              icon: 'lucide:shopping-bag',
+            },
+            {
+              label: 'B2B SaaS',
+              href: '/solutions/b2b-saas',
+              description: 'Trial conversions, in-app messaging & Linear sync',
+              icon: 'lucide:laptop',
+            },
+            {
+              label: 'Education & Schools',
+              href: '/solutions/education',
+              description:
+                'Manage student inquiries, fee reminders, and admission support efficiently.',
+              icon: 'lucide:graduation-cap',
+            },
+            {
+              label: 'Local Businesses',
+              href: '/solutions/local-businesses',
+              description:
+                'Support repeat customers with organized WhatsApp replies and follow-ups.',
+              icon: 'lucide:store',
+            },
+            {
+              label: 'Pharmacies',
+              href: '/solutions/pharmacies',
+              description: 'Prescription orders, refill reminders & rider sync',
+              icon: 'lucide:pill',
+            },
+            {
+              label: 'Manufacturing',
+              href: '/solutions/manufacturing',
+              description: 'Wholesale orders, inventory quotes & dispatch alerts',
+              icon: 'lucide:factory',
+            },
+          ],
+        },
+      ],
+    },
+    {
+      title: 'Industries B',
+      sections: [
+        {
+          items: [
+            {
+              label: 'Financial Services',
+              href: '/solutions/fintech',
+              description:
+                'Compliant support for fintechs, SACCOs, and micro-lenders with audit trails.',
+              icon: 'lucide:shield-check',
+            },
+            {
+              label: 'Marketplaces',
+              href: '/solutions/marketplaces',
+              description: 'Buyer-seller chats, dispute logs & M-Pesa escrow',
+              icon: 'lucide:layout-grid',
+            },
+            {
+              label: 'Public Sector',
+              href: '/solutions/public-sector',
+              description: 'County fee inquiries, digital support and e-Citizen guidance',
+              icon: 'lucide:landmark',
+            },
+            {
+              label: 'Beauty & Wellness',
+              href: '/solutions/beauty-wellness',
+              description: 'Salon booking, deposit payments & client retention',
+              icon: 'lucide:sparkles',
+            },
+            {
+              label: 'Automotive & Logistics',
+              href: '/solutions/automotive-logistics',
+              description: 'Boda dispatch, delivery tracking & fuel receipts',
+              icon: 'lucide:truck',
+            },
+            {
+              label: 'Travel',
+              href: '/solutions/travel',
+              description: 'Safari bookings, tour itineraries & diaspora cards',
+              icon: 'lucide:plane',
+            },
+          ],
+        },
+      ],
+    },
+  ],
+  spotlight: {
+    title: 'Built for Kenyan Commerce',
+    description:
+      'From Westlands boutiques to countrywide SACCOs, MarkChat powers 4x faster conversational sales.',
+    badge: 'Customer Stories',
+    href: '/demo',
+    ctaLabel: 'Book tailored industry demo →',
+    icon: 'lucide:trophy',
+  },
+};
+
+export const resourcesMegaMenu: MegaMenuConfig = {
+  id: 'resources',
+  label: 'Resources',
+  columns: [
+    {
+      title: 'Spotlight',
+      sections: [
+        {
+          items: [
+            {
+              label: 'Changelog',
+              href: '/resources/changelog',
+              description: 'Weekly release notes, new features & engine updates',
+              icon: 'lucide:history',
+            },
+            {
+              label: 'Help Center',
+              href: '/faq',
+              description: 'Merchant guides, Daraja onboarding & operational FAQs',
+              icon: 'lucide:help-circle',
+            },
+            {
+              label: 'Blog & Insights',
+              href: '/blog',
+              description: 'Fintech strategies, customer support playbooks & growth guides',
+              icon: 'lucide:newspaper',
+            },
+            {
+              label: 'API Reference',
+              href: '/docs',
+              description: 'REST endpoints, webhooks & payload schemas for developers',
+              icon: 'lucide:code-2',
+            },
+            {
+              label: 'Security & KDPA',
+              href: '/resources/security',
+              description: 'Kenya Data Protection Act 2019 standards & encryption',
+              icon: 'lucide:shield',
+            },
+          ],
+        },
+      ],
+    },
+    {
+      title: 'Docs & Community',
+      sections: [
+        {
+          items: [
+            {
+              label: 'Docs',
+              href: '/docs',
+              description: 'Official API documentation & channel setup guides',
+              icon: 'lucide:book-open',
+            },
+            {
+              label: 'API',
+              href: '/resources/api',
+              description: 'REST & WebSocket reference for custom merchant stacks',
+              icon: 'lucide:code-2',
+            },
+            {
+              label: 'Templates',
+              href: '/resources/templates',
+              description: 'Helpful WhatsApp and customer service reply templates',
+              icon: 'lucide:file-text',
+            },
+            {
+              label: 'Tools',
+              href: '/resources/tools',
+              description: 'M-Pesa resources and practical business tools',
+              icon: 'lucide:calculator',
+            },
+            {
+              label: 'System Status',
+              href: '/resources/status',
+              description: 'Real-time carrier latency, Daraja webhooks & uptime',
+              icon: 'lucide:activity',
+            },
+            {
+              label: 'Affiliates',
+              href: '/resources/affiliates',
+              description: 'Earn 25% recurring commission for every referral',
+              icon: 'lucide:heart-handshake',
+            },
+          ],
+        },
+      ],
+    },
+    {
+      title: 'Ecosystem',
+      sections: [
+        {
+          items: [
+            {
+              label: 'Android Bridge APK',
+              href: '/resources/downloads',
+              description: 'Official Android forwarder APK for Pochi la Biashara & Till sync',
+              icon: 'lucide:smartphone',
+            },
+            {
+              label: 'Reliability & Architecture',
+              href: '/resources/security',
+              description: 'High-availability Kenyan telco routing and data isolation',
+              icon: 'lucide:shield-check',
+            },
+            {
+              label: 'Developer Documentation',
+              href: '/docs',
+              description:
+                'Explore Safaricom Daraja STK and customer messaging integration guidance.',
+              icon: 'lucide:code-2',
+            },
+            {
+              label: 'Engineering Support',
+              href: '/contact',
+              description: 'Direct technical consultation with our Nairobi engineering team',
+              icon: 'lucide:headphones',
+            },
+          ],
+        },
+      ],
+    },
+  ],
+};
+
+export const directNavLinks = [
+  { label: 'Markcopilot', href: '/markcopilot', badge: 'AI' },
+  { label: 'Pricing', href: '/pricing' },
+  { label: 'Integrations', href: '/integrations' },
+  { label: 'Demo', href: '/demo' },
+];
+
+export const headerCtas = [
+  { label: 'Login', href: '/login', variant: 'ghost' as const },
+  { label: 'Get Started', href: '/register', variant: 'primary' as const },
+];

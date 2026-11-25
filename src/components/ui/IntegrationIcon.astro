@@ -1,0 +1,406 @@
+---
+/**
+ * Authentic Full-Color Brand Icon for Kenyan & Global Integrations
+ *
+ * Provides crisp, high-fidelity brand SVGs for all 18 MarkChat integrations:
+ * 1. Safaricom M-Pesa (Daraja C2B & STK)
+ * 2. WhatsApp Business (Cloud API & Embedded)
+ * 3. Africa's Talking Bulk SMS & BYOC
+ * 4. Markcopilot AI Assistant
+ * 5. Shopify
+ * 6. Instagram & Facebook Messenger
+ * 7. Pochi la Biashara & Personal Till Sync
+ * 8. Shared Bank Paybill (KCB, Equity, Co-op)
+ * 9. TikTok Business Messaging
+ * 10. Telegram
+ * 11. Website Live Chat & Help Center
+ * 12. Email (Gmail, Outlook & Custom SMTP)
+ * 13. LINE
+ * 14. Stripe
+ * 15. Slack
+ * 16. Linear
+ * 17. Notion
+ * 18. Google & Microsoft SSO
+ */
+
+interface Props {
+  iconKey?: string;
+  logoUrl?: string;
+  name?: string;
+  size?: 'sm' | 'md' | 'lg' | 'xl';
+  class?: string;
+}
+
+const {
+  iconKey = '',
+  logoUrl,
+  name = 'Integration',
+  size = 'md',
+  class: className = '',
+} = Astro.props;
+
+const containerSizes = {
+  sm: 'w-9 h-9 rounded-lg p-1.5',
+  md: 'w-12 h-12 rounded-xl p-2.5',
+  lg: 'w-14 h-14 rounded-2xl p-3',
+  xl: 'w-16 h-16 rounded-2xl p-3.5',
+}[size];
+
+const iconSizes = {
+  sm: 'w-5 h-5',
+  md: 'w-7 h-7',
+  lg: 'w-8 h-8',
+  xl: 'w-9 h-9',
+}[size];
+
+const normalizedKey = iconKey.toLowerCase().replace(/[^a-z0-9]/g, '-');
+---
+
+<div
+  class:list={[
+    'shrink-0 flex items-center justify-center bg-gray-50 dark:bg-gray-800/80 border border-gray-200/60 dark:border-gray-700/60 shadow-xs transition-transform group-hover:scale-105',
+    containerSizes,
+    className,
+  ]}
+>
+  {
+    logoUrl ? (
+      <img
+        src={logoUrl}
+        alt={name}
+        class:list={['object-contain max-w-full max-h-full', iconSizes]}
+        loading="lazy"
+      />
+    ) : normalizedKey.includes('mpesa') ||
+      normalizedKey.includes('daraja') ||
+      normalizedKey.includes('safaricom') ? (
+      <svg class={iconSizes} viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="48" height="48" rx="10" fill="#43B02A" />
+        <path
+          d="M12 36V12L24 24L36 12V36"
+          stroke="#FFFFFF"
+          stroke-width="4.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+        <circle cx="36" cy="14" r="3.5" fill="#E11414" />
+        <circle cx="12" cy="14" r="3.5" fill="#E11414" />
+      </svg>
+    ) : normalizedKey.includes('whatsapp') ? (
+      <svg class={iconSizes} viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="48" height="48" rx="10" fill="#25D366" />
+        <path
+          fill-rule="evenodd"
+          clip-rule="evenodd"
+          d="M24 10C16.268 10 10 16.268 10 24C10 26.696 10.764 29.214 12.086 31.354L10.5 37.5L16.828 35.882C18.91 37.034 21.374 37.7 24 37.7C31.732 37.7 38 31.432 38 23.7C38 15.968 31.732 10 24 10ZM31.854 28.536C31.528 29.452 30.238 30.224 29.28 30.33C28.628 30.402 27.784 30.438 24.918 29.248C21.254 27.728 18.892 24.016 18.708 23.774C18.53 23.532 17.228 21.802 17.228 20.02C17.228 18.238 18.134 17.368 18.46 17.006C18.786 16.644 19.184 16.554 19.438 16.554C19.692 16.554 19.946 16.558 20.162 16.568C20.398 16.58 20.706 16.49 21.014 17.234C21.34 18.014 22.118 19.932 22.208 20.132C22.3 20.332 22.372 20.584 22.246 20.826C22.118 21.07 22.028 21.196 21.846 21.414C21.666 21.632 21.466 21.884 21.304 22.048C21.122 22.23 20.932 22.428 21.132 22.772C21.332 23.116 22.02 24.238 23.034 25.142C24.34 26.304 25.398 26.674 25.76 26.856C26.122 27.038 26.34 27.002 26.556 26.748C26.774 26.494 27.498 25.644 27.77 25.264C28.042 24.884 28.314 24.938 28.676 25.082C29.038 25.228 30.976 26.188 31.374 26.388C31.772 26.588 32.044 26.684 32.134 26.838C32.226 26.992 32.18 27.62 31.854 28.536Z"
+          fill="#FFFFFF"
+        />
+      </svg>
+    ) : normalizedKey.includes('africa') ||
+      normalizedKey.includes('bulk-sms') ||
+      (normalizedKey.includes('sms') && !normalizedKey.includes('pochi')) ? (
+      <svg class={iconSizes} viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="48" height="48" rx="10" fill="#FFF7ED" />
+        <path
+          d="M10 24C10 16.268 16.268 10 24 10C31.732 10 38 16.268 38 24"
+          stroke="#F58220"
+          stroke-width="4"
+          stroke-linecap="round"
+        />
+        <path
+          d="M15 26C15 21.0294 19.0294 17 24 17C28.9706 17 33 21.0294 33 26"
+          stroke="#F97316"
+          stroke-width="3.5"
+          stroke-linecap="round"
+        />
+        <circle cx="24" cy="28" r="4.5" fill="#EA580C" />
+        <path d="M24 33V38" stroke="#EA580C" stroke-width="3" stroke-linecap="round" />
+      </svg>
+    ) : normalizedKey.includes('markcopilot') || normalizedKey.includes('ai') ? (
+      <svg class={iconSizes} viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient
+            id="ai-grad"
+            x1="10"
+            y1="10"
+            x2="38"
+            y2="38"
+            gradientUnits="userSpaceOnUse"
+          >
+            <stop stop-color="#6366F1" />
+            <stop offset="1" stop-color="#4F46E5" />
+          </linearGradient>
+        </defs>
+        <rect width="48" height="48" rx="10" fill="url(#ai-grad)" />
+        <path
+          d="M24 13L26.5 20.5L34 23L26.5 25.5L24 33L21.5 25.5L14 23L21.5 20.5L24 13Z"
+          fill="#FFFFFF"
+        />
+        <circle cx="33" cy="15" r="2" fill="#FDE047" />
+        <circle cx="15" cy="31" r="1.5" fill="#A5B4FC" />
+      </svg>
+    ) : normalizedKey.includes('shopify') ? (
+      <svg class={iconSizes} viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="48" height="48" rx="10" fill="#95BF47" />
+        <path
+          d="M21 15C21 13 22.5 11 25 11C27.5 11 29 13 29 15V17H21V15Z"
+          stroke="#FFFFFF"
+          stroke-width="2.5"
+          stroke-linecap="round"
+          fill="none"
+        />
+        <path
+          d="M15 17H33L31 37H17L15 17Z"
+          fill="#FFFFFF"
+          fill-opacity="0.15"
+          stroke="#FFFFFF"
+          stroke-width="2.5"
+          stroke-linejoin="round"
+        />
+        <path
+          d="M26.5 23C25.5 22.4 24.5 22 23.2 22C21 22 19.5 23.2 19.5 25C19.5 28 28.5 27.5 28.5 31.5C28.5 33.8 26.5 35 23.5 35C21.5 35 20 34.2 19 33.5L19.8 31C20.8 31.8 22.2 32.5 23.5 32.5C25.2 32.5 26 31.5 26 30.2C26 27.5 17 27.8 17 23.8C17 21.2 19.5 19.5 23.2 19.5C24.8 19.5 26.2 20 27.2 20.6L26.5 23Z"
+          fill="#FFFFFF"
+        />
+      </svg>
+    ) : normalizedKey.includes('instagram') || normalizedKey.includes('messenger') ? (
+      <svg class={iconSizes} viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient
+            id="ig-messenger-grad"
+            x1="10"
+            y1="38"
+            x2="38"
+            y2="10"
+            gradientUnits="userSpaceOnUse"
+          >
+            <stop stop-color="#0084FF" />
+            <stop offset="0.4" stop-color="#A033FF" />
+            <stop offset="0.75" stop-color="#FF5280" />
+            <stop offset="1" stop-color="#FF7A00" />
+          </linearGradient>
+        </defs>
+        <rect width="48" height="48" rx="10" fill="url(#ig-messenger-grad)" />
+        <rect x="13" y="13" width="22" height="22" rx="6" stroke="#FFFFFF" stroke-width="2.5" />
+        <circle cx="24" cy="24" r="5" stroke="#FFFFFF" stroke-width="2.5" />
+        <circle cx="30.5" cy="17.5" r="1.5" fill="#FFFFFF" />
+      </svg>
+    ) : normalizedKey.includes('pochi') || normalizedKey.includes('till') ? (
+      <svg class={iconSizes} viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="48" height="48" rx="10" fill="#ECFDF5" />
+        <rect x="11" y="11" width="26" height="26" rx="6" stroke="#059669" stroke-width="3" />
+        <path d="M18 21H30" stroke="#059669" stroke-width="2.5" stroke-linecap="round" />
+        <path d="M18 27H26" stroke="#059669" stroke-width="2.5" stroke-linecap="round" />
+        <circle cx="33" cy="33" r="7.5" fill="#D97706" />
+        <path
+          d="M30.5 33L32.5 35L35.5 31"
+          stroke="#FFFFFF"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+      </svg>
+    ) : normalizedKey.includes('bank') || normalizedKey.includes('paybill') ? (
+      <svg class={iconSizes} viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="48" height="48" rx="10" fill="#1E3A8A" />
+        <path d="M12 20L24 13L36 20V22H12V20Z" fill="#F59E0B" />
+        <rect x="15" y="24" width="3.5" height="10" rx="1" fill="#FFFFFF" />
+        <rect x="22.25" y="24" width="3.5" height="10" rx="1" fill="#FFFFFF" />
+        <rect x="29.5" y="24" width="3.5" height="10" rx="1" fill="#FFFFFF" />
+        <rect x="11" y="34" width="26" height="3" rx="1" fill="#F59E0B" />
+      </svg>
+    ) : normalizedKey.includes('tiktok') ? (
+      <svg class={iconSizes} viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="48" height="48" rx="10" fill="#000000" />
+        <path
+          d="M28.5 12C29.2 14.5 31.2 16.5 34 17V21C31.5 21 29.5 20 28.5 19V28.5C28.5 33.2 24.7 37 20 37C15.3 37 11.5 33.2 11.5 28.5C11.5 23.8 15.3 20 20 20C20.7 20 21.4 20.1 22 20.3V24.5C21.4 24.2 20.7 24 20 24C17.5 24 15.5 26 15.5 28.5C15.5 31 17.5 33 20 33C22.5 33 24.5 31 24.5 28.5V12H28.5Z"
+          fill="#00F2FE"
+        />
+        <path
+          d="M29.5 12.5C30.2 15 32.2 17 35 17.5V21.5C32.5 21.5 30.5 20.5 29.5 19.5V29C29.5 33.7 25.7 37.5 21 37.5C16.3 37.5 12.5 33.7 12.5 29C12.5 24.3 16.3 20.5 21 20.5C21.7 20.5 22.4 20.6 23 20.8V25C22.4 24.7 21.7 24.5 21 24.5C18.5 24.5 16.5 26.5 16.5 29C16.5 31.5 18.5 33.5 21 33.5C23.5 33.5 25.5 31.5 25.5 29V12.5H29.5Z"
+          fill="#FE2C55"
+        />
+        <path
+          d="M29 12.2C29.7 14.7 31.7 16.7 34.5 17.2V20.2C32 20.2 30 19.2 29 18.2V28.7C29 33.4 25.2 37.2 20.5 37.2C15.8 37.2 12 33.4 12 28.7C12 24 15.8 20.2 20.5 20.2C21.2 20.2 21.9 20.3 22.5 20.5V23.7C21.9 23.4 21.2 23.2 20.5 23.2C18 23.2 16 25.2 16 27.7C16 30.2 18 32.2 20.5 32.2C23 32.2 25 30.2 25 27.7V12.2H29Z"
+          fill="#FFFFFF"
+        />
+      </svg>
+    ) : normalizedKey.includes('telegram') ? (
+      <svg class={iconSizes} viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="48" height="48" rx="10" fill="#24A1DE" />
+        <path
+          d="M12 24.5L35 15L30 33L23 28L19 31V25.5L29 19L17 23.5L12 24.5Z"
+          fill="#FFFFFF"
+          stroke="#FFFFFF"
+          stroke-width="1.5"
+          stroke-linejoin="round"
+        />
+      </svg>
+    ) : normalizedKey.includes('live-chat') ||
+      normalizedKey.includes('chat') ||
+      normalizedKey.includes('website') ? (
+      <svg class={iconSizes} viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="48" height="48" rx="10" fill="#0D9488" />
+        <path
+          d="M13 15C13 12.7909 14.7909 11 17 11H31C33.2091 11 35 12.7909 35 15V26C35 28.2091 33.2091 30 31 30H20L14 35V29.8C13.4 29.4 13 28.7 13 28V15Z"
+          fill="#FFFFFF"
+        />
+        <circle cx="20" cy="20.5" r="2" fill="#0D9488" />
+        <circle cx="24" cy="20.5" r="2" fill="#0D9488" />
+        <circle cx="28" cy="20.5" r="2" fill="#0D9488" />
+      </svg>
+    ) : normalizedKey.includes('email') ||
+      normalizedKey.includes('smtp') ||
+      normalizedKey.includes('gmail') ||
+      normalizedKey.includes('outlook') ? (
+      <svg class={iconSizes} viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="48" height="48" rx="10" fill="#EA4335" />
+        <rect x="11" y="14" width="26" height="20" rx="3" fill="#FFFFFF" />
+        <path
+          d="M11 16L24 26L37 16"
+          stroke="#EA4335"
+          stroke-width="3"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+        <path d="M11 32L19 24" stroke="#EA4335" stroke-width="2.5" stroke-linecap="round" />
+        <path d="M37 32L29 24" stroke="#EA4335" stroke-width="2.5" stroke-linecap="round" />
+      </svg>
+    ) : normalizedKey.includes('line') ? (
+      <svg class={iconSizes} viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="48" height="48" rx="10" fill="#06C755" />
+        <path
+          d="M24 11C16.8 11 11 15.7 11 21.5C11 25.2 13.5 28.5 17.5 30.2L16.2 35.3C16 36.1 16.9 36.7 17.6 36.3L23.5 32.8C23.7 32.8 23.8 32.8 24 32.8C31.2 32.8 37 28.1 37 22.3C37 16.5 31.2 11 24 11Z"
+          fill="#FFFFFF"
+        />
+        <path
+          d="M17 19.5V25H20.5M22.5 19.5V25M25 25V19.5L28.5 25V19.5M30.5 19.5V25H34M30.5 22.2H33.5M30.5 19.5H34"
+          stroke="#06C755"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+      </svg>
+    ) : normalizedKey.includes('stripe') ? (
+      <svg class={iconSizes} viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="48" height="48" rx="10" fill="#635BFF" />
+        <path
+          d="M23.5 19.2C21.8 18.7 20.8 18.2 20.8 17.1C20.8 15.8 22.2 15 24.3 15C26.5 15 28.5 15.8 29.8 16.6L31 12.8C29.3 12 27 11.5 24.2 11.5C19.5 11.5 16 13.8 16 18C16 23.5 23.2 22.8 23.2 25.5C23.2 27 21.5 27.8 19.4 27.8C16.8 27.8 14.2 26.6 12.7 25.5L11.5 29.4C13.5 30.6 16.5 31.5 19.7 31.5C24.7 31.5 28.3 29.1 28.3 24.5C28.3 18.8 23.5 19.2 23.5 19.2Z"
+          fill="#FFFFFF"
+        />
+      </svg>
+    ) : normalizedKey.includes('slack') ? (
+      <svg class={iconSizes} viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="48" height="48" rx="10" fill="#4A154B" />
+        <path
+          d="M17 21.5C15.6 21.5 14.5 20.4 14.5 19C14.5 17.6 15.6 16.5 17 16.5H19.5V19C19.5 20.4 18.4 21.5 17 21.5Z"
+          fill="#36C5F0"
+        />
+        <path
+          d="M21 16.5C21 15.1 22.1 14 23.5 14C24.9 14 26 15.1 26 16.5V23.5C26 24.9 24.9 26 23.5 26C22.1 26 21 24.9 21 23.5V16.5Z"
+          fill="#36C5F0"
+        />
+        <path
+          d="M26.5 17C26.5 15.6 27.6 14.5 29 14.5C30.4 14.5 31.5 15.6 31.5 17V19.5H29C27.6 19.5 26.5 18.4 26.5 17Z"
+          fill="#2EB67D"
+        />
+        <path
+          d="M31.5 21C32.9 21 34 22.1 34 23.5C34 24.9 32.9 26 31.5 26H24.5C23.1 26 22 24.9 22 23.5C22 22.1 23.1 21 24.5 21H31.5Z"
+          fill="#2EB67D"
+        />
+        <path
+          d="M31 26.5C32.4 26.5 33.5 27.6 33.5 29C33.5 30.4 32.4 31.5 31 31.5H28.5V29C28.5 27.6 29.6 26.5 31 26.5Z"
+          fill="#ECB22E"
+        />
+        <path
+          d="M27 31.5C27 32.9 25.9 34 24.5 34C23.1 34 22 32.9 22 31.5V24.5C22 23.1 23.1 22 24.5 22C25.9 22 27 23.1 27 24.5V31.5Z"
+          fill="#ECB22E"
+        />
+        <path
+          d="M21.5 31C21.5 32.4 20.4 33.5 19 33.5C17.6 33.5 16.5 32.4 16.5 31V28.5H19C20.4 28.5 21.5 29.6 21.5 31Z"
+          fill="#E01E5A"
+        />
+        <path
+          d="M16.5 27C15.1 27 14 25.9 14 24.5C14 23.1 15.1 22 16.5 22H23.5C24.9 22 26 23.1 26 24.5C26 25.9 24.9 27 23.5 27H16.5Z"
+          fill="#E01E5A"
+        />
+      </svg>
+    ) : normalizedKey.includes('linear') ? (
+      <svg class={iconSizes} viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="48" height="48" rx="10" fill="#18181B" />
+        <path
+          d="M14 29.5L29.5 14C30.3 14.8 30.3 16.2 29.5 17L17 29.5C16.2 30.3 14.8 30.3 14 29.5Z"
+          fill="#5E6AD2"
+        />
+        <path
+          d="M18.5 34L34 18.5C34.8 19.3 34.8 20.7 34 21.5L21.5 34C20.7 34.8 19.3 34.8 18.5 34Z"
+          fill="#5E6AD2"
+        />
+        <circle cx="15.5" cy="15.5" r="2.5" fill="#5E6AD2" />
+        <circle cx="32.5" cy="32.5" r="2.5" fill="#5E6AD2" />
+      </svg>
+    ) : normalizedKey.includes('notion') ? (
+      <svg class={iconSizes} viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="48" height="48" rx="10" fill="#000000" />
+        <rect x="11" y="11" width="26" height="26" rx="6" fill="#FFFFFF" />
+        <path d="M16 16.5L20 17V31.5L16 32V16.5Z" fill="#000000" />
+        <path d="M20 17L28 29.5V17L32 17.5V32.5L28 32L19.5 18.5V32H16V16.5L20 17Z" fill="#000000" />
+      </svg>
+    ) : normalizedKey.includes('sso') ||
+      normalizedKey.includes('google') ||
+      normalizedKey.includes('microsoft') ? (
+      <svg class={iconSizes} viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="48" height="48" rx="10" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="2" />
+        <path
+          d="M19 23.8H14.5C14.5 21.4 16.5 19.5 19 19.5C20.2 19.5 21.3 20 22 20.7L20.2 22.4C19.9 22.1 19.5 21.9 19 21.9C17.9 21.9 17 22.8 17 23.9C17 25 17.9 25.9 19 25.9C20.1 25.9 20.8 25.2 21 24.3H19V23.8Z"
+          fill="#4285F4"
+        />
+        <circle
+          cx="19"
+          cy="24"
+          r="5.5"
+          stroke="#EA4335"
+          stroke-width="1.5"
+          stroke-dasharray="8 26"
+          fill="none"
+        />
+        <path d="M24 16V32" stroke="#CBD5E1" stroke-width="1.5" stroke-linecap="round" />
+        <rect x="27" y="19" width="4" height="4" fill="#F25022" />
+        <rect x="32" y="19" width="4" height="4" fill="#7FBA00" />
+        <rect x="27" y="24" width="4" height="4" fill="#00A4EF" />
+        <rect x="32" y="24" width="4" height="4" fill="#FFB900" />
+      </svg>
+    ) : normalizedKey.includes('api') ||
+      normalizedKey.includes('developer') ||
+      normalizedKey.includes('webhook') ? (
+      <svg class={iconSizes} viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="48" height="48" rx="10" fill="#0F172A" />
+        <path
+          d="M16 18L10 24L16 30"
+          stroke="#38BDF8"
+          stroke-width="3"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+        <path
+          d="M32 18L38 24L32 30"
+          stroke="#38BDF8"
+          stroke-width="3"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+        <path d="M26 14L22 34" stroke="#818CF8" stroke-width="3" stroke-linecap="round" />
+      </svg>
+    ) : (
+      <svg class={iconSizes} viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="48" height="48" rx="10" fill="#6366F1" />
+        <path
+          d="M16 24L22 30L32 18"
+          stroke="#FFFFFF"
+          stroke-width="3"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+      </svg>
+    )
+  }
+</div>

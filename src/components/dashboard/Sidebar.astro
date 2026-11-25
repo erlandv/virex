@@ -27,13 +27,33 @@ import { dashboardNavigation } from '../../config/dashboard-navigation';
 // Get current path for active state
 const currentPath = Astro.url.pathname;
 
+const ROUTE_ALIASES: Record<string, string> = {
+  '/dashboardMain': '/dashboard',
+  '/dashboardMain/': '/dashboard',
+  '/dashboard/pricingManage': '/dashboard/pricing',
+  '/dashboard/pricingManage/': '/dashboard/pricing',
+  '/dashboard/featuresManage': '/dashboard/features',
+  '/dashboard/featuresManage/': '/dashboard/features',
+  '/dashboard/blogManage': '/dashboard/blog',
+  '/dashboard/blogManage/': '/dashboard/blog',
+  '/dashboard/careersManage': '/dashboard/careers',
+  '/dashboard/careersManage/': '/dashboard/careers',
+  '/dashboard/faqsUpdate': '/dashboard/faqs',
+  '/dashboard/faqsUpdate/': '/dashboard/faqs',
+  '/dashboard/leadsReview': '/dashboard/leads',
+  '/dashboard/leadsReview/': '/dashboard/leads',
+  '/dashboard/legalManage': '/dashboard/legal',
+  '/dashboard/legalManage/': '/dashboard/legal',
+};
+
 /**
  * Check if a navigation item or its children are active
  */
 function isActive(href: string, children?: any[]): boolean {
-  if (currentPath === href) return true;
+  const normalizedPath = ROUTE_ALIASES[currentPath] || currentPath;
+  if (normalizedPath === href) return true;
   if (children) {
-    return children.some((child) => currentPath === child.href);
+    return children.some((child) => normalizedPath === child.href);
   }
   return false;
 }
@@ -45,7 +65,7 @@ function isActive(href: string, children?: any[]): boolean {
     <div class="sidebar-header">
       <a href="/dashboard" class="sidebar-logo">
         <Icon name="lucide:layout-dashboard" class="sidebar-logo-icon" />
-        <span class="sidebar-logo-text">Dashboard</span>
+        <span class="sidebar-logo-text">MarkChat CMS</span>
       </a>
     </div>
 

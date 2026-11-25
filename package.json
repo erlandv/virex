@@ -1,16 +1,18 @@
 {
-  "name": "virex-astro",
+  "name": "markchat-marketing",
   "type": "module",
   "version": "1.4.1",
-  "description": "A production-ready SaaS theme for Astro. Built for those who want to go from zero to launch quickly.",
+  "description": "MarkChat Public Marketing Platform & Single-Admin Website CMS",
   "keywords": [
+    "markchat",
+    "mpesa",
+    "whatsapp",
+    "sms",
+    "kenya",
     "astro",
-    "theme",
-    "saas",
-    "landing-page",
     "tailwindcss"
   ],
-  "author": "Erland <hello@erland.me>",
+  "author": "MarkChat Technologies Ltd <hello@markchat.co.ke>",
   "repository": {
     "type": "git",
     "url": "https://github.com/erlandv/virex.git"
@@ -25,10 +27,12 @@
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
+    "test": "node scripts/test-marketing.mjs",
     "check": "npm run lint && npm run format:check && astro check"
   },
   "dependencies": {
     "@astrojs/mdx": "^4.0.0",
+    "@astrojs/react": "^4.2.1",
     "@astrojs/rss": "^4.0.0",
     "@astrojs/sitemap": "^3.2.0",
     "@iconify-json/lucide": "^1.2.82",
@@ -36,11 +40,16 @@
     "@tailwindcss/typography": "^0.5.19",
     "astro": "^5.16.6",
     "astro-icon": "^1.1.5",
-    "chart.js": "^4.4.0"
+    "chart.js": "^4.4.0",
+    "framer-motion": "^14.14.0",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.6",
     "@tailwindcss/vite": "^4.0.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
     "@typescript-eslint/eslint-plugin": "^8.50.1",
     "@typescript-eslint/parser": "^8.50.1",
     "eslint": "^9.39.2",

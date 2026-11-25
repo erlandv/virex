@@ -34,6 +34,7 @@ interface Props {
   formName?: string;
 }
 
+import EnterpriseScopeFields from '@/components/enterprise/EnterpriseScopeFields.astro';
 const { action = '', method = 'POST', netlify = false, formName = 'demo-request' } = Astro.props;
 ---
 
@@ -43,6 +44,7 @@ const { action = '', method = 'POST', netlify = false, formName = 'demo-request'
   method={method}
   class="space-y-5"
   data-netlify={netlify ? 'true' : undefined}
+  data-configured-action={action}
   name={netlify ? formName : undefined}
   novalidate
 >
@@ -160,6 +162,8 @@ const { action = '', method = 'POST', netlify = false, formName = 'demo-request'
       class="w-full px-4 py-3 rounded-lg border border-border bg-background text-text placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary resize-none transition-colors"
       placeholder="Tell us about your deployment challenges..."></textarea>
   </div>
+
+  <EnterpriseScopeFields variant="demo" />
 
   <!-- Form status messages -->
   <div id="demo-form-status" class="hidden">
@@ -320,6 +324,8 @@ const { action = '', method = 'POST', netlify = false, formName = 'demo-request'
     }
   }
 
+  import { parseEnterpriseScope, formatEnterpriseScope } from '@/lib/enterprise-scope';
+
   // Form submission
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -343,12 +349,36 @@ const { action = '', method = 'POST', netlify = false, formName = 'demo-request'
     buttonLoading?.classList.remove('hidden');
 
     const formData = new FormData(form);
-    const action = form.action;
+    const action = form.dataset.configuredAction || '';
 
     try {
-      // If no action URL, simulate success (demo mode)
+      // If no action URL, persist lead via CMS API
       if (!action) {
-        await new Promise((resolve) => setTimeout(resolve, 1500));
+        try {
+          const { submitLead } = await import('@/lib/cms-api');
+          const firstName = (formData.get('firstName') as string) || '';
+          const lastName = (formData.get('lastName') as string) || '';
+          const email = (formData.get('email') as string) || '';
+          const phone = (formData.get('phone') as string) || '+254 700 000 000';
+          const company = (formData.get('company') as string) || '';
+          const enterpriseScope = parseEnterpriseScope(formData);
+          const volume = enterpriseScope.volume;
+          const message = (formData.get('message') as string) || '';
+          const leadResult = await submitLead({
+            fullName: `${firstName} ${lastName}`.trim(),
+            email,
+            phone,
+            company,
+            monthlyVolume: volume,
+            source: 'Demo Request Page (/demo)',
+            message: [message, formatEnterpriseScope(enterpriseScope)].filter(Boolean).join('\n\n'),
+          });
+          if (!leadResult.success) throw new Error('Lead submission not accepted');
+        } catch (err) {
+          console.warn('submitLead error:', err);
+          showErrorState();
+          return;
+        }
         showSuccess();
         return;
       }

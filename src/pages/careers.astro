@@ -1,94 +1,709 @@
 ---
+/**
+ * MarkChat Kenya — Careers & Open Positions
+ *
+ * Professional, modern Careers page following the Virex design language:
+ * - Compelling mission-aligned hero
+ * - CMS-driven company benefits & culture values
+ * - Filterable job listings directory with live vacancy count
+ * - Polished empty state
+ * - Speculative talent pool application portal
+ * - Full dark mode parity (dark:bg-background)
+ */
 import MarketingLayout from '@/layouts/MarketingLayout.astro';
-import PageHeader from '@sections/content/PageHeader.astro';
-import ValuesSection from '@sections/team/ValuesSection.astro';
-import JobListings from '@sections/team/JobListings.astro';
+import { Icon } from 'astro-icon/components';
 import { siteConfig } from '@/config';
+import { fetchCareers, fetchCareersContent } from '@/lib/cms-api';
 
-const benefits = [
-  {
-    icon: 'lucide:globe',
-    title: 'Remote First',
-    description:
-      "Work from anywhere in the world. We believe great talent isn't limited by geography.",
-  },
-  {
-    icon: 'lucide:bar-chart',
-    title: 'Competitive Salary',
-    description:
-      'We offer top-of-market compensation with equity options for all full-time employees.',
-  },
-  {
-    icon: 'lucide:users',
-    title: 'Great Team',
-    description:
-      'Join a diverse team of talented individuals who are passionate about what they build.',
-  },
-  {
-    icon: 'lucide:zap',
-    title: 'Learning Budget',
-    description:
-      'Annual budget for courses, conferences, and books to help you grow professionally.',
-  },
-];
+const [careers, content] = await Promise.all([fetchCareers(), fetchCareersContent()]);
 
-// Sample job openings - replace with your actual positions or integrate with an ATS
-const openings = [
-  {
-    title: 'Senior Frontend Engineer',
-    department: 'Engineering',
-    location: 'Remote',
-    type: 'Full-time',
-    href: '#',
+// Distinct departments and work arrangements for filtering
+const departments = ['All', ...new Set(careers.map((j) => j.department))];
+const workArrangements = ['All', 'Hybrid', 'Remote', 'On-site'];
+
+// Department accent colors
+const DEPT_ACCENTS: Record<string, { bg: string; text: string; border: string }> = {
+  Engineering: {
+    bg: 'bg-indigo-50 dark:bg-indigo-950/70',
+    text: 'text-indigo-600 dark:text-indigo-400',
+    border: 'border-indigo-200/80 dark:border-indigo-800/80',
   },
-  {
-    title: 'Product Designer',
-    department: 'Design',
-    location: 'Remote',
-    type: 'Full-time',
-    href: '#',
+  'Customer Operations': {
+    bg: 'bg-emerald-50 dark:bg-emerald-950/70',
+    text: 'text-emerald-600 dark:text-emerald-400',
+    border: 'border-emerald-200/80 dark:border-emerald-800/80',
   },
-  {
-    title: 'Developer Advocate',
-    department: 'Marketing',
-    location: 'Remote',
-    type: 'Full-time',
-    href: '#',
+  'Developer Relations': {
+    bg: 'bg-cyan-50 dark:bg-cyan-950/70',
+    text: 'text-cyan-600 dark:text-cyan-400',
+    border: 'border-cyan-200/80 dark:border-cyan-800/80',
   },
-  {
-    title: 'Customer Success Manager',
-    department: 'Support',
-    location: 'Remote (US/EU)',
-    type: 'Full-time',
-    href: '#',
+  'Growth & Sales': {
+    bg: 'bg-purple-50 dark:bg-purple-950/70',
+    text: 'text-purple-600 dark:text-purple-400',
+    border: 'border-purple-200/80 dark:border-purple-800/80',
   },
-];
+};
+
+const defaultDeptAccent = {
+  bg: 'bg-blue-50 dark:bg-blue-950/70',
+  text: 'text-blue-600 dark:text-blue-400',
+  border: 'border-blue-200/80 dark:border-blue-800/80',
+};
 ---
 
 <MarketingLayout
-  title={`Careers - ${siteConfig.name}`}
-  description={`Join the ${siteConfig.name} team. We're building the future of deployment and looking for talented people to help us get there.`}
+  title={`Careers & Open Roles — ${siteConfig.name}`}
+  description="Join MarkChat in Nairobi. Help build the future of business conversations, in-chat Safaricom M-Pesa payments, and cultural AI for African commerce."
 >
-  <PageHeader
-    title="Join our team"
-    subtitle="We're on a mission to make deployment effortless for every developer. Join us and help shape the future of how software gets shipped."
-    align="left"
-    maxWidth="lg"
-  />
+  <div
+    class="py-14 sm:py-20 bg-slate-50 dark:bg-background min-h-screen transition-colors duration-200"
+  >
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      {/* =============================================================== */}
+      {/* 1. HERO SECTION                                                 */}
+      {/* =============================================================== */}
+      <section class="max-w-3xl mb-16 sm:mb-20">
+        <div
+          class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-950/70 border border-blue-200/80 dark:border-blue-800/80 text-blue-700 dark:text-blue-300 text-xs font-bold tracking-wide uppercase mb-4 shadow-none"
+        >
+          <span class="w-2 h-2 rounded-full bg-blue-600 animate-pulse"></span>
+          <span>We're Hiring in Nairobi &amp; Kenya</span>
+        </div>
+        <h1
+          class="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-tight"
+        >
+          Build the Future of <span class="text-primary">Business Conversations</span>
+        </h1>
+        <p
+          class="mt-5 text-lg sm:text-xl text-slate-600 dark:text-slate-300 leading-relaxed font-normal"
+        >
+          {content.heroSubtitle}
+        </p>
+        <div class="mt-8 flex flex-wrap items-center gap-4">
+          <a
+            href={content.heroCtaHref}
+            class="inline-flex items-center justify-center px-6 py-3 rounded-xl bg-blue-600 text-white font-semibold text-sm shadow-none hover:bg-blue-700 transition-colors"
+          >
+            <span>{content.heroCtaText}</span>
+            <span class="ml-2 font-bold">&darr;</span>
+          </a>
+          <a
+            href="#general-application"
+            class="inline-flex items-center justify-center px-6 py-3 rounded-xl bg-white dark:bg-surface text-slate-700 dark:text-slate-200 font-semibold text-sm border border-border dark:border-border hover:border-border dark:hover:border-slate-700 transition-colors shadow-none"
+          >
+            <span>Join Talent Pool</span>
+          </a>
+        </div>
+      </section>
 
-  <ValuesSection
-    title="Why work with us"
-    items={benefits}
-    variant="with-icon"
-    columns={2}
-    background="muted"
-  />
+      {/* =============================================================== */}
+      {/* 2. WHY WORK AT MARKCHAT (CMS-DRIVEN BENEFITS)                   */}
+      {/* =============================================================== */}
+      <section class="mb-20 sm:mb-24">
+        <div class="max-w-2xl mb-10">
+          <h2 class="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white tracking-tight">
+            {content.whyWorkTitle}
+          </h2>
+          <p class="mt-2 text-sm sm:text-base text-slate-600 dark:text-slate-400">
+            {content.whyWorkSubtitle}
+          </p>
+        </div>
 
-  <JobListings
-    title="Open positions"
-    jobs={openings}
-    emptyMessage="No open positions at the moment. Check back soon or send us your resume anyway!"
-    contactEmail={siteConfig.contact.email}
-    background="default"
-  />
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
+          {
+            content.benefits.map((benefit) => (
+              <div class="p-6 sm:p-8 rounded-xl bg-white dark:bg-surface border border-border dark:border-border shadow-none flex flex-col justify-between">
+                <div>
+                  <div class="w-12 h-12 rounded-xl flex items-center justify-center bg-blue-50 dark:bg-blue-950/70 border border-blue-200/80 dark:border-blue-800/80 text-blue-600 dark:text-blue-400 mb-5">
+                    <Icon name={benefit.icon} class="w-6 h-6" />
+                  </div>
+                  <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-2">
+                    {benefit.title}
+                  </h3>
+                  <p class="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+                    {benefit.description}
+                  </p>
+                </div>
+              </div>
+            ))
+          }
+        </div>
+      </section>
+
+      {/* =============================================================== */}
+      {/* 3. OPERATING PRINCIPLES & VALUES                                */}
+      {/* =============================================================== */}
+      <section
+        class="mb-20 sm:mb-24 p-8 sm:p-12 rounded-xl bg-white dark:bg-surface border border-border dark:border-border shadow-none"
+      >
+        <div class="max-w-2xl mb-10">
+          <div
+            class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 text-xs font-semibold uppercase tracking-wider mb-3"
+          >
+            <span>Culture &amp; Mindset</span>
+          </div>
+          <h2 class="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white tracking-tight">
+            {content.valuesTitle}
+          </h2>
+          <p class="mt-2 text-sm sm:text-base text-slate-600 dark:text-slate-400">
+            {content.valuesSubtitle}
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {
+            content.values.map((val) => (
+              <div class="p-5 rounded-xl bg-slate-50 dark:bg-surface border border-border dark:border-border flex flex-col justify-between">
+                <div>
+                  <span class="inline-block px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-blue-100/80 dark:bg-blue-950/80 text-blue-700 dark:text-blue-300 mb-3">
+                    {val.tag}
+                  </span>
+                  <h3 class="text-base font-bold text-slate-900 dark:text-white mb-2">
+                    {val.title}
+                  </h3>
+                  <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+                    {val.description}
+                  </p>
+                </div>
+              </div>
+            ))
+          }
+        </div>
+      </section>
+
+      {/* =============================================================== */}
+      {/* 4. OPEN POSITIONS DIRECTORY WITH REAL-TIME FILTERS              */}
+      {/* =============================================================== */}
+      <section id="open-positions" class="mb-20 sm:mb-24 scroll-mt-24">
+        <div
+          class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8 border-b border-border dark:border-border pb-6"
+        >
+          <div>
+            <h2
+              class="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white tracking-tight"
+            >
+              {content.openPositionsTitle}
+            </h2>
+            <p class="mt-2 text-sm sm:text-base text-slate-600 dark:text-slate-400">
+              {content.openPositionsSubtitle}
+            </p>
+          </div>
+          <div class="text-xs font-semibold text-slate-500 dark:text-slate-400 shrink-0">
+            <span id="vacancy-counter"
+              >Showing {careers.length} open {careers.length === 1 ? 'position' : 'positions'}</span
+            >
+          </div>
+        </div>
+
+        {/* Filter Controls Row */}
+        <div
+          class="mb-8 flex flex-col md:flex-row gap-4 justify-between items-stretch md:items-center"
+        >
+          {/* Department Pills */}
+          <div
+            class="flex items-center gap-2 overflow-x-auto pb-2 md:pb-0 scrollbar-none"
+            role="tablist"
+            aria-label="Filter by department"
+          >
+            <span
+              class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mr-1"
+              >Dept:</span
+            >
+            {
+              departments.map((dept, idx) => (
+                <button
+                  type="button"
+                  data-filter-dept={dept}
+                  class:list={[
+                    'filter-dept-btn px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer shrink-0',
+                    idx === 0
+                      ? 'bg-blue-600 text-white shadow-none'
+                      : 'bg-white dark:bg-surface text-slate-600 dark:text-slate-400 border border-border dark:border-border hover:border-border dark:hover:border-slate-700',
+                  ]}
+                >
+                  {dept}
+                </button>
+              ))
+            }
+          </div>
+
+          {/* Arrangement Dropdown & Keyword Search */}
+          <div class="flex items-center gap-3">
+            <div class="relative min-w-[140px]">
+              <label for="filter-arrangement" class="sr-only">Filter by Arrangement</label>
+              <select
+                id="filter-arrangement"
+                class="w-full px-3 py-2 rounded-xl bg-white dark:bg-surface border border-border dark:border-border text-xs font-medium text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                {
+                  workArrangements.map((arrangement) => (
+                    <option value={arrangement}>
+                      {arrangement === 'All' ? 'All Arrangements' : arrangement}
+                    </option>
+                  ))
+                }
+              </select>
+            </div>
+
+            <div class="relative w-full sm:w-56">
+              <label for="career-search-input" class="sr-only">Search roles</label>
+              <input
+                type="text"
+                id="career-search-input"
+                placeholder="Search roles..."
+                class="w-full pl-8 pr-3 py-2 rounded-xl bg-white dark:bg-surface border border-border dark:border-border text-xs text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              <Icon
+                name="lucide:search"
+                class="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Vacancies Grid */}
+        <div id="vacancies-grid" class="space-y-4">
+          {
+            careers.map((job) => {
+              const deptAccent = DEPT_ACCENTS[job.department] || defaultDeptAccent;
+              const arrangement = job.workArrangement || 'Hybrid';
+              const experience = job.experienceLevel || job.experience || 'Mid-Level';
+
+              return (
+                <article
+                  data-job-card
+                  data-title={job.title.toLowerCase()}
+                  data-department={job.department}
+                  data-arrangement={arrangement}
+                  class="p-6 rounded-xl bg-white dark:bg-surface border border-border dark:border-border hover:border-blue-500/50 dark:hover:border-blue-500/50 shadow-none dark:hover: transition-all duration-200 group flex flex-col lg:flex-row lg:items-center justify-between gap-6"
+                >
+                  <div class="flex-1 min-w-0">
+                    {/* Badges Row */}
+                    <div class="flex flex-wrap items-center gap-2 mb-2.5">
+                      <span
+                        class:list={[
+                          'inline-block px-2.5 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider border',
+                          deptAccent.bg,
+                          deptAccent.text,
+                          deptAccent.border,
+                        ]}
+                      >
+                        {job.department}
+                      </span>
+                      <span class="inline-block px-2 py-0.5 rounded-md text-[10px] font-medium bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
+                        {arrangement}
+                      </span>
+                      <span class="inline-block px-2 py-0.5 rounded-md text-[10px] font-medium bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
+                        {job.type}
+                      </span>
+                      {job.featured && (
+                        <span class="inline-block px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
+                          Featured
+                        </span>
+                      )}
+                    </div>
+
+                    {/* Role Title */}
+                    <h3 class="text-lg sm:text-xl font-bold text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors mb-2">
+                      <a href={`/careers/${job.slug || job.id}`} class="hover:underline">
+                        {job.title}
+                      </a>
+                    </h3>
+
+                    {/* Short Description */}
+                    <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 line-clamp-2 mb-3 leading-relaxed">
+                      {job.shortDescription || job.description}
+                    </p>
+
+                    {/* Metadata Footer */}
+                    <div class="flex flex-wrap items-center gap-4 text-xs text-slate-400 dark:text-slate-500">
+                      <span class="flex items-center gap-1">
+                        <Icon name="lucide:map-pin" class="w-3.5 h-3.5 text-slate-400" />
+                        <span>{job.location}</span>
+                      </span>
+                      {job.salaryRange && (
+                        <span class="flex items-center gap-1 font-mono text-slate-700 dark:text-slate-300 font-medium">
+                          <Icon name="lucide:credit-card" class="w-3.5 h-3.5 text-emerald-500" />
+                          <span>{job.salaryRange}</span>
+                        </span>
+                      )}
+                      <span>Exp: {experience}</span>
+                    </div>
+                  </div>
+
+                  {/* Actions Column */}
+                  <div class="shrink-0 flex items-center lg:flex-col lg:items-end justify-between gap-3 pt-4 lg:pt-0 border-t lg:border-t-0 border-border dark:border-border">
+                    <a
+                      href={`/careers/${job.slug || job.id}`}
+                      class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-blue-50 dark:bg-blue-950/70 border border-blue-200/80 dark:border-blue-800/80 text-blue-700 dark:text-blue-300 text-xs font-semibold hover:bg-blue-600 hover:text-white transition-all shadow-none"
+                    >
+                      <span>View Role &amp; Apply</span>
+                      <Icon name="lucide:arrow-right" class="w-3.5 h-3.5" />
+                    </a>
+                  </div>
+                </article>
+              );
+            })
+          }
+        </div>
+
+        {/* Empty State when filters yield 0 results */}
+        <div
+          id="vacancies-empty-state"
+          class="hidden text-center py-16 px-4 bg-white dark:bg-surface rounded-xl border border-border dark:border-border shadow-none"
+        >
+          <div
+            class="w-14 h-14 mx-auto mb-4 rounded-xl bg-blue-50 dark:bg-blue-950/70 border border-blue-200 dark:border-blue-800 flex items-center justify-center text-blue-600 dark:text-blue-400"
+          >
+            <Icon name="lucide:briefcase" class="w-7 h-7" />
+          </div>
+          <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-1">
+            No Open Roles Matching Criteria
+          </h3>
+          <p class="text-sm text-slate-500 dark:text-slate-400 max-w-md mx-auto mb-5">
+            We don't currently have vacancies matching this exact combination. Consider joining our
+            general talent pool.
+          </p>
+          <button
+            type="button"
+            id="reset-vacancies-btn"
+            class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-blue-600 text-white font-semibold text-xs shadow-none hover:bg-blue-700 transition-colors"
+          >
+            <Icon name="lucide:rotate-ccw" class="w-3.5 h-3.5" />
+            <span>Reset Filters</span>
+          </button>
+        </div>
+      </section>
+
+      {/* =============================================================== */}
+      {/* 5. GENERAL APPLICATION / TALENT POOL SECTION                    */}
+      {/* =============================================================== */}
+      <section
+        id="general-application"
+        class="p-8 sm:p-12 rounded-xl bg-primary text-white shadow-none border border-slate-800"
+      >
+        <div class="max-w-2xl mb-8">
+          <div
+            class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/20 text-blue-300 text-xs font-semibold uppercase tracking-wider mb-3 border border-blue-500/30"
+          >
+            <Icon name="lucide:user-plus" class="w-3.5 h-3.5" />
+            <span>Talent Pool</span>
+          </div>
+          <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-white mb-2">
+            {content.generalAppTitle}
+          </h2>
+          <p class="text-sm sm:text-base text-slate-300 leading-relaxed">
+            {content.generalAppSubtitle}
+          </p>
+        </div>
+
+        <form id="general-talent-form" class="space-y-4 max-w-3xl">
+          <input type="hidden" name="careerId" value="general" />
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label for="talent-name" class="block text-xs font-semibold text-slate-300 mb-1.5">
+                Full Name *
+              </label>
+              <input
+                type="text"
+                id="talent-name"
+                required
+                placeholder="e.g. Achieng Odhiambo"
+                class="w-full px-3.5 py-2.5 rounded-xl bg-slate-800/80 border border-slate-700 text-white text-xs placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <label for="talent-email" class="block text-xs font-semibold text-slate-300 mb-1.5">
+                Email Address *
+              </label>
+              <input
+                type="email"
+                id="talent-email"
+                required
+                placeholder="name@domain.com"
+                class="w-full px-3.5 py-2.5 rounded-xl bg-slate-800/80 border border-slate-700 text-white text-xs placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label for="talent-phone" class="block text-xs font-semibold text-slate-300 mb-1.5">
+                Phone Number (E.164) *
+              </label>
+              <input
+                type="tel"
+                id="talent-phone"
+                required
+                placeholder="+254 7XX XXX XXX"
+                class="w-full px-3.5 py-2.5 rounded-xl bg-slate-800/80 border border-slate-700 text-white text-xs placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <label for="talent-role" class="block text-xs font-semibold text-slate-300 mb-1.5">
+                Area of Specialization *
+              </label>
+              <select
+                id="talent-role"
+                required
+                class="w-full px-3.5 py-2.5 rounded-xl bg-slate-800 border border-slate-700 text-white text-xs focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="Backend / Systems Engineering">Backend / Systems Engineering</option>
+                <option value="Frontend / Full-Stack Engineering"
+                  >Frontend / Full-Stack Engineering</option
+                >
+                <option value="Merchant Success & Onboarding"
+                  >Merchant Success &amp; Onboarding</option
+                >
+                <option value="Commercial Partnerships & Sales"
+                  >Commercial Partnerships &amp; Sales</option
+                >
+                <option value="Developer Relations & Technical Writing"
+                  >Developer Relations &amp; Technical Writing</option
+                >
+                <option value="Product Design & UI/UX">Product Design &amp; UI/UX</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label
+                for="talent-linkedin"
+                class="block text-xs font-semibold text-slate-300 mb-1.5"
+              >
+                LinkedIn / GitHub Profile
+              </label>
+              <input
+                type="url"
+                id="talent-linkedin"
+                placeholder="https://linkedin.com/in/... or https://github.com/..."
+                class="w-full px-3.5 py-2.5 rounded-xl bg-slate-800/80 border border-slate-700 text-white text-xs placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <label for="talent-resume" class="block text-xs font-semibold text-slate-300 mb-1.5">
+                Portfolio / CV Public Link
+              </label>
+              <input
+                type="url"
+                id="talent-resume"
+                placeholder="Google Drive, Dropbox, or personal site"
+                class="w-full px-3.5 py-2.5 rounded-xl bg-slate-800/80 border border-slate-700 text-white text-xs placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label for="talent-note" class="block text-xs font-semibold text-slate-300 mb-1.5">
+              Brief Introduction &amp; Past Experience *
+            </label>
+            <textarea
+              id="talent-note"
+              rows="3"
+              required
+              placeholder="Tell us about relevant projects, APIs you’ve built, or merchant experience in Kenya..."
+              class="w-full px-3.5 py-2.5 rounded-xl bg-slate-800/80 border border-slate-700 text-white text-xs placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            ></textarea>
+          </div>
+
+          {/* Privacy Consent Checkbox (KDPA 2019 Alignment) */}
+          <div class="pt-2">
+            <label class="flex items-start gap-2.5 text-xs text-slate-300 cursor-pointer">
+              <input
+                type="checkbox"
+                id="talent-consent"
+                required
+                class="mt-0.5 rounded bg-slate-800 border-slate-700 text-blue-600 focus:ring-blue-500"
+              />
+              <span>
+                I consent to MarkChat retaining my professional profile for future recruitment
+                consideration in accordance with the <a
+                  href="/privacy"
+                  target="_blank"
+                  class="text-blue-400 hover:underline">Privacy Policy</a
+                > and Kenya Data Protection Act, 2019.
+              </span>
+            </label>
+          </div>
+
+          <div class="pt-3">
+            <button
+              type="submit"
+              id="talent-submit-btn"
+              class="inline-flex items-center justify-center px-6 py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs transition-colors shadow-none cursor-pointer"
+            >
+              <span>Submit to Talent Pool</span>
+            </button>
+          </div>
+        </form>
+
+        <div
+          id="talent-success-msg"
+          class="hidden p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs text-center mt-6"
+        >
+          &check; Asante sana! Your submission has been securely received into our talent pool. Our
+          team reviews submissions weekly and will reach out if a matching position opens.
+        </div>
+      </section>
+    </div>
+  </div>
 </MarketingLayout>
+
+<script>
+  import { submitCareerApplication } from '@/lib/cms-api';
+
+  function initCareersPage() {
+    // 1. Filtering logic
+    const deptButtons = document.querySelectorAll<HTMLButtonElement>('.filter-dept-btn');
+    const arrangementSelect = document.getElementById(
+      'filter-arrangement'
+    ) as HTMLSelectElement | null;
+    const searchInput = document.getElementById('career-search-input') as HTMLInputElement | null;
+    const jobCards = document.querySelectorAll<HTMLElement>('[data-job-card]');
+    const counterEl = document.getElementById('vacancy-counter');
+    const emptyStateEl = document.getElementById('vacancies-empty-state');
+    const resetBtn = document.getElementById('reset-vacancies-btn');
+    const gridEl = document.getElementById('vacancies-grid');
+
+    let activeDept = 'All';
+    let activeArrangement = 'All';
+    let searchQuery = '';
+
+    function applyJobFilters() {
+      let visibleCount = 0;
+      const q = searchQuery.toLowerCase().trim();
+
+      jobCards.forEach((card) => {
+        const title = card.getAttribute('data-title') || '';
+        const dept = card.getAttribute('data-department') || '';
+        const arr = card.getAttribute('data-arrangement') || '';
+
+        const matchesDept = activeDept === 'All' || dept === activeDept;
+        const matchesArr = activeArrangement === 'All' || arr === activeArrangement;
+        const matchesSearch = !q || title.includes(q) || dept.toLowerCase().includes(q);
+
+        if (matchesDept && matchesArr && matchesSearch) {
+          card.classList.remove('hidden');
+          visibleCount++;
+        } else {
+          card.classList.add('hidden');
+        }
+      });
+
+      if (counterEl) {
+        counterEl.textContent = `Showing ${visibleCount} open ${visibleCount === 1 ? 'position' : 'positions'}`;
+      }
+
+      if (visibleCount === 0) {
+        emptyStateEl?.classList.remove('hidden');
+        gridEl?.classList.add('hidden');
+      } else {
+        emptyStateEl?.classList.add('hidden');
+        gridEl?.classList.remove('hidden');
+      }
+    }
+
+    deptButtons.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        activeDept = btn.getAttribute('data-filter-dept') || 'All';
+        deptButtons.forEach((b) => {
+          b.classList.remove('bg-blue-600', 'text-white', 'shadow-none');
+          b.classList.add('bg-white', 'dark:bg-surface', 'text-slate-600', 'dark:text-slate-400');
+        });
+        btn.classList.add('bg-blue-600', 'text-white', 'shadow-none');
+        btn.classList.remove(
+          'bg-white',
+          'dark:bg-surface',
+          'text-slate-600',
+          'dark:text-slate-400'
+        );
+        applyJobFilters();
+      });
+    });
+
+    arrangementSelect?.addEventListener('change', (e) => {
+      activeArrangement = (e.target as HTMLSelectElement).value;
+      applyJobFilters();
+    });
+
+    searchInput?.addEventListener('input', (e) => {
+      searchQuery = (e.target as HTMLInputElement).value;
+      applyJobFilters();
+    });
+
+    resetBtn?.addEventListener('click', () => {
+      activeDept = 'All';
+      activeArrangement = 'All';
+      searchQuery = '';
+      if (searchInput) searchInput.value = '';
+      if (arrangementSelect) arrangementSelect.value = 'All';
+
+      deptButtons.forEach((b) => {
+        const d = b.getAttribute('data-filter-dept');
+        if (d === 'All') {
+          b.classList.add('bg-blue-600', 'text-white', 'shadow-none');
+          b.classList.remove(
+            'bg-white',
+            'dark:bg-surface',
+            'text-slate-600',
+            'dark:text-slate-400'
+          );
+        } else {
+          b.classList.remove('bg-blue-600', 'text-white', 'shadow-none');
+          b.classList.add('bg-white', 'dark:bg-surface', 'text-slate-600', 'dark:text-slate-400');
+        }
+      });
+      applyJobFilters();
+    });
+
+    // 2. Talent Pool Form Submission
+    const talentForm = document.getElementById('general-talent-form');
+    const talentSuccess = document.getElementById('talent-success-msg');
+    const talentSubmitBtn = document.getElementById(
+      'talent-submit-btn'
+    ) as HTMLButtonElement | null;
+
+    talentForm?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const fullName = (document.getElementById('talent-name') as HTMLInputElement).value;
+      const email = (document.getElementById('talent-email') as HTMLInputElement).value;
+      const phone = (document.getElementById('talent-phone') as HTMLInputElement).value;
+      const specialization = (document.getElementById('talent-role') as HTMLSelectElement).value;
+      const linkedinUrl = (document.getElementById('talent-linkedin') as HTMLInputElement).value;
+      const resumeUrl = (document.getElementById('talent-resume') as HTMLInputElement).value;
+      const coverLetter = (document.getElementById('talent-note') as HTMLTextAreaElement).value;
+      const consentAgreed = (document.getElementById('talent-consent') as HTMLInputElement).checked;
+
+      if (!consentAgreed) {
+        alert('Please accept the data privacy consent to proceed.');
+        return;
+      }
+
+      if (talentSubmitBtn) {
+        talentSubmitBtn.disabled = true;
+        talentSubmitBtn.textContent = 'Submitting...';
+      }
+
+      await submitCareerApplication('general', {
+        fullName,
+        email,
+        phone,
+        location: 'Kenya',
+        linkedinUrl,
+        portfolioUrl: resumeUrl,
+        coverLetter: `[Specialization: ${specialization}] ${coverLetter}`,
+        consentAgreed,
+      });
+
+      talentForm.classList.add('hidden');
+      talentSuccess?.classList.remove('hidden');
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', initCareersPage);
+  document.addEventListener('astro:page-load', initCareersPage);
+</script>

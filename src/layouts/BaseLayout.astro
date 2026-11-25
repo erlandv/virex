@@ -12,6 +12,9 @@ interface Props {
   modifiedDate?: Date;
   author?: string;
   tags?: string[];
+  canonicalUrl?: string;
+  noindex?: boolean;
+  robots?: string;
 }
 
 const {
@@ -23,11 +26,14 @@ const {
   modifiedDate,
   author,
   tags,
+  canonicalUrl,
+  noindex,
+  robots,
 } = Astro.props;
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="en-KE" data-design-system="virex-flat-v2">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -41,32 +47,47 @@ const {
       modifiedDate={modifiedDate}
       author={author}
       tags={tags}
+      canonicalUrl={canonicalUrl}
+      noindex={noindex}
+      robots={robots}
     />
+    <script>
+      import '../lib/ga4-consent';
+    </script>
     <!-- Theme and announcement initialization - runs before page render to prevent flash -->
     <script is:inline>
       (function () {
         // Theme initialization
-        const stored = localStorage.getItem('theme');
-        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        const theme = stored || (prefersDark ? 'dark' : 'light');
-        if (theme === 'dark') {
-          document.documentElement.classList.add('dark');
+        let stored = null;
+        try {
+          stored = localStorage.getItem('theme');
+        } catch {
+          /* private mode */
         }
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const theme =
+          stored === 'dark' || stored === 'light' ? stored : prefersDark ? 'dark' : 'light';
+        document.documentElement.classList.toggle('dark', theme === 'dark');
+        document.documentElement.style.colorScheme = theme;
 
         // Announcement dismissal check - hide if any announcement was dismissed
-        const keys = Object.keys(localStorage).filter((k) =>
-          k.startsWith('announcement-dismissed-')
-        );
-        keys.forEach((key) => {
-          if (localStorage.getItem(key) === 'true') {
-            const id = key.replace('announcement-dismissed-', '');
-            document.documentElement.classList.add(`announcement-${id}-dismissed`);
-          }
-        });
+        try {
+          const keys = Object.keys(localStorage).filter((k) =>
+            k.startsWith('announcement-dismissed-')
+          );
+          keys.forEach((key) => {
+            if (localStorage.getItem(key) === 'true') {
+              const id = key.replace('announcement-dismissed-', '');
+              document.documentElement.classList.add(`announcement-${id}-dismissed`);
+            }
+          });
+        } catch {
+          /* storage can be unavailable */
+        }
       })();
     </script>
   </head>
-  <body class="min-h-screen bg-background text-text antialiased">
+  <body class="min-h-screen bg-background text-text antialiased selection:bg-primary/15">
     <!-- Skip to main content link for accessibility -->
     <a
       href="#main-content"

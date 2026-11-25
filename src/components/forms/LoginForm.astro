@@ -1,154 +1,222 @@
 ---
 /**
- * LoginForm - Login form with validation and multiple backend support
+ * LoginForm - Customer login form for MarkChat SaaS
  *
- * @description
- * A fully-featured login form with client-side validation, loading states,
- * and success/error feedback. Supports Netlify Identity, custom endpoints,
- * and runs in demo mode (simulates success) when no action URL is provided.
- *
- * @example Demo mode (no backend)
- * ```astro
- * <LoginForm />
- * ```
- *
- * @example Netlify Identity
- * ```astro
- * <LoginForm netlify />
- * ```
- *
- * @example Custom endpoint
- * ```astro
- * <LoginForm action="https://api.example.com/login" method="POST" />
- * ```
+ * Implemented using native Virex semantic design tokens and layout conventions.
+ * Hardened with OWASP ASVS anti-account-enumeration, open-redirect defense (CWE-601),
+ * WCAG 2.2 AA accessibility, in-flight submission locking, and rate-limit backoff.
  */
+import SocialAuthButtons from './SocialAuthButtons.astro';
 
 interface Props {
-  /** Form action URL - leave empty for demo mode */
   action?: string;
-  /** HTTP method for form submission */
   method?: 'POST' | 'GET';
-  /** Enable Netlify Identity integration */
   netlify?: boolean;
-  /** Redirect URL after successful login */
   redirectUrl?: string;
 }
 
-const { action = '', method = 'POST', netlify = false, redirectUrl = '/dashboard' } = Astro.props;
+const { action = '', method = 'POST', netlify = false, redirectUrl = '/billing' } = Astro.props;
+const controlPlaneUrl =
+  import.meta.env.PUBLIC_CONTROL_PLANE_URL ||
+  import.meta.env.PUBLIC_CONTROL_PLANE_API_URL ||
+  'http://localhost:5000';
 ---
 
-<form
-  id="login-form"
-  action={action}
-  method={method}
-  class="space-y-6"
-  data-netlify={netlify ? 'true' : undefined}
-  data-redirect={redirectUrl}
-  novalidate
->
-  <!-- Honeypot field for spam protection -->
-  <div class="hidden" aria-hidden="true">
-    <label>
-      Don't fill this out if you're human:
-      <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" />
-    </label>
-  </div>
+<div class="w-full">
+  <!-- Federated Google Sign-In -->
+  <SocialAuthButtons variant="login" dividerText="Or continue with email" />
 
-  <!-- Email field -->
-  <div>
-    <label for="email" class="block text-sm font-medium text-text mb-2"> Email address </label>
-    <input
-      type="email"
-      id="email"
-      name="email"
-      required
-      autocomplete="email"
-      class="w-full px-4 py-3 rounded-md border border-border bg-background text-text placeholder-text-muted focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-colors"
-      placeholder="you@example.com"
-    />
-    <p class="mt-1 text-sm text-red-500 hidden" data-error="email"></p>
-  </div>
+  <!-- Email & Password Form -->
+  <form
+    id="login-form"
+    action={action}
+    method={method}
+    class="space-y-4"
+    data-netlify={netlify ? 'true' : undefined}
+    data-redirect={redirectUrl}
+    data-api-url={controlPlaneUrl}
+    aria-busy="false"
+    novalidate
+  >
+    <!-- Honeypot field for anti-bot defense -->
+    <div class="hidden" aria-hidden="true">
+      <label>
+        Don't fill this out if you're human:
+        <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" />
+      </label>
+    </div>
 
-  <!-- Password field -->
-  <div>
-    <label for="password" class="block text-sm font-medium text-text mb-2"> Password </label>
-    <input
-      type="password"
-      id="password"
-      name="password"
-      required
-      autocomplete="current-password"
-      class="w-full px-4 py-3 rounded-md border border-border bg-background text-text placeholder-text-muted focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-colors"
-      placeholder="••••••••"
-    />
-    <p class="mt-1 text-sm text-red-500 hidden" data-error="password"></p>
-  </div>
+    <!-- Email field -->
+    <div>
+      <label for="email" class="block text-sm font-medium text-text mb-1.5">
+        Email address <span class="text-error" aria-hidden="true">*</span>
+      </label>
+      <input
+        type="email"
+        id="email"
+        name="email"
+        required
+        autocomplete="email"
+        aria-describedby="email-error"
+        aria-invalid="false"
+        class="w-full h-11 px-4 rounded-xl border border-border bg-background text-text placeholder:text-text-muted/60 focus:outline-none focus-visible:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 focus-visible:ring-2 focus-visible:ring-primary transition-colors text-sm shadow-xs"
+        placeholder="you@company.co.ke"
+      />
+      <p id="email-error" class="mt-1 text-xs text-error hidden" data-error="email" role="alert">
+      </p>
+    </div>
 
-  <!-- Remember me and Forgot password -->
-  <div class="flex items-center justify-between">
-    <div class="flex items-center">
+    <!-- Password field -->
+    <div>
+      <div class="flex items-center justify-between mb-1.5">
+        <label for="password" class="block text-sm font-medium text-text">
+          Password <span class="text-error" aria-hidden="true">*</span>
+        </label>
+        <a
+          href="/forgot-password"
+          class="text-xs font-medium text-primary hover:text-primary-dark hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded px-1 py-0.5"
+        >
+          Forgot password?
+        </a>
+      </div>
+      <div class="relative">
+        <input
+          type="password"
+          id="password"
+          name="password"
+          required
+          autocomplete="current-password"
+          aria-describedby="password-error"
+          aria-invalid="false"
+          class="w-full h-11 px-4 pr-11 rounded-xl border border-border bg-background text-text placeholder:text-text-muted/60 focus:outline-none focus-visible:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 focus-visible:ring-2 focus-visible:ring-primary transition-colors text-sm shadow-xs"
+          placeholder="••••••••"
+        />
+        <button
+          type="button"
+          id="toggle-login-password"
+          class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-text-muted hover:text-text cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded my-1.5 mr-1"
+          aria-label="Show password"
+          aria-pressed="false"
+        >
+          <svg
+            id="eye-icon-login"
+            class="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            aria-hidden="true"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+            ></path>
+          </svg>
+        </button>
+      </div>
+      <p
+        id="password-error"
+        class="mt-1 text-xs text-error hidden"
+        data-error="password"
+        role="alert"
+      >
+      </p>
+    </div>
+
+    <!-- Remember me checkbox -->
+    <div class="flex items-center pt-1">
       <input
         type="checkbox"
         id="rememberMe"
         name="rememberMe"
-        class="h-4 w-4 rounded border-border text-primary focus:ring-primary focus:ring-offset-background"
+        class="h-4 w-4 rounded border-border bg-background text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary cursor-pointer"
       />
-      <label for="rememberMe" class="ml-2 text-sm text-text-muted"> Remember me </label>
+      <label for="rememberMe" class="ml-2.5 text-xs text-text-muted select-none cursor-pointer">
+        Remember this device for 30 days
+      </label>
     </div>
-    <a
-      href="/forgot-password"
-      class="text-sm font-medium text-primary hover:text-primary-dark transition-colors focus:outline-none focus:underline"
-    >
-      Forgot password?
-    </a>
-  </div>
 
-  <!-- Form status messages -->
-  <div id="login-form-status" class="hidden">
-    <div
-      id="login-form-success"
-      class="hidden p-4 rounded-md bg-green-100 dark:bg-green-950 border border-green-300 dark:border-green-800"
-    >
-      <p class="text-green-900 dark:text-green-100 font-medium">Login successful!</p>
-      <p class="text-green-800 dark:text-green-300 text-sm mt-1">Redirecting you now...</p>
-    </div>
-    <div
-      id="login-form-error"
-      class="hidden p-4 rounded-md bg-red-100 dark:bg-red-950 border border-red-300 dark:border-red-800"
-    >
-      <p class="text-red-900 dark:text-red-100 font-medium">Login failed</p>
-      <p class="text-red-800 dark:text-red-300 text-sm mt-1">
-        Please check your credentials and try again.
-      </p>
-    </div>
-  </div>
-
-  <!-- Submit button -->
-  <button
-    type="submit"
-    id="login-submit-button"
-    class="w-full cursor-pointer px-6 py-3 rounded-md bg-primary text-white font-medium hover:bg-primary-dark transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background disabled:opacity-50 disabled:cursor-not-allowed"
-  >
-    <span id="login-button-text">Sign in</span>
-    <span id="login-button-loading" class="hidden">
-      <svg
-        class="animate-spin inline-block w-5 h-5 mr-2"
-        xmlns="http://www.w3.org/2000/svg"
-        fill="none"
-        viewBox="0 0 24 24"
+    <!-- Form status messages -->
+    <div id="login-form-status" class="hidden" role="alert" aria-live="polite">
+      <div
+        id="login-form-success"
+        class="hidden p-3.5 rounded-lg bg-success-bg border border-success text-success text-sm"
       >
-        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"
-        ></circle>
-        <path
-          class="opacity-75"
-          fill="currentColor"
-          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-        ></path>
-      </svg>
-      Signing in...
-    </span>
-  </button>
-</form>
+        <p class="font-semibold flex items-center gap-2">
+          <svg
+            class="w-4 h-4 text-success shrink-0"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            aria-hidden="true"
+          >
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"
+            ></path>
+          </svg>
+          Sign in successful
+        </p>
+        <p class="text-xs mt-0.5">Redirecting you to your workspace...</p>
+      </div>
+      <div
+        id="login-form-error"
+        class="hidden p-3.5 rounded-lg bg-error-bg border border-error text-error text-sm"
+      >
+        <p class="font-semibold flex items-center gap-2">
+          <svg
+            class="w-4 h-4 text-error shrink-0"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            aria-hidden="true"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+            ></path>
+          </svg>
+          Authentication failed
+        </p>
+        <p id="login-error-text" class="text-xs mt-0.5 leading-relaxed">
+          Invalid email address or password. Please verify your credentials and try again.
+        </p>
+      </div>
+    </div>
+
+    <!-- Submit button -->
+    <button
+      type="submit"
+      id="login-submit-button"
+      class="w-full h-11 cursor-pointer px-6 rounded-xl bg-primary hover:bg-primary-dark text-white font-medium text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:opacity-50 disabled:cursor-not-allowed shadow-xs flex items-center justify-center"
+    >
+      <span id="login-button-text">Sign in to workspace</span>
+      <span id="login-button-loading" class="hidden items-center gap-2">
+        <svg
+          class="animate-spin w-4 h-4 text-white"
+          fill="none"
+          viewBox="0 0 24 24"
+          aria-hidden="true"
+        >
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"
+          ></circle>
+          <path
+            class="opacity-75"
+            fill="currentColor"
+            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+          ></path>
+        </svg>
+        <span>Signing in...</span>
+      </span>
+    </button>
+  </form>
+</div>
 
 <script>
   const form = document.getElementById('login-form') as HTMLFormElement;
@@ -158,11 +226,74 @@ const { action = '', method = 'POST', netlify = false, redirectUrl = '/dashboard
   const formStatus = document.getElementById('login-form-status');
   const formSuccess = document.getElementById('login-form-success');
   const formError = document.getElementById('login-form-error');
+  const emailInput = document.getElementById('email') as HTMLInputElement;
+  const passwordInput = document.getElementById('password') as HTMLInputElement;
+  const toggleBtn = document.getElementById('toggle-login-password');
+
+  // Track touched fields to strictly prevent premature errors on initial load
+  const touchedFields = new Set<string>();
+
+  // Surface OAuth Errors Gracefully
+  const initialParams = new URLSearchParams(window.location.search);
+  const oauthError = initialParams.get('oauth_error');
+  if (oauthError) {
+    let message = 'Google authentication could not be completed. Please try again.';
+    if (oauthError === 'google_not_configured') {
+      message =
+        'Google Sign-In is not configured on this environment yet. Please sign in with your business email below.';
+    } else if (oauthError === 'access_denied') {
+      message = 'Google sign-in was canceled.';
+    }
+    showFormError(message);
+    initialParams.delete('oauth_error');
+    const cleanSearch = initialParams.toString();
+    const cleanUrl =
+      window.location.pathname + (cleanSearch ? `?${cleanSearch}` : '') + window.location.hash;
+    window.history.replaceState({}, document.title, cleanUrl);
+  }
+
+  // Open-Redirect Protection Helper (CWE-601)
+  function getSafeRedirect(
+    targetUrl: string | null | undefined,
+    fallback: string = '/billing'
+  ): string {
+    if (!targetUrl || typeof targetUrl !== 'string') return fallback;
+    if (
+      /^\/(?![/\\])/.test(targetUrl) &&
+      !targetUrl.includes('\\') &&
+      !targetUrl.includes(':') &&
+      !Array.from(targetUrl).some((char) => char.charCodeAt(0) < 32) &&
+      !/%(?:0[0-9a-f]|5c)/i.test(targetUrl)
+    ) {
+      return targetUrl;
+    }
+    return fallback;
+  }
+
+  // Password visibility toggle with accessible aria state
+  const eyeOpenSvg = `
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+  `;
+  const eyeClosedSvg = `
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
+  `;
+
+  if (toggleBtn && passwordInput) {
+    toggleBtn.addEventListener('click', () => {
+      const isPassword = passwordInput.type === 'password';
+      passwordInput.type = isPassword ? 'text' : 'password';
+      toggleBtn.setAttribute('aria-pressed', isPassword ? 'true' : 'false');
+      toggleBtn.setAttribute('aria-label', isPassword ? 'Hide password' : 'Show password');
+      const eyeIcon = document.getElementById('eye-icon-login');
+      if (eyeIcon) eyeIcon.innerHTML = isPassword ? eyeClosedSvg : eyeOpenSvg;
+    });
+  }
 
   // Validation rules
   const validationRules: Record<string, (value: string) => string | null> = {
     email: (value) => {
-      if (!value.trim()) return 'Email is required';
+      if (!value.trim()) return 'Email address is required';
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(value)) return 'Please enter a valid email address';
       return null;
@@ -173,28 +304,29 @@ const { action = '', method = 'POST', netlify = false, redirectUrl = '/dashboard
     },
   };
 
-  // Show/hide error message
   function showError(fieldName: string, message: string | null) {
     const errorEl = document.querySelector(`#login-form [data-error="${fieldName}"]`);
-    const inputEl = document.getElementById(fieldName);
+    const inputEl = document.getElementById(fieldName) as HTMLInputElement | null;
 
     if (errorEl && inputEl) {
       if (message) {
         errorEl.textContent = message;
         errorEl.classList.remove('hidden');
-        inputEl.classList.add('border-red-500');
-        inputEl.classList.remove('border-border');
+        inputEl.classList.add('border-error', 'focus:border-error', 'focus:ring-error/20');
+        inputEl.setAttribute('aria-invalid', 'true');
       } else {
         errorEl.classList.add('hidden');
-        inputEl.classList.remove('border-red-500');
-        inputEl.classList.add('border-border');
+        inputEl.classList.remove('border-error', 'focus:border-error', 'focus:ring-error/20');
+        inputEl.removeAttribute('aria-invalid');
       }
     }
   }
 
-  // Validate single field
-  function validateField(fieldName: string): boolean {
-    const input = form.elements.namedItem(fieldName) as HTMLInputElement;
+  function validateField(fieldName: string, force: boolean = false): boolean {
+    // Only validate if field has been touched or validation is forced (submit)
+    if (!force && !touchedFields.has(fieldName)) return true;
+
+    const input = document.getElementById(fieldName) as HTMLInputElement | null;
     if (!input || !validationRules[fieldName]) return true;
 
     const error = validationRules[fieldName](input.value);
@@ -202,105 +334,151 @@ const { action = '', method = 'POST', netlify = false, redirectUrl = '/dashboard
     return !error;
   }
 
-  // Validate all fields
   function validateForm(): boolean {
     let isValid = true;
     for (const fieldName of Object.keys(validationRules)) {
-      if (!validateField(fieldName)) {
+      touchedFields.add(fieldName);
+      if (!validateField(fieldName, true)) {
         isValid = false;
       }
     }
     return isValid;
   }
 
-  // Real-time validation on blur
+  // Event bindings: mark touched on blur, and update on input only if already touched & displaying error
   for (const fieldName of Object.keys(validationRules)) {
-    const input = form.elements.namedItem(fieldName) as HTMLInputElement | null;
-    if (input && 'addEventListener' in input) {
-      input.addEventListener('blur', () => validateField(fieldName));
-      input.addEventListener('input', () => {
-        // Clear error on input if field was previously invalid
-        const errorEl = document.querySelector(`#login-form [data-error="${fieldName}"]`);
-        if (errorEl && !errorEl.classList.contains('hidden')) {
-          validateField(fieldName);
-        }
-      });
-    }
+    const input = document.getElementById(fieldName);
+    input?.addEventListener('blur', () => {
+      touchedFields.add(fieldName);
+      validateField(fieldName);
+    });
+    input?.addEventListener('input', () => {
+      const errorEl = document.querySelector(`#login-form [data-error="${fieldName}"]`);
+      if (errorEl && !errorEl.classList.contains('hidden')) {
+        validateField(fieldName);
+      }
+    });
   }
 
-  // Form submission
-  form.addEventListener('submit', async (e) => {
-    e.preventDefault();
+  // Form submission with AbortController and Rate-Limit handling
+  if (form) {
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
 
-    // Hide previous status messages
-    formStatus?.classList.add('hidden');
-    formSuccess?.classList.add('hidden');
-    formError?.classList.add('hidden');
+      formStatus?.classList.add('hidden');
+      formSuccess?.classList.add('hidden');
+      formError?.classList.add('hidden');
 
-    // Validate form
-    if (!validateForm()) {
-      // Focus first invalid field
-      const firstError = form.querySelector('.border-red-500') as HTMLElement;
-      firstError?.focus();
-      return;
-    }
+      const gotcha = (form.querySelector('input[name="_gotcha"]') as HTMLInputElement)?.value;
+      if (gotcha) return;
 
-    // Show loading state
-    submitButton.disabled = true;
-    buttonText?.classList.add('hidden');
-    buttonLoading?.classList.remove('hidden');
-
-    const formData = new FormData(form);
-    const action = form.action;
-
-    try {
-      // If no action URL, simulate success (demo mode)
-      if (!action || action === window.location.href) {
-        await new Promise((resolve) => setTimeout(resolve, 1500));
-        showSuccess();
+      if (!validateForm()) {
+        const firstError = form.querySelector('[aria-invalid="true"]') as HTMLElement;
+        firstError?.focus();
         return;
       }
 
-      // Submit to actual endpoint
-      const response = await fetch(action, {
-        method: form.method || 'POST',
-        body: formData,
-        headers: {
-          Accept: 'application/json',
-        },
-      });
+      submitButton.disabled = true;
+      form.setAttribute('aria-busy', 'true');
+      buttonText?.classList.add('hidden');
+      buttonLoading?.classList.remove('hidden');
+      buttonLoading?.classList.add('inline-flex');
 
-      if (response.ok) {
-        showSuccess();
-      } else {
-        showErrorState();
+      const email = emailInput?.value.trim().toLowerCase();
+      const password = passwordInput?.value;
+      const apiUrl = form.dataset.apiUrl || 'http://localhost:5000';
+
+      const urlParams = new URLSearchParams(window.location.search);
+      const queryRedirect = urlParams.get('redirect');
+      const targetRedirect = getSafeRedirect(queryRedirect || form.dataset.redirect || '/billing');
+
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 15000);
+
+      try {
+        const response = await fetch(`${apiUrl}/api/v1/auth/login`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+          },
+          body: JSON.stringify({ email, password }),
+          signal: controller.signal,
+        });
+
+        clearTimeout(timeoutId);
+
+        if (response.status === 429) {
+          const retryAfter = response.headers.get('Retry-After') || '60';
+          showFormError(
+            `Too many sign-in attempts. Please wait ${retryAfter} seconds before trying again.`
+          );
+          return;
+        }
+
+        if (response.status === 401 || response.status === 404) {
+          showFormError(
+            'Invalid email address or password. Please verify your credentials and try again.'
+          );
+          return;
+        }
+
+        if (!response.ok) {
+          const errData = await response.json().catch(() => ({}));
+          const safeMessage =
+            typeof errData.message === 'string' && !errData.message.includes('stack')
+              ? errData.message
+              : 'Authentication failed. Please verify your credentials and try again.';
+          showFormError(safeMessage);
+          return;
+        }
+
+        const data = await response.json();
+        const payload = data.data || data;
+
+        if (payload.token) {
+          try {
+            localStorage.setItem('markchat_cp_token', payload.token);
+          } catch {
+            // Storage unavailable or quota exceeded
+          }
+        }
+
+        formStatus?.classList.remove('hidden');
+        formSuccess?.classList.remove('hidden');
+
+        const destination = payload.ssoUrl || targetRedirect;
+        setTimeout(() => {
+          window.location.href = destination;
+        }, 800);
+      } catch (err: unknown) {
+        clearTimeout(timeoutId);
+        if (err instanceof Error && err.name === 'AbortError') {
+          showFormError(
+            'Authentication request timed out. Please check your internet connection and try again.'
+          );
+          return;
+        }
+        showFormError(
+          'Unable to connect to the authentication service. Please verify your connection and try again.'
+        );
       }
-    } catch {
-      showErrorState();
-    }
-  });
-
-  function showSuccess() {
-    formStatus?.classList.remove('hidden');
-    formSuccess?.classList.remove('hidden');
-    resetButtonState();
-
-    // Redirect after showing success message
-    const redirectUrl = form.dataset.redirect || '/';
-    setTimeout(() => {
-      window.location.href = redirectUrl;
-    }, 1500);
+    });
   }
 
-  function showErrorState() {
+  function showFormError(message: string) {
     formStatus?.classList.remove('hidden');
     formError?.classList.remove('hidden');
+    const errText = document.getElementById('login-error-text');
+    if (errText) errText.textContent = message;
     resetButtonState();
   }
 
   function resetButtonState() {
     submitButton.disabled = false;
+    form.removeAttribute('aria-busy');
     buttonText?.classList.remove('hidden');
     buttonLoading?.classList.add('hidden');
+    buttonLoading?.classList.remove('inline-flex');
   }
 </script>
