@@ -29,6 +29,23 @@ const field = (name: string) => 'hero-media-' + page + '-' + name;
       <label class="form-label" for={field('mobile')}>Mobile / tablet crop URL (optional)</label>
       <input id={field('mobile')} data-hero-field="heroBackgroundMobileImageUrl" class="form-input w-full" type="text" placeholder="/media/editorial/image-mobile.webp" value={data.heroBackgroundMobileImageUrl} />
     </div>
+    <div class="sm:col-span-2 rounded-lg border border-border p-4">
+      <p class="mb-2 text-sm font-semibold text-text">Upload through your authorized CMS media provider</p>
+      <p class="mb-3 text-xs text-text-muted">WebP, JPEG, PNG or AVIF · 5 MB maximum. Uploading requires the connected CMS bridge's secure media endpoint.</p>
+      <div class="grid gap-3 sm:grid-cols-2">
+        <div>
+          <label class="form-label" for={field('desktopFile')}>Desktop file</label>
+          <input id={field('desktopFile')} type="file" data-hero-file="desktop" accept="image/webp,image/jpeg,image/png,image/avif" class="block w-full text-sm text-text" />
+          <button type="button" data-hero-upload="desktop" class="btn btn-secondary mt-2 text-sm">Upload desktop</button>
+        </div>
+        <div>
+          <label class="form-label" for={field('mobileFile')}>Mobile file</label>
+          <input id={field('mobileFile')} type="file" data-hero-file="mobile" accept="image/webp,image/jpeg,image/png,image/avif" class="block w-full text-sm text-text" />
+          <button type="button" data-hero-upload="mobile" class="btn btn-secondary mt-2 text-sm">Upload mobile</button>
+        </div>
+      </div>
+      <p data-hero-upload-status aria-live="polite" class="mt-3 text-xs text-text-muted"></p>
+    </div>
     <div class="sm:col-span-2">
       <label class="form-label" for={field('alt')}>Image description / alt text</label>
       <input id={field('alt')} data-hero-field="heroBackgroundAlt" class="form-input w-full" type="text" maxlength="180" value={data.heroBackgroundAlt} />
@@ -66,7 +83,7 @@ const field = (name: string) => 'hero-media-' + page + '-' + name;
 
 <script>
   import { normalizeHeroMedia, HERO_MEDIA_PAGES } from '@/lib/hero-media';
-  import { updateHeroMediaSettings } from '@/lib/cms-api';
+  import { updateHeroMediaSettings, uploadHeroMediaAsset } from '@/lib/cms-api';
   import type { HeroMediaPage, HeroMediaSettings } from '@/lib/types';
 
   function collectHeroMedia(root: HTMLElement): Partial<HeroMediaSettings> {
@@ -108,6 +125,26 @@ const field = (name: string) => 'hero-media-' + page + '-' + name;
         preview.alt = media.heroBackgroundAlt || 'Selected editorial preview';
         preview.classList.remove('hidden'); empty.classList.add('hidden');
       };
+      root.querySelectorAll<HTMLButtonElement>('[data-hero-upload]').forEach(button => {
+        button.addEventListener('click', async () => {
+          const variant = button.dataset.heroUpload as 'desktop' | 'mobile';
+          const input = root.querySelector<HTMLInputElement>('[data-hero-file="' + variant + '"]');
+          const status = root.querySelector<HTMLElement>('[data-hero-upload-status]');
+          const file = input?.files?.[0];
+          if (!file) { if (status) status.textContent = 'Select an image first.'; return; }
+          button.disabled = true;
+          try {
+            const uploadedUrl = await uploadHeroMediaAsset(page, variant, file);
+            const fieldName = variant === 'desktop' ? 'heroBackgroundImageUrl' : 'heroBackgroundMobileImageUrl';
+            const field = root.querySelector<HTMLInputElement>('[data-hero-field="' + fieldName + '"]');
+            if (field) field.value = uploadedUrl;
+            if (status) status.textContent = 'Upload confirmed. Save the page settings to publish the selected media.';
+            render();
+          } catch (error) {
+            if (status) status.textContent = error instanceof Error ? error.message : 'Upload failed.';
+          } finally { button.disabled = false; }
+        });
+      });
       preview?.addEventListener('error', () => {
         preview.classList.add('hidden');
         empty?.classList.remove('hidden');
