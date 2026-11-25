@@ -10,11 +10,11 @@ import IntegrationIcon from '@/components/ui/IntegrationIcon.astro';
 ---
 
 <div
-  class="integrations-showcase-container relative w-full max-w-5xl mx-auto rounded-3xl border border-slate-200/90 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 p-6 sm:p-10 shadow-2xl backdrop-blur-xl overflow-hidden text-left"
+  class="integrations-showcase-container relative w-full max-w-5xl mx-auto rounded-xl border border-slate-200/90 dark:border-slate-800 bg-white/80 dark:bg-surface p-6 sm:p-10 shadow-none  overflow-hidden text-left"
 >
   <!-- Ambient Inner Glows -->
   <div
-    class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[350px] sm:w-[500px] h-[350px] sm:h-[500px] bg-primary/10 blur-[100px] rounded-full pointer-events-none -z-10"
+    class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[350px] sm:w-[500px] h-[350px] sm:h-[500px] bg-primary/10 hidden rounded-full pointer-events-none -z-10"
   >
   </div>
 
@@ -58,7 +58,7 @@ import IntegrationIcon from '@/components/ui/IntegrationIcon.astro';
 
       <!-- WhatsApp Node -->
       <div
-        class="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 flex items-center justify-between group hover:border-emerald-500/50 transition-all shadow-xs"
+        class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 flex items-center justify-between group hover:border-emerald-500/50 transition-all shadow-none"
       >
         <div class="flex items-center gap-3 min-w-0">
           <IntegrationIcon iconKey="whatsapp" name="WhatsApp" size="sm" />
@@ -79,7 +79,7 @@ import IntegrationIcon from '@/components/ui/IntegrationIcon.astro';
 
       <!-- SMS Node -->
       <div
-        class="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 flex items-center justify-between group hover:border-amber-500/50 transition-all shadow-xs"
+        class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 flex items-center justify-between group hover:border-amber-500/50 transition-all shadow-none"
       >
         <div class="flex items-center gap-3 min-w-0">
           <IntegrationIcon iconKey="africas-talking" name="Africa's Talking" size="sm" />
@@ -99,7 +99,7 @@ import IntegrationIcon from '@/components/ui/IntegrationIcon.astro';
 
       <!-- Social Node -->
       <div
-        class="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 flex items-center justify-between group hover:border-rose-500/50 transition-all shadow-xs"
+        class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 flex items-center justify-between group hover:border-rose-500/50 transition-all shadow-none"
       >
         <div class="flex items-center gap-3 min-w-0">
           <IntegrationIcon iconKey="instagram" name="Instagram & Messenger" size="sm" />
@@ -132,7 +132,7 @@ import IntegrationIcon from '@/components/ui/IntegrationIcon.astro';
 
         <!-- Center Badge -->
         <div
-          class="relative w-20 h-20 rounded-3xl bg-gradient-to-tr from-primary via-indigo-600 to-indigo-700 text-white flex flex-col items-center justify-center shadow-xl shadow-primary/30 z-10 p-2"
+          class="relative w-20 h-20 rounded-xl bg-surface    text-white flex flex-col items-center justify-center shadow-none shadow-primary/30 z-10 p-2"
         >
           <Icon name="lucide:message-square" class="w-8 h-8 text-white mb-0.5" />
           <span class="font-extrabold text-[10px] tracking-wider uppercase">MarkChat</span>
@@ -157,7 +157,7 @@ import IntegrationIcon from '@/components/ui/IntegrationIcon.astro';
 
       <!-- M-Pesa Daraja Node -->
       <div
-        class="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 flex items-center justify-between group hover:border-emerald-500/50 transition-all shadow-xs"
+        class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 flex items-center justify-between group hover:border-emerald-500/50 transition-all shadow-none"
       >
         <div class="flex items-center gap-3 min-w-0">
           <IntegrationIcon iconKey="mpesa" name="Safaricom M-Pesa" size="sm" />
@@ -178,7 +178,7 @@ import IntegrationIcon from '@/components/ui/IntegrationIcon.astro';
 
       <!-- Developer APIs Node -->
       <div
-        class="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 flex items-center justify-between group hover:border-blue-500/50 transition-all shadow-xs"
+        class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 flex items-center justify-between group hover:border-blue-500/50 transition-all shadow-none"
       >
         <div class="flex items-center gap-3 min-w-0">
           <IntegrationIcon iconKey="api" name="Developer APIs" size="sm" />
@@ -198,7 +198,7 @@ import IntegrationIcon from '@/components/ui/IntegrationIcon.astro';
 
       <!-- Markcopilot Node -->
       <div
-        class="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 flex items-center justify-between group hover:border-indigo-500/50 transition-all shadow-xs"
+        class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 flex items-center justify-between group hover:border-indigo-500/50 transition-all shadow-none"
       >
         <div class="flex items-center gap-3 min-w-0">
           <IntegrationIcon iconKey="markcopilot" name="Markcopilot AI" size="sm" />
