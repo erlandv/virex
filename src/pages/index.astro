@@ -1,619 +1,376 @@
 ---
 /**
- * MarkChat Kenya — Homepage
- *
- * Unified Customer Conversations, Engagement & In-Chat Commerce.
- * Grounded in verified product capabilities and authentic Kenyan commerce workflows.
+ * MarkChat — Kenya-first, Community-safe, product-led homepage.
+ * All media is CMS-published, locally verified, or an accessible fallback.
+ * This page intentionally does not advertise the deferred SMS product line.
  */
 import MarketingLayout from '@/layouts/MarketingLayout.astro';
-import LivePlatformWorkbench from '@/components/enterprise/LivePlatformWorkbench.astro';
-import EnterpriseArchitecture from '@/components/enterprise/EnterpriseArchitecture.astro';
 import Hero from '@sections/marketing/Hero.astro';
-import HowItWorks from '@sections/marketing/HowItWorks.astro';
+import LivePlatformWorkbench from '@/components/enterprise/LivePlatformWorkbench.astro';
 import OmnichannelFlowHub from '@sections/marketing/OmnichannelFlowHub.astro';
-import MarkcopilotExplainer from '@sections/marketing/MarkcopilotExplainer.astro';
+import HowItWorks from '@sections/marketing/HowItWorks.astro';
 import SolutionsPreview from '@sections/marketing/SolutionsPreview.astro';
-import IntegrationsGrid from '@sections/marketing/IntegrationsGrid.astro';
 import PricingTable from '@sections/pricing/PricingTable.astro';
-import FeaturesSection from '@sections/marketing/FeaturesSection.astro';
 import FAQSection from '@sections/content/FAQSection.astro';
 import CTA from '@sections/marketing/CTA.astro';
 import Newsletter from '@sections/marketing/Newsletter.astro';
-import { Icon } from 'astro-icon/components';
+import MCSection from '@/components/design-system/MCSection.astro';
+import MCSectionHeading from '@/components/design-system/MCSectionHeading.astro';
+import MCFeatureBento from '@/components/design-system/MCFeatureBento.astro';
+import MCButton from '@/components/design-system/MCButton.astro';
+import { communityIllustrations } from '@/data/product-assets';
+import type { ProductWorkflow, CmsProductMediaOverride } from '@/data/product-assets';
 import { siteConfig } from '@/config';
-import { fetchPricingMatrix, fetchIntegrations, fetchHomepageSettings } from '@/lib/cms-api';
+import {
+  fetchHomepageSettings,
+  fetchPricingMatrix,
+  fetchFeatures,
+  fetchFaqs,
+} from '@/lib/cms-api';
 
-const [pricingMatrix, allIntegrations, homepageSettings] = await Promise.all([
-  fetchPricingMatrix(),
-  fetchIntegrations(),
+const [homepageSettings, pricingMatrix, publishedFeatures, publishedFaqs] = await Promise.all([
   fetchHomepageSettings(),
+  fetchPricingMatrix(),
+  fetchFeatures(),
+  fetchFaqs(),
 ]);
 
-const sections = homepageSettings?.sections || {
-  hero: true,
-  omnichannelFlow: true,
-  howItWorks: true,
-  coreCapabilities: true,
-  operationalScenarios: true,
-  markcopilot: true,
-  solutionsPreview: true,
-  integrations: true,
-  pricing: true,
-  kenyaPrinciples: true,
-  faqs: true,
-  closingCta: true,
-  newsletter: true,
-};
+const sections = homepageSettings.sections;
+const deferredTerms =
+  /(?:bulk\s+)?sms|sender\s+id|byoc|saml|sso|audit\s+logs?|custom\s+roles?|captain\s+ai|agent\s+capacity|sla\s+polic(?:y|ies)|dedicated\s+sla/i;
+const legacyHeroTitle = /Bring Customer Conversations, Engagement & Sales Together/i;
+const legacyDefaultCopy = /bring customer conversations, engagement and sales together/i;
 
-const featuredIntegrations = allIntegrations
-  .filter((i) => i.isFeatured)
-  .slice(0, 6)
-  .map((i) => ({
-    slug: i.slug,
-    name: i.name,
-    category: i.category,
-    iconKey: i.iconKey,
-    logoUrl: i.logoUrl,
-    isPopular: i.isPopular,
-    shortDescription: i.shortDescription,
-    href: `/integrations/${i.slug}`,
-  }));
+function cleanCoreCopy(value: string | undefined, fallback: string): string {
+  if (!value || deferredTerms.test(value) || legacyHeroTitle.test(value)) return fallback;
+  return value;
+}
 
-const pricingPlans = pricingMatrix.tiers.map((tier) => ({
-  name: tier.name,
-  monthlyPrice: tier.monthlyPrice,
-  customPrice: tier.monthlyPrice === null ? 'Custom' : undefined,
-  description: tier.description,
-  features: tier.features,
-  highlighted: tier.highlighted,
-  badge: tier.badge,
-  cta: {
-    label: tier.ctaLabel,
-    href: tier.ctaHref,
+function safeInternalPath(value: string | undefined, fallback: string): string {
+  if (
+    value &&
+    /^\/(?![/\\])/.test(value) &&
+    !value.includes('\\') &&
+    !value.includes(':') &&
+    !Array.from(value).some((character) => character.charCodeAt(0) < 32)
+  ) {
+    return value;
+  }
+  return fallback;
+}
+
+const heroTitle =
+  'One inbox for customer conversations, AI-assisted responses, and M-Pesa payment workflows.';
+const heroSubtitle =
+  'Built for Kenyan businesses. Connect supported messaging channels, collaborate in one workspace, review Markcopilot suggestions, and manage configured M-Pesa checkout workflows.';
+const cmsHeroTitle = cleanCoreCopy(homepageSettings.hero?.title, heroTitle);
+const cmsHeroSubtitle = cleanCoreCopy(homepageSettings.hero?.subtitle, heroSubtitle);
+
+const cmsMedia: Partial<Record<ProductWorkflow, CmsProductMediaOverride>> = {};
+for (const feature of publishedFeatures) {
+  if (feature.status !== 'published' || feature.mediaType !== 'screenshot' || !feature.mediaUrl) {
+    continue;
+  }
+  const name = (feature.slug + ' ' + feature.title).toLowerCase();
+  let workflow: ProductWorkflow | null = null;
+  if (/inbox|conversation/.test(name)) workflow = 'inbox';
+  else if (/mpesa|m-pesa|checkout|daraja/.test(name)) workflow = 'mpesa';
+  else if (/markcopilot|ai-assist|ai-reply/.test(name)) workflow = 'markcopilot';
+  if (workflow && !cmsMedia[workflow]) {
+    cmsMedia[workflow] = {
+      status: feature.status,
+      mediaUrl: feature.mediaUrl,
+      mediaAlt: feature.mediaAlt || feature.title,
+    };
+  }
+}
+
+const capabilities = [
+  {
+    id: 'unified-inbox',
+    title: 'Unified Inbox',
+    description: 'Manage connected conversations, assignments, and customer context in one workspace.',
+    icon: 'lucide:inbox',
+    href: '/product/shared-inbox',
   },
+  {
+    id: 'mpesa-stk',
+    title: 'M-Pesa Checkout',
+    description: 'Coordinate approved Daraja /stk payment requests and review callback status in context.',
+    icon: 'lucide:wallet-cards',
+    href: '/integrations/safaricom-mpesa-daraja',
+  },
+  {
+    id: 'markcopilot',
+    title: 'Markcopilot AI',
+    description: 'Get contextual reply suggestions for human review before responding to customers.',
+    icon: 'lucide:sparkles',
+    href: '/markcopilot',
+  },
+  {
+    id: 'automation-routing',
+    title: 'Automation & Routing',
+    description: 'Organize supported rules, team queues, and conversation assignments.',
+    icon: 'lucide:workflow',
+    href: '/features/automation-and-routing',
+  },
+  {
+    id: 'contact-crm',
+    title: 'Contact CRM',
+    description: 'Keep contact details, conversations, and authorized follow-ups together.',
+    icon: 'lucide:contact-round',
+    href: '/product/crm-workspace',
+  },
+  {
+    id: 'help-center',
+    title: 'Self-Service Help Center',
+    description: 'Help customers find answers from your published support knowledge.',
+    icon: 'lucide:book-open',
+    href: '/product/help-center',
+  },
+  {
+    id: 'analytics-webhooks',
+    title: 'Analytics & Webhooks',
+    description: 'Understand supported conversation activity and connect documented event workflows.',
+    icon: 'lucide:chart-no-axes-combined',
+    href: '/integrations/developer-api-webhooks',
+  },
+].map((feature) => ({
+  ...feature,
+  illustration: communityIllustrations.find((item) => item.id === feature.id)?.path,
 }));
 
-// Authentic Core Product Capabilities
-const coreCapabilities = [
+const pricingPlans = pricingMatrix.tiers.map((tier) => {
+  const features = tier.features
+    .filter((feature) => !deferredTerms.test(feature) && !/guaranteed|unlimited channels/i.test(feature))
+    .slice(0, 5);
+  return {
+    name: tier.name,
+    monthlyPrice: tier.monthlyPrice,
+    customPrice: tier.monthlyPrice === null ? 'Custom' : undefined,
+    description: cleanCoreCopy(
+      tier.description,
+      'A MarkChat workspace plan with scope and integrations confirmed during onboarding.'
+    ),
+    features: features.length > 0 ? features : ['Shared customer conversation workspace'],
+    highlighted: tier.highlighted,
+    badge: cleanCoreCopy(tier.badge, 'Workspace plan'),
+    cta: {
+      label: tier.ctaLabel,
+      href: safeInternalPath(tier.ctaHref, '/pricing'),
+    },
+  };
+});
+
+const coreFaqs = publishedFaqs
+  .filter((item) => item.status === 'published')
+  .filter((item) => !deferredTerms.test(item.question + ' ' + item.answer))
+  .slice(0, 5)
+  .map((item) => ({ question: item.question, answer: item.answer }));
+
+const fallbackFaqs = [
   {
-    icon: 'lucide:inbox',
-    title: 'Collaborative Omnichannel Inbox',
-    description:
-      'Unify WhatsApp Cloud API, Africa’s Talking Bulk SMS, Instagram DMs, Facebook Messenger, and website live chat into one workspace with team collision detection and private notes.',
+    question: 'Which customer channels can I connect?',
+    answer:
+      'MarkChat supports connected customer conversation workflows. Each channel requires the appropriate provider account, permissions and configuration.',
   },
   {
-    icon: 'lucide:smartphone',
-    title: 'In-Chat /stk M-Pesa Prompts',
-    description:
-      'Agents trigger instant Safaricom SIM Toolkit PIN prompts directly within customer chat threads using /stk <amount> <phone>, eliminating account number typing errors.',
+    question: 'How does M-Pesa checkout work?',
+    answer:
+      'Authorized merchants configure Safaricom Daraja credentials. Payment status must be confirmed through trusted provider callbacks, not screenshots.',
   },
   {
-    icon: 'lucide:shield-check',
-    title: 'Automated Callback Verification',
-    description:
-      'Review Safaricom Daraja C2B payment evidence before releasing goods. Merchant credentials and configured payment validation are required.',
+    question: 'Can Markcopilot send replies automatically?',
+    answer:
+      'Markcopilot can assist with drafting replies for human review. Other automation capabilities depend on the features enabled in your workspace.',
   },
   {
-    icon: 'lucide:message-square',
-    title: 'Africa’s Talking Bulk SMS & BYOC',
-    description:
-      'Send transactional notifications and promotional SMS broadcasts using your own approved Alphanumeric Sender ID, with two-way conversation threading.',
-  },
-  {
-    icon: 'lucide:sparkles',
-    title: 'Bilingual Markcopilot AI',
-    description:
-      'Dual-mode artificial intelligence that drafts contextual agent replies in English, Swahili, and Sheng, while autonomously handling common catalog and order questions.',
-  },
-  {
-    icon: 'lucide:layers',
-    title: 'Pochi la Biashara & Till Android Sync',
-    description:
-      'Connect small-merchant Pochi la Biashara and Buy Goods lines via our dedicated Android SMS bridge APK, streaming mobile payment receipts directly into customer records.',
+    question: 'Where can I see the plans?',
+    answer:
+      'See the subscription options on our pricing page. Billing and supported integrations are confirmed during signup and onboarding.',
   },
 ];
+const homepageFaqs = coreFaqs.length >= 3 ? coreFaqs : fallbackFaqs;
 
-// Substantive Real-World Operational Scenarios (Kenyan Commerce Workflows)
-const operationalScenarios = [
-  {
-    title: 'Retail & Social Commerce',
-    subtitle: 'From WhatsApp Product Inquiries to Instant STK Settlement',
-    badge: 'WhatsApp Cloud + /stk',
-    channelName: 'WhatsApp Business',
-    channelIcon: 'lucide:message-circle',
-    channelColor: 'text-[#25D366]',
-    recipient: '+254 722 ••• 456 (Peter K.)',
-    reconciliationBadge: 'Daraja Webhook Matched',
-    steps: [
-      {
-        speaker: 'Customer (WhatsApp)',
-        role: 'Buyer',
-        text: 'Habari, do you have the leather sneakers size 43 in black? How much with delivery to Westlands?',
-        type: 'customer',
-        time: '14:21',
-      },
-      {
-        speaker: 'Sales Agent (MarkChat)',
-        role: 'Staff',
-        text: 'Habari! Yes, size 43 black is available in stock. Total is KES 4,050 (shoes + KES 250 boda). Prompting your M-Pesa now.',
-        type: 'agent',
-        time: '14:22',
-      },
-      {
-        speaker: 'Daraja STK Gateway',
-        role: 'System Action',
-        text: 'Executed: /stk 4050 0722123456 → Safaricom SIM Toolkit PIN prompt pushed to customer phone.',
-        type: 'system',
-        time: '14:22',
-      },
-      {
-        speaker: 'Safaricom Daraja Callback',
-        role: 'Verified Payment',
-        text: 'Confirmed: KES 4,050 received from PETER KAMAU (Ref: QHL81920). Order #8192 marked PAID.',
-        type: 'success',
-        time: '14:23',
-      },
-    ],
-  },
-  {
-    title: 'Clinics & Professional Services',
-    subtitle: 'Automated Consultation Deposits & SMS Confirmation',
-    badge: 'Live Chat + Paybill',
-    channelName: 'Website Live Chat',
-    channelIcon: 'lucide:messages-square',
-    channelColor: 'text-indigo-500',
-    recipient: 'Website Visitor #4029',
-    reconciliationBadge: 'C2B Paybill Reconciled',
-    steps: [
-      {
-        speaker: 'Patient (Live Chat)',
-        role: 'Visitor',
-        text: 'I would like to schedule a dental checkup for tomorrow at 2:00 PM at your Upper Hill clinic.',
-        type: 'customer',
-        time: '10:04',
-      },
-      {
-        speaker: 'Markcopilot AI',
-        role: 'Autonomous Assistant',
-        text: 'Dental slot for tomorrow 2:00 PM is open. A KES 500 consultation deposit confirms your appointment.',
-        type: 'agent',
-        time: '10:04',
-      },
-      {
-        speaker: 'Daraja C2B Webhook',
-        role: 'System Action',
-        text: 'Payment matched on Paybill 625100 (Acc: DENT-104, Ref: RK782910). Clinic calendar locked.',
-        type: 'system',
-        time: '10:06',
-      },
-      {
-        speaker: 'Africa’s Talking SMS Broadcast',
-        role: 'Transactional SMS',
-        text: 'SMS delivered via CLINICCARE: "Your dental appointment is confirmed for tomorrow 2:00 PM."',
-        type: 'success',
-        time: '10:06',
-      },
-    ],
-  },
-  {
-    title: 'Wholesale & Auto Spares',
-    subtitle: 'Africa’s Talking Two-Way SMS & Pochi la Biashara Android Sync',
-    badge: 'Bulk SMS + Pochi Sync',
-    channelName: 'Africa’s Talking SMS',
-    channelIcon: 'lucide:phone-call',
-    channelColor: 'text-amber-500',
-    recipient: '+254 712 ••• 654 (Daniel O.)',
-    reconciliationBadge: 'Android APK Bridge Synced',
-    steps: [
-      {
-        speaker: 'Customer (Bulk SMS)',
-        role: 'SMS Buyer',
-        text: 'Nahitaji brake pads za Toyota Fielder 2015. Mko nazo na bei ni ngapi?',
-        type: 'customer',
-        time: '09:12',
-      },
-      {
-        speaker: 'Wholesale Desk (MarkChat)',
-        role: 'Staff',
-        text: 'Ziko boss! OEM pair ni KES 4,500. Lipa kwa Pochi la Biashara 0712987654 tutume na parcel leo.',
-        type: 'agent',
-        time: '09:14',
-      },
-      {
-        speaker: 'MarkChat Android Bridge',
-        role: 'System Action',
-        text: 'Android SMS Bridge matched receipt: KES 4,500 from DANIEL OCHIENG (Ref: RH39201L).',
-        type: 'system',
-        time: '09:18',
-      },
-      {
-        speaker: 'Alphanumeric Dispatch Alert',
-        role: 'Automated Broadcast',
-        text: 'SMS delivered via AUTOPARTS: "Mzigo wako umetumwa na Modern Coast Waybill #MC8812. Shukran!"',
-        type: 'success',
-        time: '09:20',
-      },
-    ],
-  },
-];
-
-// Core Engineering & Product Principles
-const corePrinciples = [
-  {
-    id: 'kenya-first',
-    title: 'Built for Kenya First',
-    description:
-      'Engineered specifically for local commerce realities: Safaricom Paybill, Buy Goods Tills, Pochi la Biashara, and WhatsApp sales across East Africa.',
-    icon: 'lucide:map-pin',
-    badge: 'Local Context',
-  },
-  {
-    id: 'fraud-shield',
-    title: 'Real-Time Fraud Prevention',
-    description:
-      'Helps staff verify payment references through configured provider integrations rather than trusting SMS screenshots.',
-    icon: 'lucide:shield-check',
-    badge: 'Fraud Shield',
-  },
-  {
-    id: 'conversational-speed',
-    title: 'Conversational Speed',
-    description:
-      'Use configured M-Pesa STK workflows to reduce manual payment steps, subject to Safaricom availability and merchant authorization.',
-    icon: 'lucide:zap',
-    badge: 'Checkout Velocity',
-  },
-  {
-    id: 'radical-simplicity',
-    title: 'Radical Simplicity',
-    description:
-      'Use guided workspace setup and configure the channels approved for your business. Provider onboarding time can vary.',
-    icon: 'lucide:sparkles',
-    badge: 'Zero Friction',
-  },
-];
-
-// Leadership profiles are intentionally withheld until verified.
-
-// Verified Kenyan Merchant FAQs
-const homepageFaqs = [
-  {
-    question: 'How does the in-chat /stk command work?',
-    answer:
-      'While chatting with a customer in WhatsApp or live chat, an authorized agent types `/stk <amount> <phone>` (for example `/stk 2500 0712345678`). MarkChat communicates directly with Safaricom’s Daraja API to trigger a SIM Toolkit prompt on the customer’s phone. The customer enters their M-Pesa PIN, and once approved, Safaricom sends an encrypted callback to MarkChat that verifies the transaction and logs the receipt in the conversation thread.',
-  },
-  {
-    question: 'Do I need a Safaricom Daraja developer account to use MarkChat?',
-    answer:
-      'No. If you have an existing Safaricom Business Paybill or Buy Goods Till, you can connect it directly using our guided integration setup. For merchants using Pochi la Biashara or personal mobile lines, our MarkChat Android SMS Bridge allows you to stream payment confirmations securely without technical Daraja API setup.',
-  },
-  {
-    question: 'Does MarkChat charge a percentage fee on my M-Pesa transactions?',
-    answer:
-      'MarkChat Core plans are recurring workspace subscriptions. SMS prepaid credits and provider transaction charges are separate; review the current plan and provider tariffs before purchasing.',
-  },
-  {
-    question: 'Can my team respond to WhatsApp and SMS from the same interface?',
-    answer:
-      'MarkChat Core is designed for teams to manage supported messaging channels in one workspace. SMS Studio is a separate prepaid service and full inbox federation depends on configured integrations.',
-  },
-  {
-    question: 'What is Bring Your Own Credentials (BYOC) for Bulk SMS?',
-    answer:
-      'BYOC allows you to connect your own Africa’s Talking API key and approved Alphanumeric Sender ID directly into MarkChat. You pay Africa’s Talking directly at your negotiated carrier volume rates, while using MarkChat’s shared inbox to manage two-way SMS conversations and marketing campaigns.',
-  },
-  {
-    question: 'How does Markcopilot handle Swahili and Sheng conversations?',
-    answer:
-      'Markcopilot is trained on East African commercial communication patterns. It understands colloquial Sheng expressions, regional English dialects, and polite formal Swahili. In Agent Assist mode, it suggests 1-click draft responses for human review, and in Autonomous mode, it can deflect common repetitive questions about store hours, locations, and pricing.',
-  },
-];
+const closingTitle = cleanCoreCopy(
+  homepageSettings.closingCta?.title,
+  'Bring your team and customer conversations together.'
+);
+const closingDescription = cleanCoreCopy(
+  homepageSettings.closingCta?.description,
+  'Start with a shared inbox, add eligible channels, and explore the workflows that fit your Kenyan business.'
+);
+const finalTitle = legacyDefaultCopy.test(closingTitle)
+  ? 'Bring your team and customer conversations together.'
+  : closingTitle;
 ---
 
 <MarketingLayout
-  title={`${siteConfig.name} - Unified Customer Conversations & Engagement Platform`}
-  description="Bring customer conversations, engagement, and sales together. Unify WhatsApp Business, Africa’s Talking SMS, Instagram DMs, Messenger, and live chat with Markcopilot AI and in-chat M-Pesa."
+  title={siteConfig.name + ' — One Inbox for Kenyan Businesses'}
+  description="Manage customer conversations from supported channels, review Markcopilot AI replies, and connect authorized M-Pesa payment workflows."
 >
-  <!-- 1. Hero Section (Unified Customer Communications Platform) -->
   {
     sections.hero && (
       <Hero
-        title="Bring Customer Conversations, Engagement & Sales Together"
-        subtitle="Unify WhatsApp Business Cloud, Africa’s Talking Bulk SMS, Instagram DMs, Messenger, and website live chat into one collaborative team inbox. Empower your support team, automate repetitive queries with Markcopilot AI, and close deals with in-chat M-Pesa."
-        badge="Unified Customer Communications & Engagement Platform"
-        primaryCTA={{
-          label: 'Book Live Demo',
-          href: '/demo',
-        }}
-        secondaryCTA={{
-          label: 'Explore Plans & Pricing',
-          href: '/pricing',
-        }}
-        stats={[
-          { value: '6 Channels', label: 'Single Shared Hub' },
-          { value: 'M-Pesa', label: 'Verification workflows' },
-          { value: 'Team', label: 'Assisted conversations', highlight: true },
-        ]}
+        title={cmsHeroTitle}
+        subtitle={cmsHeroSubtitle}
+        badge={cleanCoreCopy(homepageSettings.hero?.badge, 'BUILT FOR KENYAN BUSINESSES')}
+        primaryCTA={{ label: 'Get Started', href: '/register' }}
+        secondaryCTA={{ label: 'Book a Demo', href: '/demo' }}
+        cmsMedia={cmsMedia.inbox}
       />
     )
   }
 
-  <LivePlatformWorkbench />
+  <LivePlatformWorkbench cmsMedia={cmsMedia} />
 
-  <!-- 2. Omnichannel Vector Pulse Flow Hub -->
-  {sections.omnichannelFlow && <OmnichannelFlowHub />}
+  {(sections.omnichannelFlow || sections.integrations) && <OmnichannelFlowHub />}
 
-  <!-- 3. How It Works (3 Concrete Steps) -->
+  {
+    sections.coreCapabilities && (
+      <MCSection tone="default" id="core-capabilities">
+        <div class="mb-10">
+          <MCSectionHeading
+            eyebrow="Community-safe capabilities"
+            title="The essentials for customer conversations and commerce"
+            description="Seven connected workflows explained without premium-only capability claims."
+          />
+        </div>
+        <MCFeatureBento features={capabilities} />
+        <div class="mt-9">
+          <MCButton href="/features" variant="secondary">Explore all features</MCButton>
+        </div>
+      </MCSection>
+    )
+  }
+
   {
     sections.howItWorks && (
       <HowItWorks
-        title="How MarkChat Operates in 3 Concrete Steps"
-        subtitle="From channel connection to collaborative team engagement and instant in-chat payment settlement."
+        title="How MarkChat works"
+        subtitle="Connect your channels, organize customer inquiries, and complete supported workflows."
         steps={[
           {
-            title: '1. Connect Your Communication Channels',
+            title: 'Connect customer channels',
             description:
-              'Link your official WhatsApp Business Cloud API number, Africa’s Talking SMS credentials, and social messaging inboxes.',
-            icon: 'lucide:link-2',
+              'Configure your approved WhatsApp Business Cloud, social messaging, web chat and email integrations.',
+            icon: 'lucide:plug',
           },
           {
-            title: '2. Collaborate & Automate with Markcopilot AI',
+            title: 'Collaborate with your team',
             description:
-              'Assign conversations across teammates, detect collisions, and let bilingual AI handle routine FAQs in English, Swahili, and Sheng.',
-            icon: 'lucide:sparkles',
+              'Assign conversations, keep internal context, and review Markcopilot AI suggestions.',
+            icon: 'lucide:users',
           },
           {
-            title: '3. Close Deals with In-Chat M-Pesa /stk',
+            title: 'Handle authorized M-Pesa workflows',
             description:
-              'Trigger instant Safaricom SIM Toolkit PIN prompts in-thread. MarkChat reconciles the Daraja C2B callback and logs verified receipts.',
-            icon: 'lucide:check-circle-2',
+              'Use configured Daraja integration and verify outcomes from trusted callbacks.',
+            icon: 'lucide:shield-check',
           },
         ]}
         variant="horizontal"
-        background="default"
-      />
-    )
-  }
-
-  <EnterpriseArchitecture />
-
-  <!-- 4. Substantive Core Capabilities Breakdown -->
-  {
-    sections.coreCapabilities && (
-      <FeaturesSection
-        title="Core Architecture Built for African Commerce"
-        subtitle="A unified platform engineered around local payment habits, telco infrastructure, and multilingual customer engagement."
-        features={coreCapabilities}
         background="muted"
-        footerLink={{ label: 'Explore complete feature directory →', href: '/features' }}
       />
     )
   }
 
-  <!-- 5. Real-World Operational Scenarios Walkthrough -->
+  {(sections.solutionsPreview || sections.operationalScenarios) && <SolutionsPreview />}
+
   {
-    sections.operationalScenarios && (
-      <section class="py-16 sm:py-24 bg-surface/40 border-y border-border">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div class="max-w-3xl mx-auto text-center mb-16">
-            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-primary/10 text-primary border border-primary/20 mb-4">
-              <Icon name="lucide:workflow" class="w-3.5 h-3.5" />
-              <span>Operational Scenarios</span>
+    sections.markcopilot && (
+      <MCSection tone="default" id="markcopilot-assist">
+        <div class="grid items-center gap-8 lg:grid-cols-2">
+          <div>
+            <MCSectionHeading
+              eyebrow="Markcopilot AI"
+              title="Faster replies, with people in control"
+              description="Help your agents draft contextual responses in English and Kiswahili, with human review before sending."
+            />
+            <div class="mt-7">
+              <MCButton href="/markcopilot" variant="secondary">Explore Markcopilot</MCButton>
             </div>
-            <h2 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-text">
-              Illustrative Kenyan Merchant Workflows
-            </h2>
-            <p class="mt-4 text-base sm:text-lg text-text-muted">
-              Examples illustrating possible customer-support and payment journeys. They are not
-              verified client transactions, live provider receipts or evidence of deployment.
+          </div>
+          <div class="rounded-xl border border-border bg-surface p-6">
+            <img
+              src="/media/illustrations/markcopilot.svg"
+              alt="Conceptual illustration of an AI-assisted customer reply"
+              loading="lazy"
+              class="mx-auto aspect-[5/4] max-h-64 w-full object-contain"
+            />
+            <p class="mt-3 text-xs text-text-muted">
+              Conceptual illustration. AI assistance and language coverage depend on workspace configuration.
             </p>
           </div>
-
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
-            {operationalScenarios.map((scenario) => (
-              <div class="bg-surface border border-border rounded-2xl shadow-sm hover:shadow-md transition-all flex flex-col justify-between overflow-hidden">
-                <div>
-                  {/* Chat Window Chrome / Header */}
-                  <div class="px-4 py-3 bg-surface-hover/80 border-b border-border/80 flex items-center justify-between">
-                    <div class="flex items-center gap-2.5 min-w-0">
-                      <div
-                        class={`w-7 h-7 rounded-lg bg-surface border border-border flex items-center justify-center shrink-0 ${scenario.channelColor}`}
-                      >
-                        <Icon name={scenario.channelIcon} class="w-4 h-4" />
-                      </div>
-                      <div class="min-w-0">
-                        <div class="flex items-center gap-1.5">
-                          <span class="text-xs font-bold text-text truncate">
-                            {scenario.channelName}
-                          </span>
-                          <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />
-                        </div>
-                        <p class="text-[10px] text-text-muted font-mono truncate">
-                          {scenario.recipient}
-                        </p>
-                      </div>
-                    </div>
-                    <span class="px-2 py-0.5 rounded-md text-[10px] font-semibold bg-primary/10 text-primary border border-primary/20 shrink-0">
-                      {scenario.badge}
-                    </span>
-                  </div>
-
-                  {/* Scenario Title Bar */}
-                  <div class="px-4 pt-4 pb-2">
-                    <h3 class="text-base font-bold text-text leading-snug">{scenario.title}</h3>
-                    <p class="text-xs text-text-muted mt-0.5">{scenario.subtitle}</p>
-                  </div>
-
-                  {/* Step-by-Step Message Thread */}
-                  <div class="p-4 space-y-3">
-                    {scenario.steps.map((step) => (
-                      <div
-                        class={`p-3 rounded-xl text-xs leading-relaxed transition-colors ${
-                          step.type === 'customer'
-                            ? 'bg-surface border border-border text-text shadow-xs'
-                            : step.type === 'agent'
-                              ? 'bg-blue-50/70 dark:bg-blue-950/30 border border-blue-200/80 dark:border-blue-800/40 text-text shadow-xs'
-                              : step.type === 'system'
-                                ? 'bg-amber-50 dark:bg-amber-950/40 border border-amber-200/90 dark:border-amber-800/60 text-amber-950 dark:text-amber-200 font-mono text-[11px]'
-                                : 'bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200/90 dark:border-emerald-800/60 text-emerald-950 dark:text-emerald-200 font-mono text-[11px]'
-                        }`}
-                      >
-                        <div class="flex items-center justify-between mb-1">
-                          <span
-                            class={`font-bold text-[10px] uppercase tracking-wider ${
-                              step.type === 'customer'
-                                ? 'text-text-muted'
-                                : step.type === 'agent'
-                                  ? 'text-primary'
-                                  : step.type === 'system'
-                                    ? 'text-amber-800 dark:text-amber-300'
-                                    : 'text-emerald-800 dark:text-emerald-300'
-                            }`}
-                          >
-                            {step.speaker}
-                          </span>
-                          <span class="text-[10px] opacity-60 font-mono">{step.time}</span>
-                        </div>
-                        <div class="leading-relaxed">{step.text}</div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Card Footer */}
-                <div class="px-4 py-3 bg-surface-hover/50 border-t border-border/70 flex items-center justify-between text-xs text-text-muted">
-                  <span class="inline-flex items-center gap-1.5 text-[11px] text-text-muted font-mono">
-                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                    {scenario.reconciliationBadge}
-                  </span>
-                  <a href="/demo" class="text-primary hover:underline font-medium text-xs">
-                    Live demo →
-                  </a>
-                </div>
-              </div>
-            ))}
-          </div>
         </div>
-      </section>
+      </MCSection>
     )
   }
 
-  <!-- 6. Markcopilot AI Explainer Node Tree -->
-  {sections.markcopilot && <MarkcopilotExplainer />}
-
-  <!-- 7. Business Solutions & Industry Use Cases Preview -->
-  {sections.solutionsPreview && <SolutionsPreview />}
-
-  <!-- 8. Featured African Integrations Grid -->
-  {
-    sections.integrations && (
-      <IntegrationsGrid
-        title="Mobile Money & African Telco Integrations"
-        subtitle="Direct connections for local infrastructure: Safaricom Daraja C2B, Africa’s Talking, and Meta Cloud API."
-        integrations={featuredIntegrations}
-        variant="detailed"
-        invertOnDark={false}
-        columns={3}
-        background="default"
-        footerLink={{ label: 'View all integrations →', href: '/integrations' }}
-      />
-    )
-  }
-
-  <!-- 9. Dynamic KES Pricing Table -->
   {
     sections.pricing && (
       <PricingTable
-        title="Transparent KES Pricing for Kenyan Merchants"
-        subtitle="Predictable monthly plans designed for growing businesses. Connect your channels, collaborate with your team, and SMS credits are prepaid and sold separately. Annual subscription checkout is not yet available."
+        flatPreview
+        title="Straightforward Core subscription plans"
+        subtitle="Choose a MarkChat workspace plan for your team. Channel setup and provider billing are confirmed separately."
         plans={pricingPlans}
-        annualDiscount={20}
         background="muted"
-        footerLink={{ label: 'View full plan comparison & feature matrix →', href: '/pricing' }}
+        footerLink={{ label: 'View complete plan details', href: '/pricing' }}
       />
     )
   }
 
-  <!-- 10. Core Principles & Nairobi Engineering Leadership -->
   {
     sections.kenyaPrinciples && (
-      <section class="py-16 sm:py-24 bg-surface/40 border-t border-border">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Section Header */}
-          <div class="max-w-3xl mx-auto text-center mb-16">
-            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-primary/10 text-primary border border-primary/20 mb-4">
-              <Icon name="lucide:shield-check" class="w-3.5 h-3.5" />
-              <span>Local Engineering & Integrity</span>
-            </div>
-            <h2 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-text">
-              Engineered in Nairobi for African Commerce Reality
-            </h2>
-            <p class="mt-4 text-base sm:text-lg text-text-muted">
-              We do not build generic Western SaaS. We build software adapted directly to Kenyan
-              payment flows, local carrier infrastructure, and multilingual customer interactions.
-            </p>
-          </div>
-
-          {/* 4 Core Principles Bento Grid */}
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-            {corePrinciples.map((principle) => (
-              <div class="bg-surface border border-border rounded-2xl p-6 shadow-xs hover:border-primary/40 transition-all flex flex-col justify-between">
-                <div>
-                  <div class="w-10 h-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary mb-4">
-                    <Icon name={principle.icon} class="w-5 h-5" />
-                  </div>
-                  <span class="text-[10px] font-semibold uppercase tracking-wider text-primary font-mono">
-                    {principle.badge}
-                  </span>
-                  <h3 class="text-base font-bold text-text mt-1 mb-2">{principle.title}</h3>
-                  <p class="text-xs text-text-muted leading-relaxed">{principle.description}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* Leadership profiles omitted until real identities and titles are verified. */}
+      <MCSection tone="default" id="kenya-first">
+        <MCSectionHeading
+          eyebrow="Kenya-first design"
+          title="Built around the way Kenyan teams work"
+          description="Customer conversations, local payments and business handoffs deserve straightforward, dependable software."
+        />
+        <div class="mt-8 grid gap-4 md:grid-cols-3">
+          {[
+            ['Local customer context', 'Built for customer journeys across Kenyan retail and service businesses.'],
+            ['Verified payment status', 'Use configured provider responses rather than relying on payment screenshots.'],
+            ['Human-led workflows', 'Keep agents in control of customer service and AI-assisted replies.'],
+          ].map(([title, description]) => (
+            <article class="rounded-xl border border-border bg-surface-elevated p-6">
+              <h3 class="font-semibold text-text">{title}</h3>
+              <p class="mt-3 text-sm leading-relaxed text-text-muted">{description}</p>
+            </article>
+          ))}
         </div>
-      </section>
+      </MCSection>
     )
   }
 
-  <!-- 11. Frequently Asked Questions -->
   {
     sections.faqs && (
       <FAQSection
         title="Frequently Asked Questions"
-        subtitle="Everything you need to know about setting up MarkChat, connecting Safaricom M-Pesa, and managing team messaging."
+        subtitle="Practical answers about channels, M-Pesa, AI assistance, and getting started."
         faqs={homepageFaqs}
       />
     )
   }
 
-  <!-- 12. Bottom Action CTA -->
+  {sections.newsletter && <Newsletter />}
+
   {
     sections.closingCta && (
       <CTA
-        title={
-          homepageSettings.closingCta?.title ||
-          'Ready to bring customer conversations, engagement and sales together?'
-        }
-        description={
-          homepageSettings.closingCta?.description ||
-          'Empower your team with a unified inbox across WhatsApp, SMS, and social channels. Automate support with Markcopilot AI and close sales with in-chat M-Pesa.'
-        }
+        title={finalTitle}
+        description={closingDescription}
         action={{
-          label: homepageSettings.closingCta?.primaryCtaLabel || 'Book Live Demo',
-          href: homepageSettings.closingCta?.primaryCtaHref || '/demo',
+          label: cleanCoreCopy(homepageSettings.closingCta?.primaryCtaLabel, 'Get Started'),
+          href: safeInternalPath(homepageSettings.closingCta?.primaryCtaHref, '/register'),
         }}
         secondaryAction={{
-          label: homepageSettings.closingCta?.secondaryCtaLabel || 'Explore Plans & Pricing',
-          href: homepageSettings.closingCta?.secondaryCtaHref || '/pricing',
+          label: cleanCoreCopy(homepageSettings.closingCta?.secondaryCtaLabel, 'Book a Demo'),
+          href: safeInternalPath(homepageSettings.closingCta?.secondaryCtaHref, '/demo'),
         }}
-        background="default"
+        background="muted"
       />
     )
   }
-
-  <!-- 13. Newsletter -->
-  {sections.newsletter && <Newsletter />}
 </MarketingLayout>
