@@ -24,7 +24,7 @@ If your Core login state is needed, append `--storage-state=/absolute/path/to/de
 
 ## Expected results
 
-Six verified PNG screenshots are produced:
+Six verified PNG screenshots plus `public/media/product/capture-report.json` (with SHA-256 hashes) are produced:
 
 ```text
 public/media/product/inbox/light.png
@@ -34,6 +34,8 @@ public/media/product/mpesa/dark.png
 public/media/product/markcopilot/light.png
 public/media/product/markcopilot/dark.png
 ```
+
+Optional workflow-specific UI actions can be added to each workflow's `actions` array in the capture config (supported: `click`, `fill`, `press`). For example, M-Pesa and Markcopilot panels may need an explicit click or a synthetic `/stk` input. Never remove the synthetic expected-text verification.
 
 Only after all six captures pass synthetic-text verification does the script update `src/data/captured-product-assets.json` to `verified: true`. A failed run keeps the current manifest unchanged. Review all images manually before committing them or using them on the public website.
 

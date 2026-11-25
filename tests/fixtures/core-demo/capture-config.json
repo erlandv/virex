@@ -3,17 +3,20 @@
     "inbox": {
       "path": "/app/accounts/1/conversations",
       "selector": "#app",
-      "expectedText": "Amina Wanjiku"
+      "expectedText": "Amina Wanjiku",
+      "actions": []
     },
     "mpesa": {
       "path": "/app/accounts/1/conversations/101",
       "selector": "#app",
-      "expectedText": "DEMO-STK-0001"
+      "expectedText": "DEMO-STK-0001",
+      "actions": []
     },
     "markcopilot": {
       "path": "/app/accounts/1/conversations/101",
       "selector": "#app",
-      "expectedText": "Habari Amina"
+      "expectedText": "Habari Amina",
+      "actions": []
     }
   },
   "routes": [

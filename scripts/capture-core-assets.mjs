@@ -3,11 +3,13 @@
  * Run locally: npm install --no-save playwright && npx playwright install chromium
  *             node scripts/capture-core-assets.mjs --base-url=http://localhost:3000
  *
- * No real provider, customer, payment, or backend requests are allowed.
+ * Only local app-shell documents and static files may load; all backend XHR/fetch
+ * requests are mocked or blocked. The local Core MUST use a synthetic demo workspace.
  * Every backend request must resolve to an explicit synthetic JSON fixture.
  * A capture is accepted only when a visible fixture marker is rendered.
  */
 import { readFile, writeFile, mkdir } from 'node:fs/promises';
+import { createHash } from 'node:crypto';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -47,6 +49,7 @@ const manifest = {
   markcopilot: { light: null, dark: null },
 };
 let successful = 0;
+const captureReport = { capturedAt: new Date().toISOString(), origin: baseOrigin, images: [] };
 try {
   for (const workflow of workflowIds) {
     for (const theme of ['light', 'dark']) {
@@ -111,13 +114,29 @@ try {
         const response = await page.goto(destination.href, { waitUntil: 'domcontentloaded', timeout: 15000 });
         if (!response?.ok()) throw new Error('Core returned non-success HTTP status on ' + workflow);
         await page.locator(task.selector).first().waitFor({ state: 'visible', timeout: 12000 });
+        // Optional deterministic interactions required to reveal local product panels.
+        for (const action of task.actions || []) {
+          if (!action.selector || typeof action.selector !== 'string') {
+            throw new Error('Capture action is missing a selector for ' + workflow);
+          }
+          const target = page.locator(action.selector).first();
+          if (action.type === 'click') await target.click({ timeout: 7000 });
+          else if (action.type === 'fill' && typeof action.value === 'string') {
+            await target.fill(action.value, { timeout: 7000 });
+          } else if (action.type === 'press' && typeof action.key === 'string') {
+            await target.press(action.key, { timeout: 7000 });
+          } else throw new Error('Unsupported capture action type for ' + workflow);
+        }
         await page.getByText(task.expectedText, { exact: false }).first().waitFor({ state: 'visible', timeout: 12000 });
         await page.evaluate(() => document.fonts.ready);
         if (mockedResponses < 1) throw new Error('No synthetic API fixtures were consumed; refusing screenshot.');
         if (blockedApi.length) throw new Error('Unmapped backend endpoints: ' + [...new Set(blockedApi)].join(', '));
         const dir = path.join(outDir, workflow);
         await mkdir(dir, { recursive: true });
-        await page.screenshot({ path: path.join(dir, theme + '.png'), fullPage: false, animations: 'disabled' });
+        const outputPath = path.join(dir, theme + '.png');
+        await page.screenshot({ path: outputPath, fullPage: false, animations: 'disabled' });
+        const sha256 = createHash('sha256').update(await readFile(outputPath)).digest('hex');
+        captureReport.images.push({ workflow, theme, sha256, width: 1600, height: 1000, fixtureResponses: mockedResponses });
         manifest[workflow][theme] = '/media/product/' + workflow + '/' + theme + '.png';
         successful++;
         process.stdout.write('Verified synthetic capture: ' + workflow + ' / ' + theme + '\n');
@@ -128,6 +147,7 @@ try {
   }
   if (successful !== 6) throw new Error('Incomplete screenshot set: expected six verified images.');
   manifest.verified = true;
+  await writeFile(path.join(outDir, 'capture-report.json'), JSON.stringify(captureReport, null, 2) + '\n');
   // The manifest becomes importable by the marketing application after review.
   await writeFile(path.join(root, 'src/data/captured-product-assets.json'), JSON.stringify(manifest, null, 2) + '\n');
   process.stdout.write('Six captures complete. Review each image before staging assets for Git.\n');
