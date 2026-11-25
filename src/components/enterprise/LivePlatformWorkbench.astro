@@ -1,76 +1,51 @@
 ---
 import MCContainer from '@/components/design-system/MCContainer.astro';
 import MCProductTabs from '@/components/design-system/MCProductTabs.astro';
-import MCProductFrame from '@/components/design-system/MCProductFrame.astro';
 import MCSectionHeading from '@/components/design-system/MCSectionHeading.astro';
 import MCStatusBadge from '@/components/design-system/MCStatusBadge.astro';
-import { resolveProductAsset, type ProductWorkflow, type CmsProductMediaOverride } from '@/data/product-assets';
+import MCWorkflowPreview from '@/components/design-system/MCWorkflowPreview.astro';
+import type { ProductWorkflow, CmsProductMediaOverride } from '@/data/product-assets';
 
 interface Props {
   cmsMedia?: Partial<Record<ProductWorkflow, CmsProductMediaOverride | null>>;
 }
 
 const { cmsMedia = {} } = Astro.props;
-const workflows = [
-  {
-    id: 'inbox' as const,
-    title: 'Unified Inbox',
-    description:
-      'View conversations from connected channels, collaborate with your team, and keep customer context together.',
-  },
-  {
-    id: 'mpesa' as const,
-    title: 'M-Pesa Checkout',
-    description:
-      'Review a simulated /stk checkout workflow. Real requests require configured merchant credentials and provider authorization.',
-  },
-  {
-    id: 'markcopilot' as const,
-    title: 'Markcopilot AI',
-    description:
-      'Preview AI-assisted replies intended for human review before sending. Language support depends on configuration.',
-  },
-];
-
-const items = workflows.map((workflow) => ({
-  ...workflow,
-  light: resolveProductAsset(workflow.id, 'light', cmsMedia[workflow.id]),
-  dark: resolveProductAsset(workflow.id, 'dark', cmsMedia[workflow.id]),
-}));
 ---
 
-<section id="platform-workbench" aria-labelledby="platform-workbench-heading" class="border-b border-border bg-surface py-12 sm:py-16 lg:py-24">
+<section
+  id="platform-workbench"
+  aria-labelledby="platform-workbench-heading"
+  class="border-b border-border bg-surface py-12 sm:py-16 lg:py-24"
+>
   <MCContainer>
     <div class="mb-10 flex flex-col justify-between gap-4 lg:flex-row lg:items-end">
       <MCSectionHeading
         eyebrow="Explore MarkChat"
         title="See your customer workflows in one place"
-        description="Three product views, designed around Kenyan businesses. All screenshots use approved synthetic demonstration data."
+        description="Three product views for Kenyan teams. Verified images will use synthetic demonstration data."
       />
       <MCStatusBadge status="preview" label="Illustrative demonstrations" />
     </div>
     <MCProductTabs>
-      {
-        items.map((item) => (
-          <div slot={item.id} class="grid gap-6 lg:grid-cols-[1fr_300px] lg:items-center">
-            <div class="min-w-0">
-              <div class="dark:hidden">
-                <MCProductFrame src={item.light.src} alt={item.light.alt} label={item.title + ' screenshot pending'} />
-              </div>
-              <div class="hidden dark:block">
-                <MCProductFrame src={item.dark.src} alt={item.dark.alt} label={item.title + ' screenshot pending'} />
-              </div>
-            </div>
-            <div>
-              <h3 class="text-xl font-bold text-text">{item.title}</h3>
-              <p class="mt-3 text-sm leading-relaxed text-text-muted">{item.description}</p>
-              <p class="mt-5 rounded-lg border border-border bg-surface p-3 text-xs text-text-muted">
-                Captures remain unavailable until verified on the separate Core host. No messages or payments are sent from this showcase.
-              </p>
-            </div>
-          </div>
-        ))
-      }
+      <MCWorkflowPreview
+        slot="inbox"
+        workflow="inbox"
+        cmsMedia={cmsMedia.inbox}
+        description="Manage connected conversations in one workspace, with team assignment and customer context."
+      />
+      <MCWorkflowPreview
+        slot="mpesa"
+        workflow="mpesa"
+        cmsMedia={cmsMedia.mpesa}
+        description="Preview an M-Pesa /stk checkout workflow. Live transactions require configured merchant credentials and provider approval."
+      />
+      <MCWorkflowPreview
+        slot="markcopilot"
+        workflow="markcopilot"
+        cmsMedia={cmsMedia.markcopilot}
+        description="Review Markcopilot's AI-assisted replies before an authorized agent chooses to send."
+      />
     </MCProductTabs>
   </MCContainer>
 </section>
