@@ -1,0 +1,135 @@
+---
+import type { HeroMediaPage, HeroMediaSettings } from '@/lib/types';
+import { normalizeHeroMedia } from '@/lib/hero-media';
+
+interface Props {
+  page: HeroMediaPage;
+  settings?: Partial<HeroMediaSettings>;
+  standalone?: boolean;
+}
+const { page, settings, standalone = false } = Astro.props;
+const data = normalizeHeroMedia(page, settings, import.meta.env.PUBLIC_CMS_MEDIA_HOST || '');
+const field = (name: string) => 'hero-media-' + page + '-' + name;
+---
+
+<section class="rounded-xl border border-border bg-surface p-4 sm:p-6" data-hero-media-editor={page}>
+  <div class="mb-5">
+    <h3 class="text-base font-semibold text-text">Hero Background &amp; Visual Media</h3>
+    <p class="mt-2 text-sm leading-relaxed text-text-muted">
+      Approved editorial images only. Use a public HTTPS CMS media URL or a deployed /media/ asset.
+      Images are not verified product screenshots. Uploaded local files require a deployed media asset.
+    </p>
+  </div>
+  <div class="grid gap-4 sm:grid-cols-2">
+    <div class="sm:col-span-2">
+      <label class="form-label" for={field('desktop')}>Desktop / default image URL</label>
+      <input id={field('desktop')} data-hero-field="heroBackgroundImageUrl" class="form-input w-full" type="text" placeholder="/media/editorial/image.webp" value={data.heroBackgroundImageUrl} />
+    </div>
+    <div class="sm:col-span-2">
+      <label class="form-label" for={field('mobile')}>Mobile / tablet crop URL (optional)</label>
+      <input id={field('mobile')} data-hero-field="heroBackgroundMobileImageUrl" class="form-input w-full" type="text" placeholder="/media/editorial/image-mobile.webp" value={data.heroBackgroundMobileImageUrl} />
+    </div>
+    <div class="sm:col-span-2">
+      <label class="form-label" for={field('alt')}>Image description / alt text</label>
+      <input id={field('alt')} data-hero-field="heroBackgroundAlt" class="form-input w-full" type="text" maxlength="180" value={data.heroBackgroundAlt} />
+    </div>
+    <div>
+      <label class="form-label" for={field('mode')}>Display mode</label>
+      <select id={field('mode')} data-hero-field="heroMediaMode" class="form-input w-full">
+        <option value="layered-preview" selected={data.heroMediaMode === 'layered-preview'}>Layered product preview</option>
+        <option value="editorial-backdrop" selected={data.heroMediaMode === 'editorial-backdrop'}>Editorial backdrop</option>
+        <option value="hybrid" selected={data.heroMediaMode === 'hybrid'}>Editorial plus workflow</option>
+      </select>
+    </div>
+    <div>
+      <label class="form-label" for={field('scrim')}>Solid scrim strength</label>
+      <select id={field('scrim')} data-hero-field="heroScrimStrength" class="form-input w-full">
+        <option value="subtle" selected={data.heroScrimStrength === 'subtle'}>Subtle</option>
+        <option value="medium" selected={data.heroScrimStrength === 'medium'}>Medium</option>
+        <option value="strong" selected={data.heroScrimStrength === 'strong'}>Strong</option>
+      </select>
+    </div>
+  </div>
+  <div class="mt-5 overflow-hidden rounded-lg border border-border bg-background">
+    <img data-hero-media-preview alt="Hero image preview" class="hidden aspect-[16/9] max-h-64 w-full object-cover object-center" loading="lazy" />
+    <div data-hero-media-empty class="p-6 text-center text-sm text-text-muted">No deployed hero image selected; the neutral canvas remains active.</div>
+  </div>
+  {
+    standalone && (
+      <div class="mt-4 flex flex-wrap items-center gap-3">
+        <button type="button" class="btn btn-primary" data-hero-media-save>Save {page} hero media</button>
+        <span aria-live="polite" data-hero-media-status class="text-sm text-text-muted" />
+      </div>
+    )
+  }
+</section>
+
+<script>
+  import { normalizeHeroMedia, HERO_MEDIA_PAGES } from '@/lib/hero-media';
+  import { updateHeroMediaSettings } from '@/lib/cms-api';
+  import type { HeroMediaPage, HeroMediaSettings } from '@/lib/types';
+
+  function collectHeroMedia(root: HTMLElement): Partial<HeroMediaSettings> {
+    const value = (name: string) =>
+      (root.querySelector<HTMLInputElement | HTMLSelectElement>('[data-hero-field="' + name + '"]')?.value || '');
+    return {
+      heroBackgroundImageUrl: value('heroBackgroundImageUrl'),
+      heroBackgroundMobileImageUrl: value('heroBackgroundMobileImageUrl'),
+      heroBackgroundAlt: value('heroBackgroundAlt'),
+      heroMediaMode: value('heroMediaMode') as HeroMediaSettings['heroMediaMode'],
+      heroScrimStrength: value('heroScrimStrength') as HeroMediaSettings['heroScrimStrength'],
+    };
+  }
+
+  declare global {
+    interface Window {
+      markchatReadHeroMedia?: (page: HeroMediaPage) => Partial<HeroMediaSettings>;
+    }
+  }
+  window.markchatReadHeroMedia = (page: HeroMediaPage) => {
+    const root = document.querySelector<HTMLElement>('[data-hero-media-editor="' + page + '"]');
+    return root ? collectHeroMedia(root) : {};
+  };
+
+  function initHeroMediaEditors() {
+    document.querySelectorAll<HTMLElement>('[data-hero-media-editor]').forEach(root => {
+      if (root.dataset.initialized === 'true') return;
+      root.dataset.initialized = 'true';
+      const page = root.dataset.heroMediaEditor as HeroMediaPage;
+      if (!HERO_MEDIA_PAGES.includes(page)) return;
+      const preview = root.querySelector<HTMLImageElement>('[data-hero-media-preview]');
+      const empty = root.querySelector<HTMLElement>('[data-hero-media-empty]');
+      const render = () => {
+        const media = normalizeHeroMedia(page, collectHeroMedia(root));
+        const url = media.heroBackgroundImageUrl || media.heroBackgroundMobileImageUrl;
+        if (!preview || !empty) return;
+        if (!url) { preview.removeAttribute('src'); preview.classList.add('hidden'); empty.classList.remove('hidden'); return; }
+        preview.src = url;
+        preview.alt = media.heroBackgroundAlt || 'Selected editorial preview';
+        preview.classList.remove('hidden'); empty.classList.add('hidden');
+      };
+      preview?.addEventListener('error', () => {
+        preview.classList.add('hidden');
+        empty?.classList.remove('hidden');
+      });
+      root.querySelectorAll('input,select').forEach(input => {
+        input.addEventListener('input', render);
+        input.addEventListener('change', render);
+      });
+      root.querySelector<HTMLButtonElement>('[data-hero-media-save]')?.addEventListener('click', async event => {
+        const button = event.currentTarget as HTMLButtonElement;
+        const status = root.querySelector<HTMLElement>('[data-hero-media-status]');
+        button.disabled = true;
+        try {
+          await updateHeroMediaSettings(page, collectHeroMedia(root));
+          if (status) status.textContent = 'Saved in this browser; confirm the CMS bridge before treating it as published.';
+        } catch {
+          if (status) status.textContent = 'Unable to save; check your session and CMS bridge.';
+        } finally { button.disabled = false; }
+      });
+      render();
+    });
+  }
+  initHeroMediaEditors();
+  document.addEventListener('astro:page-load', initHeroMediaEditors);
+</script>
