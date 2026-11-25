@@ -1,432 +1,76 @@
 ---
-import { Icon } from 'astro-icon/components';
+import MCContainer from '@/components/design-system/MCContainer.astro';
+import MCProductTabs from '@/components/design-system/MCProductTabs.astro';
+import MCProductFrame from '@/components/design-system/MCProductFrame.astro';
+import MCSectionHeading from '@/components/design-system/MCSectionHeading.astro';
+import MCStatusBadge from '@/components/design-system/MCStatusBadge.astro';
+import { resolveProductAsset, type ProductWorkflow, type CmsProductMediaOverride } from '@/data/product-assets';
 
-const tabs = [
-  { id: 'inbox', label: 'Team Inbox', icon: 'lucide:messages-square' },
-  { id: 'sms', label: 'SMS Studio', icon: 'lucide:send' },
-  { id: 'mpesa', label: 'M-Pesa verification', icon: 'lucide:shield-check' },
-  { id: 'ai', label: 'Markcopilot AI', icon: 'lucide:sparkles' },
+interface Props {
+  cmsMedia?: Partial<Record<ProductWorkflow, CmsProductMediaOverride | null>>;
+}
+
+const { cmsMedia = {} } = Astro.props;
+const workflows = [
+  {
+    id: 'inbox' as const,
+    title: 'Unified Inbox',
+    description:
+      'View conversations from connected channels, collaborate with your team, and keep customer context together.',
+  },
+  {
+    id: 'mpesa' as const,
+    title: 'M-Pesa Checkout',
+    description:
+      'Review a simulated /stk checkout workflow. Real requests require configured merchant credentials and provider authorization.',
+  },
+  {
+    id: 'markcopilot' as const,
+    title: 'Markcopilot AI',
+    description:
+      'Preview AI-assisted replies intended for human review before sending. Language support depends on configuration.',
+  },
 ];
+
+const items = workflows.map((workflow) => ({
+  ...workflow,
+  light: resolveProductAsset(workflow.id, 'light', cmsMedia[workflow.id]),
+  dark: resolveProductAsset(workflow.id, 'dark', cmsMedia[workflow.id]),
+}));
 ---
 
-<section
-  aria-labelledby="workbench-heading"
-  class="py-16 sm:py-24 bg-background border-b border-border"
-  id="platform-workbench"
->
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6 mb-9">
-      <div class="max-w-2xl">
-        <p class="text-xs font-bold uppercase tracking-[0.18em] text-primary mb-3">
-          Explore the platform
-        </p>
-        <h2 id="workbench-heading" class="text-3xl sm:text-4xl font-bold tracking-tight text-text">
-          See every conversation in context.
-        </h2>
-        <p class="text-base text-text-muted mt-4 leading-relaxed">
-          Four distinct workflows. A single, deliberate interface for Kenyan teams, carrier
-          messaging, payments and assisted support.
-        </p>
-      </div>
-      <span
-        class="inline-flex items-center gap-2 text-xs font-semibold border border-border rounded-lg py-2 px-3 text-text-muted bg-surface"
-      >
-        <span class="w-2 h-2 rounded-full bg-primary" aria-hidden="true"></span> Interactive product simulation
-        — no messages or payments sent
-      </span>
+<section id="platform-workbench" aria-labelledby="platform-workbench-heading" class="border-b border-border bg-surface py-12 sm:py-16 lg:py-24">
+  <MCContainer>
+    <div class="mb-10 flex flex-col justify-between gap-4 lg:flex-row lg:items-end">
+      <MCSectionHeading
+        eyebrow="Explore MarkChat"
+        title="See your customer workflows in one place"
+        description="Three product views, designed around Kenyan businesses. All screenshots use approved synthetic demonstration data."
+      />
+      <MCStatusBadge status="preview" label="Illustrative demonstrations" />
     </div>
-    <div
-      data-workbench
-      class="overflow-hidden rounded-2xl border border-border bg-surface shadow-xl shadow-black/5"
-    >
-      <div class="flex flex-col lg:flex-row border-b border-border">
-        <div
-          role="tablist"
-          aria-label="Choose platform demonstration"
-          class="grid grid-cols-2 md:grid-cols-4 flex-1 gap-1 p-2"
-        >
-          {
-            tabs.map((tab, index) => (
-              <button
-                type="button"
-                role="tab"
-                id={'workbench-tab-' + tab.id}
-                aria-controls={'workbench-panel-' + tab.id}
-                aria-selected={index === 0 ? 'true' : 'false'}
-                tabindex={index === 0 ? 0 : -1}
-                data-workbench-tab={tab.id}
-                class:list={[
-                  'inline-flex justify-center items-center gap-2 rounded-lg px-3 py-3 text-sm font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-primary',
-                  index === 0
-                    ? 'bg-primary text-white'
-                    : 'text-text-muted hover:text-text hover:bg-background',
-                ]}
-              >
-                <>
-                  <Icon name={tab.icon} class="w-4 h-4 shrink-0" />
-                  <span>{tab.label}</span>
-                </>
-              </button>
-            ))
-          }
-        </div>
-      </div>
-      <div class="p-4 sm:p-8 lg:p-10 min-h-[340px]">
-        <div
-          id="workbench-panel-inbox"
-          role="tabpanel"
-          tabindex="0"
-          aria-labelledby="workbench-tab-inbox"
-          data-workbench-panel="inbox"
-        >
-          <div class="grid lg:grid-cols-[0.78fr_1.22fr] gap-8 items-center">
+    <MCProductTabs>
+      {
+        items.map((item) => (
+          <div slot={item.id} class="grid gap-6 lg:grid-cols-[1fr_300px] lg:items-center">
+            <div class="min-w-0">
+              <div class="dark:hidden">
+                <MCProductFrame src={item.light.src} alt={item.light.alt} label={item.title + ' screenshot pending'} />
+              </div>
+              <div class="hidden dark:block">
+                <MCProductFrame src={item.dark.src} alt={item.dark.alt} label={item.title + ' screenshot pending'} />
+              </div>
+            </div>
             <div>
-              <span class="text-xs font-semibold text-primary uppercase tracking-wider"
-                >01 / Collaborative inbox</span
-              >
-              <h3 class="text-2xl sm:text-3xl font-bold text-text mt-3 mb-4">
-                From product question to a clearer next action.
-              </h3>
-              <p class="text-text-muted leading-relaxed mb-6">
-                A Nairobi retailer can review the channel, customer context and requested payment
-                without switching between personal devices. Actual WhatsApp and M-Pesa connections
-                require merchant onboarding.
-              </p>
-              <a
-                href="/product/shared-inbox"
-                class="font-semibold text-primary hover:underline inline-flex gap-2 items-center"
-                >Explore the team inbox <Icon name="lucide:arrow-up-right" class="w-4 h-4" /></a
-              >
-            </div>
-            <div class="border border-border rounded-xl bg-background overflow-hidden">
-              <div class="flex justify-between items-center px-5 py-4 border-b border-border">
-                <div class="flex items-center gap-3">
-                  <span
-                    class="w-9 h-9 rounded-lg bg-primary/10 text-primary flex items-center justify-center"
-                    ><Icon name="lucide:message-circle" class="w-5 h-5" /></span
-                  ><div>
-                    <p class="text-sm font-bold text-text">Nairobi Retail · Sales</p><p
-                      class="text-xs text-text-muted"
-                    >
-                      WhatsApp Cloud · demonstration
-                    </p>
-                  </div>
-                </div>
-                <span class="text-xs font-semibold text-primary bg-primary/10 rounded-md px-2 py-1"
-                  >Assigned · Amina</span
-                >
-              </div>
-              <div class="space-y-3 p-5 text-sm">
-                <p
-                  class="max-w-[83%] border border-border rounded-xl rounded-tl-sm p-3 text-text bg-surface"
-                >
-                  Habari! Is the black jacket in medium still in stock?
-                </p>
-                <p class="max-w-[84%] ml-auto bg-primary/10 text-text rounded-xl rounded-tr-sm p-3">
-                  Yes, size M is available. Delivery to Kilimani is KES 250.
-                </p>
-                <div class="rounded-xl border border-border bg-surface p-4 flex items-center gap-3">
-                  <Icon name="lucide:smartphone" class="w-5 h-5 text-primary shrink-0" /><div
-                    class="flex-1"
-                  >
-                    <p class="font-semibold text-text">STK request · KES 4,500</p><p
-                      class="text-xs text-text-muted"
-                    >
-                      Await customer confirmation · simulated
-                    </p>
-                  </div><span
-                    class="text-xs bg-background border border-border text-text-muted rounded-md px-2 py-1"
-                    >Pending</span
-                  >
-                </div>
-                <p class="text-xs text-text-muted">
-                  Payment verification is shown only after a trusted callback, never from an SMS
-                  screenshot.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div
-          id="workbench-panel-sms"
-          role="tabpanel"
-          tabindex="0"
-          aria-labelledby="workbench-tab-sms"
-          data-workbench-panel="sms"
-          hidden
-        >
-          <div class="grid lg:grid-cols-2 gap-8 items-center">
-            <div>
-              <span class="text-xs font-semibold text-primary uppercase tracking-wider"
-                >02 / Separate prepaid product</span
-              >
-              <h3 class="text-2xl sm:text-3xl font-bold text-text mt-3 mb-4">
-                Know the sender, segment and route.
-              </h3>
-              <p class="text-text-muted mb-6 leading-relaxed">
-                Compose a campaign, understand message segmentation, and distinguish promotional
-                sending windows from approved transactional routes. SMS Studio credits are purchased
-                separately from Core plans.
-              </p>
-              <a
-                href="/pricing#sms-calculator"
-                class="font-semibold text-primary hover:underline inline-flex gap-2 items-center"
-                >Estimate SMS spend <Icon name="lucide:arrow-up-right" class="w-4 h-4" /></a
-              >
-            </div>
-            <div class="border border-border rounded-xl bg-background overflow-hidden">
-              <div class="px-5 py-4 border-b border-border flex justify-between">
-                <p class="font-semibold text-text">Campaign dispatch preview</p><span
-                  class="text-xs text-text-muted">Sample · no provider connected</span
-                >
-              </div>
-              <div class="p-5 space-y-5">
-                <div class="flex gap-3 items-center justify-between">
-                  <p class="text-xs text-text-muted">Sender identity</p><span
-                    class="text-sm tracking-widest font-bold text-primary border border-primary/20 bg-primary/5 rounded-lg px-3 py-1"
-                    >MARKCHAT · DEMO</span
-                  >
-                </div>
-                <p class="p-4 rounded-xl bg-surface border border-border text-sm text-text">
-                  Hi Wanjiku, your order is ready for collection at our Nairobi shop. Reply STOP to
-                  opt out of promotions.
-                </p>
-                <div class="grid grid-cols-3 gap-2">
-                  {
-                    ['Safaricom', 'Airtel', 'Telkom'].map((network) => (
-                      <div class="bg-surface border border-border rounded-lg p-3">
-                        <>
-                          <p class="font-semibold text-text text-xs">{network}</p>
-                          <p class="text-[11px] text-text-muted mt-2">Carrier route · sample</p>
-                        </>
-                      </div>
-                    ))
-                  }
-                </div>
-                <div
-                  class="flex flex-wrap items-center justify-between border-t border-border pt-4 gap-4"
-                >
-                  <p class="text-xs text-text-muted">GSM-7 · 1 segment in this sample</p><span
-                    data-demo-dlr
-                    aria-live="polite"
-                    class="text-xs font-bold text-primary">Queued · sample</span
-                  >
-                </div>
-                <div class="flex flex-wrap gap-2">
-                  <button
-                    type="button"
-                    data-demo-dlr-step="submitted"
-                    class="text-xs font-semibold border border-border bg-surface text-text rounded-md px-3 py-2 hover:border-primary"
-                    >Simulate carrier accepted</button
-                  ><button
-                    type="button"
-                    data-demo-dlr-step="delivered"
-                    class="text-xs font-semibold border border-border bg-surface text-text rounded-md px-3 py-2 hover:border-primary"
-                    >Simulate delivered DLR</button
-                  >
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div
-          id="workbench-panel-mpesa"
-          role="tabpanel"
-          tabindex="0"
-          aria-labelledby="workbench-tab-mpesa"
-          data-workbench-panel="mpesa"
-          hidden
-        >
-          <div class="grid lg:grid-cols-2 gap-8 items-center">
-            <div>
-              <span class="text-xs font-semibold text-primary uppercase tracking-wider"
-                >03 / Merchant payment checks</span
-              >
-              <h3 class="text-2xl sm:text-3xl font-bold text-text mt-3 mb-4">
-                A payment record that can be reviewed.
-              </h3>
-              <p class="text-text-muted leading-relaxed mb-6">
-                Illustrative C2B verification flow for Paybill, Till and eligible Pochi
-                arrangements. Match a reference to the correct order and keep the response
-                auditable. Availability depends on each provider's approved integration.
-              </p>
-              <a
-                href="/integrations/safaricom-mpesa-daraja"
-                class="font-semibold text-primary hover:underline inline-flex gap-2 items-center"
-                >Review M-Pesa integration <Icon name="lucide:arrow-up-right" class="w-4 h-4" /></a
-              >
-            </div>
-            <div class="bg-background rounded-xl border border-border p-6">
-              <div class="flex gap-3 items-center">
-                <span
-                  class="w-11 h-11 bg-primary/10 rounded-xl flex items-center justify-center text-primary"
-                  ><Icon name="lucide:receipt-text" class="w-6 h-6" /></span
-                ><div>
-                  <p class="text-xs uppercase font-bold text-text-muted">
-                    Sample C2B transaction
-                  </p><p class="text-xl font-bold text-text">KES 4,500</p>
-                </div>
-              </div>
-              <div class="mt-6 divide-y divide-border text-sm">
-                {
-                  [
-                    ['Transaction reference', 'SJ84K92LMP'],
-                    ['Paybill / Till', 'Merchant configuration required'],
-                    ['Customer reference', 'ORD-2049'],
-                    ['Verification', 'Matched · demonstration'],
-                  ].map(([label, value]) => (
-                    <div class="flex justify-between gap-4 py-3">
-                      <>
-                        <span class="text-text-muted">{label}</span>
-                        <span class="text-text font-semibold text-right">{value}</span>
-                      </>
-                    </div>
-                  ))
-                }
-              </div>
-              <div class="mt-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                <p data-demo-mpesa aria-live="polite" class="text-xs font-semibold text-text-muted">
-                  Awaiting example callback · not verified
-                </p><button
-                  type="button"
-                  data-demo-mpesa-action
-                  class="text-xs font-bold bg-primary text-white rounded-lg px-3 py-2"
-                  >Simulate verified match</button
-                >
-              </div>
-              <p class="text-xs text-text-muted mt-3">
-                An illustrative state transition only. No real transaction was looked up, verified
-                or settled.
+              <h3 class="text-xl font-bold text-text">{item.title}</h3>
+              <p class="mt-3 text-sm leading-relaxed text-text-muted">{item.description}</p>
+              <p class="mt-5 rounded-lg border border-border bg-surface p-3 text-xs text-text-muted">
+                Captures remain unavailable until verified on the separate Core host. No messages or payments are sent from this showcase.
               </p>
             </div>
           </div>
-        </div>
-        <div
-          id="workbench-panel-ai"
-          role="tabpanel"
-          tabindex="0"
-          aria-labelledby="workbench-tab-ai"
-          data-workbench-panel="ai"
-          hidden
-        >
-          <div class="grid lg:grid-cols-2 gap-8 items-center">
-            <div>
-              <span class="text-xs font-semibold text-primary uppercase tracking-wider"
-                >04 / Human-guided automation</span
-              >
-              <h3 class="text-2xl sm:text-3xl font-bold text-text mt-3 mb-4">
-                A relevant suggestion, not an invented answer.
-              </h3>
-              <p class="text-text-muted leading-relaxed mb-6">
-                Markcopilot illustrates intent classification, English–Swahili response drafting and
-                human approval. Sensitive actions and unknown facts should move to a teammate rather
-                than be guessed.
-              </p>
-              <a
-                href="/markcopilot"
-                class="font-semibold text-primary hover:underline inline-flex gap-2 items-center"
-                >Explore Markcopilot <Icon name="lucide:arrow-up-right" class="w-4 h-4" /></a
-              >
-            </div>
-            <div class="border border-border rounded-xl bg-background p-5">
-              <div class="flex justify-between border-b border-border pb-4">
-                <p class="text-text font-bold flex items-center gap-2">
-                  <Icon name="lucide:sparkles" class="w-5 h-5 text-primary" /> Markcopilot review
-                </p><span class="text-xs text-text-muted">Illustrative</span>
-              </div>
-              <div class="space-y-4 pt-4 text-sm">
-                <div>
-                  <p class="text-xs text-text-muted uppercase font-semibold mb-2">
-                    Customer intent
-                  </p><p class="text-text">Stock availability · Nairobi pickup · payment options</p>
-                </div>
-                <div class="border-l-2 border-primary pl-4">
-                  <p class="text-xs text-text-muted uppercase font-semibold mb-2">
-                    Suggested response · Kiswahili
-                  </p><p class="text-text">
-                    Habari! Tunaweza kukusaidia kuthibitisha bidhaa na bei. Tafadhali tuambie size
-                    unayohitaji.
-                  </p>
-                </div>
-                <div class="bg-surface rounded-lg border border-border p-4">
-                  <p class="text-xs text-text-muted uppercase font-semibold mb-1">
-                    English context
-                  </p><p class="text-text">
-                    Ask for the size before quoting an unverified amount. Escalate payment status to
-                    a verified integration or agent.
-                  </p>
-                </div>
-                <span
-                  class="inline-flex border border-border rounded-md text-xs font-semibold px-3 py-2 text-text-muted"
-                  >Agent review required before sending</span
-                >
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <p class="text-xs text-text-muted mt-4">
-      All customer names, references, delivery events and payment states above are fictional
-      demonstration data.
-    </p>
-  </div>
+        ))
+      }
+    </MCProductTabs>
+  </MCContainer>
 </section>
-
-<script>
-  function initPlatformWorkbench() {
-    document.querySelectorAll<HTMLElement>('[data-workbench]').forEach((root) => {
-      if (root.dataset.initialized === 'true') return;
-      root.dataset.initialized = 'true';
-      const tabs = Array.from(root.querySelectorAll<HTMLButtonElement>('[data-workbench-tab]'));
-      const panels = Array.from(root.querySelectorAll<HTMLElement>('[data-workbench-panel]'));
-      const activate = (id: string) => {
-        tabs.forEach((tab) => {
-          const active = tab.dataset.workbenchTab === id;
-          tab.setAttribute('aria-selected', String(active));
-          tab.tabIndex = active ? 0 : -1;
-          tab.classList.toggle('bg-primary', active);
-          tab.classList.toggle('text-white', active);
-          tab.classList.toggle('text-text-muted', !active);
-          tab.classList.toggle('hover:bg-background', !active);
-        });
-        panels.forEach((panel) => {
-          panel.hidden = panel.dataset.workbenchPanel !== id;
-        });
-      };
-      tabs.forEach((tab, index) => {
-        tab.addEventListener('click', () => activate(tab.dataset.workbenchTab || 'inbox'));
-        tab.addEventListener('keydown', (event) => {
-          const next =
-            event.key === 'ArrowRight' ? index + 1 : event.key === 'ArrowLeft' ? index - 1 : null;
-          if (next === null) return;
-          event.preventDefault();
-          const target = tabs[(next + tabs.length) % tabs.length];
-          if (target) {
-            target.focus();
-            activate(target.dataset.workbenchTab || 'inbox');
-          }
-        });
-      });
-      root.querySelectorAll<HTMLButtonElement>('[data-demo-dlr-step]').forEach((button) => {
-        button.addEventListener('click', () => {
-          const status =
-            button.dataset.demoDlrStep === 'delivered'
-              ? 'Delivered · sample DLR'
-              : 'Carrier accepted · sample';
-          const target = root.querySelector<HTMLElement>('[data-demo-dlr]');
-          if (target) target.textContent = status;
-        });
-      });
-      root
-        .querySelector<HTMLButtonElement>('[data-demo-mpesa-action]')
-        ?.addEventListener('click', () => {
-          const target = root.querySelector<HTMLElement>('[data-demo-mpesa]');
-          if (target) target.textContent = 'Matched to ORD-2049 · simulated';
-        });
-      activate('inbox');
-    });
-  }
-  initPlatformWorkbench();
-  document.addEventListener('astro:page-load', initPlatformWorkbench);
-</script>
