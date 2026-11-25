@@ -97,3 +97,38 @@ test('Gate 2 capture tool fails closed and fixtures are synthetic', () => {
     assert.equal(fixture.demo, true);
   }
 });
+
+test('Gate 3 keeps clean fallback media behavior until approved Core captures exist', () => {
+  const manifest = JSON.parse(read('src/data/captured-product-assets.json'));
+  const frame = read('src/components/design-system/MCProductFrame.astro');
+  const preview = read('src/components/design-system/MCWorkflowPreview.astro');
+  const workbench = read('src/components/enterprise/LivePlatformWorkbench.astro');
+  assert.equal(manifest.verified, false);
+  assert.match(frame, /data-mc-media-fallback/);
+  assert.match(frame, /addEventListener\('error', showFallback\)/);
+  assert.match(frame, /MCScreenshotFallback/);
+  assert.match(preview, /resolveProductAsset\(workflow, 'light', cmsMedia\)/);
+  assert.match(preview, /resolveProductAsset\(workflow, 'dark', cmsMedia\)/);
+  assert.match(workbench, /slot="inbox"/);
+  assert.match(workbench, /slot="mpesa"/);
+  assert.match(workbench, /slot="markcopilot"/);
+  assert.doesNotMatch(workbench, /SMS Studio|Bulk SMS/i);
+});
+
+test('Gate 3 homepage continues to use exact Virex brand tokens without decoration', () => {
+  const css = read('src/styles/global.css');
+  assert.match(css, /--color-primary:\s*oklch\(0\.55 0\.2 265\)/);
+  assert.match(css, /--color-primary-dark:\s*oklch\(0\.45 0\.2 265\)/);
+  assert.match(css, /--color-secondary:\s*oklch\(0\.65 0\.25 350\)/);
+  const files = [
+    'src/pages/index.astro',
+    'src/components/sections/marketing/Hero.astro',
+    'src/components/enterprise/LivePlatformWorkbench.astro',
+    'src/components/sections/marketing/OmnichannelFlowHub.astro',
+    'src/components/sections/marketing/SolutionsPreview.astro',
+    'src/components/sections/marketing/CTA.astro',
+  ];
+  for (const file of files) {
+    assert.doesNotMatch(read(file), /bg-gradient|radial-gradient|linear-gradient|blur-3xl|backdrop-blur|SupportHero3D/i, file);
+  }
+});
