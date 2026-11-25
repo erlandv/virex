@@ -232,3 +232,22 @@ export interface BillingHistoryItem {
   status: 'paid' | 'pending' | 'failed';
   invoiceUrl?: string;
 }
+
+/** Public editorial hero media: never interpreted as a verified product screenshot. */
+export type HeroMediaMode = 'layered-preview' | 'editorial-backdrop' | 'hybrid';
+export type HeroScrimStrength = 'subtle' | 'medium' | 'strong';
+export type HeroMediaPage =
+  | 'homepage'
+  | 'features'
+  | 'markcopilot'
+  | 'integrations'
+  | 'solutions'
+  | 'about';
+
+export interface HeroMediaSettings {
+  heroBackgroundImageUrl: string;
+  heroBackgroundMobileImageUrl: string;
+  heroBackgroundAlt: string;
+  heroMediaMode: HeroMediaMode;
+  heroScrimStrength: HeroScrimStrength;
+}
