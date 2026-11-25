@@ -137,3 +137,17 @@ test('CMS Architecture & Security Boundary Verification', async (t) => {
     }
   });
 });
+
+
+test('Responsive hero media dashboard settings preserve existing authorization boundaries', () => {
+  const cms = fs.readFileSync(path.resolve(process.cwd(), 'src/lib/cms-api.ts'), 'utf8');
+  const editor = fs.readFileSync(path.resolve(process.cwd(), 'src/components/dashboard/MCHeroMediaEditor.astro'), 'utf8');
+  assert.match(cms, /Authorization:\s*`Bearer \$\{getAdminToken\(\)\}`/);
+  assert.match(cms, /updateHeroMediaSettings/);
+  assert.match(cms, /uploadHeroMediaAsset/);
+  assert.match(editor, /MCHeroMediaEditor|Hero Background/);
+  for (const page of ['homepage', 'features', 'markcopilot', 'integrations']) {
+    const content = fs.readFileSync(path.resolve(process.cwd(), 'src/pages/dashboard/' + page + '.astro'), 'utf8');
+    assert.match(content, /MCHeroMediaEditor/, page);
+  }
+});

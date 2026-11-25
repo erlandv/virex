@@ -300,3 +300,26 @@ test('Gate 4 removes decorative backgrounds from every migrated public route fam
     );
   }
 });
+
+
+test('Responsive editorial media preserves the design system and no-overlap hierarchy', () => {
+  const css = read('src/styles/global.css');
+  for (const token of [
+    '--color-primary: oklch(0.55 0.2 265);',
+    '--color-primary-dark: oklch(0.45 0.2 265);',
+    '--color-secondary: oklch(0.65 0.25 350);',
+  ]) assert.ok(css.includes(token), 'Virex token was changed: ' + token);
+  const renderer = read('src/components/design-system/MCResponsiveHeroMedia.astro');
+  const editor = read('src/components/dashboard/MCHeroMediaEditor.astro');
+  const hero = read('src/components/sections/marketing/Hero.astro');
+  assert.match(renderer, /<picture>/);
+  assert.match(renderer, /srcset=\{mobile\}/);
+  assert.match(renderer, /object-cover/);
+  assert.match(renderer, /existsSync/);
+  assert.match(renderer, /image && \(/);
+  assert.match(editor, /heroBackgroundMobileImageUrl/);
+  assert.match(editor, /data-hero-upload/);
+  assert.match(hero, /data-mc-nonoverlap-layout/);
+  assert.doesNotMatch(hero, /-mt-12|-mt-16|-mt-20/);
+  assert.doesNotMatch(renderer + hero, /radial-gradient|backdrop-blur|blur-3xl/);
+});

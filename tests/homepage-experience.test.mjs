@@ -206,3 +206,19 @@ test('Gate 3 built homepage renders safely without verified screenshots', async 
     }
   });
 });
+
+
+test('CMS responsive image source and missing-image fallbacks are safe in built pages', async () => {
+  for (const route of ['/', '/features/', '/markcopilot/', '/integrations/', '/solutions/', '/about/']) {
+    const res = await fetch('http://localhost:4321' + route, {
+      signal: AbortSignal.timeout(6000),
+    });
+    assert.equal(res.status, 200, route + ' must render');
+    const html = await res.text();
+    assert.doesNotMatch(html, /<img[^>]+src="(?:undefined|null|)"/i, route);
+    assert.doesNotMatch(html, /<source[^>]+srcset="(?:undefined|null|)"/i, route);
+    if (route === '/') {
+      assert.match(html, /data-mc-nonoverlap-layout|data-mc-responsive-hero/);
+    }
+  }
+});
