@@ -4,7 +4,6 @@
  * Subscription figures continue to come from the published billing catalog.
  */
 import MarketingLayout from '@/layouts/MarketingLayout.astro';
-import ServiceBoundaryNotice from '@/components/common/ServiceBoundaryNotice.astro';
 import PricingTable from '@sections/pricing/PricingTable.astro';
 import FAQSection from '@sections/content/FAQSection.astro';
 import CTA from '@sections/marketing/CTA.astro';
@@ -45,7 +44,6 @@ const pricingFaqs = faqsList
   title={`Pricing & Plans — ${siteConfig.name} Kenya`}
   description="Explore current MarkChat Core workspace subscriptions in KES, compare collaboration features, and arrange approved messaging and M-Pesa provider setup."
 >
-  <ServiceBoundaryNotice />
   <PricingTable
     flatPreview
     title="Simple, transparent Core workspace pricing"
