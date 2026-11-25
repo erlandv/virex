@@ -13,3 +13,10 @@ interface ImportMetaEnv {
 interface ImportMeta {
   readonly env: ImportMetaEnv;
 }
+
+/** Shared editor hook used by existing dashboard save handlers. */
+interface Window {
+  markchatReadHeroMedia?: (
+    page: import('./lib/types').HeroMediaPage
+  ) => Partial<import('./lib/types').HeroMediaSettings>;
+}

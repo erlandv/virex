@@ -98,11 +98,6 @@ const field = (name: string) => 'hero-media-' + page + '-' + name;
     };
   }
 
-  declare global {
-    interface Window {
-      markchatReadHeroMedia?: (page: HeroMediaPage) => Partial<HeroMediaSettings>;
-    }
-  }
   window.markchatReadHeroMedia = (page: HeroMediaPage) => {
     const root = document.querySelector<HTMLElement>('[data-hero-media-editor="' + page + '"]');
     return root ? collectHeroMedia(root) : {};
