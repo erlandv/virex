@@ -3,6 +3,11 @@ import MCContainer from '@/components/design-system/MCContainer.astro';
 import MCButton from '@/components/design-system/MCButton.astro';
 import MCProductFrame from '@/components/design-system/MCProductFrame.astro';
 import MCConceptualPreview from '@/components/design-system/MCConceptualPreview.astro';
+import MCResponsiveHeroMedia from '@/components/design-system/MCResponsiveHeroMedia.astro';
+import { normalizeHeroMedia } from '@/lib/hero-media';
+import type { HeroMediaSettings } from '@/lib/types';
+import { existsSync } from 'node:fs';
+import path from 'node:path';
 import { resolveProductAsset, type CmsProductMediaOverride } from '@/data/product-assets';
 
 interface Props {
@@ -12,6 +17,7 @@ interface Props {
   primaryCTA?: { label: string; href: string };
   secondaryCTA?: { label: string; href: string };
   cmsMedia?: CmsProductMediaOverride | null;
+  heroMedia?: Partial<HeroMediaSettings> | null;
 }
 
 const {
@@ -21,7 +27,14 @@ const {
   primaryCTA = { label: 'Get Started', href: '/register' },
   secondaryCTA = { label: 'Book a Demo', href: '/demo' },
   cmsMedia,
+  heroMedia,
 } = Astro.props;
+const editorial = normalizeHeroMedia('homepage', heroMedia);
+const validDeployed = (src: string) =>
+  Boolean(src) && (src.startsWith('https://') || existsSync(path.join(process.cwd(), 'public', src.slice(1))));
+const hasEditorial = validDeployed(editorial.heroBackgroundImageUrl) || validDeployed(editorial.heroBackgroundMobileImageUrl);
+const useEditorial = hasEditorial && editorial.heroMediaMode !== 'layered-preview';
+const useBackdrop = useEditorial && editorial.heroMediaMode === 'editorial-backdrop';
 
 const light = resolveProductAsset('inbox', 'light', cmsMedia);
 const dark = resolveProductAsset('inbox', 'dark', cmsMedia);
@@ -30,10 +43,11 @@ const defaultTitle = title === 'Every conversation. One smarter inbox.';
 
 <section
   id="product-hero"
-  class="border-b border-border bg-background py-14 sm:py-20 lg:py-24"
+  class="relative overflow-hidden border-b border-border bg-background py-14 sm:py-20 lg:py-24"
   aria-labelledby="hero-heading"
 >
-  <MCContainer class="max-w-[1360px]">
+  {useBackdrop && <MCResponsiveHeroMedia page="homepage" settings={editorial} presentation="backdrop" class="pointer-events-none" />}
+  <MCContainer class="relative z-10 max-w-[1360px]">
     <div class="grid items-center gap-12 lg:grid-cols-[0.95fr_1.05fr] lg:gap-16">
       <div class="max-w-xl">
         <p class="mb-5 text-xs font-bold uppercase tracking-widest text-primary">{badge}</p>
@@ -70,7 +84,17 @@ const defaultTitle = title === 'Every conversation. One smarter inbox.';
       </div>
       <div class="relative min-w-0 pb-6 pt-3">
         {
-          light.src || dark.src ? (
+          useEditorial && !useBackdrop ? (
+            <div class="space-y-3">
+              <MCResponsiveHeroMedia page="homepage" settings={editorial} focalPoint="right" />
+              {editorial.heroMediaMode === 'hybrid' && (
+                <div class="grid gap-3 sm:grid-cols-2">
+                  <MCConceptualPreview kind="mpesa" />
+                  <MCConceptualPreview kind="markcopilot" />
+                </div>
+              )}
+            </div>
+          ) : light.src || dark.src ? (
             <>
               <div class="dark:hidden">
                 <MCProductFrame
@@ -88,17 +112,15 @@ const defaultTitle = title === 'Every conversation. One smarter inbox.';
               </div>
             </>
           ) : (
-            <div class="relative">
-              <div class="relative z-10 w-[92%] overflow-hidden rounded-2xl border border-border shadow-xl shadow-black/10 dark:shadow-black/30">
+            <div class="space-y-3" data-mc-nonoverlap-layout>
+              <div class="overflow-hidden rounded-2xl border border-border shadow-sm">
                 <MCConceptualPreview kind="inbox" class="rounded-2xl border-0" />
               </div>
-              <div class="relative z-20 -mt-16 ml-auto w-[63%] max-w-sm drop-shadow-xl sm:-mt-20">
+              <div class="grid items-stretch gap-3 sm:grid-cols-2">
                 <MCConceptualPreview kind="mpesa" />
-              </div>
-              <div class="relative z-30 -mt-12 ml-5 w-[55%] max-w-xs drop-shadow-lg sm:-mt-16 sm:ml-10">
                 <MCConceptualPreview kind="markcopilot" />
               </div>
-              <p class="mt-5 text-right text-xs text-text-muted">
+              <p class="text-right text-xs text-text-muted">
                 Conceptual product preview · synthetic example content
               </p>
             </div>
