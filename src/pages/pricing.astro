@@ -15,7 +15,8 @@ import { siteConfig } from '@/config';
 import { fetchPricingMatrix, fetchFaqs } from '@/lib/cms-api';
 
 const [matrix, faqsList] = await Promise.all([fetchPricingMatrix(), fetchFaqs()]);
-const deferred = /\bsms\b|sender\s+id|byoc|\bsla\b|saml|sso|whitelabel|dedicated\s+support|shortcode|audit\s+logs?|agent\s+capacity/i;
+const deferred =
+  /\bsms\b|sender\s+id|byoc|\bsla\b|saml|sso|whitelabel|dedicated\s+support|shortcode|audit\s+logs?|agent\s+capacity/i;
 
 const plans = matrix.tiers.map((tier) => ({
   name: tier.name,
@@ -81,7 +82,8 @@ const pricingFaqs = faqsList
         <MCStatusBadge status="integration" label="Merchant configuration" />
         <h3 class="mt-4 text-lg font-semibold text-text">Configure M-Pesa</h3>
         <p class="mt-3 text-sm leading-relaxed text-text-muted">
-          Authorized Daraja payment workflows require merchant credentials and callback verification.
+          Authorized Daraja payment workflows require merchant credentials and callback
+          verification.
         </p>
       </MCCard>
     </div>
