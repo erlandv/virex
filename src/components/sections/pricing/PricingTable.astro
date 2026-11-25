@@ -97,233 +97,248 @@ function formatPrice(price: number): string {
 }
 ---
 
-{flatPreview && (
-  <section class="border-b border-border bg-surface py-12 sm:py-16 lg:py-24" aria-label="MarkChat Core subscription pricing">
-    <div class="mx-auto max-w-[1200px] px-5 sm:px-8 lg:px-10">
-      <div class="mb-10 max-w-3xl">
-        {title && <h2 class="text-3xl font-bold tracking-tight text-text sm:text-4xl">{title}</h2>}
-        {subtitle && <p class="mt-4 text-base leading-relaxed text-text-muted">{subtitle}</p>}
-      </div>
-      <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        {plans.map((plan) => (
-          <article
-            class:list={[
-              'flex flex-col rounded-xl border bg-surface-elevated p-6',
-              plan.highlighted ? 'border-primary' : 'border-border',
-            ]}
-          >
-            <div>
-              <p class="text-xs font-semibold uppercase tracking-wider text-primary">
-                {plan.badge || (plan.highlighted ? 'Popular plan' : 'Workspace subscription')}
-              </p>
-              <h3 class="mt-3 text-xl font-bold text-text">{plan.name}</h3>
-              <p class="mt-2 min-h-16 text-sm leading-relaxed text-text-muted">{plan.description}</p>
-              <p class="mt-5 text-3xl font-extrabold text-text">
-                {plan.monthlyPrice === null ? plan.customPrice || 'Custom' : formatPrice(plan.monthlyPrice)}
-                {plan.monthlyPrice !== null && <span class="text-sm font-normal text-text-muted"> / month</span>}
-              </p>
-            </div>
-            <ul class="mt-6 flex-1 space-y-3 border-t border-border pt-5">
-              {plan.features.map((feature) => (
-                <li class="flex items-start gap-2 text-sm leading-relaxed text-text-muted">
-                  <Icon name="lucide:check" class="mt-0.5 h-4 w-4 shrink-0 text-primary" />
-                  <span>{feature}</span>
-                </li>
-              ))}
-            </ul>
-            <a
-              href={plan.cta.href}
-              class:list={[
-                'mt-7 inline-flex min-h-11 items-center justify-center rounded-lg border px-4 py-3 text-sm font-semibold transition-colors',
-                plan.highlighted
-                  ? 'border-primary bg-primary text-white hover:bg-primary-dark'
-                  : 'border-border bg-background text-text hover:border-primary/50',
-              ]}
-            >
-              {plan.cta.label}
-            </a>
-          </article>
-        ))}
-      </div>
-      {footerLink && (
-        <div class="mt-9">
-          <a href={footerLink.href} class="text-sm font-semibold text-primary hover:underline">
-            {footerLink.label}
-          </a>
-        </div>
-      )}
-      <p class="mt-5 text-xs text-text-muted">
-        Prices and availability follow the current subscription catalog. Provider charges and
-        integrations may require separate agreements. Annual checkout is not shown.
-      </p>
-    </div>
-  </section>
-)}
-{!flatPreview && (
-<section class:list={['py-section', bgClass]}>
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    {/* Section Header */}
-    {
-      hasHeading && (
-        <div class="text-center max-w-3xl mx-auto mb-12">
-          {title && <h2 class="text-3xl sm:text-4xl font-bold text-text">{title}</h2>}
-          {subtitle && <p class="mt-4 text-lg text-text-muted">{subtitle}</p>}
-        </div>
-      )
-    }
-
-    {/* Billing Toggle: annual checkout is not supported by Control Plane */}
-    <div class="flex justify-center mb-12">
-      <div class="inline-flex items-center gap-3 p-1.5 bg-surface border border-border rounded-lg">
-        <button
-          type="button"
-          data-period="monthly"
-          class:list={[
-            'pricing-toggle-btn cursor-pointer px-4 py-2 text-sm font-medium rounded-md transition-all',
-            defaultPeriod === 'monthly'
-              ? 'bg-primary text-white shadow-sm'
-              : 'text-text-muted hover:text-text',
-          ]}
-          aria-pressed={defaultPeriod === 'monthly'}
-        >
-          Monthly
-        </button>
-        <a
-          href="/contact?topic=annual-billing"
-          class="text-xs font-medium text-text-muted px-3 py-2 rounded-md hover:text-primary"
-          >Annual billing: contact sales</a
-        >
-      </div>
-    </div>
-
-    {/* Pricing Cards */}
-    <div
-      class:list={[
-        'grid grid-cols-1 md:grid-cols-2 gap-8',
-        plans.length === 4 ? 'xl:grid-cols-4 lg:grid-cols-2' : 'lg:grid-cols-3',
-      ]}
-      id="pricing-cards"
+{
+  flatPreview && (
+    <section
+      class="border-b border-border bg-surface py-12 sm:py-16 lg:py-24"
+      aria-label="MarkChat Core subscription pricing"
     >
-      {
-        plans.map((plan) => {
-          const hasNumericPrice = plan.monthlyPrice !== null;
-          const monthlyPrice = plan.monthlyPrice ?? 0;
-          const annualPrice = hasNumericPrice ? getAnnualPrice(monthlyPrice) : 0;
-          const badgeText = plan.badge || (plan.highlighted ? 'Most Popular' : null);
-
-          return (
-            <div
+      <div class="mx-auto max-w-[1200px] px-5 sm:px-8 lg:px-10">
+        <div class="mb-10 max-w-3xl">
+          {title && (
+            <h2 class="text-3xl font-bold tracking-tight text-text sm:text-4xl">{title}</h2>
+          )}
+          {subtitle && <p class="mt-4 text-base leading-relaxed text-text-muted">{subtitle}</p>}
+        </div>
+        <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+          {plans.map((plan) => (
+            <article
               class:list={[
-                'pricing-card relative p-8 rounded-lg border transition-all',
-                plan.highlighted
-                  ? 'bg-primary/5 border-primary shadow-lg scale-[1.02]'
-                  : 'bg-surface border-border hover:border-primary/50 hover:shadow-md',
+                'flex flex-col rounded-xl border bg-surface-elevated p-6',
+                plan.highlighted ? 'border-primary' : 'border-border',
               ]}
-              data-monthly-price={hasNumericPrice ? monthlyPrice : ''}
-              data-annual-price={hasNumericPrice ? annualPrice : ''}
-              data-custom-price={plan.customPrice || ''}
             >
-              {badgeText && (
-                <div class="absolute -top-3 left-1/2 -translate-x-1/2">
-                  <span class="inline-block px-3 py-1 text-xs font-semibold text-white bg-primary rounded-full whitespace-nowrap">
-                    {badgeText}
-                  </span>
-                </div>
-              )}
-
-              <div class="text-center">
-                <h3 class="text-xl font-semibold text-text">{plan.name}</h3>
-                <p class="mt-2 text-text-muted text-sm">{plan.description}</p>
-
-                <div class="mt-6 min-h-18 flex flex-col justify-center">
-                  {hasNumericPrice ? (
-                    <>
-                      {/* Monthly Price Display */}
-                      <div
-                        class:list={['price-display', defaultPeriod === 'monthly' ? '' : 'hidden']}
-                        data-period="monthly"
-                      >
-                        <span class="text-4xl font-bold text-text">
-                          {formatPrice(monthlyPrice)}
-                        </span>
-                        <span class="text-text-muted">/month</span>
-                      </div>
-
-                      {/* Annual Price Display */}
-                      <div
-                        class:list={['price-display', defaultPeriod === 'annual' ? '' : 'hidden']}
-                        data-period="annual"
-                      >
-                        <span class="text-4xl font-bold text-text">{formatPrice(annualPrice)}</span>
-                        <span class="text-text-muted">/month</span>
-                        {monthlyPrice > 0 && (
-                          <div class="mt-1">
-                            <span class="text-xs text-text-muted line-through mr-2">
-                              {formatPrice(monthlyPrice)}/mo
-                            </span>
-                            <span class="text-xs text-primary font-medium">
-                              Save {formatPrice((monthlyPrice - annualPrice) * 12)}
-                              /year
-                            </span>
-                          </div>
-                        )}
-                      </div>
-                    </>
-                  ) : (
-                    <div class="price-display">
-                      <span class="text-4xl font-bold text-text">
-                        {plan.customPrice || 'Custom'}
-                      </span>
-                      <span class="text-text-muted">/month</span>
-                    </div>
+              <div>
+                <p class="text-xs font-semibold uppercase tracking-wider text-primary">
+                  {plan.badge || (plan.highlighted ? 'Popular plan' : 'Workspace subscription')}
+                </p>
+                <h3 class="mt-3 text-xl font-bold text-text">{plan.name}</h3>
+                <p class="mt-2 min-h-16 text-sm leading-relaxed text-text-muted">
+                  {plan.description}
+                </p>
+                <p class="mt-5 text-3xl font-extrabold text-text">
+                  {plan.monthlyPrice === null
+                    ? plan.customPrice || 'Custom'
+                    : formatPrice(plan.monthlyPrice)}
+                  {plan.monthlyPrice !== null && (
+                    <span class="text-sm font-normal text-text-muted"> / month</span>
                   )}
-                </div>
+                </p>
               </div>
-
-              <ul class="mt-8 space-y-4">
+              <ul class="mt-6 flex-1 space-y-3 border-t border-border pt-5">
                 {plan.features.map((feature) => (
-                  <li class="flex items-start gap-3">
-                    <Icon name="lucide:check" class="w-5 h-5 text-primary shrink-0 mt-0.5" />
-                    <span class="text-text-muted">{feature}</span>
+                  <li class="flex items-start gap-2 text-sm leading-relaxed text-text-muted">
+                    <Icon name="lucide:check" class="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+                    <span>{feature}</span>
                   </li>
                 ))}
               </ul>
-
-              <div class="mt-8">
-                <a
-                  href={plan.cta.href}
-                  class:list={[
-                    'block w-full text-center px-6 py-3 rounded-md font-medium transition-colors',
-                    plan.highlighted
-                      ? 'bg-primary text-white hover:bg-primary-dark'
-                      : 'bg-surface border border-border text-text hover:bg-background hover:border-primary/50',
-                  ]}
-                >
-                  {plan.cta.label}
-                </a>
-              </div>
-            </div>
-          );
-        })
-      }
-    </div>
-
-    {/* Footer Link */}
-    {
-      footerLink && (
-        <div class="text-center mt-10">
-          <a
-            href={footerLink.href}
-            class="text-primary hover:text-primary-dark font-medium transition-colors"
-          >
-            {footerLink.label}
-          </a>
+              <a
+                href={plan.cta.href}
+                class:list={[
+                  'mt-7 inline-flex min-h-11 items-center justify-center rounded-lg border px-4 py-3 text-sm font-semibold transition-colors',
+                  plan.highlighted
+                    ? 'border-primary bg-primary text-white hover:bg-primary-dark'
+                    : 'border-border bg-background text-text hover:border-primary/50',
+                ]}
+              >
+                {plan.cta.label}
+              </a>
+            </article>
+          ))}
         </div>
-      )
-    }
-  </div>
-</section>
-)}
+        {footerLink && (
+          <div class="mt-9">
+            <a href={footerLink.href} class="text-sm font-semibold text-primary hover:underline">
+              {footerLink.label}
+            </a>
+          </div>
+        )}
+        <p class="mt-5 text-xs text-text-muted">
+          Prices and availability follow the current subscription catalog. Provider charges and
+          integrations may require separate agreements. Annual checkout is not shown.
+        </p>
+      </div>
+    </section>
+  )
+}
+{
+  !flatPreview && (
+    <section class:list={['py-section', bgClass]}>
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Section Header */}
+        {hasHeading && (
+          <div class="text-center max-w-3xl mx-auto mb-12">
+            {title && <h2 class="text-3xl sm:text-4xl font-bold text-text">{title}</h2>}
+            {subtitle && <p class="mt-4 text-lg text-text-muted">{subtitle}</p>}
+          </div>
+        )}
+
+        {/* Billing Toggle: annual checkout is not supported by Control Plane */}
+        <div class="flex justify-center mb-12">
+          <div class="inline-flex items-center gap-3 p-1.5 bg-surface border border-border rounded-lg">
+            <button
+              type="button"
+              data-period="monthly"
+              class:list={[
+                'pricing-toggle-btn cursor-pointer px-4 py-2 text-sm font-medium rounded-md transition-all',
+                defaultPeriod === 'monthly'
+                  ? 'bg-primary text-white shadow-sm'
+                  : 'text-text-muted hover:text-text',
+              ]}
+              aria-pressed={defaultPeriod === 'monthly'}
+            >
+              Monthly
+            </button>
+            <a
+              href="/contact?topic=annual-billing"
+              class="text-xs font-medium text-text-muted px-3 py-2 rounded-md hover:text-primary"
+            >
+              Annual billing: contact sales
+            </a>
+          </div>
+        </div>
+
+        {/* Pricing Cards */}
+        <div
+          class:list={[
+            'grid grid-cols-1 md:grid-cols-2 gap-8',
+            plans.length === 4 ? 'xl:grid-cols-4 lg:grid-cols-2' : 'lg:grid-cols-3',
+          ]}
+          id="pricing-cards"
+        >
+          {plans.map((plan) => {
+            const hasNumericPrice = plan.monthlyPrice !== null;
+            const monthlyPrice = plan.monthlyPrice ?? 0;
+            const annualPrice = hasNumericPrice ? getAnnualPrice(monthlyPrice) : 0;
+            const badgeText = plan.badge || (plan.highlighted ? 'Most Popular' : null);
+
+            return (
+              <div
+                class:list={[
+                  'pricing-card relative p-8 rounded-lg border transition-all',
+                  plan.highlighted
+                    ? 'bg-primary/5 border-primary shadow-lg scale-[1.02]'
+                    : 'bg-surface border-border hover:border-primary/50 hover:shadow-md',
+                ]}
+                data-monthly-price={hasNumericPrice ? monthlyPrice : ''}
+                data-annual-price={hasNumericPrice ? annualPrice : ''}
+                data-custom-price={plan.customPrice || ''}
+              >
+                {badgeText && (
+                  <div class="absolute -top-3 left-1/2 -translate-x-1/2">
+                    <span class="inline-block px-3 py-1 text-xs font-semibold text-white bg-primary rounded-full whitespace-nowrap">
+                      {badgeText}
+                    </span>
+                  </div>
+                )}
+
+                <div class="text-center">
+                  <h3 class="text-xl font-semibold text-text">{plan.name}</h3>
+                  <p class="mt-2 text-text-muted text-sm">{plan.description}</p>
+
+                  <div class="mt-6 min-h-18 flex flex-col justify-center">
+                    {hasNumericPrice ? (
+                      <>
+                        {/* Monthly Price Display */}
+                        <div
+                          class:list={[
+                            'price-display',
+                            defaultPeriod === 'monthly' ? '' : 'hidden',
+                          ]}
+                          data-period="monthly"
+                        >
+                          <span class="text-4xl font-bold text-text">
+                            {formatPrice(monthlyPrice)}
+                          </span>
+                          <span class="text-text-muted">/month</span>
+                        </div>
+
+                        {/* Annual Price Display */}
+                        <div
+                          class:list={['price-display', defaultPeriod === 'annual' ? '' : 'hidden']}
+                          data-period="annual"
+                        >
+                          <span class="text-4xl font-bold text-text">
+                            {formatPrice(annualPrice)}
+                          </span>
+                          <span class="text-text-muted">/month</span>
+                          {monthlyPrice > 0 && (
+                            <div class="mt-1">
+                              <span class="text-xs text-text-muted line-through mr-2">
+                                {formatPrice(monthlyPrice)}/mo
+                              </span>
+                              <span class="text-xs text-primary font-medium">
+                                Save {formatPrice((monthlyPrice - annualPrice) * 12)}
+                                /year
+                              </span>
+                            </div>
+                          )}
+                        </div>
+                      </>
+                    ) : (
+                      <div class="price-display">
+                        <span class="text-4xl font-bold text-text">
+                          {plan.customPrice || 'Custom'}
+                        </span>
+                        <span class="text-text-muted">/month</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                <ul class="mt-8 space-y-4">
+                  {plan.features.map((feature) => (
+                    <li class="flex items-start gap-3">
+                      <Icon name="lucide:check" class="w-5 h-5 text-primary shrink-0 mt-0.5" />
+                      <span class="text-text-muted">{feature}</span>
+                    </li>
+                  ))}
+                </ul>
+
+                <div class="mt-8">
+                  <a
+                    href={plan.cta.href}
+                    class:list={[
+                      'block w-full text-center px-6 py-3 rounded-md font-medium transition-colors',
+                      plan.highlighted
+                        ? 'bg-primary text-white hover:bg-primary-dark'
+                        : 'bg-surface border border-border text-text hover:bg-background hover:border-primary/50',
+                    ]}
+                  >
+                    {plan.cta.label}
+                  </a>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Footer Link */}
+        {footerLink && (
+          <div class="text-center mt-10">
+            <a
+              href={footerLink.href}
+              class="text-primary hover:text-primary-dark font-medium transition-colors"
+            >
+              {footerLink.label}
+            </a>
+          </div>
+        )}
+      </div>
+    </section>
+  )
+}
 
 <script>
   function initPricingToggle() {
