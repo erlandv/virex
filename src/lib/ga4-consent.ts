@@ -32,7 +32,7 @@ function initializeQueue() {
 function updateConsent() {
   if (!validId) return;
   const approved = getConsent()?.categories.analytics === true;
-  (window as Window & Record<string, unknown>)['ga-disable-' + validId] = !approved;
+  Object.assign(window, { ['ga-disable-' + validId]: !approved });
   window.gtag('consent', 'update', {
     analytics_storage: approved ? 'granted' : 'denied',
     ad_storage: 'denied',
