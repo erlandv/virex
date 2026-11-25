@@ -3,244 +3,165 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 
-const ROOT_DIR = process.cwd();
-const INDEX_ASTRO_PATH = path.join(ROOT_DIR, 'src', 'pages', 'index.astro');
-const HERO_ASTRO_PATH = path.join(
-  ROOT_DIR,
-  'src',
-  'components',
-  'sections',
-  'marketing',
-  'Hero.astro'
-);
-const SOLUTIONS_PREVIEW_PATH = path.join(
-  ROOT_DIR,
-  'src',
-  'components',
-  'sections',
-  'marketing',
-  'SolutionsPreview.astro'
-);
-const DASHBOARD_HOMEPAGE_PATH = path.join(ROOT_DIR, 'src', 'pages', 'dashboard', 'homepage.astro');
-const DASHBOARD_HOMEPAGE_MANAGE_PATH = path.join(
-  ROOT_DIR,
-  'src',
-  'pages',
-  'dashboard',
-  'homepageManage.astro'
-);
-const CMS_API_PATH = path.join(ROOT_DIR, 'src', 'lib', 'cms-api.ts');
-const DASH_NAV_PATH = path.join(ROOT_DIR, 'src', 'config', 'dashboard-navigation.ts');
-const DEV_URL = 'http://localhost:4321/';
+const ROOT = process.cwd();
+const read = (file) => fs.readFileSync(path.join(ROOT, file), 'utf8');
+const indexPath = 'src/pages/index.astro';
+const heroPath = 'src/components/sections/marketing/Hero.astro';
+const workbenchPath = 'src/components/enterprise/LivePlatformWorkbench.astro';
+const sections = [
+  indexPath,
+  heroPath,
+  workbenchPath,
+  'src/components/sections/marketing/OmnichannelFlowHub.astro',
+  'src/components/sections/marketing/SolutionsPreview.astro',
+  'src/components/sections/marketing/HowItWorks.astro',
+  'src/components/sections/marketing/CTA.astro',
+];
 
-test('Homepage — source files verification', async (t) => {
-  await t.test('index.astro, Hero.astro, and SolutionsPreview.astro exist', () => {
-    assert.ok(fs.existsSync(INDEX_ASTRO_PATH), 'src/pages/index.astro must exist');
-    assert.ok(
-      fs.existsSync(HERO_ASTRO_PATH),
-      'src/components/sections/marketing/Hero.astro must exist'
-    );
-    assert.ok(
-      fs.existsSync(SOLUTIONS_PREVIEW_PATH),
-      'src/components/sections/marketing/SolutionsPreview.astro must exist'
-    );
-    assert.ok(
-      fs.existsSync(DASHBOARD_HOMEPAGE_PATH),
-      'src/pages/dashboard/homepage.astro must exist'
-    );
-    assert.ok(
-      fs.existsSync(DASHBOARD_HOMEPAGE_MANAGE_PATH),
-      'src/pages/dashboard/homepageManage.astro must exist'
-    );
+test('Gate 3 homepage source composition and CMS compatibility', async (t) => {
+  for (const file of sections) {
+    await t.test(file + ' exists', () => {
+      assert.ok(fs.existsSync(path.join(ROOT, file)), file + ' must exist');
+    });
+  }
+
+  const index = read(indexPath);
+  const hero = read(heroPath);
+  const workbench = read(workbenchPath);
+  const tabs = read('src/components/design-system/MCProductTabs.astro');
+  const cmsApi = read('src/lib/cms-api.ts');
+  const dashboard = read('src/pages/dashboard/homepage.astro');
+
+  await t.test('ScrewFast-inspired hero has correct product-first message and CTAs', () => {
+    assert.match(hero, /One inbox for customer conversations, AI-assisted responses, and M-Pesa payment workflows/);
+    assert.match(index, /Built for Kenyan businesses/);
+    assert.match(hero, /lg:grid-cols-\[1\.1fr_0\.9fr\]/);
+    assert.match(hero, /label: 'Get Started', href: '\/register'/);
+    assert.match(hero, /label: 'Book a Demo', href: '\/demo'/);
+    assert.doesNotMatch(index, /SupportHero3D/);
   });
 
-  const indexContent = fs.readFileSync(INDEX_ASTRO_PATH, 'utf-8');
-  const heroContent = fs.readFileSync(HERO_ASTRO_PATH, 'utf-8');
-  const previewContent = fs.readFileSync(SOLUTIONS_PREVIEW_PATH, 'utf-8');
-  const cmsApiContent = fs.readFileSync(CMS_API_PATH, 'utf-8');
-  const dashNavContent = fs.readFileSync(DASH_NAV_PATH, 'utf-8');
-  const dashHomepageContent = fs.readFileSync(DASHBOARD_HOMEPAGE_PATH, 'utf-8');
-
-  await t.test('index.astro imports Hero.astro rather than SupportHero3D', () => {
-    assert.match(
-      indexContent,
-      /import\s+Hero\s+from\s+'@sections\/marketing\/Hero\.astro';/,
-      'index.astro must import Hero from @sections/marketing/Hero.astro'
-    );
-    assert.doesNotMatch(
-      indexContent,
-      /<SupportHero3D/,
-      'index.astro must not render SupportHero3D'
-    );
-  });
-
-  await t.test('index.astro imports CMS query and SolutionsPreview component', () => {
-    assert.match(indexContent, /import\s+SolutionsPreview\s+from/);
-    assert.match(indexContent, /fetchHomepageSettings/);
-    assert.match(indexContent, /homepageSettings/);
-  });
-
-  await t.test('Hero headline communicates unified customer conversations & sales', () => {
-    assert.match(
-      indexContent,
-      /title="Bring Customer Conversations, Engagement & Sales Together"/,
-      'Hero must have the unified platform headline'
-    );
-    assert.match(
-      indexContent,
-      /badge="Unified Customer Communications & Engagement Platform"/,
-      'Hero badge must communicate unified customer communications'
-    );
-    assert.match(
-      heroContent,
-      /Bring Customer Conversations, Engagement & Sales Together/,
-      'Hero.astro default title must match unified communications positioning'
-    );
-  });
-
-  await t.test('Hero CTAs harmonize with live demo and plans exploration', () => {
-    assert.match(
-      indexContent,
-      /label:\s*'Book Live Demo',\s*href:\s*'\/demo'/,
-      'Primary CTA must point to /demo'
-    );
-    assert.match(
-      indexContent,
-      /label:\s*'Explore Plans & Pricing',\s*href:\s*'\/pricing'/,
-      'Secondary CTA must point to /pricing'
-    );
-  });
-
-  await t.test('No unverified trial SMS credits or absolute guarantee claims exist', () => {
-    assert.doesNotMatch(
-      indexContent,
-      /50 Trial SMS|50 complimentary|Start Free Forever/i,
-      'index.astro must not contain unverified 50 Trial SMS or Start Free Forever claims'
-    );
-    assert.doesNotMatch(
-      heroContent,
-      /50 Trial SMS|100% C2B/i,
-      'Hero.astro must not contain 50 Trial SMS or 100% C2B claims'
-    );
-    assert.doesNotMatch(
-      indexContent,
-      /Zero Payment Fraud/i,
-      'index.astro must not claim Zero Payment Fraud (replaced with Real-Time Fraud Prevention)'
-    );
-  });
-
-  await t.test('Hero micro-metrics describe capabilities without invented SLAs', () => {
-    assert.match(indexContent, /value:\s*'6 Channels'/);
-    assert.match(indexContent, /value:\s*'M-Pesa'/);
-    assert.match(indexContent, /value:\s*'Team'/);
-    assert.doesNotMatch(indexContent, /value:\s*'< 10s'/);
-  });
-
-  await t.test(
-    'HowItWorks balances channel connection, collaboration/AI, and in-chat sales',
-    () => {
-      assert.match(indexContent, /1\. Connect Your Communication Channels/);
-      assert.match(indexContent, /2\. Collaborate & Automate with Markcopilot AI/);
-      assert.match(indexContent, /3\. Close Deals with In-Chat M-Pesa \/stk/);
+  await t.test('homepage binds CMS settings, pricing and published feature media without changing admin contracts', () => {
+    assert.match(index, /fetchHomepageSettings/);
+    assert.match(index, /fetchPricingMatrix/);
+    assert.match(index, /fetchFeatures/);
+    assert.match(index, /fetchFaqs/);
+    assert.match(index, /homepageSettings\.sections/);
+    assert.match(index, /mediaType !== 'screenshot'/);
+    assert.match(index, /cmsMedia=\{cmsMedia\.inbox\}/);
+    assert.match(index, /cmsMedia=\{cmsMedia\}/);
+    for (const name of ['HomepageSettings', 'HomepageHeroSettings', 'HomepageSectionVisibility']) {
+      assert.match(cmsApi, new RegExp('export interface ' + name));
     }
-  );
+    assert.match(cmsApi, /export async function updateHomepageSettings\(/);
+    assert.match(dashboard, /Hero Experience Settings/);
+    assert.match(dashboard, /Homepage Section Visibility Matrix/);
+    assert.match(dashboard, /updateHomepageSettings/);
+  });
 
-  await t.test(
-    'SolutionsPreview provides verified industry workflows linking to /solutions',
-    () => {
-      assert.match(previewContent, /Tailored Industry Solutions/);
-      assert.match(
-        previewContent,
-        /Engineered for How Your Sector Communicates &amp; Sells|Engineered for How Your Sector Communicates & Sells/
-      );
-      assert.match(previewContent, /\/solutions\/ecommerce/);
-      assert.match(previewContent, /\/solutions\/fintech/);
-      assert.match(previewContent, /\/solutions\/travel/);
-      assert.match(previewContent, /\/solutions\/education/);
-      assert.match(previewContent, /\/solutions\/healthcare/);
-      assert.match(previewContent, /\/solutions\/support/);
-      assert.match(previewContent, /href="\/solutions"/);
+  await t.test('exactly three product tabs use accessible semantics and synthetic frame fallbacks', () => {
+    assert.match(workbench, /<MCProductTabs>/);
+    assert.match(tabs, /id: 'inbox'/);
+    assert.match(tabs, /id: 'mpesa'/);
+    assert.match(tabs, /id: 'markcopilot'/);
+    assert.equal((tabs.match(/id: '/g) || []).length, 3);
+    assert.match(tabs, /role="tablist"/);
+    assert.match(tabs, /aria-selected/);
+    assert.match(tabs, /ArrowRight/);
+    assert.match(workbench, /<MCWorkflowPreview/);
+    assert.match(read('src/components/design-system/MCProductFrame.astro'), /data-mc-media-fallback/);
+    assert.match(read('src/components/design-system/MCProductFrame.astro'), /image\.addEventListener\('error', showFallback\)/);
+  });
+
+  await t.test('homepage removes deferred SMS marketing, decorative gradients and premium-only positioning', () => {
+    for (const file of sections) {
+      const source = read(file);
+      assert.doesNotMatch(source, /bg-gradient|radial-gradient|linear-gradient|blur-3xl|backdrop-blur|SupportHero3D|glassmorph/i, file);
+      assert.doesNotMatch(source, /Bulk SMS|SMS Studio|SMS wallet|SMS calculator|Captain AI|SAML\/SSO|Audit Logs|Custom Roles|Agent Capacity|SLA Policies/i, file);
     }
-  );
-
-  await t.test('CMS API exports homepage models and operations', () => {
-    assert.match(cmsApiContent, /export interface HomepageSettings/);
-    assert.match(cmsApiContent, /export interface HomepageHeroSettings/);
-    assert.match(cmsApiContent, /export interface HomepageSectionVisibility/);
-    assert.match(cmsApiContent, /export async function fetchHomepageSettings\(/);
-    assert.match(cmsApiContent, /export async function adminFetchHomepageSettings\(/);
-    assert.match(cmsApiContent, /export async function updateHomepageSettings\(/);
+    assert.match(index, /flatPreview/);
+    assert.match(index, /deferredTerms/);
   });
 
-  await t.test('Dashboard navigation includes Homepage Editor item', () => {
-    assert.match(dashNavContent, /Homepage Editor/);
-    assert.match(dashNavContent, /\/dashboard\/homepage/);
+  await t.test('seven Community-safe capabilities use the existing isometric SVG manifest', () => {
+    const illustrations = read('src/data/product-assets.ts');
+    const bento = read('src/components/design-system/MCFeatureBento.astro');
+    assert.match(index, /communityIllustrations\.find/);
+    assert.match(index, /<MCFeatureBento features=\{capabilities\}/);
+    assert.match(bento, /feature\.illustration/);
+    for (const id of [
+      'unified-inbox', 'mpesa-stk', 'markcopilot',
+      'automation-routing', 'contact-crm', 'help-center', 'analytics-webhooks',
+    ]) {
+      assert.ok(illustrations.includes("id: '" + id + "'"), 'Missing illustration ' + id);
+    }
   });
 
-  await t.test('Dashboard homepage editor has controls for hero, sections, and closing CTA', () => {
-    assert.match(dashHomepageContent, /Homepage Experience Editor/);
-    assert.match(dashHomepageContent, /hero-badge/);
-    assert.match(dashHomepageContent, /hero-title/);
-    assert.match(dashHomepageContent, /hero-subtitle/);
-    assert.match(dashHomepageContent, /Homepage Section Visibility Matrix/);
-    assert.match(dashHomepageContent, /Closing Conversion CTA Settings/);
-    assert.match(dashHomepageContent, /updateHomepageSettings/);
+  await t.test('Kenyan industry routes remain available', () => {
+    const useCases = read('src/components/sections/marketing/SolutionsPreview.astro');
+    for (const slug of [
+      'ecommerce', 'healthcare', 'pharmacies', 'education', 'support', 'fintech', 'travel',
+    ]) {
+      assert.ok(useCases.includes("/solutions/" + slug), 'Missing industry ' + slug);
+    }
+    assert.match(useCases, /Tailored Industry Solutions/);
+  });
+
+  await t.test('Core pricing preview is flat and filters deferred/premium content', () => {
+    const pricing = read('src/components/sections/pricing/PricingTable.astro');
+    assert.match(index, /flatPreview/);
+    assert.match(index, /tier\.features/);
+    assert.match(index, /deferredTerms\.test\(feature\)/);
+    assert.match(pricing, /flatPreview &&/);
+    assert.match(pricing, /bg-surface-elevated/);
+    assert.match(pricing, /formatPrice\(plan\.monthlyPrice\)/);
   });
 });
 
-test('Homepage — Live Local Server HTTP & HTML Response', async (t) => {
-  let response;
-  try {
-    response = await fetch(DEV_URL, { signal: AbortSignal.timeout(5000) });
-  } catch (err) {
-    t.skip(`Local dev server not responding on ${DEV_URL}: ${err.message}`);
-    return;
-  }
-
-  assert.equal(response.status, 200, 'Homepage must return HTTP 200');
+test('Gate 3 built homepage renders safely without verified screenshots', async (t) => {
+  const response = await fetch('http://localhost:4321/', {
+    signal: AbortSignal.timeout(6000),
+  });
+  assert.equal(response.status, 200);
   const html = await response.text();
 
-  await t.test('HTML contains doctype and title', () => {
+  await t.test('document has metadata, new hero and lead conversion actions', () => {
     assert.match(html, /<!doctype html>/i);
-    assert.match(
-      html,
-      /Unified Customer Conversations & Engagement Platform|Customer Conversations/i
-    );
+    assert.match(html, /One inbox for customer conversations/i);
+    assert.match(html, /Built for Kenyan businesses/i);
+    assert.match(html, /Get Started/i);
+    assert.match(html, /Book a Demo/i);
+    assert.match(html, /name="description"/);
   });
 
-  await t.test('HTML renders Hero with headline and CTAs', () => {
-    assert.match(html, /Bring Customer/i);
-    assert.match(html, /Conversations, Engagement &amp; Sales/i);
-    assert.match(html, /Book Live Demo/i);
-    assert.match(html, /Explore Plans &amp; Pricing|Explore Plans/i);
+  await t.test('three tab labels, visible fallback and no broken image src', () => {
+    assert.match(html, /Unified Inbox/);
+    assert.match(html, /M-Pesa \/stk/);
+    assert.match(html, /Markcopilot AI/);
+    assert.match(html, /data-screenshot-fallback/);
+    assert.doesNotMatch(html, /<img[^>]+src="(?:undefined|null|)"/i);
   });
 
-  await t.test('HTML contains verified trust badges and no fabricated trial SMS claims', () => {
-    assert.match(html, /6 Channels/i);
-    assert.match(html, /Bilingual AI/i);
-    assert.doesNotMatch(html, /50 Trial SMS/i);
-    assert.doesNotMatch(html, /50 complimentary/i);
+  await t.test('homepage has no deferred SMS product promotional sections', () => {
+    assert.doesNotMatch(html, /Bulk SMS|SMS Studio|SMS wallet|SMS calculator/i);
+    assert.doesNotMatch(html, /Captain AI|SAML\/SSO|SLA Policies|Audit Logs|Custom Roles|Agent Capacity/i);
   });
 
-  await t.test('HTML renders Solutions Preview section', () => {
-    assert.match(html, /Tailored Industry Solutions/i);
-    assert.match(html, /Retail, E-Commerce &amp; Dukas|Retail, E-Commerce & Dukas/i);
-    assert.match(html, /Financial &amp; Payment Operations|Financial & Payment Operations/i);
+  await t.test('seven features, pricing, FAQ and industry pathways render', () => {
+    assert.match(html, /Community-safe capabilities/);
+    assert.match(html, /Analytics &amp; Webhooks|Analytics & Webhooks/);
+    assert.match(html, /Tailored Industry Solutions/);
+    assert.match(html, /Core subscription plans/);
+    assert.match(html, /Frequently Asked Questions/);
   });
 
-  await t.test('GET /dashboard/homepage returns HTTP 200 with editor controls', async () => {
-    const dashRes = await fetch('http://localhost:4321/dashboard/homepage');
-    assert.equal(dashRes.status, 200, '/dashboard/homepage must return HTTP 200');
-    const dashHtml = await dashRes.text();
-    assert.match(dashHtml, /Homepage Experience Editor/);
-    assert.match(dashHtml, /Hero Experience Settings/);
-    assert.match(dashHtml, /Homepage Section Visibility Matrix/);
-  });
-
-  await t.test('GET /dashboard/homepageManage returns HTTP 200 alias', async () => {
-    const aliasRes = await fetch('http://localhost:4321/dashboard/homepageManage');
-    assert.equal(aliasRes.status, 200, '/dashboard/homepageManage must return HTTP 200');
-    const aliasHtml = await aliasRes.text();
-    assert.match(aliasHtml, /Homepage Experience Editor/);
+  await t.test('existing CMS homepage routes still render', async () => {
+    for (const url of ['/dashboard/homepage', '/dashboard/homepageManage']) {
+      const admin = await fetch('http://localhost:4321' + url, {
+        signal: AbortSignal.timeout(6000),
+      });
+      assert.equal(admin.status, 200, url);
+      assert.match(await admin.text(), /Homepage Experience Editor/);
+    }
   });
 });
